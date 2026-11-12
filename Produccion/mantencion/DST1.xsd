@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="DST1" targetNamespace="http://tempuri.org/DST1.xsd" xmlns:mstns="http://tempuri.org/DST1.xsd" xmlns="http://tempuri.org/DST1.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="DST1" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="DST1" msprop:Generator_DataSetName="DST1" msprop:EnableTableAdapterManager="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="TablaInfOt" msprop:Generator_UserTableName="TablaInfOt" msprop:Generator_RowDeletedName="TablaInfOtRowDeleted" msprop:Generator_RowChangedName="TablaInfOtRowChanged" msprop:Generator_RowClassName="TablaInfOtRow" msprop:Generator_RowChangingName="TablaInfOtRowChanging" msprop:Generator_RowEvArgName="TablaInfOtRowChangeEvent" msprop:Generator_RowEvHandlerName="TablaInfOtRowChangeEventHandler" msprop:Generator_TableClassName="TablaInfOtDataTable" msprop:Generator_TableVarName="tableTablaInfOt" msprop:Generator_RowDeletingName="TablaInfOtRowDeleting" msprop:Generator_TablePropName="TablaInfOt">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="N_OT" msprop:Generator_UserColumnName="N_OT" msprop:Generator_ColumnVarNameInTable="columnN_OT" msprop:Generator_ColumnPropNameInRow="N_OT" msprop:Generator_ColumnPropNameInTable="N_OTColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Seccion" msprop:Generator_UserColumnName="Seccion" msprop:Generator_ColumnVarNameInTable="columnSeccion" msprop:Generator_ColumnPropNameInRow="Seccion" msprop:Generator_ColumnPropNameInTable="SeccionColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Item_x002F_Maquina" msprop:Generator_UserColumnName="Item/Maquina" msprop:Generator_ColumnVarNameInTable="_columnItem_Maquina" msprop:Generator_ColumnPropNameInRow="_Item_Maquina" msprop:Generator_ColumnPropNameInTable="_Item_MaquinaColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Fecha_x002F_Hora_Inicio" msprop:Generator_UserColumnName="Fecha/Hora_Inicio" msprop:Generator_ColumnPropNameInRow="_Fecha_Hora_Inicio" msprop:Generator_ColumnVarNameInTable="_columnFecha_Hora_Inicio" msprop:Generator_ColumnPropNameInTable="_Fecha_Hora_InicioColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Fecha_x002F_Hora_Fin" msprop:Generator_UserColumnName="Fecha/Hora_Fin" msprop:Generator_ColumnPropNameInRow="_Fecha_Hora_Fin" msprop:Generator_ColumnVarNameInTable="_columnFecha_Hora_Fin" msprop:Generator_ColumnPropNameInTable="_Fecha_Hora_FinColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Detencion_x0028_Hrs_x0029_" msprop:Generator_UserColumnName="Detencion(Hrs)" msprop:Generator_ColumnPropNameInRow="_Detencion_Hrs_" msprop:Generator_ColumnVarNameInTable="_columnDetencion_Hrs_" msprop:Generator_ColumnPropNameInTable="_Detencion_Hrs_Column" type="xs:string" minOccurs="0" />
+              <xs:element name="Detencion" msprop:Generator_UserColumnName="Detencion" msprop:Generator_ColumnPropNameInRow="Detencion" msprop:Generator_ColumnVarNameInTable="columnDetencion" msprop:Generator_ColumnPropNameInTable="DetencionColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Descripcion_Breve" msprop:Generator_UserColumnName="Descripcion_Breve" msprop:Generator_ColumnPropNameInRow="Descripcion_Breve" msprop:Generator_ColumnVarNameInTable="columnDescripcion_Breve" msprop:Generator_ColumnPropNameInTable="Descripcion_BreveColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Tipo_Trabajo" msprop:Generator_UserColumnName="Tipo_Trabajo" msprop:Generator_ColumnPropNameInRow="Tipo_Trabajo" msprop:Generator_ColumnVarNameInTable="columnTipo_Trabajo" msprop:Generator_ColumnPropNameInTable="Tipo_TrabajoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Recibido_Por" msprop:Generator_UserColumnName="Recibido_Por" msprop:Generator_ColumnPropNameInRow="Recibido_Por" msprop:Generator_ColumnVarNameInTable="columnRecibido_Por" msprop:Generator_ColumnPropNameInTable="Recibido_PorColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Cerrada_Por" msprop:Generator_UserColumnName="Cerrada_Por" msprop:Generator_ColumnPropNameInRow="Cerrada_Por" msprop:Generator_ColumnVarNameInTable="columnCerrada_Por" msprop:Generator_ColumnPropNameInTable="Cerrada_PorColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Personal_1" msprop:Generator_UserColumnName="Personal_1" msprop:Generator_ColumnPropNameInRow="Personal_1" msprop:Generator_ColumnVarNameInTable="columnPersonal_1" msprop:Generator_ColumnPropNameInTable="Personal_1Column" type="xs:string" minOccurs="0" />
+              <xs:element name="Personal_2" msprop:Generator_UserColumnName="Personal_2" msprop:Generator_ColumnPropNameInRow="Personal_2" msprop:Generator_ColumnVarNameInTable="columnPersonal_2" msprop:Generator_ColumnPropNameInTable="Personal_2Column" type="xs:string" minOccurs="0" />
+              <xs:element name="Personal_3" msprop:Generator_UserColumnName="Personal_3" msprop:Generator_ColumnPropNameInRow="Personal_3" msprop:Generator_ColumnVarNameInTable="columnPersonal_3" msprop:Generator_ColumnPropNameInTable="Personal_3Column" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

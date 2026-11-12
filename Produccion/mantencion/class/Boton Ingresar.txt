@@ -1,0 +1,14 @@
+  Private Sub btnIngresar_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnIngresar.Click
+        Dim personal As New Personal
+        Dim cod_resp As Integer = 0
+        Dim resp As String = ""
+
+        personal.IngPersonal(txtRut.Text, txtDv.Text, txtCodInt.Text, txtNombres.Text, txtApPaterno.Text, txtApMaterno.Text, fecha_nac.Value, txtfono.Text, txtEmail.Text, cmbPlanta.SelectedValue, cmbSeccion.SelectedValue, cmbCargo.SelectedValue, cod_resp, resp)
+
+        If cod_resp = 1 Then
+            MsgBox(resp, MsgBoxStyle.Information, "Validación")
+            personal.limpiarFormPersonal(Me)
+        Else
+            MsgBox(resp, MsgBoxStyle.Critical, "Validación")
+        End If
+  End Sub

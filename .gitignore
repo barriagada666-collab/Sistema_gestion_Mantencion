@@ -1,0 +1,15 @@
+# Visual Studio temporary and user files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vshost.exe
+*.vshost.exe.config
+*.vshost.exe.manifest
+
+# Temporary build artifacts (keep Release bin for installer packaging)
+mantencion/obj/
+Produccion/mantencion/obj/
+Backup/
+*.log
