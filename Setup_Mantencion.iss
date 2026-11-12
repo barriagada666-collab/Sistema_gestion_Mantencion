@@ -77,11 +77,11 @@ Source: "mantencion\bin\Release\Microsoft.Office.Interop.Access.dll"; DestDir: "
 Source: "mantencion\bin\Release\Microsoft.Office.Interop.Excel.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "mantencion\bin\Release\Microsoft.Vbe.Interop.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "mantencion\bin\Release\office.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "Produccion\SetupSistMantencion\dao.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "Produccion\SetupSistMantencion\adodb.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "Produccion\SetupSistMantencion\Microsoft.AnalysisServices.AdomdClient.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "Produccion\SetupSistMantencion\Microsoft.Office.interop.access.dao.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "Produccion\SetupSistMantencion\stdole.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "mantencion\lib\dao.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "mantencion\lib\adodb.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "mantencion\lib\Microsoft.AnalysisServices.AdomdClient.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "mantencion\lib\Microsoft.Office.interop.access.dao.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "mantencion\lib\stdole.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Plantillas Excel de Reportes e Informes Estadísticos / Preventivos
 Source: "mantencion\bin\Release\inf_ot.xls"; DestDir: "{app}"; Flags: ignoreversion
