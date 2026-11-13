@@ -18,6 +18,12 @@ AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} v{#MyAppVersion} (.NET 8 Autocontenido)
 AppPublisher={#MyAppPublisher}
+AppComments=Sistema de Gestión Departamento Mantención - Cambiaso Hnos. S.A.C.
+VersionInfoDescription=Instalador Sistema de Gestión Departamento Mantención
+VersionInfoProductName=Sistema de Gestión Departamento Mantención
+VersionInfoCompany=Cambiaso Hnos. S.A.C.
+VersionInfoCopyright=Copyright (C) 2026 Cambiaso Hnos. S.A.C.
+VersionInfoVersion=2026.1.0.0
 
 ; Arquitectura de 64 bits (x64 nativo / ARM64 compatible)
 ArchitecturesAllowed=x64compatible
