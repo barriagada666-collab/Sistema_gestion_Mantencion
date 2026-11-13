@@ -119,7 +119,8 @@ $formTree.Dispose()
 Write-Host "`n[5/5] Probando exportacion directa a PDF con iTextSharp..." -ForegroundColor Yellow
 $rutaPdfTest = Join-Path $env:TEMP "test_export_itextsharp.pdf"
 try {
-    Add-Type -Path "mantencion\itextsharp.dll"
+    $itextPath = if (Test-Path "mantencion\lib\itextsharp.dll") { "mantencion\lib\itextsharp.dll" } else { "mantencion\itextsharp.dll" }
+    Add-Type -Path $itextPath
     $doc = New-Object iTextSharp.text.Document([iTextSharp.text.PageSize]::LETTER.Rotate(), 20.0, 20.0, 25.0, 25.0)
     $fs = New-Object System.IO.FileStream($rutaPdfTest, [System.IO.FileMode]::Create)
     $writer = [iTextSharp.text.pdf.PdfWriter]::GetInstance($doc, $fs)

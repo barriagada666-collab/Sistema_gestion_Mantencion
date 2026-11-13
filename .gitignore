@@ -10,6 +10,7 @@
 
 # Temporary build artifacts (keep Release bin for installer packaging)
 mantencion/obj/
+mantencion/bin/Debug/
 Produccion/mantencion/obj/
 Backup/
 *.log

@@ -50,15 +50,18 @@
   <ItemGroup>
     <Reference Include="itextsharp, Version=5.0.2.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\itextsharp.dll</HintPath>
+      <HintPath>lib\itextsharp.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Office.Interop.Access, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\Microsoft.Office.Interop.Access.dll</HintPath>
+      <HintPath>lib\Microsoft.Office.Interop.Access.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\Microsoft.Office.Interop.Excel.dll</HintPath>
+      <HintPath>lib\Microsoft.Office.Interop.Excel.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -109,7 +112,6 @@
     <Compile Include="class\Proveedor.vb" />
     <Compile Include="class\Sintoma.vb" />
     <Compile Include="class\Utilitarios.vb" />
-    <Compile Include="class\Utilitarios2.vb" />
     <Compile Include="DST1.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -702,6 +704,68 @@
     <Content Include="img\9083.ico" />
     <None Include="My Project\app.manifest" />
     <None Include="Resources\guardar_16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="plantillas\inf_ot.xls">
+      <Link>inf_ot.xls</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillas\inf_MP.xls">
+      <Link>inf_MP.xls</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillas\inf_listado_ciclo_mp.xls">
+      <Link>inf_listado_ciclo_mp.xls</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillas\inf_estadistico.xls">
+      <Link>inf_estadistico.xls</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillas\inf_datos_tecnicos.xls">
+      <Link>inf_datos_tecnicos.xls</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillas\inf_auditoria.xls">
+      <Link>inf_auditoria.xls</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillas\inf_gantt.xls">
+      <Link>inf_gantt.xls</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillas\InfGantt.xls">
+      <Link>InfGantt.xls</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\adodb.dll">
+      <Link>adodb.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\dao.dll">
+      <Link>dao.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Microsoft.AnalysisServices.AdomdClient.dll">
+      <Link>Microsoft.AnalysisServices.AdomdClient.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Microsoft.Office.interop.access.dao.dll">
+      <Link>Microsoft.Office.interop.access.dao.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Microsoft.Vbe.Interop.dll">
+      <Link>Microsoft.Vbe.Interop.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\office.dll">
+      <Link>office.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\stdole.dll">
+      <Link>stdole.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -363,67 +363,6 @@ Public Class Utilitarios
         End With
     End Sub
 
-    Public Sub Exportar_grilla_factura(ByVal grilla_tareas_pend As DataGridView, ByVal item As String)
-        If grilla_tareas_pend Is Nothing OrElse grilla_tareas_pend.RowCount = 0 Then
-            MsgBox("No hay registros para exportar.", MsgBoxStyle.Exclamation, "Validación")
-            Exit Sub
-        End If
-
-        Dim rutaPdf As String = ""
-        If item = "imprimir_directo" Then
-            rutaPdf = SolicitarRutaGuardadoPdf("Informe_Tareas")
-            If String.IsNullOrEmpty(rutaPdf) Then Exit Sub
-        End If
-
-        Dim filaexcel As Integer = 11
-        Dim rango As Excel.Range
-        Dim excelApp As Excel.Application = Nothing
-        Dim workbook As Excel.Workbook = Nothing
-        Dim worksheet_1 As Excel.Worksheet = Nothing
-
-        Try
-            excelApp = New Excel.Application
-            ConfigurarModoRapidoExcel(excelApp, True)
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "inf_fac.xls")
-            worksheet_1 = workbook.Sheets(1)
-            worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetVisible
-            worksheet_1.Activate()
-
-            Dim totalFilas As Integer = grilla_tareas_pend.RowCount
-            If totalFilas > 0 Then
-                Dim datos(totalFilas - 1, 4) As Object
-                For i As Integer = 0 To totalFilas - 1
-                    For c As Integer = 0 To 4
-                        If c < grilla_tareas_pend.ColumnCount Then
-                            datos(i, c) = grilla_tareas_pend.Rows(i).Cells(c).Value
-                        End If
-                    Next
-                Next
-                filaexcel = 11 + totalFilas
-                rango = worksheet_1.Range("A11:E" & (filaexcel - 1).ToString())
-                rango.Value2 = datos
-                rango = worksheet_1.Range("A11:F" & (filaexcel - 1).ToString())
-                rango.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
-            End If
-
-            ConfigurarModoRapidoExcel(excelApp, False)
-
-            If item = "imprimir_directo" Then
-                ImprimirLibroAPdfWindows(excelApp, workbook, rutaPdf, "Informe_Tareas")
-                LiberarExcel(workbook, excelApp)
-            Else
-                MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information)
-                excelApp.Visible = True
-            End If
-        Catch ex As Exception
-            ConfigurarModoRapidoExcel(excelApp, False)
-            If item = "imprimir_directo" Then
-                LiberarExcel(workbook, excelApp)
-            End If
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
-        End Try
-    End Sub
-
     Public Sub crgComboTurnos(ByRef cmb As ComboBox)
         cmb.Items.Add("Noche")
         cmb.Items.Add("Mañana")
@@ -579,7 +518,9 @@ Public Class Utilitarios
                     ctrl.ForeColor = ColorTextoPrincipal
                 End If
                 If ctrl.BackColor = Color.Transparent Then
-                    If ctrl.Parent IsNot Nothing AndAlso ctrl.Parent.BackColor <> Color.Transparent Then
+                    If ctrl.Parent IsNot Nothing AndAlso ctrl.Parent.BackgroundImage IsNot Nothing Then
+                        ctrl.BackColor = Color.Transparent
+                    ElseIf ctrl.Parent IsNot Nothing AndAlso ctrl.Parent.BackColor <> Color.Transparent Then
                         ctrl.BackColor = ctrl.Parent.BackColor
                     Else
                         ctrl.BackColor = ColorFondoForm
