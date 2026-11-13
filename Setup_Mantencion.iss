@@ -1,5 +1,6 @@
 ; Script de Instalación para Sistema de Gestión Departamento Mantención
-; Migrado y optimizado para Microsoft .NET 8 Windows Desktop
+; Migrado y optimizado para Microsoft .NET 8 Windows Desktop (x64)
+; Paquete Autocontenido (Self-Contained) - Zero Dependency
 ; Compatible con Inno Setup 6
 ; Configurado con máxima compresión y ruta C:\Temp\Sistema de Mantencion
 
@@ -15,8 +16,12 @@
 AppId={{81543D95-46BE-4730-8A08-A163B21205D7}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-AppVerName={#MyAppName} v{#MyAppVersion} (.NET 8)
+AppVerName={#MyAppName} v{#MyAppVersion} (.NET 8 Autocontenido)
 AppPublisher={#MyAppPublisher}
+
+; Arquitectura de 64 bits (x64 nativo / ARM64 compatible)
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
 
 ; Ruta por defecto solicitada: C:\Temp\Sistema de Mantencion
 DefaultDirName=C:\Temp\Sistema de Mantencion
@@ -50,7 +55,7 @@ LZMANumBlockThreads=4
 OutputDir=Instalador
 OutputBaseFilename=Instalador_Sistema_Mantencion_v2026.1
 
-; Permisos de ejecución (permite instalar en C:\Temp sin exigir permisos de administrador)
+; Permisos de ejecución (permite instalar en C:\Temp sin exigir privilegios de administrador)
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 
@@ -68,8 +73,9 @@ Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-; Publicación .NET 8 completa: ejecutables, dependencias NuGet y configuraciones
-Source: "mantencion\bin\Release\net8-publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Publicación .NET 8 Autocontenida (Self-Contained x64) completa:
+; Incluye Runtime .NET 8, CoreCLR, librerías WinForms, dependencias NuGet y librerías nativas (sni.dll, libSkiaSharp.dll)
+Source: "mantencion\bin\Release\net8-selfcontained-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; Plantillas Excel de Reportes e Informes Estadísticos / Preventivos
 Source: "mantencion\plantillas\*.xls"; DestDir: "{app}"; Flags: ignoreversion
@@ -85,86 +91,26 @@ Name: "{group}\Desinstalar {#MyAppName}"; Filename: "{uninstallexe}"
 ; Acceso directo en el Escritorio
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\app_icon.ico"; Tasks: desktopicon
 
+[UninstallDelete]
+Type: files; Name: "{app}\error_runtime.log"
+
 [Run]
 ; Ejecutar aplicación al finalizar instalación si el usuario lo desea
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [Code]
-// Función para verificar si .NET 8 Desktop Runtime está instalado en el equipo
-function IsDotNet8DesktopRuntimeInstalled(): Boolean;
-var
-  RegKeyx64, RegKeyx86: string;
-  Names: TArrayOfString;
-  I: Integer;
-  DotNetDir64, DotNetDir32: string;
-  FindRec: TFindRec;
-begin
-  Result := False;
-
-  // 1. Verificación por Registro de Windows (x64 y WOW6432Node)
-  RegKeyx64 := 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App';
-  RegKeyx86 := 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App';
-
-  if RegGetValueNames(HKEY_LOCAL_MACHINE, RegKeyx64, Names) then
-  begin
-    for I := 0 to GetArrayLength(Names) - 1 do
-    begin
-      if Copy(Names[I], 1, 4) = '8.0.' then
-      begin
-        Result := True;
-        Exit;
-      end;
-    end;
-  end;
-
-  if RegGetValueNames(HKEY_LOCAL_MACHINE, RegKeyx86, Names) then
-  begin
-    for I := 0 to GetArrayLength(Names) - 1 do
-    begin
-      if Copy(Names[I], 1, 4) = '8.0.' then
-      begin
-        Result := True;
-        Exit;
-      end;
-    end;
-  end;
-
-  // 2. Verificación por Sistema de Archivos en carpetas compartidas de dotnet
-  DotNetDir64 := ExpandConstant('{commonpf}') + '\dotnet\shared\Microsoft.WindowsDesktop.App\8.0.*';
-  DotNetDir32 := ExpandConstant('{commonpf32}') + '\dotnet\shared\Microsoft.WindowsDesktop.App\8.0.*';
-
-  if FindFirst(DotNetDir64, FindRec) then
-  begin
-    Result := True;
-    FindClose(FindRec);
-    Exit;
-  end;
-
-  if FindFirst(DotNetDir32, FindRec) then
-  begin
-    Result := True;
-    FindClose(FindRec);
-    Exit;
-  end;
-end;
-
+// Verificación del sistema previa a la instalación
 function InitializeSetup(): Boolean;
-var
-  ErrorCode: Integer;
-  MsgText: string;
 begin
   Result := True;
   
-  if not IsDotNet8DesktopRuntimeInstalled() then
+  // Validar que el sistema operativo sea Windows de 64 bits (x64 / ARM64)
+  if not Is64BitInstallMode then
   begin
-    MsgText := 'Esta versión fue modernizada a Microsoft .NET 8 y requiere que el equipo disponga de:' + #13#10 + #13#10 +
-               '  • Microsoft .NET 8 Desktop Runtime (x64 / x86)' + #13#10 + #13#10 +
-               'No se detectó este componente instalado en su sistema.' + #13#10 + #13#10 +
-               '¿Desea abrir la página oficial de descarga de Microsoft para instalarlo ahora?';
-               
-    if MsgBox(MsgText, mbConfirmation, MB_YESNO) = IDYES then
-    begin
-      ShellExec('open', 'https://dotnet.microsoft.com/download/dotnet/8.0/runtime', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
-    end;
+    MsgBox('Este instalador contiene la versión de alto rendimiento de 64 bits (x64) para Microsoft .NET 8.' + #13#10 + #13#10 +
+           'No es posible ejecutar esta instalación en un sistema operativo de 32 bits.' + #13#10 +
+           'Por favor ejecute el instalador en un equipo con Windows 10 o Windows 11 de 64 bits.', mbCriticalError, MB_OK);
+    Result := False;
+    Exit;
   end;
 end;
