@@ -8,9 +8,11 @@
 *.vshost.exe.config
 *.vshost.exe.manifest
 
-# Temporary build artifacts (keep Release bin for installer packaging)
+# Temporary build artifacts
 mantencion/obj/
 mantencion/bin/Debug/
+mantencion/bin/Release/net8*/
 Produccion/mantencion/obj/
 Backup/
 *.log
+*.bak

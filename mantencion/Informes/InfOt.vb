@@ -162,10 +162,10 @@ Public Class InfOt
             Dim writer As PdfWriter = PdfWriter.GetInstance(doc, fs)
             doc.Open()
 
-            Dim fontTitulo As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 13.0F, BaseColor.DARK_GRAY)
-            Dim fontSub As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA, 8.5F, BaseColor.GRAY)
-            Dim fontHeader As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 7.0F, BaseColor.WHITE)
-            Dim fontCell As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA, 6.8F, BaseColor.BLACK)
+            Dim fontTitulo As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 13.0F, BaseColor.DarkGray)
+            Dim fontSub As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA, 8.5F, BaseColor.Gray)
+            Dim fontHeader As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 7.0F, BaseColor.White)
+            Dim fontCell As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA, 6.8F, BaseColor.Black)
 
             Dim pTitulo As New Paragraph(_titulo, fontTitulo)
             pTitulo.SpacingAfter = 3.0F

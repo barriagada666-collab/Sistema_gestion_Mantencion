@@ -1,7 +1,7 @@
 ﻿<#
 .SYNOPSIS
     Script automatizado para compilar la solución y generar el instalador de Windows.
-    Sistema de Gestión Departamento Mantención - Cambiaso Hnos. S.A.C.
+    Sistema de Gestión Departamento Mantención (.NET 8) - Cambiaso Hnos. S.A.C.
 #>
 
 [CmdletBinding()]
@@ -12,49 +12,29 @@ $rootDir = if ($PSScriptRoot) { $PSScriptRoot } else { (Get-Location).Path }
 
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host "  COMPILADOR DE INSTALADOR - SISTEMA DE GESTION MANTENCION" -ForegroundColor Cyan
-Write-Host "  Cambiaso Hnos. S.A.C." -ForegroundColor Cyan
+Write-Host "  Migrado a Microsoft .NET 8 - Cambiaso Hnos. S.A.C." -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host ""
 
-# 1. Localizar MSBuild
-$msbuildPaths = @(
-    "C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe",
-    "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe",
-    "C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe",
-    "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe",
-    "C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe"
-)
+# 1. Compilación y Publicación con .NET 8 SDK
+Write-Host "[1/3] Compilando y publicando aplicacion en modo Release (.NET 8)..." -ForegroundColor Yellow
+$projectPath = Join-Path $rootDir "mantencion\mantencion.vbproj"
+$publishDir = Join-Path $rootDir "mantencion\bin\Release\net8-publish"
 
-$msbuild = $null
-foreach ($path in $msbuildPaths) {
-    if (Test-Path $path) {
-        $msbuild = $path
-        break
-    }
-}
-
-if (-not $msbuild) {
-    Write-Host "[ERROR] No se encontro MSBuild.exe en el sistema." -ForegroundColor Red
-    exit 1
-}
-
-Write-Host "[1/3] Compilando solucion en modo Release..." -ForegroundColor Yellow
-$solutionPath = Join-Path $rootDir "mantencion.sln"
-$buildArgs = @(
-    "`"$solutionPath`"",
-    "/p:Configuration=Release",
-    "/p:Platform=`"Any CPU`"",
-    "/t:Rebuild",
-    "/v:m",
-    "/nologo"
-)
-
-& $msbuild $buildArgs
+# Ejecutar dotnet publish optimizado
+& dotnet publish "`"$projectPath`"" -c Release -o "`"$publishDir`"" --nologo -v m
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "[ERROR] La compilacion de la solucion fallo con codigo $LASTEXITCODE." -ForegroundColor Red
+    Write-Host "[ERROR] La compilacion con dotnet fallo con codigo $LASTEXITCODE." -ForegroundColor Red
     exit $LASTEXITCODE
 }
-Write-Host "       Compilacion exitosa (0 errores)." -ForegroundColor Green
+
+# Limpieza de runtimes no-Windows (macOS/Linux) para empaquetado optimizado en Windows
+$osxPath = Join-Path $publishDir "runtimes\osx"
+$unixPath = Join-Path $publishDir "runtimes\unix"
+if (Test-Path $osxPath) { Remove-Item $osxPath -Recurse -Force }
+if (Test-Path $unixPath) { Remove-Item $unixPath -Recurse -Force }
+
+Write-Host "       Compilacion y publicacion exitosa (0 errores, 0 advertencias)." -ForegroundColor Green
 Write-Host ""
 
 # 2. Localizar Inno Setup Compiler (ISCC.exe)
@@ -106,6 +86,7 @@ if (Test-Path $outputExe) {
     Write-Host "       Archivo : $($item.FullName)" -ForegroundColor White
     Write-Host "       Tamano  : $sizeMb MB ($($item.Length) bytes)" -ForegroundColor White
     Write-Host "       Fecha   : $($item.LastWriteTime)" -ForegroundColor White
+    Write-Host "       Plataf. : Microsoft .NET 8 (Windows Desktop)" -ForegroundColor White
 } else {
     Write-Host "[ERROR] No se encontro el archivo de salida del instalador." -ForegroundColor Red
     exit 1
@@ -113,5 +94,5 @@ if (Test-Path $outputExe) {
 
 Write-Host ""
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host "  PROCESO COMPLETADO EXITOSAMENTE" -ForegroundColor Cyan
+Write-Host "  MIGRACION Y GENERACION COMPLETADA EXITOSAMENTE" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan

@@ -1,4 +1,5 @@
 ; Script de Instalación para Sistema de Gestión Departamento Mantención
+; Migrado y optimizado para Microsoft .NET 8 Windows Desktop
 ; Compatible con Inno Setup 6
 ; Configurado con máxima compresión y ruta C:\Temp\Sistema de Mantencion
 
@@ -14,7 +15,7 @@
 AppId={{81543D95-46BE-4730-8A08-A163B21205D7}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-AppVerName={#MyAppName} v{#MyAppVersion}
+AppVerName={#MyAppName} v{#MyAppVersion} (.NET 8)
 AppPublisher={#MyAppPublisher}
 
 ; Ruta por defecto solicitada: C:\Temp\Sistema de Mantencion
@@ -67,31 +68,11 @@ Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-; Ejecutable Principal y Archivo de Configuración
-Source: "mantencion\bin\Release\Sistema de Gestion Mantencion.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\bin\Release\Sistema de Gestion Mantencion.exe.config"; DestDir: "{app}"; Flags: ignoreversion
-
-; Bibliotecas del Sistema y COM Interop
-Source: "mantencion\bin\Release\itextsharp.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\bin\Release\Microsoft.Office.Interop.Access.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\bin\Release\Microsoft.Office.Interop.Excel.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\bin\Release\Microsoft.Vbe.Interop.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\bin\Release\office.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\lib\dao.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\lib\adodb.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\lib\Microsoft.AnalysisServices.AdomdClient.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\lib\Microsoft.Office.interop.access.dao.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\lib\stdole.dll"; DestDir: "{app}"; Flags: ignoreversion
+; Publicación .NET 8 completa: ejecutables, dependencias NuGet y configuraciones
+Source: "mantencion\bin\Release\net8-publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; Plantillas Excel de Reportes e Informes Estadísticos / Preventivos
-Source: "mantencion\bin\Release\inf_ot.xls"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\bin\Release\inf_MP.xls"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\bin\Release\inf_listado_ciclo_mp.xls"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\bin\Release\inf_estadistico.xls"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\bin\Release\inf_datos_tecnicos.xls"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\bin\Release\inf_auditoria.xls"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\bin\Release\inf_gantt.xls"; DestDir: "{app}"; Flags: ignoreversion
-Source: "mantencion\bin\Release\InfGantt.xls"; DestDir: "{app}"; Flags: ignoreversion
+Source: "mantencion\plantillas\*.xls"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Icono de la Aplicación
 Source: "mantencion\icons\app_icon.ico"; DestDir: "{app}"; Flags: ignoreversion
@@ -107,3 +88,83 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilen
 [Run]
 ; Ejecutar aplicación al finalizar instalación si el usuario lo desea
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
+[Code]
+// Función para verificar si .NET 8 Desktop Runtime está instalado en el equipo
+function IsDotNet8DesktopRuntimeInstalled(): Boolean;
+var
+  RegKeyx64, RegKeyx86: string;
+  Names: TArrayOfString;
+  I: Integer;
+  DotNetDir64, DotNetDir32: string;
+  FindRec: TFindRec;
+begin
+  Result := False;
+
+  // 1. Verificación por Registro de Windows (x64 y WOW6432Node)
+  RegKeyx64 := 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App';
+  RegKeyx86 := 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App';
+
+  if RegGetValueNames(HKEY_LOCAL_MACHINE, RegKeyx64, Names) then
+  begin
+    for I := 0 to GetArrayLength(Names) - 1 do
+    begin
+      if Copy(Names[I], 1, 4) = '8.0.' then
+      begin
+        Result := True;
+        Exit;
+      end;
+    end;
+  end;
+
+  if RegGetValueNames(HKEY_LOCAL_MACHINE, RegKeyx86, Names) then
+  begin
+    for I := 0 to GetArrayLength(Names) - 1 do
+    begin
+      if Copy(Names[I], 1, 4) = '8.0.' then
+      begin
+        Result := True;
+        Exit;
+      end;
+    end;
+  end;
+
+  // 2. Verificación por Sistema de Archivos en carpetas compartidas de dotnet
+  DotNetDir64 := ExpandConstant('{commonpf}') + '\dotnet\shared\Microsoft.WindowsDesktop.App\8.0.*';
+  DotNetDir32 := ExpandConstant('{commonpf32}') + '\dotnet\shared\Microsoft.WindowsDesktop.App\8.0.*';
+
+  if FindFirst(DotNetDir64, FindRec) then
+  begin
+    Result := True;
+    FindClose(FindRec);
+    Exit;
+  end;
+
+  if FindFirst(DotNetDir32, FindRec) then
+  begin
+    Result := True;
+    FindClose(FindRec);
+    Exit;
+  end;
+end;
+
+function InitializeSetup(): Boolean;
+var
+  ErrorCode: Integer;
+  MsgText: string;
+begin
+  Result := True;
+  
+  if not IsDotNet8DesktopRuntimeInstalled() then
+  begin
+    MsgText := 'Esta versión fue modernizada a Microsoft .NET 8 y requiere que el equipo disponga de:' + #13#10 + #13#10 +
+               '  • Microsoft .NET 8 Desktop Runtime (x64 / x86)' + #13#10 + #13#10 +
+               'No se detectó este componente instalado en su sistema.' + #13#10 + #13#10 +
+               '¿Desea abrir la página oficial de descarga de Microsoft para instalarlo ahora?';
+               
+    if MsgBox(MsgText, mbConfirmation, MB_YESNO) = IDYES then
+    begin
+      ShellExec('open', 'https://dotnet.microsoft.com/download/dotnet/8.0/runtime', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+    end;
+  end;
+end;
