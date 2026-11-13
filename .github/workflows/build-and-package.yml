@@ -1,0 +1,117 @@
+name: CI/CD - Compilación y Empaquetado (.NET 8 x64)
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - migracion-net8
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-package:
+    name: Build, Publicación Autocontenida e Instalador
+    runs-on: windows-latest
+
+    steps:
+      - name: 1. Descargar Código Fuente (Checkout)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 2. Configurar Microsoft .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: 3. Cachear Paquetes NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.vbproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: 4. Instalar Inno Setup 6
+        run: |
+          choco install innosetup --no-progress --no-color
+          echo "C:\Program Files (x86)\Inno Setup 6" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: 5. Restaurar Dependencias NuGet
+        run: |
+          dotnet restore mantencion.sln
+
+      - name: 6. Compilar Solución (Release)
+        run: |
+          dotnet build mantencion.sln -c Release --no-restore
+
+      - name: 7. Publicar Aplicación Autocontenida (Self-Contained win-x64)
+        run: |
+          $publishDir = "mantencion\bin\Release\net8-selfcontained-x64"
+          if (Test-Path $publishDir) {
+              Remove-Item $publishDir -Recurse -Force
+          }
+          dotnet publish mantencion\mantencion.vbproj -c Release -r win-x64 --self-contained true -o $publishDir --nologo -v m
+
+          # Depurar ensamblados satélites innecesarios conservando español ('es')
+          $foreignLocales = @("cs", "de", "fr", "it", "ja", "ko", "pl", "pt-BR", "ru", "tr", "zh-Hans", "zh-Hant")
+          foreach ($locale in $foreignLocales) {
+              $path = Join-Path $publishDir $locale
+              if (Test-Path $path) {
+                  Remove-Item $path -Recurse -Force
+              }
+          }
+
+      - name: 8. Compilar Instalador con Inno Setup
+        run: |
+          iscc Setup_Mantencion.iss
+
+      - name: 9. Validar y Calcular Hash SHA256 del Instalador
+        id: verify
+        run: |
+          $installer = "Instalador\Instalador_Sistema_Mantencion_v2026.1.exe"
+          if (-not (Test-Path $installer)) {
+              Write-Error "El instalador no fue generado en la ruta esperada: $installer"
+              exit 1
+          }
+          $item = Get-Item $installer
+          $hash = (Get-FileHash $installer -Algorithm SHA256).Hash
+          $sizeMb = [Math]::Round($item.Length / 1MB, 2)
+
+          Write-Host "==========================================" -ForegroundColor Cyan
+          Write-Host "Instalador generado exitosamente:" -ForegroundColor Green
+          Write-Host "Archivo : $($item.Name)" -ForegroundColor White
+          Write-Host "Tamaño  : $sizeMb MB ($($item.Length) bytes)" -ForegroundColor White
+          Write-Host "SHA256  : $hash" -ForegroundColor Yellow
+          Write-Host "==========================================" -ForegroundColor Cyan
+
+          # Guardar información en archivo de texto para los artefactos
+          $info = @"
+          Archivo: $($item.Name)
+          Tamaño: $sizeMb MB ($($item.Length) bytes)
+          Fecha Generación: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+          Plataforma: Microsoft .NET 8 LTS (Windows x64 - Autocontenido)
+          Algoritmo: SHA-256
+          Hash: $hash
+          "@
+          Set-Content -Path "Instalador\checksums_sha256.txt" -Value $info
+
+      - name: 10. Publicar Artefacto - Instalador Oficial
+        uses: actions/upload-artifact@v4
+        with:
+          name: Instalador-Sistema-Mantencion-v2026.1
+          path: |
+            Instalador/Instalador_Sistema_Mantencion_v2026.1.exe
+            Instalador/checksums_sha256.txt
+          if-no-files-found: error
+          retention-days: 30

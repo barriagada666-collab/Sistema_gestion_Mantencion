@@ -8,11 +8,18 @@
 *.vshost.exe.config
 *.vshost.exe.manifest
 
-# Temporary build artifacts
+# .NET / Build output and temporary directories
+**/bin/
+**/obj/
+mantencion/bin/
 mantencion/obj/
-mantencion/bin/Debug/
-mantencion/bin/Release/net8*/
-Produccion/mantencion/obj/
-Backup/
+*.tmp
 *.log
 *.bak
+Backup/
+
+# System and OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/

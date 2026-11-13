@@ -31,14 +31,17 @@ Write-Host ""
 & $gitExe status --short
 Write-Host ""
 
+$currentBranch = (& $gitExe branch --show-current).Trim()
+if (-not $currentBranch) { $currentBranch = "migracion-net8" }
+
 if ($Token) {
     $authUrl = "https://$($Token)@github.com/barriagada666-collab/Sistema_gestion_Mantencion.git"
-    Write-Host "Subiendo con Personal Access Token (PAT)..." -ForegroundColor Yellow
-    & $gitExe push -u $authUrl main
+    Write-Host "Subiendo rama '$currentBranch' con Personal Access Token (PAT)..." -ForegroundColor Yellow
+    & $gitExe push -u $authUrl $currentBranch
 } else {
-    Write-Host "Iniciando Git Push..." -ForegroundColor Yellow
+    Write-Host "Iniciando Git Push en rama '$currentBranch'..." -ForegroundColor Yellow
     Write-Host "Si se solicita autenticacion, autorice el acceso en la ventana de su navegador." -ForegroundColor Gray
-    & $gitExe push -u origin main
+    & $gitExe push -u origin $currentBranch
 }
 
 if ($LASTEXITCODE -eq 0) {
