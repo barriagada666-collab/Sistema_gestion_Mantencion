@@ -24,6 +24,15 @@
   <img src="https://img.shields.io/badge/Inno_Setup_6-025E87?style=for-the-badge&logo=windows&logoColor=white" alt="Inno Setup" />
 </p>
 
+<p align="center">
+  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/latest">
+    <img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_Descargar_Instalador-v2026.1_LTS_(55.7_MB)-025E87?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar Instalador Oficial" />
+  </a>
+  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases">
+    <img src="https://img.shields.io/github/v/release/barriagada666-collab/Sistema_gestion_Mantencion?style=for-the-badge&logo=github&color=107850&label=GitHub%20Releases" alt="Releases" />
+  </a>
+</p>
+
 </div>
 
 ---
@@ -192,6 +201,7 @@ Sistema_gestion_Mantencion/
 │   ├── Compilar_Instalador.bat      # Acceso rápido de compilación (.bat)
 │   ├── Compilar_Instalador.ps1      # Automatizador PowerShell de compilación .NET 8 + Inno Setup
 │   ├── Compilar_Instalador.vbs      # Lanzador VBScript sin consola
+│   ├── Publicar_Release_GitHub.ps1  # Publicador automatizado del instalador en GitHub Releases (API REST)
 │   ├── Subir_a_GitHub.ps1           # Automatizador PowerShell de sincronización GitHub
 │   ├── Subir_a_GitHub.vbs           # Lanzador VBScript para sincronización GitHub
 │   ├── diagnostico_entorno.ps1      # Diagnóstico de conectividad SQL y dependencias
@@ -231,13 +241,20 @@ El script realizará automáticamente:
 3. Compilación del instalador ejecutable con Inno Setup y compresión sólida LZMA2.
 4. Generación del instalador final en `Instalador\Instalador_Sistema_Mantencion_v2026.1.exe` (~55.7 MB).
 
+### 3. Publicación Automatizada a GitHub Releases:
+Para publicar o actualizar el instalador directamente en la sección oficial de **GitHub Releases** mediante la API REST sin saturar el historial Git:
+```powershell
+pwsh -ExecutionPolicy Bypass -File ".\automatizadores de instalacion\Publicar_Release_GitHub.ps1"
+```
+
 ---
 
-## 🔒 Verificación de Integridad del Instalador
+## 🔒 Descarga y Verificación de Integridad
 
-| Archivo | Plataforma | Tamaño | Algoritmo | Checksum |
-| :--- | :--- | :--- | :--- | :--- |
-| `Instalador_Sistema_Mantencion_v2026.1.exe` | Windows x64 | ~55.7 MB | SHA-256 | Ver [checksums_sha256.txt](Instalador/checksums_sha256.txt) |
+| Archivo | Plataforma | Tamaño | Descarga Oficial | Algoritmo | Checksum |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `Instalador_Sistema_Mantencion_v2026.1.exe` | Windows x64 | ~55.7 MB | [⬇️ Descargar v2026.1 LTS](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) | SHA-256 | `1E4B02A671011B6DABFF56BB542B29C397CCEDAA23D5F72C9DC631291FA64063` |
+| `checksums_sha256.txt` | Texto | < 1 KB | [⬇️ Descargar Hash](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/checksums_sha256.txt) | SHA-256 | Firma de integridad de la versión |
 
 Para verificar la integridad del instalador descargado en PowerShell:
 ```powershell

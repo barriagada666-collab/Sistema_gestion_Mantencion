@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-and-package:
@@ -115,3 +115,16 @@ jobs:
             Instalador/checksums_sha256.txt
           if-no-files-found: error
           retention-days: 30
+
+      - name: 11. Publicar en GitHub Releases (Oficial)
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v2026.1
+          name: Sistema de Gestión Mantención v2026.1 LTS
+          draft: false
+          prerelease: false
+          files: |
+            Instalador/Instalador_Sistema_Mantencion_v2026.1.exe
+            Instalador/checksums_sha256.txt
+          token: ${{ secrets.GITHUB_TOKEN }}

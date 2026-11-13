@@ -18,6 +18,13 @@ mantencion/obj/
 *.bak
 Backup/
 
+# Binarios de distribución (publicados en GitHub Releases)
+Instalador/*.exe
+
+# Credenciales locales y tokens (no sincronizar con Git)
+.github_token
+*.secret
+
 # System and OS files
 Thumbs.db
 ehthumbs.db
