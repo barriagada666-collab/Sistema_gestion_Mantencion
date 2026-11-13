@@ -855,6 +855,10 @@ Public Class Utilitarios
 
             ' Ajuste al contenido visible (rápido aun con muchas filas)
             For Each col As DataGridViewColumn In visibles
+                If col.Tag?.ToString() = "Fijo" AndAlso col.Width > 0 Then
+                    ' Mantiene el ancho fijo configurado explícitamente
+                    Continue For
+                End If
                 Dim preferido As Integer = col.GetPreferredWidth(DataGridViewAutoSizeColumnMode.DisplayedCells, True)
                 Dim encabezado As Integer = col.GetPreferredWidth(DataGridViewAutoSizeColumnMode.ColumnHeader, True)
                 col.Width = Math.Max(40, Math.Min(380, Math.Max(preferido, encabezado)))
@@ -873,15 +877,37 @@ Public Class Utilitarios
 
             If total < disponible Then
                 Dim extra As Integer = disponible - total
+
+                ' Identificar columnas elásticas que deben absorber el espacio adicional
+                Dim elasticas As New List(Of DataGridViewColumn)()
+                Dim totalElasticas As Integer = 0
+                For Each col As DataGridViewColumn In visibles
+                    Dim esFija As Boolean = (col.Tag?.ToString() = "Fijo") OrElse
+                                            TypeOf col Is DataGridViewCheckBoxColumn OrElse
+                                            col.ValueType Is GetType(Boolean) OrElse
+                                            col.HeaderText.Equals("ESTADO", StringComparison.OrdinalIgnoreCase) OrElse
+                                            col.HeaderText.Equals("Activo", StringComparison.OrdinalIgnoreCase) OrElse
+                                            col.HeaderText.Equals("ID", StringComparison.OrdinalIgnoreCase) OrElse
+                                            col.HeaderText.Equals("N°", StringComparison.OrdinalIgnoreCase)
+                    If Not esFija Then
+                        elasticas.Add(col)
+                        totalElasticas += col.Width
+                    End If
+                Next
+
+                Dim destinos As List(Of DataGridViewColumn) = If(elasticas.Count > 0, elasticas, visibles)
+                Dim baseTotal As Integer = If(elasticas.Count > 0, totalElasticas, total)
+                If baseTotal <= 0 Then baseTotal = 1
+
                 Dim asignado As Integer = 0
-                For i As Integer = 0 To visibles.Count - 1
+                For i As Integer = 0 To destinos.Count - 1
                     Dim incremento As Integer
-                    If i = visibles.Count - 1 Then
+                    If i = destinos.Count - 1 Then
                         incremento = extra - asignado
                     Else
-                        incremento = CInt(Math.Floor(extra * (visibles(i).Width / CDbl(total))))
+                        incremento = CInt(Math.Floor(extra * (destinos(i).Width / CDbl(baseTotal))))
                     End If
-                    visibles(i).Width += incremento
+                    destinos(i).Width += incremento
                     asignado += incremento
                 Next
             End If

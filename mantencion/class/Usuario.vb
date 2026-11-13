@@ -332,35 +332,47 @@ Public Class Usuario
         Dim DST_PER As New DataSet
 
         CrgPermisos(DST_PER, "modulos")
-        grilla_modulos.DataSource = DST_PER.Tables(0)
-        grilla_modulos.Columns(0).Visible = False
-        grilla_modulos.Columns(1).Width = 180
-        grilla_modulos.Columns(1).ReadOnly = True
-        grilla_modulos.Columns(2).Width = 50
+        ConfigurarGrillaPermisosIndividual(grilla_modulos, DST_PER.Tables(0))
 
         DST_PER.Tables.Clear()
         CrgPermisos(DST_PER, "OT")
-        grilla_mod_ot.DataSource = DST_PER.Tables(0)
-        grilla_mod_ot.Columns(0).Visible = False
-        grilla_mod_ot.Columns(1).Width = 180
-        grilla_mod_ot.Columns(1).ReadOnly = True
-        grilla_mod_ot.Columns(2).Width = 50
+        ConfigurarGrillaPermisosIndividual(grilla_mod_ot, DST_PER.Tables(0))
 
         DST_PER.Tables.Clear()
         CrgPermisos(DST_PER, "MP")
-        grilla_mod_mp.DataSource = DST_PER.Tables(0)
-        grilla_mod_mp.Columns(0).Visible = False
-        grilla_mod_mp.Columns(1).Width = 180
-        grilla_mod_mp.Columns(1).ReadOnly = True
-        grilla_mod_mp.Columns(2).Width = 50
+        ConfigurarGrillaPermisosIndividual(grilla_mod_mp, DST_PER.Tables(0))
 
         DST_PER.Tables.Clear()
         CrgPermisos(DST_PER, "mantenedores")
-        grilla_mantenedores.DataSource = DST_PER.Tables(0)
-        grilla_mantenedores.Columns(0).Visible = False
-        grilla_mantenedores.Columns(1).Width = 180
-        grilla_mantenedores.Columns(1).ReadOnly = True
-        grilla_mantenedores.Columns(2).Width = 50
+        ConfigurarGrillaPermisosIndividual(grilla_mantenedores, DST_PER.Tables(0))
+    End Sub
+
+    Private Sub ConfigurarGrillaPermisosIndividual(ByVal grilla As DataGridView, ByVal dt As DataTable)
+        If grilla Is Nothing Then Exit Sub
+        grilla.DataSource = dt
+        If grilla.Columns.Count >= 3 Then
+            grilla.Columns(0).Visible = False
+            With grilla.Columns(1)
+                .HeaderText = "Descripción"
+                .ReadOnly = True
+                .DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft
+                .HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft
+            End With
+            With grilla.Columns(2)
+                .HeaderText = "Estado"
+                .Width = 55
+                .Tag = "Fijo"
+                .HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+            End With
+        End If
+        grilla.RowHeadersVisible = False
+        grilla.AllowUserToAddRows = False
+        grilla.AllowUserToDeleteRows = False
+        grilla.AllowUserToResizeRows = False
+        grilla.RowTemplate.Height = 24
+        grilla.SelectionMode = DataGridViewSelectionMode.CellSelect
+        Utilitarios.AjustarColumnasGrilla(grilla)
     End Sub
 
     Public Sub LimpiarFrmUsuario()
@@ -377,6 +389,8 @@ Public Class Usuario
             CrgUsuarios(DST_USUARIO)
             .grillaUsuarios.DataSource = DST_USUARIO.Tables(0)
             .filtro.Table = DST_USUARIO.Tables(0)
+            .ConfigurarEstiloGrillaUsuarios()
+            Utilitarios.AjustarColumnasGrilla(.grillaUsuarios)
         End With
 
     End Sub
