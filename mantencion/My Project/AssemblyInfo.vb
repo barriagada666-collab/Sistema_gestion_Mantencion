@@ -9,10 +9,10 @@ Imports System.Runtime.InteropServices
 ' Revisar los valores de los atributos del ensamblado
 
 <Assembly: AssemblyTitle("Sistema de Gestión Departamento Mantención")> 
-<Assembly: AssemblyDescription("")> 
-<Assembly: AssemblyCompany("Cambiaso Hnos. S.A.C.")> 
-<Assembly: AssemblyProduct("mantencion")> 
-<Assembly: AssemblyCopyright("Copyright © Cambiaso Hnos. S.A.C. 2026")> 
+<Assembly: AssemblyDescription("Plataforma de Mantención Preventiva y Control Estadístico - Cambiaso Hnos. S.A.C. (Placilla de Peñuelas, Valparaíso) - Creado por Boris Arriagada")> 
+<Assembly: AssemblyCompany("Cambiaso Hnos. S.A.C. — División de Mantención Industrial")> 
+<Assembly: AssemblyProduct("Sistema de Gestión Mantención")> 
+<Assembly: AssemblyCopyright("Copyright © 2026 Cambiaso Hnos. S.A.C. — Creado por Boris Arriagada")>  
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)>

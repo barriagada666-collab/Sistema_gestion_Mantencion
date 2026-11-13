@@ -9,9 +9,11 @@
 
 [![CI/CD - Compilación y Empaquetado](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/actions/workflows/build-and-package.yml/badge.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/actions/workflows/build-and-package.yml)
 [![Versión](https://img.shields.io/badge/Versi%C3%B3n-2026.1%20LTS-025E87.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion)
+[![Creado por](https://img.shields.io/badge/Creado%20por-Boris%20Arriagada-025E87.svg?logo=github&logoColor=white)](https://github.com/barriagada666-collab)
 [![Runtime](https://img.shields.io/badge/Runtime-.NET%208.0%20LTS%20(x64)-512BD4.svg?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Distribución](https://img.shields.io/badge/Distribuci%C3%B3n-Autocontenida%20(Zero--Dependency)-107850.svg?logo=windows&logoColor=white)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion)
 [![Empresa](https://img.shields.io/badge/Empresa-Cambiaso%20Hnos.%20S.A.C.-B91C1C.svg)](https://www.cambiaso.cl/)
+[![Ubicación](https://img.shields.io/badge/Planta-Placilla%20de%20Pe%C3%B1uelas%2C%20Valpara%C3%ADso-107850.svg?logo=googlemaps&logoColor=white)](https://maps.google.com/?q=Virginia+Bravo+Letelier+777+Placilla+de+Penuelas+Valparaiso)
 
 <p align="center">
   <img src="https://img.shields.io/badge/.NET_8.0_LTS-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET 8" />
@@ -240,7 +242,8 @@ Get-FileHash -Path ".\Instalador\Instalador_Sistema_Mantencion_v2026.1.exe" -Alg
 
 <div align="center">
 
-**Cambiaso Hnos. S.A.C.** — *División de Mantención Industrial*  
-Av. El Salto 5000, Huechuraba, Santiago, Chile.
+### Cambiaso Hnos. S.A.C. — División de Mantención Industrial
+📍 **Virginia Bravo Letelier 777, Placilla de Peñuelas, Valparaíso, Chile**  
+👨‍💻 **Creado por Boris Arriagada**
 
 </div>

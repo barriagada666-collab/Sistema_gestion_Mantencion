@@ -7,7 +7,7 @@
 #define MyAppName "Sistema de Gestión Departamento Mantención"
 #define MyAppShortName "Sistema de Mantención"
 #define MyAppVersion "2026.1"
-#define MyAppPublisher "Cambiaso Hnos. S.A.C."
+#define MyAppPublisher "Cambiaso Hnos. S.A.C. — División de Mantención Industrial"
 #define MyAppExeName "Sistema de Gestion Mantencion.exe"
 #define MyAppIcon "mantencion\icons\app_icon.ico"
 
@@ -18,11 +18,11 @@ AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} v{#MyAppVersion} (.NET 8 Autocontenido)
 AppPublisher={#MyAppPublisher}
-AppComments=Sistema de Gestión Departamento Mantención - Cambiaso Hnos. S.A.C.
-VersionInfoDescription=Instalador Sistema de Gestión Departamento Mantención
+AppComments=Sistema de Gestión Departamento Mantención - Creado por Boris Arriagada - Cambiaso Hnos. S.A.C. (Placilla de Peñuelas, Valparaíso)
+VersionInfoDescription=Instalador Sistema de Gestión Departamento Mantención - Creado por Boris Arriagada
 VersionInfoProductName=Sistema de Gestión Departamento Mantención
-VersionInfoCompany=Cambiaso Hnos. S.A.C.
-VersionInfoCopyright=Copyright (C) 2026 Cambiaso Hnos. S.A.C.
+VersionInfoCompany=Cambiaso Hnos. S.A.C. — División de Mantención Industrial
+VersionInfoCopyright=Copyright (C) 2026 Cambiaso Hnos. S.A.C. — Creado por Boris Arriagada
 VersionInfoVersion=2026.1.0.0
 
 ; Arquitectura de 64 bits (x64 nativo / ARM64 compatible)
