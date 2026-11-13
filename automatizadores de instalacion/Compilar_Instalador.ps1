@@ -8,7 +8,14 @@
 param()
 
 $ErrorActionPreference = "Stop"
-$rootDir = if ($PSScriptRoot) { $PSScriptRoot } else { (Get-Location).Path }
+$scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { (Get-Location).Path }
+$rootDir = $scriptDir
+if (-not (Test-Path (Join-Path $rootDir "mantencion\mantencion.vbproj"))) {
+    $parent = Split-Path $scriptDir -Parent
+    if (Test-Path (Join-Path $parent "mantencion\mantencion.vbproj")) {
+        $rootDir = $parent
+    }
+}
 
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host "  COMPILADOR DE INSTALADOR - SISTEMA DE GESTION MANTENCION" -ForegroundColor Cyan

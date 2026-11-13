@@ -19,6 +19,16 @@ if (-not (Test-Path $gitExe)) {
     exit 1
 }
 
+$scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { (Get-Location).Path }
+$repoDir = $scriptDir
+if (-not (Test-Path (Join-Path $repoDir ".git"))) {
+    $parent = Split-Path $scriptDir -Parent
+    if (Test-Path (Join-Path $parent ".git")) {
+        $repoDir = $parent
+    }
+}
+Set-Location $repoDir
+
 $repoUrl = "https://github.com/barriagada666-collab/Sistema_gestion_Mantencion.git"
 
 Write-Host "==========================================================" -ForegroundColor Cyan
@@ -32,7 +42,7 @@ Write-Host ""
 Write-Host ""
 
 $currentBranch = (& $gitExe branch --show-current).Trim()
-if (-not $currentBranch) { $currentBranch = "migracion-net8" }
+if (-not $currentBranch) { $currentBranch = "main" }
 
 if ($Token) {
     $authUrl = "https://$($Token)@github.com/barriagada666-collab/Sistema_gestion_Mantencion.git"

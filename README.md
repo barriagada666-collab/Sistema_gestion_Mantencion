@@ -188,10 +188,14 @@ Sistema_gestion_Mantencion/
 │   ├── plantillas/                  # Plantillas oficiales Excel (.xls)
 │   ├── ApplicationEvents.vb         # Manejador global de excepciones no controladas
 │   └── mantencion.vbproj            # Proyecto SDK-Style .NET 8
+├── automatizadores de instalacion/  # Scripts de compilación, empaquetado y publicación
+│   ├── Compilar_Instalador.bat      # Acceso rápido de compilación (.bat)
+│   ├── Compilar_Instalador.ps1      # Automatizador PowerShell de compilación .NET 8 + Inno Setup
+│   ├── Compilar_Instalador.vbs      # Lanzador VBScript sin consola
+│   ├── Subir_a_GitHub.ps1           # Automatizador PowerShell de sincronización GitHub
+│   └── Subir_a_GitHub.vbs           # Lanzador VBScript para sincronización GitHub
 ├── scripts/                         # Scripts de validación y automatización
 ├── Setup_Mantencion.iss             # Script oficial de compilación Inno Setup
-├── Compilar_Instalador.ps1          # Automatizador PowerShell de compilación
-├── Compilar_Instalador.bat          # Acceso rápido en terminal para compilación
 └── README.md                        # Documentación ejecutiva del proyecto
 ```
 
@@ -211,13 +215,13 @@ dotnet build mantencion/mantencion.vbproj -c Release
 > Resultado esperado: **0 Errores, 0 Advertencias.**
 
 ### 2. Generación Automatizada del Instalador (.exe):
-Ejecuta el script PowerShell integrado en la raíz del proyecto:
+Ejecuta el script PowerShell integrado:
 ```powershell
-pwsh -ExecutionPolicy Bypass -File .\Compilar_Instalador.ps1
+pwsh -ExecutionPolicy Bypass -File ".\automatizadores de instalacion\Compilar_Instalador.ps1"
 ```
 O simplemente haciendo doble clic en:
 ```cmd
-Compilar_Instalador.bat
+automatizadores de instalacion\Compilar_Instalador.bat
 ```
 El script realizará automáticamente:
 1. Publicación autocontenida de .NET 8 (`win-x64 --self-contained true`).
