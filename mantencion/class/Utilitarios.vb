@@ -200,12 +200,26 @@ Public Class Utilitarios
 
         If exportadoOk AndAlso File.Exists(rutaPdf) Then
             If MessageBox.Show("Archivo PDF guardado exitosamente en:" & Environment.NewLine & rutaPdf & Environment.NewLine & Environment.NewLine & "¿Desea abrir el documento PDF ahora?", "Exportación PDF Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
-                Try
-                    Process.Start(rutaPdf)
-                Catch
-                End Try
+                AbrirDocumento(rutaPdf)
             End If
         End If
+    End Sub
+
+    ''' <summary>
+    ''' Abre un documento o archivo con la aplicación predeterminada de Windows en .NET 8 (UseShellExecute = True).
+    ''' </summary>
+    Public Shared Sub AbrirDocumento(ByVal ruta As String)
+        If String.IsNullOrEmpty(ruta) OrElse Not File.Exists(ruta) Then Exit Sub
+        Try
+            Dim psi As New ProcessStartInfo(ruta) With {.UseShellExecute = True}
+            Process.Start(psi)
+        Catch
+            Try
+                Dim psi As New ProcessStartInfo("explorer.exe", """" & ruta & """") With {.UseShellExecute = True}
+                Process.Start(psi)
+            Catch
+            End Try
+        End Try
     End Sub
 
     ''' <summary>

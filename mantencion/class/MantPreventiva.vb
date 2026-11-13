@@ -1697,7 +1697,7 @@ Public Class MantPreventiva
                 Dim grillaPrincipal As DataGridView = If(grilla_tareas_r IsNot Nothing AndAlso grilla_tareas_r.RowCount > 0, grilla_tareas_r, grilla_tareas_pend)
                 If grillaPrincipal IsNot Nothing AndAlso Utilitarios.ExportarGrillaAPdf(grillaPrincipal, rutaPdf, "INFORME DE MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) Then
                     If MessageBox.Show("Archivo PDF generado exitosamente mediante motor nativo en:" & Environment.NewLine & rutaPdf & Environment.NewLine & Environment.NewLine & "¿Desea abrir el documento PDF ahora?", "Exportación PDF Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
-                        Process.Start(rutaPdf)
+                        Utilitarios.AbrirDocumento(rutaPdf)
                     End If
                     Exit Sub
                 End If
@@ -1773,7 +1773,7 @@ Public Class MantPreventiva
             Try
                 If Utilitarios.ExportarGrillaAPdf(grilla_tareas_realizadas, rutaPdf, "INFORME DE MANTENCIÓN PREVENTIVA - TAREAS REALIZADAS", "Ítem / Máquina: " & item) Then
                     If MessageBox.Show("Archivo PDF generado exitosamente mediante motor nativo en:" & Environment.NewLine & rutaPdf & Environment.NewLine & Environment.NewLine & "¿Desea abrir el documento PDF ahora?", "Exportación PDF Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
-                        Process.Start(rutaPdf)
+                        Utilitarios.AbrirDocumento(rutaPdf)
                     End If
                     Exit Sub
                 End If
@@ -1848,7 +1848,7 @@ Public Class MantPreventiva
             Try
                 If Utilitarios.ExportarGrillaAPdf(grilla_tareas_pend, rutaPdf, "INFORME DE MANTENCIÓN PREVENTIVA - TAREAS PENDIENTES", "Ítem / Máquina: " & item) Then
                     If MessageBox.Show("Archivo PDF generado exitosamente mediante motor nativo en:" & Environment.NewLine & rutaPdf & Environment.NewLine & Environment.NewLine & "¿Desea abrir el documento PDF ahora?", "Exportación PDF Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
-                        Process.Start(rutaPdf)
+                        Utilitarios.AbrirDocumento(rutaPdf)
                     End If
                     Exit Sub
                 End If

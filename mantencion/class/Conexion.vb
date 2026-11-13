@@ -1,5 +1,4 @@
 ﻿Imports System.Data.SqlClient
-Imports System.Data.OleDb
 Imports System.Configuration
 
 Public Class Conexion

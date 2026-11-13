@@ -1288,6 +1288,7 @@ Public Class OT
             excelApp.Visible = True
         Catch ex As Exception
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
+            Utilitarios.CerrarExcelEnError(excelApp, workbook)
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
         End Try
     End Sub
@@ -1350,7 +1351,7 @@ Public Class OT
                 rpt.SetDataSource(dt)
                 rpt.ExportarPDF(rutaPdf)
                 If MessageBox.Show("Archivo PDF guardado exitosamente en:" & Environment.NewLine & rutaPdf & Environment.NewLine & Environment.NewLine & "¿Desea abrir el documento PDF ahora?", "Exportación PDF Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
-                    Process.Start(rutaPdf)
+                    Utilitarios.AbrirDocumento(rutaPdf)
                 End If
             Catch ex2 As Exception
                 MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar PDF")

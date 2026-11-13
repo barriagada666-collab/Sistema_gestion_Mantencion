@@ -148,7 +148,7 @@ Public Class NativeReportViewer
                 Try
                     rpt.ExportarPDF(sfd.FileName)
                     If MessageBox.Show("Informe PDF generado correctamente en:" & Environment.NewLine & sfd.FileName & Environment.NewLine & Environment.NewLine & "¿Desea abrir el archivo ahora?", "Exportación Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
-                        Process.Start(sfd.FileName)
+                        Utilitarios.AbrirDocumento(sfd.FileName)
                     End If
                 Catch ex As Exception
                     MessageBox.Show("Error al exportar a PDF: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)

@@ -1,5 +1,4 @@
 ﻿Imports System.Data.SqlClient
-Imports Excel = Microsoft.Office.Interop.Excel
 Public Class CalendarioPersonal
     Public Sub agregarPersonalCalendario(ByVal personal As String, ByVal fecha_desde_turno As DateTime, ByVal fecha_hasta_turno As DateTime, ByVal turno As String)
         Dim fecha As DateTime = fecha_desde_turno.Date
