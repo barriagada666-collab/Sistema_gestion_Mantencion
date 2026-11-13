@@ -171,11 +171,11 @@ Public Class Informes
 
         Try
             excelApp = New Excel.Application
-            excelApp.ScreenUpdating = False
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "infGantt.xls")
-            worksheet_1 = workbook.Sheets(1)
-            worksheet_2 = workbook.Sheets(2)
-            worksheet_3 = workbook.Sheets(3)
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "infGantt.xls")
+            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
+            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
+            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
             worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetVisible
             worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetHidden
             worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
@@ -208,12 +208,13 @@ Public Class Informes
             Next
             '--------------------------------------------------------------------------------------
             worksheet_1.Activate()
-            excelApp.ScreenUpdating = True
-            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information)
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
+            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Excel")
             excelApp.Visible = True
         Catch ex As Exception
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -238,11 +239,11 @@ Public Class Informes
 
         Try
             excelApp = New Excel.Application
-            excelApp.ScreenUpdating = False
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "infGantt.xls")
-            worksheet_1 = workbook.Sheets(1)
-            worksheet_2 = workbook.Sheets(2)
-            worksheet_3 = workbook.Sheets(3)
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "infGantt.xls")
+            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
+            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
+            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
             worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetHidden
             worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetVisible
             worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
@@ -336,11 +337,11 @@ Public Class Informes
 
         Try
             excelApp = New Excel.Application
-            excelApp.ScreenUpdating = False
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "infGantt.xls")
-            worksheet_1 = workbook.Sheets(1)
-            worksheet_2 = workbook.Sheets(2)
-            worksheet_3 = workbook.Sheets(3)
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "infGantt.xls")
+            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
+            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
+            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
             worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetVisible
             worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetVisible
             worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
@@ -436,12 +437,13 @@ Public Class Informes
                 cont_col = 5
             Next
             worksheet_1.Activate()
-            excelApp.ScreenUpdating = True
-            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information)
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
+            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Excel")
             excelApp.Visible = True
         Catch ex As Exception
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -466,11 +468,11 @@ Public Class Informes
 
         Try
             excelApp = New Excel.Application
-            excelApp.ScreenUpdating = False
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "infGantt.xls")
-            worksheet_1 = workbook.Sheets(1)
-            worksheet_2 = workbook.Sheets(2)
-            worksheet_3 = workbook.Sheets(3)
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "infGantt.xls")
+            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
+            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
+            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
             worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetHidden
             worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetHidden
             worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetVisible
@@ -561,19 +563,20 @@ Public Class Informes
             excelApp = New Excel.Application
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
 
-            Dim rutaPlantilla As String = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory(), "inf_auditoria.xls")
-            If Not System.IO.File.Exists(rutaPlantilla) Then
-                rutaPlantilla = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory(), "plantillas", "inf_auditoria.xls")
-            End If
-
-            If System.IO.File.Exists(rutaPlantilla) Then
-                workbook = excelApp.Workbooks.Add(rutaPlantilla)
-            Else
-                workbook = excelApp.Workbooks.Add()
-            End If
-
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "inf_auditoria.xls")
             worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
             worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetVisible
+
+            ' Si la plantilla no tenía cabeceras (libro en blanco creado de respaldo), estructurarlo
+            If worksheet_1.Cells(8, 3).Value Is Nothing OrElse String.IsNullOrEmpty(Convert.ToString(worksheet_1.Cells(8, 3).Value)) Then
+                worksheet_1.Cells(1, 3) = "Informe Control de Eventos / Auditoría"
+                worksheet_1.Cells(5, 5) = "Fecha Desde:"
+                worksheet_1.Cells(6, 5) = "Fecha Hasta:"
+                Dim cabeceras As String() = {"N° Operación", "Sesión", "Operación", "Fecha Operación", "Hora Operación", "Tabla", "Clave Afectada", "Nombre PC"}
+                For c As Integer = 0 To cabeceras.Length - 1
+                    worksheet_1.Cells(8, 3 + c) = cabeceras(c)
+                Next
+            End If
 
             ' Impresión fecha inicio y fecha fin
             worksheet_1.Cells(5, 6).NumberFormat = "@"
@@ -604,8 +607,9 @@ Public Class Informes
                     Next
                 Next
 
-                Dim rangoIni As Excel.Range = CType(worksheet_1.Cells(10, 3), Excel.Range)
-                Dim rangoFin As Excel.Range = CType(worksheet_1.Cells(10 + totalFilas - 1, 3 + cantCols - 1), Excel.Range)
+                Dim filaInicioDatos As Integer = 9
+                Dim rangoIni As Excel.Range = CType(worksheet_1.Cells(filaInicioDatos, 3), Excel.Range)
+                Dim rangoFin As Excel.Range = CType(worksheet_1.Cells(filaInicioDatos + totalFilas - 1, 3 + cantCols - 1), Excel.Range)
                 Dim rangoDestino As Excel.Range = worksheet_1.Range(rangoIni, rangoFin)
                 rangoDestino.Value = arrDatos
 
@@ -758,9 +762,9 @@ Public Class Informes
 
         Try
             excelApp = New Excel.Application
-            excelApp.ScreenUpdating = False
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "inf_estadistico.xls")
-            worksheet = workbook.Sheets(1)
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "inf_estadistico.xls")
+            worksheet = CType(workbook.Sheets(1), Excel.Worksheet)
             worksheet.Visible = Excel.XlSheetVisibility.xlSheetVisible
 
             '---------------------- impresion fecha inicio y fecha fin ----------------
@@ -1097,11 +1101,11 @@ Public Class Informes
 
         Try
             excelApp = New Excel.Application
-            excelApp.ScreenUpdating = False
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "inf_datos_tecnicos.xls")
-            worksheet_1 = workbook.Sheets(1)
-            worksheet_2 = workbook.Sheets(2)
-            worksheet_3 = workbook.Sheets(3)
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "inf_datos_tecnicos.xls")
+            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
+            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
+            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
 
             If FrmDatosTecnicosNodo.nivel >= 3 Then
 
@@ -1199,9 +1203,9 @@ Public Class Informes
 
         Try
             excelApp = New Excel.Application
-            excelApp.ScreenUpdating = False
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "inf_listado_ciclo_mp.xls")
-            worksheet_1 = workbook.Sheets(1)
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "inf_listado_ciclo_mp.xls")
+            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
             worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetVisible
 
             worksheet_1.Cells(6, 4).NumberFormat = "@"

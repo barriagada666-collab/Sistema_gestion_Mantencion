@@ -82,6 +82,45 @@ Public Class Utilitarios
     End Function
 
     ''' <summary>
+    ''' Localiza de forma determinista la ruta física de una plantilla Excel (.xls)
+    ''' buscando en el directorio base, subdirectorio plantillas y rutas de instalación.
+    ''' </summary>
+    Public Shared Function ObtenerRutaPlantilla(ByVal nombrePlantilla As String) As String
+        If String.IsNullOrWhiteSpace(nombrePlantilla) Then Return String.Empty
+
+        Dim soloNombre As String = Path.GetFileName(nombrePlantilla)
+        Dim baseDir As String = AppDomain.CurrentDomain.BaseDirectory
+        Dim appDir As String = Application.StartupPath
+
+        Dim candidatos As String() = {
+            Path.Combine(baseDir, soloNombre),
+            Path.Combine(baseDir, "plantillas", soloNombre),
+            Path.Combine(appDir, soloNombre),
+            Path.Combine(appDir, "plantillas", soloNombre),
+            Path.Combine(baseDir, "..\..\plantillas", soloNombre)
+        }
+
+        For Each ruta In candidatos
+            If File.Exists(ruta) Then Return Path.GetFullPath(ruta)
+        Next
+
+        Return String.Empty
+    End Function
+
+    ''' <summary>
+    ''' Abre o crea un libro de Excel a partir de una plantilla o de un libro en blanco si la plantilla no existe.
+    ''' </summary>
+    Public Shared Function CrearLibroDesdePlantilla(ByVal excelApp As Excel.Application, ByVal nombrePlantilla As String) As Excel.Workbook
+        If excelApp Is Nothing Then Return Nothing
+        Dim ruta As String = ObtenerRutaPlantilla(nombrePlantilla)
+        If Not String.IsNullOrEmpty(ruta) AndAlso File.Exists(ruta) Then
+            Return excelApp.Workbooks.Add(ruta)
+        Else
+            Return excelApp.Workbooks.Add()
+        End If
+    End Function
+
+    ''' <summary>
     ''' Activa o restaura el modo de alto rendimiento en una instancia de Excel para acelerar la escritura de celdas.
     ''' </summary>
     Public Shared Sub ConfigurarModoRapidoExcel(ByVal excelApp As Excel.Application, ByVal modoRapido As Boolean)
@@ -317,20 +356,29 @@ Public Class Utilitarios
     Public Shared Sub LiberarExcel(ByRef workbook As Excel.Workbook, ByRef excelApp As Excel.Application)
         Try
             If workbook IsNot Nothing Then
-                workbook.Close(False)
-                Marshal.ReleaseComObject(workbook)
+                Try
+                    workbook.Close(False)
+                Catch
+                End Try
+                LiberarObjetoCom(workbook)
                 workbook = Nothing
             End If
         Catch
         End Try
         Try
             If excelApp IsNot Nothing Then
-                excelApp.Quit()
-                Marshal.ReleaseComObject(excelApp)
+                Try
+                    excelApp.ScreenUpdating = True
+                    excelApp.DisplayAlerts = False
+                    excelApp.Quit()
+                Catch
+                End Try
+                LiberarObjetoCom(excelApp)
                 excelApp = Nothing
             End If
         Catch
         End Try
+        OptimizarMemoria()
     End Sub
 
     ''' <summary>

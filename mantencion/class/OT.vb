@@ -1276,8 +1276,8 @@ Public Class OT
         Try
             excelApp = New Excel.Application
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "inf_ot.xls")
-            worksheet = workbook.Sheets(1)
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "inf_ot.xls")
+            worksheet = CType(workbook.Sheets(1), Excel.Worksheet)
             worksheet.Visible = Excel.XlSheetVisibility.xlSheetVisible
             worksheet.Activate()
 
@@ -1312,8 +1312,8 @@ Public Class OT
         Try
             excelApp = New Excel.Application
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "inf_ot.xls")
-            worksheet = workbook.Sheets(1)
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "inf_ot.xls")
+            worksheet = CType(workbook.Sheets(1), Excel.Worksheet)
             worksheet.Visible = Excel.XlSheetVisibility.xlSheetVisible
             worksheet.Activate()
 
@@ -1354,7 +1354,7 @@ Public Class OT
                     Utilitarios.AbrirDocumento(rutaPdf)
                 End If
             Catch ex2 As Exception
-                MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar PDF")
+                MsgBox("Error durante la exportación a PDF: " & ex2.Message, MsgBoxStyle.Critical, "Exportar PDF")
             End Try
         Finally
             Utilitarios.LiberarExcel(workbook, excelApp)

@@ -85,6 +85,7 @@ Source: "mantencion\bin\Release\net8-selfcontained-x64\*"; DestDir: "{app}"; Fla
 
 ; Plantillas Excel de Reportes e Informes Estadísticos / Preventivos
 Source: "mantencion\plantillas\*.xls"; DestDir: "{app}"; Flags: ignoreversion
+Source: "mantencion\plantillas\*.xls"; DestDir: "{app}\plantillas"; Flags: ignoreversion
 
 ; Icono de la Aplicación
 Source: "mantencion\icons\app_icon.ico"; DestDir: "{app}"; Flags: ignoreversion

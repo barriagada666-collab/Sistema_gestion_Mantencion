@@ -1164,13 +1164,13 @@ Public Class MantPreventiva
 
         Try
             excelApp = New Excel.Application
-            excelApp.ScreenUpdating = False
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "inf_mp.xls")
-            worksheet = workbook.Sheets(1)
-            worksheet_2 = workbook.Sheets(2)
-            worksheet_3 = workbook.Sheets(3)
-            worksheet_4 = workbook.Sheets(4)
-            worksheet_5 = workbook.Sheets(5)
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "inf_MP.xls")
+            worksheet = CType(workbook.Sheets(1), Excel.Worksheet)
+            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
+            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
+            worksheet_4 = CType(workbook.Sheets(4), Excel.Worksheet)
+            worksheet_5 = CType(workbook.Sheets(5), Excel.Worksheet)
             worksheet.Visible = Excel.XlSheetVisibility.xlSheetVisible
             worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetHidden
             worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
@@ -1323,13 +1323,13 @@ Public Class MantPreventiva
 
         Try
             excelApp = New Excel.Application
-            excelApp.ScreenUpdating = False
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "inf_mp.xls")
-            worksheet_1 = workbook.Sheets(1)
-            worksheet_2 = workbook.Sheets(2)
-            worksheet_3 = workbook.Sheets(3)
-            worksheet_4 = workbook.Sheets(4)
-            worksheet_5 = workbook.Sheets(5)
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "inf_MP.xls")
+            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
+            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
+            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
+            worksheet_4 = CType(workbook.Sheets(4), Excel.Worksheet)
+            worksheet_5 = CType(workbook.Sheets(5), Excel.Worksheet)
             worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetHidden
             worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetHidden
             worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
@@ -1381,13 +1381,13 @@ Public Class MantPreventiva
 
         Try
             excelApp = New Excel.Application
-            excelApp.ScreenUpdating = False
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "inf_mp.xls")
-            worksheet_1 = workbook.Sheets(1)
-            worksheet_2 = workbook.Sheets(2)
-            worksheet_3 = workbook.Sheets(3)
-            worksheet_4 = workbook.Sheets(4)
-            worksheet_5 = workbook.Sheets(5)
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "inf_MP.xls")
+            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
+            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
+            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
+            worksheet_4 = CType(workbook.Sheets(4), Excel.Worksheet)
+            worksheet_5 = CType(workbook.Sheets(5), Excel.Worksheet)
             worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetHidden
             worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetHidden
             worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
@@ -1443,10 +1443,10 @@ Public Class MantPreventiva
 
         Try
             excelApp = New Excel.Application
-            excelApp.ScreenUpdating = False
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "infGantt.xls")
-            worksheet_1 = workbook.Sheets(1)
-            worksheet_2 = workbook.Sheets(2)
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "infGantt.xls")
+            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
+            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
             worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetVisible
             worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetVisible
 
@@ -1561,12 +1561,12 @@ Public Class MantPreventiva
         Try
             excelApp = New Excel.Application
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "inf_mp.xls")
-            worksheet = workbook.Sheets(1)
-            worksheet_2 = workbook.Sheets(2)
-            worksheet_3 = workbook.Sheets(3)
-            worksheet_4 = workbook.Sheets(4)
-            worksheet_5 = workbook.Sheets(5)
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "inf_MP.xls")
+            worksheet = CType(workbook.Sheets(1), Excel.Worksheet)
+            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
+            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
+            worksheet_4 = CType(workbook.Sheets(4), Excel.Worksheet)
+            worksheet_5 = CType(workbook.Sheets(5), Excel.Worksheet)
             worksheet.Visible = Excel.XlSheetVisibility.xlSheetVisible
             worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetHidden
             worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
@@ -1731,12 +1731,12 @@ Public Class MantPreventiva
         Try
             excelApp = New Excel.Application
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "inf_mp.xls")
-            worksheet_1 = workbook.Sheets(1)
-            worksheet_2 = workbook.Sheets(2)
-            worksheet_3 = workbook.Sheets(3)
-            worksheet_4 = workbook.Sheets(4)
-            worksheet_5 = workbook.Sheets(5)
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "inf_MP.xls")
+            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
+            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
+            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
+            worksheet_4 = CType(workbook.Sheets(4), Excel.Worksheet)
+            worksheet_5 = CType(workbook.Sheets(5), Excel.Worksheet)
             worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetHidden
             worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetHidden
             worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
@@ -1807,12 +1807,12 @@ Public Class MantPreventiva
         Try
             excelApp = New Excel.Application
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "inf_mp.xls")
-            worksheet_1 = workbook.Sheets(1)
-            worksheet_2 = workbook.Sheets(2)
-            worksheet_3 = workbook.Sheets(3)
-            worksheet_4 = workbook.Sheets(4)
-            worksheet_5 = workbook.Sheets(5)
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "inf_MP.xls")
+            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
+            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
+            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
+            worksheet_4 = CType(workbook.Sheets(4), Excel.Worksheet)
+            worksheet_5 = CType(workbook.Sheets(5), Excel.Worksheet)
             worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetHidden
             worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetHidden
             worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
