@@ -600,11 +600,11 @@ Public Class Nodo
     Public Shared Sub LimpiarResaltadoNodos(ByVal nodos As TreeNodeCollection)
         If nodos Is Nothing Then Exit Sub
         For Each n As TreeNode In nodos
-            If n.BackColor <> Color.Empty AndAlso n.BackColor <> Color.White Then
-                n.BackColor = Color.White
+            If n.BackColor <> Color.Empty Then
+                n.BackColor = Color.Empty
             End If
-            If n.ForeColor <> Color.Empty AndAlso n.ForeColor <> Utilitarios.ColorTextoPrincipal Then
-                n.ForeColor = Utilitarios.ColorTextoPrincipal
+            If n.ForeColor <> Color.Empty Then
+                n.ForeColor = Color.Empty
             End If
             If n.Nodes.Count > 0 Then
                 LimpiarResaltadoNodos(n.Nodes)

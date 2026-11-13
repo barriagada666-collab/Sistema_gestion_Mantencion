@@ -349,75 +349,17 @@ Public Class Utilitarios
 
     ''' <summary>
     ''' Configura un TreeView con estilos visuales modernos acordes a la paleta corporativa:
-    ''' doble búfer, selección permanente sin atenuación gris y renderizado nítido de nodos resaltados.
+    ''' doble búfer, selección persistente sin atenuación y renderizado nativo 100% perfecto
+    ''' para casillas de verificación (CheckBoxes), sangría y espacios.
     ''' </summary>
     Public Shared Sub ConfigurarTreeViewModerno(ByVal tv As TreeView)
         If tv Is Nothing Then Exit Sub
         HabilitarDobleBuffer(tv)
         tv.HideSelection = False
+        tv.DrawMode = TreeViewDrawMode.Normal
         tv.BackColor = Color.White
         tv.ForeColor = ColorTextoPrincipal
         tv.LineColor = ColorSecundario
-
-        ' Espaciado vertical confortable para checkboxes y texto
-        If tv.ItemHeight < 21 Then
-            tv.ItemHeight = 21
-        End If
-
-        tv.DrawMode = TreeViewDrawMode.OwnerDrawText
-
-        If tv.Tag Is Nothing OrElse Not tv.Tag.ToString().Contains("Moderno_Configurado") Then
-            tv.Tag = "Moderno_Configurado"
-            AddHandler tv.DrawNode, AddressOf DibujarNodoArbolModerno
-        End If
-    End Sub
-
-    Private Shared Sub DibujarNodoArbolModerno(ByVal sender As Object, ByVal e As DrawTreeNodeEventArgs)
-        Dim tv As TreeView = DirectCast(sender, TreeView)
-        If e.Node Is Nothing Then Exit Sub
-
-        Dim esSeleccionado As Boolean = (e.State And TreeNodeStates.Selected) <> 0
-        Dim tieneFondoEspecial As Boolean = (e.Node.BackColor <> Color.Empty AndAlso e.Node.BackColor <> Color.White)
-
-        ' Si el nodo no está seleccionado ni tiene resaltado especial de búsqueda,
-        ' delegar el dibujado al sistema operativo para preservar 100% el espaciado nativo de checkboxes e indentación
-        If Not tieneFondoEspecial AndAlso Not esSeleccionado Then
-            e.DrawDefault = True
-            Exit Sub
-        End If
-
-        e.DrawDefault = False
-
-        Dim bg As Color
-        Dim fg As Color
-
-        If tieneFondoEspecial Then
-            bg = e.Node.BackColor
-            fg = If(e.Node.ForeColor <> Color.Empty, e.Node.ForeColor, ColorTextoPrincipal)
-        Else
-            bg = ColorPrimario ' Azul petróleo #025E87
-            fg = Color.White
-        End If
-
-        ' Evitar cualquier solapamiento con checkboxes:
-        ' Cuando hay checkboxes activos, e.Bounds empieza tras el checkbox. Añadimos margen positivo hacia la derecha.
-        Dim xOffset As Integer = If(tv.CheckBoxes, 3, 0)
-        Dim rectFondo As New Rectangle(e.Bounds.X + xOffset, e.Bounds.Y + 1, e.Bounds.Width + 4, e.Bounds.Height - 2)
-        Dim rectTexto As New Rectangle(rectFondo.X + 3, rectFondo.Y, rectFondo.Width - 3, rectFondo.Height)
-
-        Using b As New SolidBrush(bg)
-            e.Graphics.FillRectangle(b, rectFondo)
-        End Using
-
-        Dim cBorde As Color = If(esSeleccionado, ColorSecundario, ColorAcento)
-        Using p As New Pen(cBorde, 1)
-            e.Graphics.DrawRectangle(p, rectFondo.X, rectFondo.Y, rectFondo.Width - 1, rectFondo.Height - 1)
-        End Using
-
-        Dim flags As TextFormatFlags = TextFormatFlags.VerticalCenter Or TextFormatFlags.Left
-        Dim fnt As Font = If(esSeleccionado OrElse tieneFondoEspecial, New Font(tv.Font, FontStyle.Bold), tv.Font)
-        TextRenderer.DrawText(e.Graphics, e.Node.Text, fnt, rectTexto, fg, flags)
-        If fnt IsNot tv.Font Then fnt.Dispose()
     End Sub
 
     Public Sub solonumeros(ByVal e As System.Windows.Forms.KeyPressEventArgs)
@@ -606,7 +548,49 @@ Public Class Utilitarios
                 btn.ForeColor = ColorPrimario
                 btn.Cursor = Cursors.Hand
 
-            ElseIf TypeOf ctrl Is Label OrElse TypeOf ctrl Is CheckBox OrElse TypeOf ctrl Is RadioButton Then
+            ElseIf TypeOf ctrl Is CheckBox Then
+                Dim chk As CheckBox = DirectCast(ctrl, CheckBox)
+                If EsColorRojo(chk.ForeColor) Then
+                    chk.ForeColor = ColorTextoDestacado
+                Else
+                    chk.ForeColor = ColorTextoPrincipal
+                End If
+                chk.UseVisualStyleBackColor = True
+                If Not chk.AutoSize AndAlso chk.Width < chk.PreferredSize.Width Then
+                    chk.Width = chk.PreferredSize.Width + 6
+                End If
+                If chk.BackColor = Color.Transparent Then
+                    If chk.Parent IsNot Nothing AndAlso chk.Parent.BackgroundImage IsNot Nothing Then
+                        chk.BackColor = Color.Transparent
+                    ElseIf chk.Parent IsNot Nothing AndAlso chk.Parent.BackColor <> Color.Transparent Then
+                        chk.BackColor = chk.Parent.BackColor
+                    Else
+                        chk.BackColor = ColorFondoForm
+                    End If
+                End If
+
+            ElseIf TypeOf ctrl Is RadioButton Then
+                Dim rdo As RadioButton = DirectCast(ctrl, RadioButton)
+                If EsColorRojo(rdo.ForeColor) Then
+                    rdo.ForeColor = ColorTextoDestacado
+                Else
+                    rdo.ForeColor = ColorTextoPrincipal
+                End If
+                rdo.UseVisualStyleBackColor = True
+                If Not rdo.AutoSize AndAlso rdo.Width < rdo.PreferredSize.Width Then
+                    rdo.Width = rdo.PreferredSize.Width + 6
+                End If
+                If rdo.BackColor = Color.Transparent Then
+                    If rdo.Parent IsNot Nothing AndAlso rdo.Parent.BackgroundImage IsNot Nothing Then
+                        rdo.BackColor = Color.Transparent
+                    ElseIf rdo.Parent IsNot Nothing AndAlso rdo.Parent.BackColor <> Color.Transparent Then
+                        rdo.BackColor = rdo.Parent.BackColor
+                    Else
+                        rdo.BackColor = ColorFondoForm
+                    End If
+                End If
+
+            ElseIf TypeOf ctrl Is Label Then
                 If EsColorRojo(ctrl.ForeColor) Then
                     ctrl.ForeColor = ColorTextoDestacado
                 Else
@@ -622,32 +606,11 @@ Public Class Utilitarios
                     End If
                 End If
 
-            ElseIf TypeOf ctrl Is MenuStrip Then
-                Dim ms As MenuStrip = DirectCast(ctrl, MenuStrip)
-                ms.BackColor = ColorGrisAzulado
-                ms.ForeColor = ColorTextoPrincipal
-                ms.Renderer = New ToolStripProfessionalRenderer(New ModernColorTable())
-                ms.Font = New Font("Calibri", 12.5F, FontStyle.Bold)
-                For Each item As ToolStripItem In ms.Items
-                    item.Font = New Font("Calibri", 12.5F, FontStyle.Bold)
-                    item.ForeColor = ColorTextoPrincipal
-                    ConfigurarSubMenuItems(item)
-                Next
-
-            ElseIf TypeOf ctrl Is StatusStrip Then
-                Dim ss As StatusStrip = DirectCast(ctrl, StatusStrip)
-                ss.BackColor = ColorPrimario
-                ss.ForeColor = Color.White
-                ss.Renderer = New ToolStripProfessionalRenderer(New ModernColorTable())
-                For Each item As ToolStripItem In ss.Items
-                    item.ForeColor = Color.White
-                Next
-
             ElseIf TypeOf ctrl Is ToolStrip Then
                 Dim ts As ToolStrip = DirectCast(ctrl, ToolStrip)
-                ts.BackColor = ColorGrisAzulado
-                ts.ForeColor = ColorTextoPrincipal
-                ts.Renderer = New ToolStripProfessionalRenderer(New ModernColorTable())
+                ts.Renderer = New MenuCorporativoRenderer()
+                ts.BackColor = ColorPrimario
+                ts.ForeColor = Color.White
             End If
 
             If ctrl.HasChildren AndAlso Not TypeOf ctrl Is NumericUpDown AndAlso Not TypeOf ctrl Is UserControl Then
