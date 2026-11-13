@@ -358,6 +358,12 @@ Public Class Utilitarios
         tv.BackColor = Color.White
         tv.ForeColor = ColorTextoPrincipal
         tv.LineColor = ColorSecundario
+
+        ' Espaciado vertical confortable para checkboxes y texto
+        If tv.ItemHeight < 21 Then
+            tv.ItemHeight = 21
+        End If
+
         tv.DrawMode = TreeViewDrawMode.OwnerDrawText
 
         If tv.Tag Is Nothing OrElse Not tv.Tag.ToString().Contains("Moderno_Configurado") Then
@@ -373,37 +379,44 @@ Public Class Utilitarios
         Dim esSeleccionado As Boolean = (e.State And TreeNodeStates.Selected) <> 0
         Dim tieneFondoEspecial As Boolean = (e.Node.BackColor <> Color.Empty AndAlso e.Node.BackColor <> Color.White)
 
+        ' Si el nodo no está seleccionado ni tiene resaltado especial de búsqueda,
+        ' delegar el dibujado al sistema operativo para preservar 100% el espaciado nativo de checkboxes e indentación
+        If Not tieneFondoEspecial AndAlso Not esSeleccionado Then
+            e.DrawDefault = True
+            Exit Sub
+        End If
+
+        e.DrawDefault = False
+
         Dim bg As Color
         Dim fg As Color
 
         If tieneFondoEspecial Then
             bg = e.Node.BackColor
             fg = If(e.Node.ForeColor <> Color.Empty, e.Node.ForeColor, ColorTextoPrincipal)
-        ElseIf esSeleccionado Then
+        Else
             bg = ColorPrimario ' Azul petróleo #025E87
             fg = Color.White
-        Else
-            bg = tv.BackColor
-            fg = If(e.Node.ForeColor <> Color.Empty, e.Node.ForeColor, ColorTextoPrincipal)
         End If
 
-        Dim rect As Rectangle = e.Bounds
-        rect.Inflate(4, 1)
+        ' Evitar cualquier solapamiento con checkboxes:
+        ' Cuando hay checkboxes activos, e.Bounds empieza tras el checkbox. Añadimos margen positivo hacia la derecha.
+        Dim xOffset As Integer = If(tv.CheckBoxes, 3, 0)
+        Dim rectFondo As New Rectangle(e.Bounds.X + xOffset, e.Bounds.Y + 1, e.Bounds.Width + 4, e.Bounds.Height - 2)
+        Dim rectTexto As New Rectangle(rectFondo.X + 3, rectFondo.Y, rectFondo.Width - 3, rectFondo.Height)
 
         Using b As New SolidBrush(bg)
-            e.Graphics.FillRectangle(b, rect)
+            e.Graphics.FillRectangle(b, rectFondo)
         End Using
 
-        If tieneFondoEspecial OrElse esSeleccionado Then
-            Dim cBorde As Color = If(esSeleccionado, ColorSecundario, ColorAcento)
-            Using p As New Pen(cBorde, 1)
-                e.Graphics.DrawRectangle(p, rect.X, rect.Y, rect.Width - 1, rect.Height - 1)
-            End Using
-        End If
+        Dim cBorde As Color = If(esSeleccionado, ColorSecundario, ColorAcento)
+        Using p As New Pen(cBorde, 1)
+            e.Graphics.DrawRectangle(p, rectFondo.X, rectFondo.Y, rectFondo.Width - 1, rectFondo.Height - 1)
+        End Using
 
-        Dim flags As TextFormatFlags = TextFormatFlags.VerticalCenter Or TextFormatFlags.Left Or TextFormatFlags.NoPadding
+        Dim flags As TextFormatFlags = TextFormatFlags.VerticalCenter Or TextFormatFlags.Left
         Dim fnt As Font = If(esSeleccionado OrElse tieneFondoEspecial, New Font(tv.Font, FontStyle.Bold), tv.Font)
-        TextRenderer.DrawText(e.Graphics, e.Node.Text, fnt, rect, fg, flags)
+        TextRenderer.DrawText(e.Graphics, e.Node.Text, fnt, rectTexto, fg, flags)
         If fnt IsNot tv.Font Then fnt.Dispose()
     End Sub
 
