@@ -195,14 +195,14 @@ Public Class Conexion
     End Function
 
     Public Sub Conectar(ByVal cnx As SqlConnection)
-        If cnx Is Nothing Then Exit Sub
+        If cnx Is Nothing Then Throw New ArgumentNullException(NameOf(cnx))
         Try
             If cnx.State = ConnectionState.Open Then Exit Sub
             If cnx.State = ConnectionState.Broken Then cnx.Close()
             cnx.ConnectionString = ObtenerConnectionString()
             cnx.Open()
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            Throw
         End Try
     End Sub
 

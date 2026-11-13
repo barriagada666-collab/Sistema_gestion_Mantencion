@@ -1299,12 +1299,14 @@ Public Class MantPreventiva
                 rango.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
             End If
             '--------------------------------------------------------------------------------------
-            excelApp.ScreenUpdating = True
+            worksheet.Activate()
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Excel")
             excelApp.Visible = True
         Catch ex As Exception
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -1357,12 +1359,14 @@ Public Class MantPreventiva
                 rango = worksheet_5.Range("A11:L" & filaexcel - 1)
                 rango.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
             End If
-            excelApp.ScreenUpdating = True
+            worksheet_5.Activate()
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Excel")
             excelApp.Visible = True
         Catch ex As Exception
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -1414,12 +1418,14 @@ Public Class MantPreventiva
                 rango = worksheet_4.Range("A11:K" & filaexcel - 1)
                 rango.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
             End If
-            excelApp.ScreenUpdating = True
+            worksheet_4.Activate()
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Excel")
             excelApp.Visible = True
         Catch ex As Exception
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -1535,12 +1541,13 @@ Public Class MantPreventiva
             Next
 
             worksheet_1.Activate()
-            excelApp.ScreenUpdating = True
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Excel")
             excelApp.Visible = True
         Catch ex As Exception
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try

@@ -253,7 +253,7 @@ pwsh -ExecutionPolicy Bypass -File ".\automatizadores de instalacion\Publicar_Re
 
 | Archivo | Plataforma | Tamaño | Descarga Oficial | Algoritmo | Checksum |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `Instalador_Sistema_Mantencion_v2026.1.exe` | Windows x64 | ~55.7 MB | [⬇️ Descargar v2026.1 LTS](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) | SHA-256 | `1E4B02A671011B6DABFF56BB542B29C397CCEDAA23D5F72C9DC631291FA64063` |
+| `Instalador_Sistema_Mantencion_v2026.1.exe` | Windows x64 | ~55.8 MB | [⬇️ Descargar v2026.1 LTS](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) | SHA-256 | `68FF3010F26DFCEAA148C8880D56E04E74490D47BCAE0525292EC71C4CAFBCE7` |
 | `checksums_sha256.txt` | Texto | < 1 KB | [⬇️ Descargar Hash](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/checksums_sha256.txt) | SHA-256 | Firma de integridad de la versión |
 
 Para verificar la integridad del instalador descargado en PowerShell:

@@ -307,12 +307,13 @@ Public Class Informes
             Next
 
             worksheet_2.Activate()
-            excelApp.ScreenUpdating = True
-            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information)
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
+            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Carta Gantt")
             excelApp.Visible = True
         Catch ex As Exception
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -538,12 +539,13 @@ Public Class Informes
             Next
 
             worksheet_3.Activate()
-            excelApp.ScreenUpdating = True
-            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information)
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
+            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Carta Gantt")
             excelApp.Visible = True
         Catch ex As Exception
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -1047,12 +1049,13 @@ Public Class Informes
 
             '--------------------------------------------------------------------------------------
             worksheet.Activate()
-            excelApp.ScreenUpdating = True
-            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information)
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
+            MsgBox("Informe Estadístico exportado exitosamente a Excel.", MsgBoxStyle.Information, "Exportar Resumen Estadístico")
             excelApp.Visible = True
         Catch ex As Exception
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -1113,23 +1116,32 @@ Public Class Informes
                 worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetHidden
                 worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
 
-                Dim filaexcel As Integer = 9
+                Dim totalFilas As Integer = grilla_datos_tecnicos.RowCount
+                If totalFilas > 0 Then
+                    If totalFilas > 1 Then
+                        Dim rangoInsert As Excel.Range = worksheet_1.Range("B10:D" & (8 + totalFilas).ToString())
+                        rangoInsert.EntireRow.Insert(Excel.XlInsertShiftDirection.xlShiftDown)
+                    End If
 
-                '------------- llenado de operaciones realizadas --------------------------------------------
-                With grilla_datos_tecnicos
-                    For i = 0 To .RowCount - 1
-                        worksheet_1.Rows(filaexcel + 1).Insert()
-                        worksheet_1.Cells(filaexcel, 2) = .Rows(i).Cells(2).Value
-                        worksheet_1.Cells(filaexcel, 3) = .Rows(i).Cells(3).Value
-                        worksheet_1.Cells(filaexcel, 4) = .Rows(i).Cells(4).Value
-                        filaexcel = filaexcel + 1
+                    Dim arrDatos(totalFilas - 1, 2) As Object
+                    For i As Integer = 0 To totalFilas - 1
+                        arrDatos(i, 0) = grilla_datos_tecnicos.Rows(i).Cells(2).Value
+                        arrDatos(i, 1) = grilla_datos_tecnicos.Rows(i).Cells(3).Value
+                        arrDatos(i, 2) = grilla_datos_tecnicos.Rows(i).Cells(4).Value
                     Next
-                End With
 
-                '--------------------------------------------------------------------------------------
+                    Dim rangoDestino As Excel.Range = worksheet_1.Range("B9:D" & (9 + totalFilas - 1).ToString())
+                    rangoDestino.Value2 = arrDatos
+                    Try
+                        rangoDestino.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
+                        rangoDestino.Borders.Weight = Excel.XlBorderWeight.xlThin
+                    Catch
+                    End Try
+                End If
+
                 worksheet_1.Activate()
-                excelApp.ScreenUpdating = True
-                MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information)
+                Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
+                MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Datos Técnicos")
                 excelApp.Visible = True
 
             ElseIf FrmDatosTecnicosNodo.nivel = 2 Then
@@ -1138,24 +1150,33 @@ Public Class Informes
                 worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetVisible
                 worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
 
-                Dim filaexcel As Integer = 9
+                Dim totalFilas As Integer = grilla_datos_tecnicos.RowCount
+                If totalFilas > 0 Then
+                    If totalFilas > 1 Then
+                        Dim rangoInsert As Excel.Range = worksheet_2.Range("B10:E" & (8 + totalFilas).ToString())
+                        rangoInsert.EntireRow.Insert(Excel.XlInsertShiftDirection.xlShiftDown)
+                    End If
 
-                '------------- llenado de operaciones realizadas --------------------------------------------
-                With grilla_datos_tecnicos
-                    For i = 0 To .RowCount - 1
-                        worksheet_2.Rows(filaexcel + 1).Insert()
-                        worksheet_2.Cells(filaexcel, 2) = .Rows(i).Cells(2).Value
-                        worksheet_2.Cells(filaexcel, 3) = .Rows(i).Cells(3).Value
-                        worksheet_2.Cells(filaexcel, 4) = .Rows(i).Cells(4).Value
-                        worksheet_2.Cells(filaexcel, 5) = .Rows(i).Cells(5).Value
-                        filaexcel = filaexcel + 1
+                    Dim arrDatos(totalFilas - 1, 3) As Object
+                    For i As Integer = 0 To totalFilas - 1
+                        arrDatos(i, 0) = grilla_datos_tecnicos.Rows(i).Cells(2).Value
+                        arrDatos(i, 1) = grilla_datos_tecnicos.Rows(i).Cells(3).Value
+                        arrDatos(i, 2) = grilla_datos_tecnicos.Rows(i).Cells(4).Value
+                        arrDatos(i, 3) = grilla_datos_tecnicos.Rows(i).Cells(5).Value
                     Next
-                End With
 
-                '--------------------------------------------------------------------------------------
+                    Dim rangoDestino As Excel.Range = worksheet_2.Range("B9:E" & (9 + totalFilas - 1).ToString())
+                    rangoDestino.Value2 = arrDatos
+                    Try
+                        rangoDestino.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
+                        rangoDestino.Borders.Weight = Excel.XlBorderWeight.xlThin
+                    Catch
+                    End Try
+                End If
+
                 worksheet_2.Activate()
-                excelApp.ScreenUpdating = True
-                MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information)
+                Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
+                MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Datos Técnicos")
                 excelApp.Visible = True
 
             ElseIf FrmDatosTecnicosNodo.nivel = 1 Then
@@ -1164,32 +1185,42 @@ Public Class Informes
                 worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetHidden
                 worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetVisible
 
-                Dim filaexcel As Integer = 9
+                Dim totalFilas As Integer = grilla_datos_tecnicos.RowCount
+                If totalFilas > 0 Then
+                    If totalFilas > 1 Then
+                        Dim rangoInsert As Excel.Range = worksheet_3.Range("B10:F" & (8 + totalFilas).ToString())
+                        rangoInsert.EntireRow.Insert(Excel.XlInsertShiftDirection.xlShiftDown)
+                    End If
 
-                '------------- llenado de operaciones realizadas --------------------------------------------
-                With grilla_datos_tecnicos
-                    For i = 0 To .RowCount - 1
-                        worksheet_3.Rows(filaexcel + 1).Insert()
-                        worksheet_3.Cells(filaexcel, 2) = .Rows(i).Cells(2).Value
-                        worksheet_3.Cells(filaexcel, 3) = .Rows(i).Cells(3).Value
-                        worksheet_3.Cells(filaexcel, 4) = .Rows(i).Cells(4).Value
-                        worksheet_3.Cells(filaexcel, 5) = .Rows(i).Cells(5).Value
-                        worksheet_3.Cells(filaexcel, 6) = .Rows(i).Cells(6).Value
-                        filaexcel = filaexcel + 1
+                    Dim arrDatos(totalFilas - 1, 4) As Object
+                    For i As Integer = 0 To totalFilas - 1
+                        arrDatos(i, 0) = grilla_datos_tecnicos.Rows(i).Cells(2).Value
+                        arrDatos(i, 1) = grilla_datos_tecnicos.Rows(i).Cells(3).Value
+                        arrDatos(i, 2) = grilla_datos_tecnicos.Rows(i).Cells(4).Value
+                        arrDatos(i, 3) = grilla_datos_tecnicos.Rows(i).Cells(5).Value
+                        arrDatos(i, 4) = grilla_datos_tecnicos.Rows(i).Cells(6).Value
                     Next
-                End With
 
-                '--------------------------------------------------------------------------------------
+                    Dim rangoDestino As Excel.Range = worksheet_3.Range("B9:F" & (9 + totalFilas - 1).ToString())
+                    rangoDestino.Value2 = arrDatos
+                    Try
+                        rangoDestino.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
+                        rangoDestino.Borders.Weight = Excel.XlBorderWeight.xlThin
+                    Catch
+                    End Try
+                End If
+
                 worksheet_3.Activate()
-                excelApp.ScreenUpdating = True
-                MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information)
+                Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
+                MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Datos Técnicos")
                 excelApp.Visible = True
             Else
-                excelApp.ScreenUpdating = True
+                Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             End If
         Catch ex As Exception
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -1198,7 +1229,7 @@ Public Class Informes
     Public Sub expInfListadoCiclo(ByVal grilla_ciclos_mp As DataGridView, ByVal fecha_desde As DateTime, ByVal fecha_hasta As DateTime)
         Dim excelApp As Excel.Application = Nothing
         Dim workbook As Excel.Workbook = Nothing
-        Dim worksheet_1 As Excel.Worksheet
+        Dim worksheet_1 As Excel.Worksheet = Nothing
         Dim num_mant As Integer = 0
 
         Try
@@ -1213,27 +1244,38 @@ Public Class Informes
             worksheet_1.Cells(6, 4) = fecha_desde.ToString("dd-MM-yyyy")
             worksheet_1.Cells(7, 4) = fecha_hasta.ToString("dd-MM-yyyy")
 
-            Dim filaexcel As Integer = 11
+            Dim totalFilas As Integer = grilla_ciclos_mp.RowCount
+            If totalFilas > 0 Then
+                If totalFilas > 1 Then
+                    Dim rangoInsert As Excel.Range = worksheet_1.Range("B12:H" & (10 + totalFilas).ToString())
+                    rangoInsert.EntireRow.Insert(Excel.XlInsertShiftDirection.xlShiftDown)
+                End If
 
-            For i = 0 To grilla_ciclos_mp.RowCount - 1
-                worksheet_1.Rows(filaexcel + 1).Insert()
-                worksheet_1.Cells(filaexcel, 2) = grilla_ciclos_mp.Rows(i).Cells(0).Value
-                worksheet_1.Cells(filaexcel, 3) = grilla_ciclos_mp.Rows(i).Cells(1).Value
-                worksheet_1.Cells(filaexcel, 4) = grilla_ciclos_mp.Rows(i).Cells(2).Value
-                worksheet_1.Cells(filaexcel, 5) = grilla_ciclos_mp.Rows(i).Cells(3).Value
-                worksheet_1.Cells(filaexcel, 6) = grilla_ciclos_mp.Rows(i).Cells(4).Value
-                worksheet_1.Cells(filaexcel, 7) = grilla_ciclos_mp.Rows(i).Cells(5).Value
-                worksheet_1.Cells(filaexcel, 8) = grilla_ciclos_mp.Rows(i).Cells(6).Value
-                filaexcel = filaexcel + 1
-            Next
+                Dim arrDatos(totalFilas - 1, 6) As Object
+                For i As Integer = 0 To totalFilas - 1
+                    For c As Integer = 0 To 6
+                        Dim val As Object = grilla_ciclos_mp.Rows(i).Cells(c).Value
+                        arrDatos(i, c) = If(val IsNot Nothing AndAlso Not IsDBNull(val), val.ToString(), "")
+                    Next
+                Next
+
+                Dim rangoDestino As Excel.Range = worksheet_1.Range("B11:H" & (11 + totalFilas - 1).ToString())
+                rangoDestino.Value2 = arrDatos
+                Try
+                    rangoDestino.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
+                    rangoDestino.Borders.Weight = Excel.XlBorderWeight.xlThin
+                Catch
+                End Try
+            End If
 
             worksheet_1.Activate()
-            excelApp.ScreenUpdating = True
-            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportación a excel")
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
+            MsgBox(String.Format("Listado de Ciclos MP exportado exitosamente a Excel.{0}Total de registros: {1:N0}", vbCrLf, totalFilas), MsgBoxStyle.Information, "Exportación a Excel")
             excelApp.Visible = True
         Catch ex As Exception
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
