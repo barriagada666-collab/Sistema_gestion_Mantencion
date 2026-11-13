@@ -547,47 +547,196 @@ Public Class Informes
         End Try
     End Sub
 
-    Public Sub expInfAuditoria(ByVal grilla_auditoria As DataGridView, ByVal fecha_inicio As DateTime, ByVal fecha_fin As DateTime)
+    Public Sub expInfAuditoria(ByVal grilla_auditoria As DataGridView,
+                               ByVal fecha_inicio As DateTime,
+                               ByVal fecha_fin As DateTime,
+                               Optional ByVal filasPersonalizadas As IList(Of DataGridViewRow) = Nothing,
+                               Optional ByVal incluirEstadisticas As Boolean = True,
+                               Optional ByVal dsEstadisticas As DataSet = Nothing)
         Dim excelApp As Excel.Application = Nothing
         Dim workbook As Excel.Workbook = Nothing
-        Dim worksheet_1 As Excel.Worksheet
+        Dim worksheet_1 As Excel.Worksheet = Nothing
 
         Try
             excelApp = New Excel.Application
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
-            workbook = excelApp.Workbooks.Add(System.AppDomain.CurrentDomain.BaseDirectory() & "inf_auditoria.xls")
-            worksheet_1 = workbook.Sheets(1)
+
+            Dim rutaPlantilla As String = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory(), "inf_auditoria.xls")
+            If Not System.IO.File.Exists(rutaPlantilla) Then
+                rutaPlantilla = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory(), "plantillas", "inf_auditoria.xls")
+            End If
+
+            If System.IO.File.Exists(rutaPlantilla) Then
+                workbook = excelApp.Workbooks.Add(rutaPlantilla)
+            Else
+                workbook = excelApp.Workbooks.Add()
+            End If
+
+            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
             worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetVisible
 
-            '---------------------- impresion fecha inicio y fecha fin ----------------
+            ' Impresión fecha inicio y fecha fin
             worksheet_1.Cells(5, 6).NumberFormat = "@"
             worksheet_1.Cells(6, 6).NumberFormat = "@"
             worksheet_1.Cells(5, 6) = fecha_inicio.ToString("dd-MM-yyyy")
             worksheet_1.Cells(6, 6) = fecha_fin.ToString("dd-MM-yyyy")
-            '---------------------------------------------------------------------------------------
 
-            Dim filaexcel As Integer = 10
-
-            '------------- llenado de operaciones realizadas --------------------------------------------
-            With grilla_auditoria
-                For i = 0 To .RowCount - 1
-                    For colIdx As Integer = 0 To Math.Min(.ColumnCount - 1, 7)
-                        worksheet_1.Cells(filaexcel, colIdx + 3) = .Rows(i).Cells(colIdx).Value
-                    Next
-                    filaexcel = filaexcel + 1
+            ' Determinación de filas a exportar (seleccionadas o todas las visibles filtradas)
+            Dim filasAExportar As New List(Of DataGridViewRow)
+            If filasPersonalizadas IsNot Nothing AndAlso filasPersonalizadas.Count > 0 Then
+                filasAExportar.AddRange(filasPersonalizadas)
+            Else
+                For i As Integer = 0 To grilla_auditoria.RowCount - 1
+                    filasAExportar.Add(grilla_auditoria.Rows(i))
                 Next
-            End With
+            End If
 
-            '--------------------------------------------------------------------------------------
+            Dim totalFilas As Integer = filasAExportar.Count
+            If totalFilas > 0 Then
+                Dim cantCols As Integer = Math.Min(grilla_auditoria.ColumnCount, 8)
+                Dim arrDatos(totalFilas - 1, cantCols - 1) As Object
+
+                For r As Integer = 0 To totalFilas - 1
+                    Dim row As DataGridViewRow = filasAExportar(r)
+                    For c As Integer = 0 To cantCols - 1
+                        Dim val As Object = row.Cells(c).Value
+                        arrDatos(r, c) = If(val IsNot Nothing AndAlso Not IsDBNull(val), val.ToString(), "")
+                    Next
+                Next
+
+                Dim rangoIni As Excel.Range = CType(worksheet_1.Cells(10, 3), Excel.Range)
+                Dim rangoFin As Excel.Range = CType(worksheet_1.Cells(10 + totalFilas - 1, 3 + cantCols - 1), Excel.Range)
+                Dim rangoDestino As Excel.Range = worksheet_1.Range(rangoIni, rangoFin)
+                rangoDestino.Value = arrDatos
+
+                Try
+                    rangoDestino.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
+                    rangoDestino.Borders.Weight = Excel.XlBorderWeight.xlThin
+                Catch
+                End Try
+            End If
+
+            ' Incorporar Hoja de Estadísticas si fue solicitado
+            If incluirEstadisticas AndAlso dsEstadisticas IsNot Nothing AndAlso dsEstadisticas.Tables.Count > 0 Then
+                Try
+                    Dim wsStats As Excel.Worksheet = CType(workbook.Sheets.Add(After:=worksheet_1), Excel.Worksheet)
+                    wsStats.Name = "Resumen Estadístico"
+                    ConstruirHojaEstadisticasAuditoria(wsStats, dsEstadisticas, fecha_inicio, fecha_fin, totalFilas)
+                Catch
+                End Try
+            End If
+
             worksheet_1.Activate()
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information)
+            MsgBox(String.Format("Auditoría exportada exitosamente a Excel.{0}Total de registros: {1:N0}", vbCrLf, totalFilas), MsgBoxStyle.Information, "Exportar Auditoría")
             excelApp.Visible = True
         Catch ex As Exception
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
+        End Try
+    End Sub
+
+    Public Sub expSoloEstadisticasAuditoria(ByVal dsEstadisticas As DataSet, ByVal fecha_inicio As DateTime, ByVal fecha_fin As DateTime, Optional ByVal totalOps As Integer = 0)
+        Dim excelApp As Excel.Application = Nothing
+        Dim workbook As Excel.Workbook = Nothing
+        Dim worksheet_1 As Excel.Worksheet = Nothing
+
+        Try
+            If dsEstadisticas Is Nothing OrElse dsEstadisticas.Tables.Count = 0 Then
+                MsgBox("No hay datos estadísticos para exportar.", MsgBoxStyle.Information, "Estadísticas")
+                Exit Sub
+            End If
+
+            excelApp = New Excel.Application
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
+            workbook = excelApp.Workbooks.Add()
+            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
+            worksheet_1.Name = "Métricas y Distribución"
+
+            ConstruirHojaEstadisticasAuditoria(worksheet_1, dsEstadisticas, fecha_inicio, fecha_fin, totalOps)
+
+            worksheet_1.Activate()
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
+            MsgBox("Reporte estadístico generado exitosamente.", MsgBoxStyle.Information, "Estadísticas Auditoría")
+            excelApp.Visible = True
+        Catch ex As Exception
+            Utilitarios.CerrarExcelEnError(excelApp, workbook)
+            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Estadísticas")
+        Finally
+            Utilitarios.OptimizarMemoria()
+        End Try
+    End Sub
+
+    Private Sub ConstruirHojaEstadisticasAuditoria(ByVal ws As Excel.Worksheet, ByVal ds As DataSet, ByVal fIni As DateTime, ByVal fFin As DateTime, ByVal totalOps As Integer)
+        If ws Is Nothing OrElse ds Is Nothing Then Exit Sub
+
+        ' Títulos Principales
+        ws.Cells(1, 1) = "CAMBIASO HNOS. S.A.C."
+        ws.Cells(2, 1) = "DEPARTAMENTO DE MANTENCIÓN - REPORTE DE AUDITORÍA Y ESTADÍSTICAS"
+        ws.Cells(3, 1) = String.Format("Período: {0} al {1} | Operaciones Analizadas: {2:N0} | Fecha Emisión: {3}",
+                                       fIni.ToString("dd-MM-yyyy"), fFin.ToString("dd-MM-yyyy"), totalOps, DateTime.Now.ToString("dd-MM-yyyy HH:mm"))
+
+        Dim rTit As Excel.Range = ws.Range(ws.Cells(1, 1), ws.Cells(3, 8))
+        rTit.Font.Name = "Calibri"
+        rTit.Font.Bold = True
+
+        Dim filaActual As Integer = 5
+
+        For Each dt As DataTable In ds.Tables
+            If dt.Rows.Count = 0 Then Continue For
+
+            ' Título de la Sección
+            ws.Cells(filaActual, 1) = dt.TableName.ToUpperInvariant()
+            Dim rSec As Excel.Range = CType(ws.Cells(filaActual, 1), Excel.Range)
+            rSec.Font.Bold = True
+            rSec.Font.Size = 11
+
+            filaActual += 1
+
+            ' Encabezados de Columna
+            Dim cantCols As Integer = dt.Columns.Count
+            For c As Integer = 0 To cantCols - 1
+                ws.Cells(filaActual, c + 1) = dt.Columns(c).ColumnName
+            Next
+
+            Dim rEnc As Excel.Range = ws.Range(ws.Cells(filaActual, 1), ws.Cells(filaActual, cantCols))
+            rEnc.Font.Bold = True
+            rEnc.Interior.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorPrimario)
+            rEnc.Font.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.White)
+
+            filaActual += 1
+
+            ' Datos de la Tabla
+            Dim cantFilas As Integer = dt.Rows.Count
+            Dim matriz(cantFilas - 1, cantCols - 1) As Object
+
+            For r As Integer = 0 To cantFilas - 1
+                For c As Integer = 0 To cantCols - 1
+                    Dim v As Object = dt.Rows(r)(c)
+                    matriz(r, c) = If(v IsNot Nothing AndAlso Not IsDBNull(v), v.ToString(), "")
+                Next
+            Next
+
+            Dim rDatosIni As Excel.Range = CType(ws.Cells(filaActual, 1), Excel.Range)
+            Dim rDatosFin As Excel.Range = CType(ws.Cells(filaActual + cantFilas - 1, cantCols), Excel.Range)
+            Dim rBloque As Excel.Range = ws.Range(rDatosIni, rDatosFin)
+            rBloque.Value = matriz
+
+            Try
+                Dim rTablaEntera As Excel.Range = ws.Range(rEnc, rDatosFin)
+                rTablaEntera.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
+                rTablaEntera.Borders.Weight = Excel.XlBorderWeight.xlThin
+            Catch
+            End Try
+
+            filaActual += cantFilas + 2
+        Next
+
+        Try
+            ws.Columns.AutoFit()
+        Catch
         End Try
     End Sub
 
