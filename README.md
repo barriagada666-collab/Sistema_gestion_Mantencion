@@ -188,13 +188,15 @@ Sistema_gestion_Mantencion/
 │   ├── plantillas/                  # Plantillas oficiales Excel (.xls)
 │   ├── ApplicationEvents.vb         # Manejador global de excepciones no controladas
 │   └── mantencion.vbproj            # Proyecto SDK-Style .NET 8
-├── automatizadores de instalacion/  # Scripts de compilación, empaquetado y publicación
+├── automatizadores de instalacion/  # Scripts de compilación, diagnóstico y automatización
 │   ├── Compilar_Instalador.bat      # Acceso rápido de compilación (.bat)
 │   ├── Compilar_Instalador.ps1      # Automatizador PowerShell de compilación .NET 8 + Inno Setup
 │   ├── Compilar_Instalador.vbs      # Lanzador VBScript sin consola
 │   ├── Subir_a_GitHub.ps1           # Automatizador PowerShell de sincronización GitHub
-│   └── Subir_a_GitHub.vbs           # Lanzador VBScript para sincronización GitHub
-├── scripts/                         # Scripts de validación y automatización
+│   ├── Subir_a_GitHub.vbs           # Lanzador VBScript para sincronización GitHub
+│   ├── diagnostico_entorno.ps1      # Diagnóstico de conectividad SQL y dependencias
+│   ├── test_forms.ps1               # Validación de estados de ventanas MDI
+│   └── test_mdi_simulation.ps1      # Simulación de arranque de formularios
 ├── Setup_Mantencion.iss             # Script oficial de compilación Inno Setup
 └── README.md                        # Documentación ejecutiva del proyecto
 ```
