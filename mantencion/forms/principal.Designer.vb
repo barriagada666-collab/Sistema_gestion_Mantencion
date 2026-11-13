@@ -50,6 +50,8 @@ Partial Class principal
         Me.AdministraciónUsuariosToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.AuditoriaToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.AuditoriaDeOperacionesToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.ToolStripSeparatorMantenedor = New System.Windows.Forms.ToolStripSeparator
+        Me.ConfigurarServidorToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.SalirToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.CerrarSesiónToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.SalirToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem
@@ -63,14 +65,15 @@ Partial Class principal
         '
         'MenuStrip
         '
-        Me.MenuStrip.BackColor = System.Drawing.Color.FromArgb(160, 197, 207)
-        Me.MenuStrip.Font = New System.Drawing.Font("Calibri", 12.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.MenuStrip.BackColor = System.Drawing.Color.FromArgb(15, 45, 68)
+        Me.MenuStrip.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.MenuStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OrdenesDeTrabajoToolStripMenuItem, Me.MantPreventivaToolStripMenuItem, Me.InformesToolStripMenuItem, Me.MantenedorToolStripMenuItem, Me.AuditoriaToolStripMenuItem, Me.SalirToolStripMenuItem})
         Me.MenuStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow
         Me.MenuStrip.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip.Name = "MenuStrip"
+        Me.MenuStrip.Padding = New System.Windows.Forms.Padding(6, 4, 0, 4)
         Me.MenuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
-        Me.MenuStrip.Size = New System.Drawing.Size(1027, 26)
+        Me.MenuStrip.Size = New System.Drawing.Size(1027, 32)
         Me.MenuStrip.TabIndex = 5
         Me.MenuStrip.Text = "MenuStrip"
         '
@@ -152,10 +155,22 @@ Partial Class principal
         '
         'MantenedorToolStripMenuItem
         '
-        Me.MantenedorToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.NodosToolStripMenuItem, Me.PersonalToolStripMenuItem, Me.ItemsToolStripMenuItem, Me.UsuariosToolStripMenuItem})
+        Me.MantenedorToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.NodosToolStripMenuItem, Me.PersonalToolStripMenuItem, Me.ItemsToolStripMenuItem, Me.UsuariosToolStripMenuItem, Me.ToolStripSeparatorMantenedor, Me.ConfigurarServidorToolStripMenuItem})
         Me.MantenedorToolStripMenuItem.Name = "MantenedorToolStripMenuItem"
         Me.MantenedorToolStripMenuItem.Size = New System.Drawing.Size(111, 22)
         Me.MantenedorToolStripMenuItem.Text = "Mantenedores"
+        '
+        'ToolStripSeparatorMantenedor
+        '
+        Me.ToolStripSeparatorMantenedor.Name = "ToolStripSeparatorMantenedor"
+        Me.ToolStripSeparatorMantenedor.Size = New System.Drawing.Size(257, 6)
+        '
+        'ConfigurarServidorToolStripMenuItem
+        '
+        Me.ConfigurarServidorToolStripMenuItem.Image = Global.mantencion.My.Resources.Resources.operations
+        Me.ConfigurarServidorToolStripMenuItem.Name = "ConfigurarServidorToolStripMenuItem"
+        Me.ConfigurarServidorToolStripMenuItem.Size = New System.Drawing.Size(260, 22)
+        Me.ConfigurarServidorToolStripMenuItem.Text = "Configurar Servidor BD..."
         '
         'NodosToolStripMenuItem
         '
@@ -358,5 +373,7 @@ Partial Class principal
     Friend WithEvents MantenedorItemsMaquinasToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents GestiónDatosTécnicosToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents AsocDatosTécnicosItemsToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripSeparatorMantenedor As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents ConfigurarServidorToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class

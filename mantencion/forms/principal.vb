@@ -215,6 +215,11 @@ Public Class principal
         Next
         Utilitarios.RegistrarTemaGlobal()
         Utilitarios.AplicarTemaModerno(Me)
+        Try
+            Me.MenuStrip.Renderer = New MenuCorporativoRenderer()
+            Me.StatusStrip.Renderer = New MenuCorporativoRenderer()
+        Catch
+        End Try
     End Sub
 
     Private Sub principal_MdiChildActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.MdiChildActivate
@@ -346,5 +351,11 @@ Public Class principal
 
     Private Sub AsocDatosTécnicosItemsToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AsocDatosTécnicosItemsToolStripMenuItem.Click
         AbrirAmbienteMdi(FrmDatosTecnicosNodo)
+    End Sub
+
+    Private Sub ConfigurarServidorToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ConfigurarServidorToolStripMenuItem.Click
+        Using frm As New FrmConfiguracionServidor()
+            frm.ShowDialog(Me)
+        End Using
     End Sub
 End Class

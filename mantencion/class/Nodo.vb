@@ -603,6 +603,9 @@ Public Class Nodo
             If n.BackColor <> Color.Empty AndAlso n.BackColor <> Color.White Then
                 n.BackColor = Color.White
             End If
+            If n.ForeColor <> Color.Empty AndAlso n.ForeColor <> Utilitarios.ColorTextoPrincipal Then
+                n.ForeColor = Utilitarios.ColorTextoPrincipal
+            End If
             If n.Nodes.Count > 0 Then
                 LimpiarResaltadoNodos(n.Nodes)
             End If
@@ -617,7 +620,8 @@ Public Class Nodo
             LimpiarResaltadoNodos(arbol.Nodes)
             objetivo.EnsureVisible()
             arbol.SelectedNode = objetivo
-            objetivo.BackColor = Utilitarios.ColorSeleccion
+            objetivo.BackColor = Utilitarios.ColorPrimario
+            objetivo.ForeColor = Color.White
             idNodoSelect = idNodo
 
             If arbol.IsHandleCreated Then
@@ -626,7 +630,9 @@ Public Class Nodo
                                                        LimpiarResaltadoNodos(arbol.Nodes)
                                                        objetivo.EnsureVisible()
                                                        arbol.SelectedNode = objetivo
-                                                       objetivo.BackColor = Utilitarios.ColorSeleccion
+                                                       objetivo.BackColor = Utilitarios.ColorPrimario
+                                                       objetivo.ForeColor = Color.White
+                                                       arbol.Invalidate()
                                                    End If
                                                End Sub
                 arbol.BeginInvoke(aplicar)
@@ -675,10 +681,12 @@ Public Class Nodo
         Dim termino As String = txtBuscar.Text.Trim()
         If String.IsNullOrEmpty(termino) Then
             txtBuscar.BackColor = Color.White
+            txtBuscar.ForeColor = Utilitarios.ColorTextoPrincipal
             LimpiarResaltadoNodos(arbol.Nodes)
             arbol.SelectedNode = Nothing
             idNodoSelect = ""
             nodoAnterior = ""
+            arbol.Invalidate()
             Exit Sub
         End If
 
@@ -702,7 +710,9 @@ Public Class Nodo
         End If
 
         If coincidencias.Count > 0 Then
-            txtBuscar.BackColor = Utilitarios.ColorFondoInput
+            ' Fondo verde/cian muy suave indicando coincidencia encontrada
+            txtBuscar.BackColor = Color.FromArgb(240, 253, 250)
+            txtBuscar.ForeColor = Utilitarios.ColorTextoPrincipal
             Dim elegido As TreeNode = coincidencias(0)
 
             If e IsNot Nothing AndAlso (e.KeyCode = Keys.Enter OrElse e.KeyCode = Keys.Down) AndAlso arbol.SelectedNode IsNot Nothing Then
@@ -712,22 +722,39 @@ Public Class Nodo
                 End If
             End If
 
+            ' Limpiar resaltados anteriores
             LimpiarResaltadoNodos(arbol.Nodes)
+
+            ' 1. Resaltar TODAS las ramas/nodos coincidentes con el tono turquesa suave de la paleta
+            For Each cNode As TreeNode In coincidencias
+                cNode.BackColor = Color.FromArgb(217, 241, 244) ' Turquesa suave (#D9F1F4)
+                cNode.ForeColor = Color.FromArgb(2, 94, 135)    ' Azul petróleo (#025E87)
+            Next
+
+            ' 2. Destacar prominentemente el nodo ACTIVO seleccionado con el color principal de la paleta
             elegido.EnsureVisible()
             arbol.SelectedNode = elegido
-            elegido.BackColor = Utilitarios.ColorSeleccion
+            elegido.BackColor = Color.FromArgb(2, 94, 135)       ' Azul petróleo corporativo (#025E87)
+            elegido.ForeColor = Color.White                      ' Texto blanco alto contraste
             idNodoSelect = elegido.Name
             nodoAnterior = elegido.Name
 
             ' Asegurar selección robusta mediante BeginInvoke cuando el árbol tiene foco o procesa eventos de mouse
             If arbol.IsHandleCreated Then
                 Dim targetNode As TreeNode = elegido
+                Dim todasCoincidencias As New List(Of TreeNode)(coincidencias)
                 Dim aplicar As MethodInvoker = Sub()
                                                    If Not arbol.IsDisposed AndAlso targetNode IsNot Nothing Then
                                                        LimpiarResaltadoNodos(arbol.Nodes)
+                                                       For Each cNode As TreeNode In todasCoincidencias
+                                                           cNode.BackColor = Color.FromArgb(217, 241, 244)
+                                                           cNode.ForeColor = Color.FromArgb(2, 94, 135)
+                                                       Next
                                                        targetNode.EnsureVisible()
                                                        arbol.SelectedNode = targetNode
-                                                       targetNode.BackColor = Utilitarios.ColorSeleccion
+                                                       targetNode.BackColor = Color.FromArgb(2, 94, 135)
+                                                       targetNode.ForeColor = Color.White
+                                                       arbol.Invalidate()
                                                    End If
                                                End Sub
                 arbol.BeginInvoke(aplicar)
@@ -735,6 +762,7 @@ Public Class Nodo
         Else
             LimpiarResaltadoNodos(arbol.Nodes)
             txtBuscar.BackColor = Utilitarios.ColorErrorInput
+            arbol.Invalidate()
             If e IsNot Nothing AndAlso e.KeyCode = Keys.Enter Then
                 MsgBox("No se encontró el ítem '" & termino & "'", MsgBoxStyle.Exclamation, "Información")
                 txtBuscar.SelectAll()

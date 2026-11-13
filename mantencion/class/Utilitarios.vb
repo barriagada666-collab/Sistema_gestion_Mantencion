@@ -347,6 +347,66 @@ Public Class Utilitarios
         End Try
     End Sub
 
+    ''' <summary>
+    ''' Configura un TreeView con estilos visuales modernos acordes a la paleta corporativa:
+    ''' doble búfer, selección permanente sin atenuación gris y renderizado nítido de nodos resaltados.
+    ''' </summary>
+    Public Shared Sub ConfigurarTreeViewModerno(ByVal tv As TreeView)
+        If tv Is Nothing Then Exit Sub
+        HabilitarDobleBuffer(tv)
+        tv.HideSelection = False
+        tv.BackColor = Color.White
+        tv.ForeColor = ColorTextoPrincipal
+        tv.LineColor = ColorSecundario
+        tv.DrawMode = TreeViewDrawMode.OwnerDrawText
+
+        If tv.Tag Is Nothing OrElse Not tv.Tag.ToString().Contains("Moderno_Configurado") Then
+            tv.Tag = "Moderno_Configurado"
+            AddHandler tv.DrawNode, AddressOf DibujarNodoArbolModerno
+        End If
+    End Sub
+
+    Private Shared Sub DibujarNodoArbolModerno(ByVal sender As Object, ByVal e As DrawTreeNodeEventArgs)
+        Dim tv As TreeView = DirectCast(sender, TreeView)
+        If e.Node Is Nothing Then Exit Sub
+
+        Dim esSeleccionado As Boolean = (e.State And TreeNodeStates.Selected) <> 0
+        Dim tieneFondoEspecial As Boolean = (e.Node.BackColor <> Color.Empty AndAlso e.Node.BackColor <> Color.White)
+
+        Dim bg As Color
+        Dim fg As Color
+
+        If tieneFondoEspecial Then
+            bg = e.Node.BackColor
+            fg = If(e.Node.ForeColor <> Color.Empty, e.Node.ForeColor, ColorTextoPrincipal)
+        ElseIf esSeleccionado Then
+            bg = ColorPrimario ' Azul petróleo #025E87
+            fg = Color.White
+        Else
+            bg = tv.BackColor
+            fg = If(e.Node.ForeColor <> Color.Empty, e.Node.ForeColor, ColorTextoPrincipal)
+        End If
+
+        Dim rect As Rectangle = e.Bounds
+        rect.Inflate(4, 1)
+
+        Using b As New SolidBrush(bg)
+            e.Graphics.FillRectangle(b, rect)
+        End Using
+
+        If tieneFondoEspecial OrElse esSeleccionado Then
+            Dim cBorde As Color = If(esSeleccionado, ColorSecundario, ColorAcento)
+            Using p As New Pen(cBorde, 1)
+                e.Graphics.DrawRectangle(p, rect.X, rect.Y, rect.Width - 1, rect.Height - 1)
+            End Using
+        End If
+
+        Dim flags As TextFormatFlags = TextFormatFlags.VerticalCenter Or TextFormatFlags.Left Or TextFormatFlags.NoPadding
+        Dim fnt As Font = If(esSeleccionado OrElse tieneFondoEspecial, New Font(tv.Font, FontStyle.Bold), tv.Font)
+        TextRenderer.DrawText(e.Graphics, e.Node.Text, fnt, rect, fg, flags)
+        If fnt IsNot tv.Font Then fnt.Dispose()
+    End Sub
+
     Public Sub solonumeros(ByVal e As System.Windows.Forms.KeyPressEventArgs)
         If Char.IsDigit(e.KeyChar) Then
             e.Handled = False
@@ -479,11 +539,19 @@ Public Class Utilitarios
 
             ElseIf TypeOf ctrl Is TreeView Then
                 Dim tv As TreeView = DirectCast(ctrl, TreeView)
-                HabilitarDobleBuffer(tv)
-                tv.HideSelection = False
-                tv.BackColor = Color.White
-                tv.ForeColor = ColorTextoPrincipal
-                tv.LineColor = ColorSecundario
+                ConfigurarTreeViewModerno(tv)
+
+            ElseIf TypeOf ctrl Is MenuStrip Then
+                Dim ms As MenuStrip = DirectCast(ctrl, MenuStrip)
+                ms.Renderer = New MenuCorporativoRenderer()
+                ms.BackColor = Color.FromArgb(15, 45, 68)
+                ms.ForeColor = Color.White
+
+            ElseIf TypeOf ctrl Is StatusStrip Then
+                Dim ss As StatusStrip = DirectCast(ctrl, StatusStrip)
+                ss.Renderer = New MenuCorporativoRenderer()
+                ss.BackColor = ColorPrimario
+                ss.ForeColor = Color.White
 
             ElseIf TypeOf ctrl Is DateTimePicker Then
                 Dim dtp As DateTimePicker = DirectCast(ctrl, DateTimePicker)
