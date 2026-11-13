@@ -300,8 +300,12 @@ Get-FileHash -Path ".\Instalador\Instalador_Sistema_Mantencion_v2026.1.exe" -Alg
 
 ---
 
-<div align="center">
-
+<div align="center"> 
+<p align="center">
+  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe"><img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_INSTALADOR-v2026.1_LTS_(55.8_MB)-025E87?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar Instalador" /></a>&nbsp;
+  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/tag/v2026.1"><img src="https://img.shields.io/badge/GITHUB_RELEASES-v2026.1-107850?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Releases" /></a>
+</p>
+  
 ### Cambiaso Hnos. S.A.C. — División de Mantención Industrial
 📍 **Virginia Bravo Letelier 777, Placilla de Peñuelas, Valparaíso, Chile**  
 👨‍💻 **Creado por Boris Arriagada**
