@@ -20,15 +20,6 @@
 [![Planta](https://img.shields.io/badge/Planta-Placilla%20de%20Pe%C3%B1uelas%2C%20Valpara%C3%ADso-107850.svg?logo=googlemaps&logoColor=white)](https://maps.google.com/?q=Virginia+Bravo+Letelier+777+Placilla+de+Penuelas+Valparaiso)
 
 <p align="center">
-  <img src="https://img.shields.io/badge/.NET_8.0_LTS-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET 8" />&nbsp;
-  <img src="https://img.shields.io/badge/Windows_x64-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Windows x64" />&nbsp;
-  <img src="https://img.shields.io/badge/SQL_Server-CC292B?style=for-the-badge&logo=microsoftsqlserver&logoColor=white" alt="SQL Server" />&nbsp;
-  <img src="https://img.shields.io/badge/Excel_Reports-217346?style=for-the-badge&logo=microsoftexcel&logoColor=white" alt="Excel Reports" />&nbsp;
-  <img src="https://img.shields.io/badge/PDF_Vectorial-EC1C24?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="PDF Vectorial" />&nbsp;
-  <img src="https://img.shields.io/badge/Inno_Setup_6-025E87?style=for-the-badge&logo=windows&logoColor=white" alt="Inno Setup" />
-</p>
-
-<p align="center">
   <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe"><img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_INSTALADOR-v2026.1_LTS_(55.8_MB)-025E87?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar Instalador" /></a>&nbsp;
   <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/tag/v2026.1"><img src="https://img.shields.io/badge/GITHUB_RELEASES-v2026.1-107850?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Releases" /></a>
 </p>
