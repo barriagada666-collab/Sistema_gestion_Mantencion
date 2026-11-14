@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class frm_OT
     Inherits System.Windows.Forms.Form
 
@@ -1036,7 +1036,7 @@ Partial Class frm_OT
         'btn_guardar
         '
         Me.btn_guardar.Cursor = System.Windows.Forms.Cursors.Hand
-        Me.btn_guardar.Image = CType(resources.GetObject("btn_guardar.Image"), System.Drawing.Image)
+        Me.btn_guardar.Image = Global.mantencion.My.Resources.Resources.guardar
         Me.btn_guardar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.btn_guardar.Location = New System.Drawing.Point(16, 16)
         Me.btn_guardar.Name = "btn_guardar"
