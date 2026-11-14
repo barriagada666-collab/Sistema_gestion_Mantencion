@@ -243,8 +243,8 @@ Sistema_gestion_Mantencion/
 | Archivo | Plataforma | Tamaño | Descarga Oficial | Checksum SHA-256 |
 | :--- | :--- | :--- | :--- | :--- |
 | **`Instalador_Sistema_Mantencion_v2026.1.exe`** | Windows 10/11 x64 | **55.52 MB** | [⬇️ Descargar Instalador Windows](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) | `7206C13C5A3083282F37403C0D603AEC7293D7609DBFDBC56EEDD3EFCB653918` |
-| **`Instalador_Sistema_Mantencion_v2026.1_macOS.dmg`** | macOS Universal (DMG)| **92.0 MB** | [⬇️ Descargar Instalador macOS DMG](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) | `c413067a479653f1d5a5b075f235ea4068a5babede8e58a11211c6324a5c0715` |
-| **`Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip`** | macOS Universal (ZIP)| **82.0 MB** | [⬇️ Descargar Paquete macOS ZIP](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) | `71c05ca32f2bd6affa964c0abc4e6c78d5e7de8fc0fec5c815a9cf70d41ff02c` |
+| **`Instalador_Sistema_Mantencion_v2026.1_macOS.dmg`** | macOS Universal (DMG)| **92.0 MB** | [⬇️ Descargar Instalador macOS DMG](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) | `129637ac3e7d9a7af47848521cb02b652b964e90279ca106b13e191921c8d4bc` |
+| **`Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip`** | macOS Universal (ZIP)| **77.0 MB** | [⬇️ Descargar Paquete macOS ZIP](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) | `38663b5d5738cf651b994ab41c4e04fcc67f451d1bc1936522bf6b4b9b08cf6e` |
 
 ### Verificación de Integridad:
 
@@ -260,7 +260,7 @@ Get-FileHash -Path ".\Instalador\Instalador_Sistema_Mantencion_v2026.1.exe" -Alg
 shasum -a 256 "Instalador_Sistema_Mantencion_v2026.1_macOS.dmg"
 ```
 > Valor de coincidencia esperado:  
-> `c413067a479653f1d5a5b075f235ea4068a5babede8e58a11211c6324a5c0715`
+> `129637ac3e7d9a7af47848521cb02b652b964e90279ca106b13e191921c8d4bc`
 
 ---
 
