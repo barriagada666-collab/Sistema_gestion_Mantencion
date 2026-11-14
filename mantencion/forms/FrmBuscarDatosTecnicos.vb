@@ -1,40 +1,43 @@
-﻿Public Class FrmBuscarDatosTecnicos
+Public Class FrmBuscarDatosTecnicos
     Public nombre_form As String
 
     Private Sub FrmBuscarDatosTecnicos_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim datos_tecnicos As New DatosTecnicos
-        Dim formato_grid As New FormatoGrillas
-        Dim DST_DATOS_TECNICOS As New DataSet
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
+        Try
+            Dim datos_tecnicos As New DatosTecnicos
+            Dim formato_grid As New FormatoGrillas
+            Dim DST_DATOS_TECNICOS As New DataSet
 
-        If nombre_form = "FrmDatosTecnicos" Then
-            datos_tecnicos.CrgDatosTecnicos(DST_DATOS_TECNICOS)
+            grillaDatosTecnicos.SuspendLayout()
             Try
-                grillaDatosTecnicos.DataSource = DST_DATOS_TECNICOS.Tables(0)
-                formato_grid.grillaDatosTecnicos(grillaDatosTecnicos)
-                btnAgregar.Visible = False
-                chkSelTodo.Visible = False
+                If nombre_form = "FrmDatosTecnicos" Then
+                    datos_tecnicos.CrgDatosTecnicos(DST_DATOS_TECNICOS)
+                    grillaDatosTecnicos.DataSource = DST_DATOS_TECNICOS.Tables(0)
+                    formato_grid.grillaDatosTecnicos(grillaDatosTecnicos)
+                    btnAgregar.Visible = False
+                    chkSelTodo.Visible = False
+                ElseIf nombre_form = "FrmDatosTecnicosNodo" Then
+                    Dim columnaCheckBox As New DataGridViewCheckBoxColumn
+                    datos_tecnicos.CrgDatosTecnicos(DST_DATOS_TECNICOS)
+                    columnaCheckBox.Name = "sel_datos"
+                    columnaCheckBox.HeaderText = "Sel."
+                    grillaDatosTecnicos.Columns.Add(columnaCheckBox)
+                    grillaDatosTecnicos.DataSource = DST_DATOS_TECNICOS.Tables(0)
+                    formato_grid.grillaDatosTecnicos(grillaDatosTecnicos)
+                    btnAgregar.Visible = True
+                    btnCambiarEstado.Visible = False
+                End If
             Catch ex As Exception
                 MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            Finally
+                grillaDatosTecnicos.ResumeLayout(False)
             End Try
-
-        ElseIf nombre_form = "FrmDatosTecnicosNodo" Then
-            Dim columnaCheckBox As New DataGridViewCheckBoxColumn
-
-            datos_tecnicos.CrgDatosTecnicos(DST_DATOS_TECNICOS)
-            Try
-                columnaCheckBox.Name = "sel_datos"
-                columnaCheckBox.HeaderText = "Sel."
-                grillaDatosTecnicos.Columns.Add(columnaCheckBox)
-                grillaDatosTecnicos.DataSource = DST_DATOS_TECNICOS.Tables(0)
-                formato_grid.grillaDatosTecnicos(grillaDatosTecnicos)
-                btnAgregar.Visible = True
-                btnCambiarEstado.Visible = False
-            Catch ex As Exception
-                MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
-            End Try
-        End If
-        Utilitarios.AjustarColumnasGrilla(grillaDatosTecnicos)
-        Utilitarios.AplicarTemaModerno(Me)
+            Utilitarios.AjustarColumnasGrilla(grillaDatosTecnicos)
+            Utilitarios.AplicarTemaModerno(Me)
+        Finally
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub grillaDatosTecnicos_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaDatosTecnicos.CellContentDoubleClick

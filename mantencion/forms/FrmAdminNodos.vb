@@ -1,4 +1,4 @@
-﻿Public Class FrmAdminNodos
+Public Class FrmAdminNodos
     Public nivel_nodo_padre As Integer = 0
     Public id_nodo_padre As String = ""
     Public id_nodo_select As String = ""
@@ -7,18 +7,25 @@
     Public ds_arbol As DataSet
     Public form_limpio As Boolean = False
     Private Sub FrmAdminNodos_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim nd As New Nodo
-        Dim nodoRaiz As New TreeNode
-        Dim grillas As New FormatoGrillas
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
+        Try
+            Dim nd As New Nodo
+            Dim nodoRaiz As New TreeNode
+            Dim grillas As New FormatoGrillas
 
-        GrpInfoNuevoNodo.Enabled = False
-        ds_arbol = nd.CRG_NODOS_DST()
-        arbol4.BeginUpdate()
-        nodoRaiz.Name = "1"
-        nodoRaiz.Text = "Cambiaso Hnos S.A."
-        nd.CRG_NODO_HIJO_TODOS(nodoRaiz)
-        arbol4.Nodes.Add(nodoRaiz)
-        arbol4.EndUpdate()
+            GrpInfoNuevoNodo.Enabled = False
+            ds_arbol = nd.CRG_NODOS_DST()
+            arbol4.BeginUpdate()
+            arbol4.Nodes.Clear()
+            nodoRaiz.Name = "1"
+            nodoRaiz.Text = "Cambiaso Hnos S.A."
+            nd.CRG_NODO_HIJO_TODOS(nodoRaiz)
+            arbol4.Nodes.Add(nodoRaiz)
+            arbol4.EndUpdate()
+        Finally
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub btnNuevoNodo_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnNuevoNodo.Click

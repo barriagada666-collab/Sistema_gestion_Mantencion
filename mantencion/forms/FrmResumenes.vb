@@ -1,4 +1,4 @@
-﻿Imports System.Collections.Generic
+Imports System.Collections.Generic
 Imports System.Data
 Imports System.Data.SqlClient
 Imports System.Drawing
@@ -247,26 +247,35 @@ Public Class FrmResumenes
     End Sub
 
     Private Sub FrmResumenes_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim nodoRaiz As New TreeNode
-        Dim nd As New Nodo
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
+        Try
+            Dim nodoRaiz As New TreeNode
+            Dim nd As New Nodo
 
-        nodoRaiz.Name = "1"
-        nodoRaiz.Text = "Cambiaso Hnos S.A."
-        nd.CRG_NODO_HIJO(nodoRaiz)
-        arbol7.Nodes.Add(nodoRaiz)
-        grpDesglose.Enabled = False
+            nodoRaiz.Name = "1"
+            nodoRaiz.Text = "Cambiaso Hnos S.A."
+            nd.CRG_NODO_HIJO(nodoRaiz)
+            arbol7.BeginUpdate()
+            arbol7.Nodes.Clear()
+            arbol7.Nodes.Add(nodoRaiz)
+            arbol7.EndUpdate()
+            grpDesglose.Enabled = False
 
-        ' Inicializar estilos modernos en grillas
-        Dim formato As New FormatoGrillas()
-        formato.grillasOT(grillaTopMaquinas)
-        formato.grillasOT(grillaTopComponentes)
-        formato.grillasOT(grillaOtCerradaPorTec)
-        formato.grillasOT(grillaOtRecibidaPor)
-        formato.grillasOT(grillaOtPorTipoFalla)
-        formato.grillasOT(grillaOtPorTurno)
-        formato.grillasOT(grillaTotalesPeriodo)
-        formato.grillasOT(grillaOtPorDia)
-        formato.grillasOT(grillaOtPorMes)
+            ' Inicializar estilos modernos en grillas de forma agrupada
+            Dim formato As New FormatoGrillas()
+            formato.grillasOT(grillaTopMaquinas)
+            formato.grillasOT(grillaTopComponentes)
+            formato.grillasOT(grillaOtCerradaPorTec)
+            formato.grillasOT(grillaOtRecibidaPor)
+            formato.grillasOT(grillaOtPorTipoFalla)
+            formato.grillasOT(grillaOtPorTurno)
+            formato.grillasOT(grillaTotalesPeriodo)
+            formato.grillasOT(grillaOtPorDia)
+            formato.grillasOT(grillaOtPorMes)
+        Finally
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub btnBuscarRes_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnBuscarRes.Click

@@ -1,4 +1,4 @@
-﻿Public Class FrmPersonal
+Public Class FrmPersonal
 
     Private Sub btnIngresar_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnIngresar.Click
         Dim personal As New Personal
@@ -25,13 +25,20 @@
     End Sub
 
     Private Sub IngPersonal_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
         Dim planta As New Planta
         Dim seccion As New Seccion
         Dim cargo As New Cargo
 
-        planta.crgPlanta(cmbPlanta)
-        seccion.crgCmbSeccion(cmbSeccion)
-        cargo.crgCmbCargo(cmbCargo)
+        Try
+            planta.crgPlanta(cmbPlanta)
+            seccion.crgCmbSeccion(cmbSeccion)
+            cargo.crgCmbCargo(cmbCargo)
+            Utilitarios.AplicarTemaModerno(Me)
+        Finally
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub btnLimpiar_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnLimpiar.Click
@@ -81,10 +88,6 @@
         End If
     End Sub
 
-    Private Sub txtRut_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtRut.TextChanged
-
-    End Sub
-
     Private Sub txtfono_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles txtfono.KeyPress
         If Char.IsDigit(e.KeyChar) Then
             e.Handled = False
@@ -93,14 +96,6 @@
         Else
             e.Handled = True
         End If
-    End Sub
-
-    Private Sub txtfono_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtfono.TextChanged
-      
-    End Sub
-
-    Private Sub Label7_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Label7.Click
-
     End Sub
 
     Private Sub btnSalirPersonal_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSalirPersonal.Click
@@ -119,31 +114,6 @@
 
     End Sub
 
-    Private Sub txtDv_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtDv.LostFocus
-        
-    End Sub
-
-    Private Sub txtDv_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtDv.TextChanged
-
-    End Sub
-
-    Private Sub txtCodInt_Enter(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtCodInt.Enter
-        'Dim usuario As New Usuario
-        'Dim rutValido As Boolean
-        'rutValido = usuario.ValidarRut(txtRut.Text, txtDv.Text)
-
-        'If rutValido = False Then
-        '    MsgBox("El rut ingresado no es valido, favor ingrese nuevamente", MsgBoxStyle.Exclamation, "Validación Rut")
-        '    txtDv.ResetText()
-        '    txtRut.ResetText()
-        '    txtRut.Focus()
-        'End If
-    End Sub
-
-    Private Sub txtCodInt_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtCodInt.TextChanged
-
-    End Sub
-
     Private Sub txtCelular_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles txtCelular.KeyPress
         If Char.IsDigit(e.KeyChar) Then
             e.Handled = False
@@ -152,9 +122,5 @@
         Else
             e.Handled = True
         End If
-    End Sub
-
-    Private Sub txtCelular_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtCelular.TextChanged
-
     End Sub
 End Class

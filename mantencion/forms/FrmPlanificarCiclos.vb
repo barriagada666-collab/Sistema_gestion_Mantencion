@@ -1,16 +1,22 @@
-﻿Public Class FrmPlanificarCiclos
+Public Class FrmPlanificarCiclos
 
     Private Sub FrmPlanificarCiclos_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        fecha_inicio_ult_ciclo.Value = FrmMp.FechaIniCiclo.Value.Date.Add(New TimeSpan(FrmMp.HrInicioCiclo.Value.Hour, FrmMp.HrInicioCiclo.Value.Minute, 0))
-        fecha_fin_ult_ciclo.Value = FrmMp.fechaFinCicloMp.Value.Date.Add(New TimeSpan(FrmMp.HrFinCiclo.Value.Hour, FrmMp.HrFinCiclo.Value.Minute, 0))
-        txtUltimoCiclo.Text = FrmMp.txtIdCiclo.Text
-        txtFrecuenciaPlan.Text = FrmMp.txtFrecuenciaMp.Text
-        txtDuracionPlan.Text = FrmMp.txtDuracionCiclo.Text
-        cmbNumCiclos.Text = cmbNumCiclos.Items(0)
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
+        Try
+            fecha_inicio_ult_ciclo.Value = FrmMp.FechaIniCiclo.Value.Date.Add(New TimeSpan(FrmMp.HrInicioCiclo.Value.Hour, FrmMp.HrInicioCiclo.Value.Minute, 0))
+            fecha_fin_ult_ciclo.Value = FrmMp.fechaFinCicloMp.Value.Date.Add(New TimeSpan(FrmMp.HrFinCiclo.Value.Hour, FrmMp.HrFinCiclo.Value.Minute, 0))
+            txtUltimoCiclo.Text = FrmMp.txtIdCiclo.Text
+            txtFrecuenciaPlan.Text = FrmMp.txtFrecuenciaMp.Text
+            txtDuracionPlan.Text = FrmMp.txtDuracionCiclo.Text
+            cmbNumCiclos.Text = cmbNumCiclos.Items(0)
 
-        Dim formato As New FormatoGrillas()
-        formato.grillasOT(grillaVistaPrevia)
-        Utilitarios.AplicarTemaModerno(Me)
+            Dim formato As New FormatoGrillas()
+            formato.grillasOT(grillaVistaPrevia)
+            Utilitarios.AplicarTemaModerno(Me)
+        Finally
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub btnCrearVistaPrevia_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnCrearVistaPrevia.Click

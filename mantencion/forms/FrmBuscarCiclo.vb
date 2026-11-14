@@ -1,20 +1,25 @@
-﻿Public Class FrmBuscarCiclo
+Public Class FrmBuscarCiclo
 
     Private Sub FrmBuscarCiclo_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim mant_prev As New MantPreventiva
-        Dim DS As New DataSet
-        Dim grillas As New FormatoGrillas
-
-        mant_prev.CrgCicloMp(FrmMp.txtIdMant.Text, DS)
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
         Try
-            grillaBuscarCiclo.DataSource = DS.Tables(0)
-            grillas.grillasMp(grillaBuscarCiclo)
-            Utilitarios.AjustarColumnasGrilla(grillaBuscarCiclo)
+            Dim mant_prev As New MantPreventiva
+            Dim DS As New DataSet
+            Dim grillas As New FormatoGrillas
+
+            mant_prev.CrgCicloMp(FrmMp.txtIdMant.Text, DS)
+            If DS.Tables.Count > 0 Then
+                grillaBuscarCiclo.DataSource = DS.Tables(0)
+                grillas.grillasMp(grillaBuscarCiclo)
+                Utilitarios.AjustarColumnasGrilla(grillaBuscarCiclo)
+            End If
             Utilitarios.AplicarTemaModerno(Me)
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+        Finally
+            Me.ResumeLayout(True)
         End Try
-
     End Sub
 
     Private Sub grillaBuscarCiclo_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaBuscarCiclo.CellContentDoubleClick
@@ -115,9 +120,5 @@
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
         End Try
         
-    End Sub
-
-    Private Sub grillaBuscarCiclo_CellContentClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaBuscarCiclo.CellContentClick
-
     End Sub
 End Class

@@ -1,21 +1,23 @@
-﻿Public Class FrmBuscarPlanta
+Public Class FrmBuscarPlanta
 
     Private Sub FrmBuscarPlanta_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim DS As New DataSet
-        Dim planta As New Planta
-
-        planta.CrgGrillaPlanta(DS)
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
         Try
-            grillaPlanta.DataSource = DS.Tables(0)
-            Utilitarios.AjustarColumnasGrilla(grillaPlanta)
+            Dim DS As New DataSet
+            Dim planta As New Planta
+
+            planta.CrgGrillaPlanta(DS)
+            If DS.Tables.Count > 0 Then
+                grillaPlanta.DataSource = DS.Tables(0)
+                Utilitarios.AjustarColumnasGrilla(grillaPlanta)
+            End If
+            Utilitarios.AplicarTemaModerno(Me)
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+        Finally
+            Me.ResumeLayout(True)
         End Try
-
-    End Sub
-
-    Private Sub grillaPlanta_CellContentClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaPlanta.CellContentClick
-
     End Sub
 
     Private Sub grillaPlanta_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaPlanta.CellContentDoubleClick

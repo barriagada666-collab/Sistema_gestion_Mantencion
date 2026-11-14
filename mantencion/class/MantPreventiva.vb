@@ -1,4 +1,4 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Imports Excel = Microsoft.Office.Interop.Excel
 
 Public Class MantPreventiva
@@ -340,28 +340,49 @@ Public Class MantPreventiva
     End Sub
 
     Public Sub CrgCmbEstadoMp(ByRef combo As ComboBox)
-        combo.Items.Add("Activa")
-        combo.Items.Add("Cerrada")
-        combo.Text = combo.Items(0)
+        If combo Is Nothing Then Exit Sub
+        combo.BeginUpdate()
+        Try
+            combo.Items.Clear()
+            combo.Items.Add("Activa")
+            combo.Items.Add("Cerrada")
+            combo.Text = combo.Items(0)
+        Finally
+            combo.EndUpdate()
+        End Try
     End Sub
 
     Public Sub CrgCmbTipoMp(ByRef combo As ComboBox)
-        combo.Items.Add("Mecanica")
-        combo.Items.Add("Mecanica Mayor")
-        combo.Items.Add("Electrica")
-        combo.Items.Add("Electrica Mayor")
-        combo.Items.Add("Electronica")
-        combo.Text = combo.Items(0)
+        If combo Is Nothing Then Exit Sub
+        combo.BeginUpdate()
+        Try
+            combo.Items.Clear()
+            combo.Items.Add("Mecanica")
+            combo.Items.Add("Mecanica Mayor")
+            combo.Items.Add("Electrica")
+            combo.Items.Add("Electrica Mayor")
+            combo.Items.Add("Electronica")
+            combo.Text = combo.Items(0)
+        Finally
+            combo.EndUpdate()
+        End Try
     End Sub
 
     Public Sub CrgCmbTipoMpGantt(ByRef combo As ComboBox)
-        combo.Items.Add("Mecanica")
-        combo.Items.Add("Mecanica Mayor")
-        combo.Items.Add("Electrica")
-        combo.Items.Add("Electrica Mayor")
-        combo.Items.Add("Electronica")
-        combo.Items.Add("Todos")
-        combo.Text = combo.Items(0)
+        If combo Is Nothing Then Exit Sub
+        combo.BeginUpdate()
+        Try
+            combo.Items.Clear()
+            combo.Items.Add("Mecanica")
+            combo.Items.Add("Mecanica Mayor")
+            combo.Items.Add("Electrica")
+            combo.Items.Add("Electrica Mayor")
+            combo.Items.Add("Electronica")
+            combo.Items.Add("Todos")
+            combo.Text = combo.Items(0)
+        Finally
+            combo.EndUpdate()
+        End Try
     End Sub
 
     Public Sub CrgMpNodo(ByVal id_nodo As String, ByVal tipo_mp As String, ByRef DS As DataSet)
@@ -1274,8 +1295,6 @@ Public Class MantPreventiva
                     rango.MergeCells = True
                     filaexcel_2 = filaexcel_2 + 1
                 Next
-                'rango = worksheet_2.Range("A11:J" & filaexcel_2 - 1)
-                'rango.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
             End If
             '-------------------------------------------------------------------------------------
             '-------------------- llenado de insumos asociados al ciclo --------------------------

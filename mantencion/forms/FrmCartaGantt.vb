@@ -1,11 +1,15 @@
-﻿Public Class FrmCartaGantt
+Public Class FrmCartaGantt
     Public form As String
     Public item_gantt As String
     Private Sub FrmCartaGantt_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
         Dim fila As Integer = 0
         Dim informes As New Informes
 
         Try
+            grillaInfoGantt.SuspendLayout()
+            grillaGraficoGantt.SuspendLayout()
             Utilitarios.AplicarTemaModerno(Me)
             If form = "FrmInfMantPrev" Then
                 informes.CrgInfGanttCiclosMaq()
@@ -19,6 +23,9 @@
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
         Finally
+            grillaGraficoGantt.ResumeLayout(False)
+            grillaInfoGantt.ResumeLayout(False)
+            Me.ResumeLayout(True)
             Utilitarios.OptimizarMemoria()
         End Try
     End Sub

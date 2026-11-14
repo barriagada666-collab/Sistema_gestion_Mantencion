@@ -1,24 +1,34 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Public Class Planta
 
     Public Sub crgPlanta(ByRef combo As ComboBox)
-        Dim conexion As New Conexion
-        Dim cnx As New SqlConnection
+        If combo Is Nothing Then Exit Sub
         Try
-            conexion.Conectar(cnx)
-            Using DA As New SqlDataAdapter("CRG_CMB_PLANTA", cnx)
-                Dim DS As New DataSet
-                DA.Fill(DS)
-                combo.DataSource = DS.Tables(0)
+            combo.BeginUpdate()
+            Dim dt As DataTable = Conexion.ObtenerCatalogoEnCache("CRG_CMB_PLANTA", Function()
+                Dim conexion As New Conexion
+                Dim cnx As New SqlConnection
+                Try
+                    conexion.Conectar(cnx)
+                    Using DA As New SqlDataAdapter("CRG_CMB_PLANTA", cnx)
+                        Dim t As New DataTable()
+                        DA.Fill(t)
+                        Return t
+                    End Using
+                Finally
+                    conexion.Desconectar(cnx)
+                End Try
+            End Function)
+            If dt IsNot Nothing Then
+                combo.DataSource = dt
                 combo.DisplayMember = "DESCRIPCION"
                 combo.ValueMember = "CODIGO"
-            End Using
+            End If
         Catch ex As Exception
             MsgBox(ex.Message)
         Finally
-            conexion.Desconectar(cnx)
+            combo.EndUpdate()
         End Try
-
     End Sub
 
     Public Sub IngPlanta(ByVal cod_planta As String, ByVal nombre_planta As String, ByVal sesion As String, ByRef cod_resp As Integer, ByRef resp As String)
@@ -47,6 +57,7 @@ Public Class Planta
                     If DR.Read() Then
                         cod_resp = DR(0)
                         resp = DR(1)
+                        If cod_resp = 1 Then Conexion.InvalidarCacheCatalogos("CRG_CMB_PLANTA")
                     End If
                 End Using
             End Using
@@ -72,6 +83,7 @@ Public Class Planta
                     If DR.Read() Then
                         cod_resp = DR(0)
                         resp = DR(1)
+                        If cod_resp = 1 Then Conexion.InvalidarCacheCatalogos("CRG_CMB_PLANTA")
                     End If
                 End Using
             End Using
@@ -104,6 +116,7 @@ Public Class Planta
                     If DR.Read() Then
                         cod_resp = DR(0)
                         resp = DR(1)
+                        If cod_resp = 1 Then Conexion.InvalidarCacheCatalogos("CRG_CMB_PLANTA")
                     End If
                 End Using
             End Using

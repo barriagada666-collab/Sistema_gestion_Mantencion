@@ -1,18 +1,26 @@
-﻿Public Class FrmBuscarInsumo
+Public Class FrmBuscarInsumo
     Public filtro_insumos As New DataView
     Public nombre_form As String
     Private Sub FrmBuscarInsumo_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim INSUMOS As New Insumo
-        Dim DS As New DataSet
-        Dim grillas As New FormatoGrillas
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
+        Try
+            Dim INSUMOS As New Insumo
+            Dim DS As New DataSet
+            Dim grillas As New FormatoGrillas
 
-        INSUMOS.CrgInsumosMp(DS)
-        grillaInsumos.DataSource = DS.Tables(0)
-        filtro_insumos.Table = DS.Tables(0)
-        grillas.grillasMp(grillaInsumos)
-        Utilitarios.AjustarColumnasGrilla(grillaInsumos)
-        Utilitarios.AplicarTemaModerno(Me)
-        opcCodSap.Checked = True
+            INSUMOS.CrgInsumosMp(DS)
+            If DS.Tables.Count > 0 Then
+                grillaInsumos.DataSource = DS.Tables(0)
+                filtro_insumos.Table = DS.Tables(0)
+                grillas.grillasMp(grillaInsumos)
+                Utilitarios.AjustarColumnasGrilla(grillaInsumos)
+            End If
+            Utilitarios.AplicarTemaModerno(Me)
+            opcCodSap.Checked = True
+        Finally
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub txtFiltro_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtFiltro.TextChanged
@@ -24,10 +32,6 @@
         End If
         grillaInsumos.DataSource = filtro_insumos
         Utilitarios.AjustarColumnasGrilla(grillaInsumos)
-    End Sub
-
-    Private Sub grillaInsumos_CellContentClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaInsumos.CellContentClick
-
     End Sub
 
     Private Sub grillaInsumos_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaInsumos.CellContentDoubleClick

@@ -1,4 +1,4 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Imports System.Diagnostics
 Imports System.Drawing
 Imports System.Drawing.Printing
@@ -491,11 +491,12 @@ Public Class Utilitarios
     ''' <summary>
     ''' Aplica recursivamente la paleta de colores corporativa con alto contraste a un formulario y todos sus controles.
     ''' </summary>
-    Public Shared Sub AplicarTemaModerno(ByVal controlRaiz As Control)
+    Public Shared Sub AplicarTemaModerno(ByVal controlRaiz As Control, Optional ByVal forzar As Boolean = False)
         If controlRaiz Is Nothing OrElse controlRaiz.IsDisposed Then Exit Sub
 
         If TypeOf controlRaiz Is Form Then
             Dim frm As Form = DirectCast(controlRaiz, Form)
+            If Not forzar AndAlso _formulariosConTema.Contains(frm) Then Exit Sub
             _formulariosConTema.Add(frm)
             RemoveHandler frm.FormClosed, AddressOf AlCerrarFormularioTema
             AddHandler frm.FormClosed, AddressOf AlCerrarFormularioTema
@@ -506,7 +507,12 @@ Public Class Utilitarios
             HabilitarDobleBuffer(frm)
         End If
 
-        AplicarTemaControlesHijos(controlRaiz.Controls)
+        controlRaiz.SuspendLayout()
+        Try
+            AplicarTemaControlesHijos(controlRaiz.Controls)
+        Finally
+            controlRaiz.ResumeLayout(False)
+        End Try
     End Sub
 
     Private Shared Function EsColorRojo(ByVal c As Color) As Boolean

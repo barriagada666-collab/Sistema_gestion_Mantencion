@@ -1,27 +1,36 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Public Class FrmInfMantPrev
     Public id_nodo_select As String = ""
     Public nombre_nodo_select As String = ""
     Public nodo_anterior As String = ""
     Public nodo_anterior2 As String = ""
     Private Sub FrmInfMantPrev_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
         Dim mantPrev As New MantPreventiva
         Dim nd As New Nodo
         Dim nodoRaiz As New TreeNode
 
-        nodoRaiz.Name = "1"
-        nodoRaiz.Text = "Cambiaso Hnos S.A."
-        nd.CRG_NODO_HIJO(nodoRaiz)
-        Arbol2.Nodes.Add(nodoRaiz)
-        mantPrev.CrgCmbTipoMp(CmbTipoMp)
-        CmbTipoMp.Text = CmbTipoMp.Items(0)
-        lblFechaIniInfMp.Visible = False
-        f_ini_inf_mp.Visible = False
-        lblFechaFinInfMp.Visible = False
-        f_fin_inf_mp.Visible = False
-        lbltipoMpInf.Visible = False
-        CmbTipoMp.Visible = False
-        GrpFiltroTareas.Visible = False
+        Try
+            Arbol2.BeginUpdate()
+            nodoRaiz.Name = "1"
+            nodoRaiz.Text = "Cambiaso Hnos S.A."
+            nd.CRG_NODO_HIJO(nodoRaiz)
+            Arbol2.Nodes.Add(nodoRaiz)
+            mantPrev.CrgCmbTipoMp(CmbTipoMp)
+            CmbTipoMp.Text = CmbTipoMp.Items(0)
+            lblFechaIniInfMp.Visible = False
+            f_ini_inf_mp.Visible = False
+            lblFechaFinInfMp.Visible = False
+            f_fin_inf_mp.Visible = False
+            lbltipoMpInf.Visible = False
+            CmbTipoMp.Visible = False
+            GrpFiltroTareas.Visible = False
+            Utilitarios.AplicarTemaModerno(Me)
+        Finally
+            Arbol2.EndUpdate()
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub Arbol2_AfterSelect(ByVal sender As System.Object, ByVal e As System.Windows.Forms.TreeViewEventArgs) Handles Arbol2.AfterSelect
@@ -230,10 +239,6 @@ Public Class FrmInfMantPrev
         Me.Close()
     End Sub
 
-    Private Sub GrpFiltroInf_Enter(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles GrpFiltroInf.Enter
-
-    End Sub
-
     Private Sub opcfiltroTareas_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles opcfiltroTareas.CheckedChanged
         If opcfiltroTareas.Checked Then
             GrpFiltroTareas.Visible = True
@@ -262,14 +267,6 @@ Public Class FrmInfMantPrev
         End If
     End Sub
 
-    Private Sub tareasCicloMp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tareasCicloMp.Click
-
-    End Sub
-
-    Private Sub TabDetalleCicloMp_Selecting(ByVal sender As Object, ByVal e As System.Windows.Forms.TabControlCancelEventArgs) Handles TabDetalleCicloMp.Selecting
-
-    End Sub
-
     Private Sub btnExpExcel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnExpExcel.Click
         Dim MP As New MantPreventiva
         If opcfiltroTareas.Checked Then
@@ -285,10 +282,6 @@ Public Class FrmInfMantPrev
                 MP.exportarInfMpExcel(grillaInfMant, grillaDetalleCicloMp, grillaTareasInfMp, grillaPersonalInfMp, grillaTareasPendInfMp, grillaInsumosInfMp, nombre_nodo_select)
             End If
         End If
-    End Sub
-
-    Private Sub grillaInfMant_CellValueNeeded(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellValueEventArgs) Handles grillaInfMant.CellValueNeeded
-
     End Sub
 
     Private Sub btnGantt_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnGantt.Click
@@ -322,10 +315,6 @@ Public Class FrmInfMantPrev
         Nodo.LimpiarResaltadoNodos(Arbol2.Nodes)
     End Sub
 
-    Private Sub Arbol2_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Arbol2.Click
-
-    End Sub
-
     Private Sub txtBuscarNodo_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtBuscarNodo.KeyUp
         If e.KeyCode = Keys.Enter Then e.SuppressKeyPress = True
         Dim nodo As New Nodo
@@ -341,10 +330,6 @@ Public Class FrmInfMantPrev
         If Arbol2.SelectedNode IsNot Nothing Then
             nombre_nodo_select = Arbol2.SelectedNode.Text
         End If
-    End Sub
-
-    Private Sub grillaDetalleCicloMp_CellContentClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaDetalleCicloMp.CellContentClick
-
     End Sub
 
     Private Sub btn_Limpiar_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_Limpiar.Click

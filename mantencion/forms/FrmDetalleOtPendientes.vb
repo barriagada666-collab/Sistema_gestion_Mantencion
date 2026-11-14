@@ -1,4 +1,4 @@
-﻿Public Class FrmDetalleOtPendientes
+Public Class FrmDetalleOtPendientes
     Public personal As String = ""
     Public fecha_inicio As DateTime
     Public fecha_termino As DateTime
@@ -13,8 +13,11 @@
         Dim OT As New OT
         Dim formato_grid As New FormatoGrillas
         Dim DST_OT_PEND As New DataSet
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
         Try
             Me.Cursor = Cursors.WaitCursor
+            grillaDetalleOtPend.SuspendLayout()
             Utilitarios.AplicarTemaModerno(Me)
             OT.CrgDetalleResumenOt(personal, fecha_inicio, fecha_termino, opcion, tipo_falla, turno, fecha, estado, nodo_padre, DST_OT_PEND)
             grillaDetalleOtPend.DataSource = DST_OT_PEND.Tables(0)
@@ -24,7 +27,9 @@
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
         Finally
+            grillaDetalleOtPend.ResumeLayout(False)
             Me.Cursor = Cursors.Default
+            Me.ResumeLayout(True)
             Utilitarios.OptimizarMemoria()
         End Try
     End Sub

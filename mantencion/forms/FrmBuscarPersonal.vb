@@ -1,45 +1,46 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Public Class FrmBuscarPersonal
     Public nombre_form As String
     Public filtro As New DataView
     Private Sub FrmBuscarPersonal_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim Personal As New Personal
-        Dim formato_grid As New FormatoGrillas
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
+        Try
+            Dim Personal As New Personal
+            Dim formato_grid As New FormatoGrillas
 
-        Select Case nombre_form
+            Select Case nombre_form
 
-            Case Is = "personal"
-                Dim ds As New DataSet
-                Personal.CrgPersonal(ds)
-                filtro.Table = ds.Tables(0)
-                grillaPersonal.DataSource = ds.Tables(0)
-                formato_grid.grillaPersonal(grillaPersonal)
-            Case Is = "mp"
-                Dim DS As New DataSet
-                grilla_personal_2.Visible = True
-                btn_agregar_personal.Visible = True
-                btn_limpiar.Visible = True
-                Personal.BuscarPersonalMp2(DS)
-                grillaPersonal.DataSource = DS.Tables(0)
-                filtro.Table = DS.Tables(0)
-                formato_grid.grillaPersonal(grillaPersonal)
+                Case Is = "personal"
+                    Dim ds As New DataSet
+                    Personal.CrgPersonal(ds)
+                    filtro.Table = ds.Tables(0)
+                    grillaPersonal.DataSource = ds.Tables(0)
+                    formato_grid.grillaPersonal(grillaPersonal)
+                Case Is = "mp"
+                    Dim DS As New DataSet
+                    grilla_personal_2.Visible = True
+                    btn_agregar_personal.Visible = True
+                    btn_limpiar.Visible = True
+                    Personal.BuscarPersonalMp2(DS)
+                    grillaPersonal.DataSource = DS.Tables(0)
+                    filtro.Table = DS.Tables(0)
+                    formato_grid.grillaPersonal(grillaPersonal)
 
-            Case Is = "frm_OT"
-                grilla_personal_2.Visible = True
-                btn_agregar_personal.Visible = True
-                btn_limpiar.Visible = True
-                Dim DS As New DataSet
-                Personal.BuscarPersonalMp2(DS)
-                grillaPersonal.DataSource = DS.Tables(0)
-                filtro.Table = DS.Tables(0)
-                formato_grid.grillaPersonal(grillaPersonal)
-        End Select
-        Utilitarios.AjustarColumnasGrilla(grillaPersonal)
-
-    End Sub
-
-    Private Sub grillaPersonal_CellContentClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaPersonal.CellContentClick
-
+                Case Is = "frm_OT"
+                    grilla_personal_2.Visible = True
+                    btn_agregar_personal.Visible = True
+                    btn_limpiar.Visible = True
+                    Dim DS As New DataSet
+                    Personal.BuscarPersonalMp2(DS)
+                    grillaPersonal.DataSource = DS.Tables(0)
+                    filtro.Table = DS.Tables(0)
+                    formato_grid.grillaPersonal(grillaPersonal)
+            End Select
+            Utilitarios.AjustarColumnasGrilla(grillaPersonal)
+        Finally
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub grillaPersonal_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaPersonal.CellContentDoubleClick

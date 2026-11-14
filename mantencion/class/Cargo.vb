@@ -1,41 +1,62 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Public Class Cargo
-
     Public Sub crgCmbCargo(ByRef combo As ComboBox)
-        Dim conexion As New Conexion
-        Dim cnx As New SqlConnection
+        If combo Is Nothing Then Exit Sub
         Try
-            conexion.Conectar(cnx)
-            Using DA As New SqlDataAdapter("CRG_CMB_CARGO", cnx)
-                Dim DS As New DataSet
-                DA.Fill(DS)
-                combo.DataSource = DS.Tables(0)
+            combo.BeginUpdate()
+            Dim dt As DataTable = Conexion.ObtenerCatalogoEnCache("CRG_CMB_CARGO", Function()
+                Dim conexion As New Conexion
+                Dim cnx As New SqlConnection
+                Try
+                    conexion.Conectar(cnx)
+                    Using DA As New SqlDataAdapter("CRG_CMB_CARGO", cnx)
+                        Dim t As New DataTable()
+                        DA.Fill(t)
+                        Return t
+                    End Using
+                Finally
+                    conexion.Desconectar(cnx)
+                End Try
+            End Function)
+            If dt IsNot Nothing Then
+                combo.DataSource = dt
                 combo.DisplayMember = "desc_cargo"
                 combo.ValueMember = "idcargo"
-            End Using
+            End If
         Catch ex As Exception
             MsgBox(ex.Message)
         Finally
-            conexion.Desconectar(cnx)
+            combo.EndUpdate()
         End Try
     End Sub
 
     Public Sub crgTipoInter(ByRef combo As ComboBox)
-        Dim conexion As New Conexion
-        Dim cnx As New SqlConnection
+        If combo Is Nothing Then Exit Sub
         Try
-            conexion.Conectar(cnx)
-            Using DA As New SqlDataAdapter("CRG_CMB_INTER", cnx)
-                Dim DS As New DataSet
-                DA.Fill(DS)
-                combo.DataSource = DS.Tables(0)
+            combo.BeginUpdate()
+            Dim dt As DataTable = Conexion.ObtenerCatalogoEnCache("CRG_CMB_INTER", Function()
+                Dim conexion As New Conexion
+                Dim cnx As New SqlConnection
+                Try
+                    conexion.Conectar(cnx)
+                    Using DA As New SqlDataAdapter("CRG_CMB_INTER", cnx)
+                        Dim t As New DataTable()
+                        DA.Fill(t)
+                        Return t
+                    End Using
+                Finally
+                    conexion.Desconectar(cnx)
+                End Try
+            End Function)
+            If dt IsNot Nothing Then
+                combo.DataSource = dt
                 combo.DisplayMember = "desc_intervencion"
                 combo.ValueMember = "idtipo"
-            End Using
+            End If
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
         Finally
-            conexion.Desconectar(cnx)
+            combo.EndUpdate()
         End Try
     End Sub
 
@@ -55,6 +76,7 @@ Public Class Cargo
                     If DR.Read() Then
                         cod_resp = DR(0)
                         resp = DR(1)
+                        If cod_resp = 1 Then Conexion.InvalidarCacheCatalogos("CRG_CMB_CARGO")
                     End If
                 End Using
             End Using
@@ -90,6 +112,7 @@ Public Class Cargo
                     If DR.Read() Then
                         cod_resp = DR(0)
                         resp = DR(1)
+                        If cod_resp = 1 Then Conexion.InvalidarCacheCatalogos("CRG_CMB_CARGO")
                     End If
                 End Using
             End Using
@@ -143,6 +166,7 @@ Public Class Cargo
                     If DR.Read() Then
                         cod_resp = DR(0)
                         resp = DR(1)
+                        If cod_resp = 1 Then Conexion.InvalidarCacheCatalogos("CRG_CMB_CARGO")
                     End If
                 End Using
             End Using
