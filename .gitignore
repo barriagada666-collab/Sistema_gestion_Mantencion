@@ -20,6 +20,9 @@ Backup/
 
 # Binarios de distribución (publicados en GitHub Releases)
 Instalador/*.exe
+Instalador/*.zip
+Instalador/*.dmg
+dist-mac/
 
 # Credenciales locales y tokens (no sincronizar con Git)
 .github_token
