@@ -197,7 +197,7 @@ Public Class FrmInfMantPrev
         Dim DST4 As New DataSet
         Dim DST5 As New DataSet
         Try
-            If grillaInfMant.CurrentRow Is Nothing OrElse grillaDetalleCicloMp.CurrentRow Is Nothing Then Exit Sub
+            If e.RowIndex < 0 OrElse grillaInfMant.CurrentRow Is Nothing OrElse grillaDetalleCicloMp.CurrentRow Is Nothing Then Exit Sub
             mant_prev.InfTareasCicloMp(grillaInfMant.Rows(grillaInfMant.CurrentRow.Index).Cells(0).Value, grillaDetalleCicloMp.Rows(grillaDetalleCicloMp.CurrentRow.Index).Cells(0).Value, id_nodo_select, DST2)
             mant_prev.InfTareasPendCicloMp(grillaInfMant.Rows(grillaInfMant.CurrentRow.Index).Cells(0).Value, grillaDetalleCicloMp.Rows(grillaDetalleCicloMp.CurrentRow.Index).Cells(0).Value, id_nodo_select, DST5)
             mant_prev.InfPersonalCicloMp(grillaInfMant.Rows(grillaInfMant.CurrentRow.Index).Cells(0).Value, grillaDetalleCicloMp.Rows(grillaDetalleCicloMp.CurrentRow.Index).Cells(0).Value, DST3)

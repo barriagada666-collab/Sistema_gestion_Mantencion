@@ -16,8 +16,9 @@ Public Class FrmCartaGantt
             ElseIf form = "FrmInfMantPrevCiclosMaq" Then
                 informes.CrgInfGanttCiclosVariasMaq()
                 lblDesdeGantt.Text = FormatDateTime(FrmInfMantPrevCiclosMaq.fecha_ini_inf_mp.Value, DateFormat.ShortDate)
-                lblHastaGantt.Text = FormatDateTime(FrmInfMantPrevCiclosMaq.fecha_fin_inf_mp.Value, DateFormat.ShortDate)
-                lblTituloGantt.Text = lblTituloGantt.Text & " " & FrmInfMantPrevCiclosMaq.Arbol7.SelectedNode.Text
+                If FrmInfMantPrevCiclosMaq.Arbol7.SelectedNode IsNot Nothing Then
+                    lblTituloGantt.Text = "Carta Gantt - " & FrmInfMantPrevCiclosMaq.Arbol7.SelectedNode.Text
+                End If
             End If
             Utilitarios.AjustarColumnasGrilla(grillaInfoGantt)
         Catch ex As Exception

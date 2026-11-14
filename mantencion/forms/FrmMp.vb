@@ -331,7 +331,7 @@ Public Class FrmMp
                         For i = 0 To .Rows.Count - 1
                             Dim obs_tarea As String = If(.Rows(i).Cells(6).Value Is Nothing, "", .Rows(i).Cells(6).Value.ToString())
 
-                            If CBool(.Rows(i).Cells(0).Value) Then
+                            If True.Equals(.Rows(i).Cells(0).Value) Then
                                 mant_prev.IngTareasCicloMp(txtIdMant.Text, txtIdCiclo.Text, .Rows(i).Cells(1).Value, .Rows(i).Cells(2).Value, .Rows(i).Cells(5).Value, obs_tarea)
                             Else
                                 mant_prev.IngTareasPendCicloMp(txtIdMant.Text, txtIdCiclo.Text, .Rows(i).Cells(1).Value, .Rows(i).Cells(2).Value, obs_tarea)
@@ -451,7 +451,7 @@ Public Class FrmMp
 
                         For i = 0 To .Rows.Count - 1
                             obs_tarea = If(.Rows(i).Cells(6).Value Is Nothing, "", .Rows(i).Cells(6).Value.ToString())
-                            If CBool(.Rows(i).Cells(0).Value) Then
+                            If True.Equals(.Rows(i).Cells(0).Value) Then
                                 mant_prev.IngTareasCicloMp(txtIdMant.Text, CStr(id_nuevo_ciclo), .Rows(i).Cells(1).Value, .Rows(i).Cells(2).Value, .Rows(i).Cells(5).Value, obs_tarea)
                             Else
                                 mant_prev.IngTareasPendCicloMp(txtIdMant.Text, CStr(id_nuevo_ciclo), .Rows(i).Cells(1).Value, .Rows(i).Cells(2).Value, obs_tarea)
@@ -558,7 +558,7 @@ Public Class FrmMp
         Try
             With grillaTareasCicloMp
                 If .CurrentCell IsNot Nothing AndAlso .CurrentCell.ColumnIndex = 0 Then
-                    If CBool(.Rows(.CurrentRow.Index).Cells(0).Value) = False Then
+                    If Not True.Equals(.Rows(.CurrentRow.Index).Cells(0).Value) Then
                         .Rows(.CurrentRow.Index).Cells(5).Value = 0
                     End If
                 End If
@@ -622,12 +622,12 @@ Public Class FrmMp
             If DST_TAREAS.Tables.Count > 0 Then
                 With grillaTareasAdMp
                     For i = 0 To .RowCount - 1
-                        If CBool(.Rows(i).Cells(0).Value) = True Then
+                        If True.Equals(.Rows(i).Cells(0).Value) Then
                             Dim fila As DataRow = DST_TAREAS.Tables(0).NewRow
 
                             fila(1) = id_nodo_select            'ID Nodo seleccionado
                             fila(0) = .Rows(i).Cells(1).Value   'ID Tarea
-                            fila(2) = arbol1.SelectedNode.Text  'Nombre Modulo seleccionado
+                            fila(2) = If(arbol1.SelectedNode IsNot Nothing, arbol1.SelectedNode.Text, "") 'Nombre Modulo seleccionado
                             fila(3) = .Rows(i).Cells(5).Value   'Descripcion Tarea seleccionada
                             fila(4) = 0                         'Tiempo Tarea
                             DST_TAREAS.Tables(0).Rows.Add(fila)
@@ -649,12 +649,12 @@ Public Class FrmMp
 
                 With grillaTareasAdMp
                     For i = 0 To .RowCount - 1
-                        If CBool(.Rows(i).Cells(0).Value) = True Then
+                        If True.Equals(.Rows(i).Cells(0).Value) Then
                             Dim fila As DataRow = DST_TAREAS.Tables(0).NewRow
 
                             fila(1) = id_nodo_select            'ID Nodo seleccionado
                             fila(0) = .Rows(i).Cells(1).Value   'ID Tarea
-                            fila(2) = arbol1.SelectedNode.Text  'Nombre Modulo seleccionado
+                            fila(2) = If(arbol1.SelectedNode IsNot Nothing, arbol1.SelectedNode.Text, "") 'Nombre Modulo seleccionado
                             fila(3) = .Rows(i).Cells(5).Value   'Descripcion Tarea seleccionada
                             fila(4) = 0                         'Tiempo Tarea
                             DST_TAREAS.Tables(0).Rows.Add(fila)
@@ -764,7 +764,7 @@ Public Class FrmMp
                 Dim obs_tarea As String
 
                 For i = 0 To .Rows.Count - 1
-                    If CBool(.Rows(i).Cells(0).Value) Then
+                    If True.Equals(.Rows(i).Cells(0).Value) Then
                         obs_tarea = If(.Rows(i).Cells(6).Value Is Nothing, "", .Rows(i).Cells(6).Value.ToString())
                         mant_prev.UpdIdNodoTareasMp(txtIdMant.Text, txtIdCiclo.Text, .Rows(i).Cells(1).Value, id_nodo_select, cod_resp, resp)
                     End If

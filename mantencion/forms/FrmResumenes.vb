@@ -732,8 +732,7 @@ Public Class FrmResumenes
     End Sub
 
     Private Sub grillaOtRecibidaPor_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtRecibidaPor.CellContentDoubleClick
-        If grillaOtRecibidaPor.RowCount = 0 Then
-            MsgBox("Debe buscar datos antes de ver el detalle", MsgBoxStyle.Exclamation, "Validación")
+        If e.RowIndex < 0 OrElse grillaOtRecibidaPor.CurrentRow Is Nothing OrElse grillaOtRecibidaPor.RowCount = 0 Then
             Exit Sub
         End If
 
@@ -759,8 +758,7 @@ Public Class FrmResumenes
     End Sub
 
     Private Sub grillaOtCerradaPorTec_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtCerradaPorTec.CellContentDoubleClick
-        If grillaOtCerradaPorTec.RowCount = 0 Then
-            MsgBox("Debe buscar datos antes de ver el detalle", MsgBoxStyle.Exclamation, "Validación")
+        If e.RowIndex < 0 OrElse grillaOtCerradaPorTec.CurrentRow Is Nothing OrElse grillaOtCerradaPorTec.RowCount = 0 Then
             Exit Sub
         End If
 
@@ -778,8 +776,7 @@ Public Class FrmResumenes
     End Sub
 
     Private Sub grillaOtPorTipoFalla_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtPorTipoFalla.CellContentDoubleClick
-        If grillaOtPorTipoFalla.RowCount = 0 Then
-            MsgBox("Debe buscar datos antes de ver el detalle", MsgBoxStyle.Exclamation, "Validación")
+        If e.RowIndex < 0 OrElse grillaOtPorTipoFalla.CurrentRow Is Nothing OrElse grillaOtPorTipoFalla.RowCount = 0 Then
             Exit Sub
         End If
 
@@ -797,8 +794,7 @@ Public Class FrmResumenes
     End Sub
 
     Private Sub grillaOtPorTurno_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtPorTurno.CellContentDoubleClick
-        If grillaOtPorTurno.RowCount = 0 Then
-            MsgBox("Debe buscar datos antes de ver el detalle", MsgBoxStyle.Exclamation, "Validación")
+        If e.RowIndex < 0 OrElse grillaOtPorTurno.CurrentRow Is Nothing OrElse grillaOtPorTurno.RowCount = 0 Then
             Exit Sub
         End If
 
@@ -816,8 +812,7 @@ Public Class FrmResumenes
     End Sub
 
     Private Sub grillaOtPorDia_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtPorDia.CellContentDoubleClick
-        If grillaOtPorDia.RowCount = 0 Then
-            MsgBox("Debe buscar datos antes de ver el detalle", MsgBoxStyle.Exclamation, "Validación")
+        If e.RowIndex < 0 OrElse grillaOtPorDia.CurrentRow Is Nothing OrElse grillaOtPorDia.RowCount = 0 Then
             Exit Sub
         End If
 
@@ -835,8 +830,7 @@ Public Class FrmResumenes
     End Sub
 
     Private Sub grillaTotalesPeriodo_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaTotalesPeriodo.CellContentDoubleClick
-        If grillaTotalesPeriodo.RowCount = 0 Then
-            MsgBox("Debe buscar datos antes de ver el detalle", MsgBoxStyle.Exclamation, "Validación")
+        If e.RowIndex < 0 OrElse grillaTotalesPeriodo.CurrentRow Is Nothing OrElse grillaTotalesPeriodo.RowCount = 0 Then
             Exit Sub
         End If
 

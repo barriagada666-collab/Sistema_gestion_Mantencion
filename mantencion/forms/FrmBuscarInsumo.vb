@@ -35,6 +35,7 @@ Public Class FrmBuscarInsumo
     End Sub
 
     Private Sub grillaInsumos_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaInsumos.CellContentDoubleClick
+        If e.RowIndex < 0 Then Exit Sub
         Select Case nombre_form
             Case "MP"
                 Dim fila_mp As Integer = 0

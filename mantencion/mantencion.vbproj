@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -23,6 +23,9 @@
 
     <!-- Habilita la deserialización segura de BinaryFormatter para recursos ResX heredados en .NET 8 -->
     <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
+
+    <!-- Habilita compilación cruzada en Linux/macOS sin advertencias -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
 
     <!-- Silencia advertencias obsoletas de VB, compatibilidad de plataforma y serialización para compilación 100% limpia -->
     <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036,SYSLIB0051,CA1416</NoWarn>

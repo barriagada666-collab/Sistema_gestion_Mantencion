@@ -26,6 +26,7 @@ Public Class FrmBuscarMp
     End Sub
 
     Private Sub grillaBuscarMp_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaBuscarMp.CellContentDoubleClick
+        If e.RowIndex < 0 OrElse grillaBuscarMp.CurrentRow Is Nothing Then Exit Sub
         Try
             With FrmMp
                 .txtIdMant.Text = grillaBuscarMp.Rows(grillaBuscarMp.CurrentRow.Index).Cells(0).Value

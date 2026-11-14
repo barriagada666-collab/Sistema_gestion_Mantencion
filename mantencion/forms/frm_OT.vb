@@ -282,10 +282,6 @@ Public Class frm_OT
         utilitario.solonumeros(e)
     End Sub
 
-    Private Sub text_prio_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs)
-        utilitario.solonumeros(e)
-    End Sub
-
     Private Sub btn_limpiar_Click_1(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_limpiar.Click
         Dim OT As New OT
         OT.LimpiarFrmOt()

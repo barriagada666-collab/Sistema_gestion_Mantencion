@@ -45,7 +45,7 @@ Public Class FrmBuscarTareasMp
             If .grillaTareasCicloMp.RowCount > 0 Then
 
                 For i = 0 To grillaTareasNodoMp.RowCount - 1
-                    If grillaTareasNodoMp.Rows(i).Cells(0).Value Then
+                    If True.Equals(grillaTareasNodoMp.Rows(i).Cells(0).Value) Then
                         For j = 0 To .grillaTareasCicloMp.RowCount - 1
                             If .grillaTareasCicloMp.Rows(j).Cells(1).Value = grillaTareasNodoMp.Rows(i).Cells(1).Value Then
                                 MsgBox("La tarea seleccionada ya se encuentra registrada en el ciclo, fila n° " & j + 1, MsgBoxStyle.Exclamation, "Validación")
@@ -73,7 +73,7 @@ Public Class FrmBuscarTareasMp
                 .DST_TAREAS.Tables(0).Columns.Add("observacion_ciclo")
 
                 For i = 0 To grillaTareasNodoMp.RowCount - 1
-                    If grillaTareasNodoMp.Rows(i).Cells(0).Value Then
+                    If True.Equals(grillaTareasNodoMp.Rows(i).Cells(0).Value) Then
                         Dim fila As DataRow = .DST_TAREAS.Tables(0).NewRow
 
                         fila(0) = grillaTareasNodoMp.Rows(i).Cells(1).Value

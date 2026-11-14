@@ -9,7 +9,7 @@ Public Class FrmPlanificarCiclos
             txtUltimoCiclo.Text = FrmMp.txtIdCiclo.Text
             txtFrecuenciaPlan.Text = FrmMp.txtFrecuenciaMp.Text
             txtDuracionPlan.Text = FrmMp.txtDuracionCiclo.Text
-            cmbNumCiclos.Text = cmbNumCiclos.Items(0)
+            If cmbNumCiclos.Items.Count > 0 Then cmbNumCiclos.SelectedIndex = 0
 
             Dim formato As New FormatoGrillas()
             formato.grillasOT(grillaVistaPrevia)

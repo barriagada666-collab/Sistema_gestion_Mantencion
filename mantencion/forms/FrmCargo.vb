@@ -86,6 +86,7 @@ Public Class FrmCargo
     End Sub
 
     Private Sub grillaCargos_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaCargos.CellContentDoubleClick
+        If e.RowIndex < 0 OrElse grillaCargos.CurrentRow Is Nothing Then Exit Sub
         Try
             With grillaCargos
                 txtCodCargo.Text = .Rows(.CurrentRow.Index).Cells(0).Value

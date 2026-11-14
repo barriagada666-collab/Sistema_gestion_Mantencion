@@ -44,6 +44,7 @@ Public Class FrmBuscarPersonal
     End Sub
 
     Private Sub grillaPersonal_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaPersonal.CellContentDoubleClick
+        If e.RowIndex < 0 Then Exit Sub
         Dim personal As New Personal
 
         Select Case nombre_form

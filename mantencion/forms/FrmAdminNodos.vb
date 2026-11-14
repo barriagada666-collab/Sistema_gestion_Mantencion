@@ -35,7 +35,7 @@ Public Class FrmAdminNodos
         Else
             If GrpInfoNuevoNodo.Enabled = False Then
                 GrpInfoNuevoNodo.Enabled = True
-                cmbGrupoNodo.Text = cmbGrupoNodo.Items(0)
+                If cmbGrupoNodo.Items.Count > 0 Then cmbGrupoNodo.SelectedIndex = 0
             End If
 
             Dim NODO As New Nodo
@@ -301,7 +301,7 @@ Public Class FrmAdminNodos
         Else
             FrmVerDatosTecnicos.id_nodo = id_nodo_select
             FrmVerDatosTecnicos.nivel = arbol4.SelectedNode.Level
-            FrmVerDatosTecnicos.Text = FrmVerDatosTecnicos.Text & " " & arbol4.SelectedNode.Text
+            FrmVerDatosTecnicos.Text = "Datos Técnicos - " & arbol4.SelectedNode.Text
             FrmVerDatosTecnicos.Show()
         End If
     End Sub

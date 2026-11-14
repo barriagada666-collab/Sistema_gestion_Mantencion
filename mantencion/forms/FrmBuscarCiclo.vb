@@ -23,6 +23,7 @@ Public Class FrmBuscarCiclo
     End Sub
 
     Private Sub grillaBuscarCiclo_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaBuscarCiclo.CellContentDoubleClick
+        If e.RowIndex < 0 Then Exit Sub
         Dim nodo As New Nodo
         Dim DS As New DataSet
         Dim DST As New DataSet

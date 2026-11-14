@@ -41,6 +41,7 @@ Public Class FrmBuscarDatosTecnicos
     End Sub
 
     Private Sub grillaDatosTecnicos_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaDatosTecnicos.CellContentDoubleClick
+        If e.RowIndex < 0 OrElse grillaDatosTecnicos.CurrentRow Is Nothing Then Exit Sub
         Try
             If nombre_form = "FrmDatosTecnicos" Then
                 With FrmDatosTecnicos

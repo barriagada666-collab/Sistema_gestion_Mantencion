@@ -39,7 +39,7 @@ Public Class FrmAdminTareasNodo
         txtIdTarea.Text = nodo.NuevoIdTareaNodo
         txtDescTarea.ResetText()
         txtOrdenDespliegue.ResetText()
-        cmbTipoMP.Text = cmbTipoMP.Items(0)
+        If cmbTipoMP.Items.Count > 0 Then cmbTipoMP.SelectedIndex = 0
     End Sub
 
     Private Sub btnGuardar_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnGuardar.Click
@@ -78,13 +78,14 @@ Public Class FrmAdminTareasNodo
     End Sub
 
     Private Sub grillaTareasNodo_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaTareasNodo.CellContentDoubleClick
+        If e.RowIndex < 0 OrElse grillaTareasNodo.CurrentRow Is Nothing Then Exit Sub
         Try
             With grillaTareasNodo
-                txtIdTarea.Text = .Rows(.CurrentRow.Index).Cells(0).Value
-                txtDescTarea.Text = .Rows(.CurrentRow.Index).Cells(3).Value
-                txtOrdenDespliegue.Text = .Rows(.CurrentRow.Index).Cells(5).Value
-                cmbTipoMP.Text = .Rows(.CurrentRow.Index).Cells(4).Value
-                txtIdModulo.Text = .Rows(.CurrentRow.Index).Cells(1).Value
+                txtIdTarea.Text = .Rows(e.RowIndex).Cells(0).Value
+                txtDescTarea.Text = .Rows(e.RowIndex).Cells(3).Value
+                txtOrdenDespliegue.Text = .Rows(e.RowIndex).Cells(5).Value
+                cmbTipoMP.Text = .Rows(e.RowIndex).Cells(4).Value
+                txtIdModulo.Text = .Rows(e.RowIndex).Cells(1).Value
             End With
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Exclamation, "Validación")

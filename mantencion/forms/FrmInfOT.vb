@@ -426,7 +426,8 @@ Public Class FrmInfOT
     End Sub
 
     Private Sub grillaInfOt_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaInfOt.CellContentDoubleClick
-        If grillaInfOt.RowCount > 0 AndAlso grillaInfOt.CurrentRow IsNot Nothing Then
+        If e.RowIndex < 0 OrElse grillaInfOt.CurrentRow Is Nothing Then Exit Sub
+        If grillaInfOt.RowCount > 0 Then
             FrmDetalleOt.num_ot = grillaInfOt.Rows(grillaInfOt.CurrentRow.Index).Cells(0).Value
             FrmDetalleOt.Show()
         End If
