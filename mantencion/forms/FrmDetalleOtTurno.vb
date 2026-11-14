@@ -1,4 +1,4 @@
-﻿Public Class FrmDetalleOtTurno
+Public Class FrmDetalleOtTurno
     Public personal As String = ""
     Public fecha_inicio As DateTime
     Public fecha_termino As DateTime
@@ -13,8 +13,11 @@
         Dim formato_grid As New FormatoGrillas
         Dim DST_OT_TURNO As New DataSet
 
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
         Try
             Me.Cursor = Cursors.WaitCursor
+            grillaOtDetalleTurno.SuspendLayout()
             Utilitarios.AplicarTemaModerno(Me)
             OT.CrgDetalleResumenOt(personal, fecha_inicio, fecha_termino, opcion, tipo_falla, turno, fecha, estado, nodo_padre, DST_OT_TURNO)
             grillaOtDetalleTurno.DataSource = DST_OT_TURNO.Tables(0)
@@ -24,7 +27,9 @@
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
         Finally
+            grillaOtDetalleTurno.ResumeLayout(False)
             Me.Cursor = Cursors.Default
+            Me.ResumeLayout(True)
             Utilitarios.OptimizarMemoria()
         End Try
     End Sub

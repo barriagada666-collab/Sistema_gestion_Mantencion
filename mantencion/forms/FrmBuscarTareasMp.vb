@@ -1,15 +1,18 @@
-﻿Public Class FrmBuscarTareasMp
+Public Class FrmBuscarTareasMp
     Public nodo_padre As String = ""
     Public tipo_mp As String = ""
     Public filtro_tareas As New DataView
     Public DST_TAREAS_MP As New DataSet
 
     Private Sub FrmBuscarTareasMp_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
         Dim nodo As New Nodo
         Dim formato_grid As New FormatoGrillas
 
-        nodo.CRG_TAREAS_MP(nodo_padre, tipo_mp, DST_TAREAS_MP)
         Try
+            grillaTareasNodoMp.SuspendLayout()
+            nodo.CRG_TAREAS_MP(nodo_padre, tipo_mp, DST_TAREAS_MP)
             grillaTareasNodoMp.DataSource = DST_TAREAS_MP.Tables(0)
             filtro_tareas.Table = DST_TAREAS_MP.Tables(0)
             formato_grid.grillasMp(grillaTareasNodoMp)
@@ -17,6 +20,9 @@
             Utilitarios.AplicarTemaModerno(Me)
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+        Finally
+            grillaTareasNodoMp.ResumeLayout(False)
+            Me.ResumeLayout(True)
         End Try
         
     End Sub

@@ -1,7 +1,8 @@
-﻿Public Class FrmDatosTecnicos
+Public Class FrmDatosTecnicos
 
     Private Sub FrmDatosTecnicos_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-
+        Me.DoubleBuffered = True
+        Utilitarios.AplicarTemaModerno(Me)
     End Sub
 
     Private Sub btnSalir_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSalir.Click

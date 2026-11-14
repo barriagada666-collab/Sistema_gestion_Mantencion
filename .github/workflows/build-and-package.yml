@@ -128,3 +128,62 @@ jobs:
             Instalador/Instalador_Sistema_Mantencion_v2026.1.exe
             Instalador/checksums_sha256.txt
           token: ${{ secrets.GITHUB_TOKEN }}
+
+  build-mac-installer:
+    name: Build e Instalador macOS Universal (DMG)
+    runs-on: macos-latest
+
+    steps:
+      - name: 1. Descargar Código Fuente (Checkout)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 2. Configurar Microsoft .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: 3. Publicar Aplicación Autocontenida (win-x64)
+        run: |
+          dotnet publish mantencion/mantencion.vbproj -c Release -r win-x64 --self-contained true -o mantencion/bin/Release/net8-selfcontained-x64 -p:EnableWindowsTargeting=true --nologo -v m
+
+      - name: 4. Generar macOS App Bundle y DMG con hdiutil
+        run: |
+          chmod +x "automatizadores de instalacion/Generar_Instalador_Mac.sh"
+          "./automatizadores de instalacion/Generar_Instalador_Mac.sh"
+
+          # Generar DMG oficial de macOS con hdiutil nativo
+          DMG_NAME="Instalador_Sistema_Mantencion_v2026.1_macOS.dmg"
+          hdiutil create -volname "Sistema Mantencion" -srcfolder "dist-mac" -ov -format UDZO "Instalador/$DMG_NAME"
+
+          # Checksums
+          cd Instalador
+          shasum -a 256 "$DMG_NAME" > checksums_mac_sha256.txt
+          cat checksums_mac_sha256.txt
+
+      - name: 5. Publicar Artefacto - Instalador macOS (DMG y ZIP)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Instalador-Sistema-Mantencion-v2026.1-macOS
+          path: |
+            Instalador/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg
+            Instalador/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip
+            Instalador/checksums_mac_sha256.txt
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: 6. Publicar en GitHub Releases (macOS Assets)
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v2026.1
+          name: Sistema de Gestión Mantención v2026.1 LTS
+          draft: false
+          prerelease: false
+          files: |
+            Instalador/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg
+            Instalador/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip
+            Instalador/checksums_mac_sha256.txt
+          token: ${{ secrets.GITHUB_TOKEN }}
+

@@ -1,4 +1,4 @@
-﻿Public Class FrmDetalleOt
+Public Class FrmDetalleOt
     Public num_ot As String
 
     Private Function FormatearFechaHora(ByVal fechaObj As Object, ByVal horaObj As Object, Optional ByVal fallback As String = "Sin Fecha") As String
@@ -17,6 +17,8 @@
     End Function
 
     Private Sub FrmDetalleOt_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
         Dim OT As New OT
         Dim DST_ORDEN_TRABAJO As New DataSet
         Dim DST_PERSONAL_OT As New DataSet
@@ -31,6 +33,10 @@
         formato.grillasOT(GrillaOtExternasDetalle)
 
         Try
+            grillaPersonalDetalleOt.SuspendLayout()
+            grillaInsumosOt.SuspendLayout()
+            GrillaOtExternasDetalle.SuspendLayout()
+
             If FrmInfOT.grillaInfOt.CurrentRow IsNot Nothing Then
                 With FrmInfOT.grillaInfOt
                     OT.CrgOrdenTrabajo(.Rows(.CurrentRow.Index).Cells(0).Value.ToString(), DST_ORDEN_TRABAJO)
@@ -78,6 +84,10 @@
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
         Finally
+            GrillaOtExternasDetalle.ResumeLayout(False)
+            grillaInsumosOt.ResumeLayout(False)
+            grillaPersonalDetalleOt.ResumeLayout(False)
+            Me.ResumeLayout(True)
             Utilitarios.OptimizarMemoria()
         End Try
     End Sub

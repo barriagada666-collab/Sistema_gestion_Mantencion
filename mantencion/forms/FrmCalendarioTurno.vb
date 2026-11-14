@@ -1,18 +1,24 @@
-﻿Public Class FrmCalendarioTurno
+Public Class FrmCalendarioTurno
 
     Private Sub btn_salir_turnos_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_salir_turnos.Click
         Me.Close()
     End Sub
 
     Private Sub FrmCalendarioTurno_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
         Dim OT As New OT
         Dim utilitario As New Utilitarios
 
-        Utilitarios.AplicarTemaModerno(Me)
-        grpTurnosPersonal.Enabled = False
-        grpOperaciones.Enabled = False
-        OT.autocompletar_personal(txtPersonalTurno)
-        utilitario.crgComboTurnos(cmbTurno)
+        Try
+            Utilitarios.AplicarTemaModerno(Me)
+            grpTurnosPersonal.Enabled = False
+            grpOperaciones.Enabled = False
+            OT.autocompletar_personal(txtPersonalTurno)
+            utilitario.crgComboTurnos(cmbTurno)
+        Finally
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub btn_crear_fechas_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_crear_fechas.Click
@@ -22,6 +28,7 @@
         Dim formato_grid As New FormatoGrillas
 
         Try
+            grillaCalendarioTurno.SuspendLayout()
             fecha_inicio = fecha_desde_cal.Value.Date
             fecha_fin = fecha_hasta_cal.Value.Date
             fecha = fecha_inicio
@@ -39,6 +46,8 @@
             grpOperaciones.Enabled = True
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+        Finally
+            grillaCalendarioTurno.ResumeLayout(True)
         End Try
 
     End Sub

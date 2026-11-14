@@ -1,4 +1,4 @@
-﻿Public Class FrmSeccion
+Public Class FrmSeccion
 
     Private Sub btnIngSeccion_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnIngSeccion.Click
         Dim seccion As New Seccion
@@ -44,6 +44,8 @@
     End Sub
 
     Private Sub FrmSeccion_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Me.DoubleBuffered = True
+        Utilitarios.AplicarTemaModerno(Me)
     End Sub
 
     Private Sub btn_salir_seccion_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_salir_seccion.Click

@@ -1,4 +1,4 @@
-﻿Public Class FrmPlantas
+Public Class FrmPlantas
 
     Private Sub btnIngPlanta_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnIngPlanta.Click
         Dim planta As New Planta
@@ -63,15 +63,13 @@
         End If
     End Sub
 
-    Private Sub txtCodPlanta_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtCodPlanta.TextChanged
-
-    End Sub
-
     Private Sub btnBuscarPlanta_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnBuscarPlanta.Click
         FrmBuscarPlanta.Show()
     End Sub
 
     Private Sub FrmPlantas_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Me.DoubleBuffered = True
+        Utilitarios.AplicarTemaModerno(Me)
     End Sub
 
     Private Sub btn_salir_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_salir.Click

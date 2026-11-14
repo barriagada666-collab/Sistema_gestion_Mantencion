@@ -1,4 +1,4 @@
-﻿Imports System.Collections.Generic
+Imports System.Collections.Generic
 Imports System.Data
 Imports System.Data.SqlClient
 Imports System.Drawing
@@ -20,9 +20,11 @@ Public Class Nodo
 
     Private Shared Sub CopiarHijos(ByVal origen As TreeNode, ByVal destino As TreeNode)
         destino.Nodes.Clear()
+        Dim listaHijos As New List(Of TreeNode)(origen.Nodes.Count)
         For Each hijo As TreeNode In origen.Nodes
-            destino.Nodes.Add(DirectCast(hijo.Clone(), TreeNode))
+            listaHijos.Add(DirectCast(hijo.Clone(), TreeNode))
         Next
+        destino.Nodes.AddRange(listaHijos.ToArray())
     End Sub
 
     Public Function CRG_NODO(ByVal id_nodo As Integer) As DataSet
@@ -81,7 +83,6 @@ Public Class Nodo
     End Sub
 
     Private Sub CargarHijosConConexion(ByVal nodoPadre As TreeNode, ByVal cnx As SqlConnection, ByVal modo As Integer)
-        Dim dt As New DataTable()
         Dim spName As String = "CRG_NODOS_ACTIVOS"
         If modo = 2 Then
             spName = "CRG_NODOS_TODOS"
@@ -89,24 +90,32 @@ Public Class Nodo
             spName = "CRG_NODOS_MANT_SI"
         End If
 
-        Using da As New SqlDataAdapter()
+        Dim hijos As New List(Of (Id As String, Desc As String))()
+        Using cmd As New SqlCommand()
+            cmd.Connection = cnx
             If modo = 3 Then
-                da.SelectCommand = New SqlCommand(spName, cnx)
-                da.SelectCommand.CommandType = CommandType.StoredProcedure
-                da.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(nodoPadre.Name))
+                cmd.CommandText = spName
+                cmd.CommandType = CommandType.StoredProcedure
+                cmd.Parameters.AddWithValue("@nodo_padre", CInt(nodoPadre.Name))
             Else
-                da.SelectCommand = New SqlCommand(spName & " " & CInt(nodoPadre.Name).ToString(), cnx)
+                cmd.CommandText = spName & " " & CInt(nodoPadre.Name).ToString()
             End If
-            da.Fill(dt)
+            Using dr As SqlDataReader = cmd.ExecuteReader()
+                While dr.Read()
+                    hijos.Add((dr("idnodo").ToString(), dr("desc_nodo").ToString()))
+                End While
+            End Using
         End Using
 
-        For Each row As DataRow In dt.Rows
+        Dim listaNodosHijos As New List(Of TreeNode)(hijos.Count)
+        For Each h In hijos
             Dim nodoHijo As New TreeNode()
-            nodoHijo.Text = row("desc_nodo").ToString()
-            nodoHijo.Name = row("idnodo").ToString()
-            nodoPadre.Nodes.Add(nodoHijo)
+            nodoHijo.Text = h.Desc
+            nodoHijo.Name = h.Id
+            listaNodosHijos.Add(nodoHijo)
             CargarHijosConConexion(nodoHijo, cnx, modo)
         Next
+        nodoPadre.Nodes.AddRange(listaNodosHijos.ToArray())
     End Sub
 
     Public Sub CRG_TAREAS_MP(ByVal nodo_padre As String, ByVal tipo_mp As String, ByRef DS As DataSet)

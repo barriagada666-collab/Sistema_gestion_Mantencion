@@ -1,4 +1,4 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Imports System.Configuration
 Imports System.IO
 Imports System.Xml
@@ -71,13 +71,17 @@ Public Class Conexion
         Catch
         End Try
 
-        ' Pool de conexiones explícito para reutilizar sockets y acelerar todas las consultas
+        ' Pool de conexiones de alto rendimiento para reutilizar sockets y acelerar todas las consultas
         Try
             Dim sb As New SqlConnectionStringBuilder(cadena)
             sb.Pooling = True
-            If sb.MinPoolSize < 2 Then sb.MinPoolSize = 2
-            If sb.MaxPoolSize < 50 Then sb.MaxPoolSize = 50
-            If sb.ConnectTimeout < 15 Then sb.ConnectTimeout = 15
+            If sb.MinPoolSize < 5 Then sb.MinPoolSize = 5
+            If sb.MaxPoolSize < 100 Then sb.MaxPoolSize = 100
+            If sb.ConnectTimeout > 15 OrElse sb.ConnectTimeout < 5 Then sb.ConnectTimeout = 10
+            sb.Enlist = False
+            sb.PacketSize = 8192
+            sb.MultipleActiveResultSets = True
+            sb.LoadBalanceTimeout = 0
             If String.IsNullOrEmpty(sb.ApplicationName) OrElse sb.ApplicationName = ".Net SqlClient Data Provider" Then
                 sb.ApplicationName = "Sistema de Gestion Mantencion"
             End If
@@ -88,6 +92,50 @@ Public Class Conexion
         _connectionStringCache = cadena
         Return cadena
     End Function
+
+    Private Shared ReadOnly _catalogoCache As New System.Collections.Concurrent.ConcurrentDictionary(Of String, DataTable)(StringComparer.OrdinalIgnoreCase)
+
+    ''' <summary>
+    ''' Obtiene una copia en memoria de un catálogo común si existe en caché, o ejecuta la función cargadora.
+    ''' </summary>
+    Public Shared Function ObtenerCatalogoEnCache(ByVal clave As String, ByVal cargador As Func(Of DataTable)) As DataTable
+        If String.IsNullOrEmpty(clave) OrElse cargador Is Nothing Then Return Nothing
+        Dim dt As DataTable = Nothing
+        If _catalogoCache.TryGetValue(clave, dt) AndAlso dt IsNot Nothing Then
+            Return dt.Copy()
+        End If
+        dt = cargador()
+        If dt IsNot Nothing Then
+            _catalogoCache(clave) = dt
+            Return dt.Copy()
+        End If
+        Return Nothing
+    End Function
+
+    ''' <summary>
+    ''' Invalida la caché de catálogos en memoria tras modificaciones o altas.
+    ''' </summary>
+    Public Shared Sub InvalidarCacheCatalogos(Optional ByVal clave As String = Nothing)
+        If String.IsNullOrEmpty(clave) Then
+            _catalogoCache.Clear()
+        Else
+            _catalogoCache.TryRemove(clave, Nothing)
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' Precalienta el pool de conexiones en segundo plano para eliminar la latencia inicial al abrir formularios.
+    ''' </summary>
+    Public Shared Sub PrecalentarPool()
+        System.Threading.ThreadPool.QueueUserWorkItem(Sub()
+                                                         Try
+                                                             Using cnx As New SqlConnection(ObtenerConnectionString())
+                                                                 cnx.Open()
+                                                             End Using
+                                                         Catch
+                                                         End Try
+                                                     End Sub)
+    End Sub
 
     ''' <summary>
     ''' Desglosa los parámetros actuales de la conexión en un SqlConnectionStringBuilder.
@@ -179,6 +227,7 @@ Public Class Conexion
 
             ' 4. Invalidar el caché en memoria para que tome efecto inmediato en caliente
             _connectionStringCache = Nothing
+            InvalidarCacheCatalogos()
             ObtenerConnectionString()
 
             Return (True, "La configuración de conexión fue guardada y respaldada exitosamente.")
@@ -199,7 +248,9 @@ Public Class Conexion
         Try
             If cnx.State = ConnectionState.Open Then Exit Sub
             If cnx.State = ConnectionState.Broken Then cnx.Close()
-            cnx.ConnectionString = ObtenerConnectionString()
+            If String.IsNullOrEmpty(cnx.ConnectionString) Then
+                cnx.ConnectionString = ObtenerConnectionString()
+            End If
             cnx.Open()
         Catch ex As Exception
             Throw

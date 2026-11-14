@@ -1,4 +1,4 @@
-﻿Public Class FrmAdminTareasNodo
+Public Class FrmAdminTareasNodo
     Public id_nodo_select As String
     Public nombre_nodo_select As String
     Public nodo_anterior As String = ""
@@ -6,15 +6,24 @@
     Public DST_TN As New DataSet
     Public form_limpio As Boolean = False
     Private Sub FrmAdminTareasNodo_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim nd As New Nodo
-        Dim nodoRaiz As New TreeNode
-        Dim MP As New MantPreventiva
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
+        Try
+            Dim nd As New Nodo
+            Dim nodoRaiz As New TreeNode
+            Dim MP As New MantPreventiva
 
-        nodoRaiz.Name = "1"
-        nodoRaiz.Text = "Cambiaso Hnos S.A."
-        nd.CRG_NODO_HIJO(nodoRaiz)
-        arbol6.Nodes.Add(nodoRaiz)
-        MP.CrgCmbTipoMp(cmbTipoMP)
+            nodoRaiz.Name = "1"
+            nodoRaiz.Text = "Cambiaso Hnos S.A."
+            nd.CRG_NODO_HIJO(nodoRaiz)
+            arbol6.BeginUpdate()
+            arbol6.Nodes.Clear()
+            arbol6.Nodes.Add(nodoRaiz)
+            arbol6.EndUpdate()
+            MP.CrgCmbTipoMp(cmbTipoMP)
+        Finally
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub arbol6_AfterSelect(ByVal sender As System.Object, ByVal e As System.Windows.Forms.TreeViewEventArgs) Handles arbol6.AfterSelect

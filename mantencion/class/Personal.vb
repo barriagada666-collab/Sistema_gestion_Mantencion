@@ -1,4 +1,4 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Public Class Personal
 
     Public Sub IngPersonal(ByVal rut As String, ByRef dv As String, ByVal cod_int As String, ByVal nombres As String, ByVal ap_paterno As String, ByVal ap_materno As String, ByVal alias_personal As String, ByVal fecha_nac As DateTime, ByVal fono As String, ByVal email As String, ByVal planta As String, ByVal seccion As String, ByVal cargo As String, ByVal sesion As String, ByVal activo As Boolean, ByVal direccion As String, ByVal fecha_ingreso As DateTime, ByVal celular As String, ByRef cod_resp As Integer, ByRef resp As String)
@@ -51,6 +51,7 @@ Public Class Personal
                     If DR.Read() Then
                         cod_resp = DR(0)
                         resp = DR(1)
+                        If cod_resp = 1 Then OT.InvalidarCachePersonal()
                     End If
                 End Using
             End Using
@@ -106,6 +107,7 @@ Public Class Personal
                     If DR.Read() Then
                         cod_resp = DR(0)
                         resp = DR(1)
+                        If cod_resp = 1 Then OT.InvalidarCachePersonal()
                     End If
                 End Using
             End Using
@@ -202,21 +204,9 @@ Public Class Personal
     End Sub
 
     Public Sub BuscarPersonalMp(ByRef txt_alias As TextBox)
-        Dim conexion As New Conexion
-        Dim cnx As New SqlConnection
-        Dim datos As New AutoCompleteStringCollection
-
+        If txt_alias Is Nothing Then Exit Sub
         Try
-            conexion.Conectar(cnx)
-            Using com As New SqlCommand("AUTOCOMPLETAR_PERSONAL", cnx)
-                com.CommandType = CommandType.StoredProcedure
-
-                Using DR As SqlDataReader = com.ExecuteReader
-                    While DR.Read
-                        datos.Add(DR(1).ToString)
-                    End While
-                End Using
-            End Using
+            Dim datos As AutoCompleteStringCollection = OT.ObtenerColeccionAutocompletarPersonal()
             With txt_alias
                 .AutoCompleteMode = AutoCompleteMode.SuggestAppend
                 .AutoCompleteSource = AutoCompleteSource.CustomSource
@@ -224,8 +214,6 @@ Public Class Personal
             End With
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
-        Finally
-            conexion.Desconectar(cnx)
         End Try
     End Sub
 

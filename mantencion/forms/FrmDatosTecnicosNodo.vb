@@ -1,4 +1,4 @@
-﻿Public Class FrmDatosTecnicosNodo
+Public Class FrmDatosTecnicosNodo
     Public id_nodo_select As String
     Public nodo_anterior As String = ""
     Public nodo_anterior2 As String = ""
@@ -12,19 +12,28 @@
     Public fila As DataRow
 
     Private Sub FrmDatosTecnicosNodo_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
         Dim nodo As New Nodo
         Dim datos_tecnicos As New DatosTecnicos
         Dim formato_grid As New FormatoGrillas
         Dim nodoRaiz As New TreeNode
 
-        nodoRaiz.Name = "1"
-        nodoRaiz.Text = "Cambiaso Hnos S.A."
-        nodo.CRG_NODO_HIJO(nodoRaiz)
-        arbol9.Nodes.Add(nodoRaiz)
-        nivel = 3
-        formato_grid.grillaDatosTecnicos(grillaDatosTecnicosNodo)
-        grpFiltroDatosTecnicos.Enabled = False
-        DST_NODOS = nodo.CRG_NODOS_DST()
+        Try
+            arbol9.BeginUpdate()
+            nodoRaiz.Name = "1"
+            nodoRaiz.Text = "Cambiaso Hnos S.A."
+            nodo.CRG_NODO_HIJO(nodoRaiz)
+            arbol9.Nodes.Add(nodoRaiz)
+            nivel = 3
+            formato_grid.grillaDatosTecnicos(grillaDatosTecnicosNodo)
+            grpFiltroDatosTecnicos.Enabled = False
+            DST_NODOS = nodo.CRG_NODOS_DST()
+            Utilitarios.AplicarTemaModerno(Me)
+        Finally
+            arbol9.EndUpdate()
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub arbol9_AfterSelect(ByVal sender As System.Object, ByVal e As System.Windows.Forms.TreeViewEventArgs) Handles arbol9.AfterSelect
@@ -162,6 +171,7 @@
         datos_tecnicos.CrgDatosTecnicosNodo(id_nodo_select, nivel, DST_DATOS_TECNICOS_NODO)
 
         Try
+            grillaDatosTecnicosNodo.SuspendLayout()
             grillaDatosTecnicosNodo.Columns.Clear()
             grillaDatosTecnicosNodo.DataSource = DST_DATOS_TECNICOS_NODO.Tables(0)
             filtro_datos_tecnicos.Table = DST_DATOS_TECNICOS_NODO.Tables(0)
@@ -170,6 +180,8 @@
             grpFiltroDatosTecnicos.Enabled = True
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+        Finally
+            grillaDatosTecnicosNodo.ResumeLayout(False)
         End Try
     End Sub
 

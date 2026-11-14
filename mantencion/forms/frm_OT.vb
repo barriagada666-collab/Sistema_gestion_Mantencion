@@ -1,4 +1,4 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Public Class frm_OT
     Dim utilitario As New Utilitarios
     Public id_nodo_ot_select As String
@@ -19,30 +19,36 @@ Public Class frm_OT
     End Function
 
     Private Sub frm_OT_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim mantPrev As New MantPreventiva
-        Dim nd As New Nodo
-        Dim nodoRaiz As New TreeNode
-        Dim Cargo As New Cargo
-        Dim OT As New OT
-        Dim falla As New ModoFalla
-        Dim sintoma As New Sintoma
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
+        Try
+            Dim mantPrev As New MantPreventiva
+            Dim nd As New Nodo
+            Dim nodoRaiz As New TreeNode
+            Dim Cargo As New Cargo
+            Dim OT As New OT
+            Dim falla As New ModoFalla
+            Dim sintoma As New Sintoma
 
-        Cargo.crgTipoInter(cmb_Tipo_Det)
-        sintoma.crgCmbSintoma(cmbSintoma)
-        nodoRaiz.Name = "1"
-        nodoRaiz.Text = "Cambiaso Hnos S.A."
-        nd.CRG_NODO_HIJO(nodoRaiz)
-        arbol3.Nodes.Clear()
-        arbol3.Nodes.Add(nodoRaiz)
-        OT.CrgCmbDetencion(cmb_det)
-        OT.autocompletar_personal(txtRecibidoPor)
-        OT.autocompletar_personal(txtSolicitadoPor)
-        OT.autocompletar_personal(txtCerradoPor)
-        falla.crgTipoFalla(cmb_Tipo_trab)
-        falla.crgModoFalla(cmbFalla)
-        PanFechaCierreOt.Enabled = False
-        cmbEstadoOt.Text = cmbEstadoOt.Items(0)
-        cmbEstadoOt.Enabled = False
+            Cargo.crgTipoInter(cmb_Tipo_Det)
+            sintoma.crgCmbSintoma(cmbSintoma)
+            nodoRaiz.Name = "1"
+            nodoRaiz.Text = "Cambiaso Hnos S.A."
+            nd.CRG_NODO_HIJO(nodoRaiz)
+            arbol3.BeginUpdate()
+            arbol3.Nodes.Clear()
+            arbol3.Nodes.Add(nodoRaiz)
+            arbol3.EndUpdate()
+            OT.CrgCmbDetencion(cmb_det)
+            OT.autocompletar_personal(txtRecibidoPor, txtSolicitadoPor, txtCerradoPor)
+            falla.crgTipoFalla(cmb_Tipo_trab)
+            falla.crgModoFalla(cmbFalla)
+            PanFechaCierreOt.Enabled = False
+            cmbEstadoOt.Text = cmbEstadoOt.Items(0)
+            cmbEstadoOt.Enabled = False
+        Finally
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub btn_guardar_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_guardar.Click
@@ -307,10 +313,6 @@ Public Class frm_OT
         nodo.BuscarYSeleccionarNodoArbol(arbol3, txtBuscarNodo, Nothing, id_nodo_ot_select, nodo_anterior, 2)
     End Sub
 
-    Private Sub BtnNuevaOt_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
-
-    End Sub
-
     Private Sub chkOtCierre_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkOtCierre.CheckedChanged
         If chkOtCierre.Checked Then
             PanFechaCierreOt.Enabled = True
@@ -355,10 +357,6 @@ Public Class frm_OT
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
         End Try
-
-    End Sub
-
-    Private Sub grillaPersonalOt_CellContentClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaPersonalOt.CellContentClick
 
     End Sub
 
@@ -754,10 +752,6 @@ Public Class frm_OT
 
     End Sub
 
-    Private Sub grillaInsumosOt_CellContentClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaInsumosOt.CellContentClick
-
-    End Sub
-
     Private Sub grillaInsumosOt_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles grillaInsumosOt.KeyDown
         If e.KeyCode = Keys.Enter Then
             FrmBuscarInsumo.nombre_form = "OT"
@@ -776,29 +770,6 @@ Public Class frm_OT
             MsgBox("La fecha de recepción debe ser mayor o igual a la fecha de inicio", MsgBoxStyle.Critical, "Validación")
             dt_fecha_rec.Focus()
         End If
-    End Sub
-
-    Private Sub btnAnularOt_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
-        If txtNot.Text = "" Then
-            MsgBox("Debe ingresar un N° de OT antes de anular !!!", MsgBoxStyle.Exclamation, "Validación")
-        Else
-            If MsgBox("Esta seguro de anular la Orden N° :" & txtNot.Text, MsgBoxStyle.YesNo, "Validación") = MsgBoxResult.Yes Then
-                Dim ot As New OT
-                Dim cod_resp As Integer = 0
-                Dim resp As String = 0
-
-                ot.AnularOt(txtNot.Text, cod_resp, resp)
-                If cod_resp = 1 Then
-                    MsgBox(resp, MsgBoxStyle.Information, "Validación")
-                    ot.LimpiarFrmOt()
-                    Exit Sub
-                Else
-                    MsgBox(resp, MsgBoxStyle.Critical, "Validación")
-                    Exit Sub
-                End If
-            End If
-        End If
-
     End Sub
 
     Private Sub dt_fecha_rec_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles dt_fecha_rec.ValueChanged
@@ -820,10 +791,6 @@ Public Class frm_OT
     Private Sub dt_fecha_ter_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles dt_fecha_ter.ValueChanged
         CalcularDuracionOt()
         dt_fecha_cierre.Value = dt_fecha_ter.Value
-    End Sub
-
-    Private Sub txtNot_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtNot.TextChanged
-
     End Sub
 
     Private Sub dt_fecha_cierre_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles dt_fecha_cierre.ValueChanged
@@ -922,9 +889,5 @@ Public Class frm_OT
         Else
             txtCerradoPor.Text = UCase(Trim(txtCerradoPor.Text))
         End If
-    End Sub
-
-    Private Sub cmb_Tipo_Det_SelectedIndexChanged(sender As System.Object, e As System.EventArgs) Handles cmb_Tipo_Det.SelectedIndexChanged
-
     End Sub
 End Class

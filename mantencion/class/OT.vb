@@ -670,30 +670,66 @@ Public Class OT
     End Sub
 
 
-    Public Sub autocompletar_personal(ByRef textbox As TextBox)
+    Private Shared _cacheAutocompletarPersonal As AutoCompleteStringCollection = Nothing
+
+    Public Shared Sub InvalidarCachePersonal()
+        _cacheAutocompletarPersonal = Nothing
+    End Sub
+
+    Public Shared Function ObtenerColeccionAutocompletarPersonal() As AutoCompleteStringCollection
+        If _cacheAutocompletarPersonal IsNot Nothing AndAlso _cacheAutocompletarPersonal.Count > 0 Then
+            Return _cacheAutocompletarPersonal
+        End If
+
+        Dim coleccion As New AutoCompleteStringCollection
         Dim cnx As New SqlConnection
         Dim conexion As New Conexion
-        Dim coleccion As New AutoCompleteStringCollection
-        Dim DST As New DataSet
         Try
             conexion.Conectar(cnx)
-            Using DA As New SqlDataAdapter("AUTOCOMPLETAR_PERSONAL", cnx)
-                DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.Fill(DST)
+            Using com As New SqlCommand("AUTOCOMPLETAR_PERSONAL", cnx)
+                com.CommandType = CommandType.StoredProcedure
+                Using dr As SqlDataReader = com.ExecuteReader()
+                    While dr.Read()
+                        If Not dr.IsDBNull(1) Then
+                            coleccion.Add(dr(1).ToString())
+                        End If
+                    End While
+                End Using
             End Using
-
-            For i = 0 To DST.Tables(0).Rows.Count - 1
-                coleccion.Add(DST.Tables(0).Rows(i).Item(1).ToString)
-            Next
-
-            textbox.AutoCompleteMode = AutoCompleteMode.Suggest
-            textbox.AutoCompleteSource = AutoCompleteSource.CustomSource
-            textbox.AutoCompleteCustomSource = coleccion
-
+            _cacheAutocompletarPersonal = coleccion
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
         Finally
             conexion.Desconectar(cnx)
+        End Try
+        Return coleccion
+    End Function
+
+    Public Sub autocompletar_personal(ByRef textbox As TextBox)
+        If textbox Is Nothing Then Exit Sub
+        Try
+            Dim coleccion As AutoCompleteStringCollection = ObtenerColeccionAutocompletarPersonal()
+            textbox.AutoCompleteMode = AutoCompleteMode.Suggest
+            textbox.AutoCompleteSource = AutoCompleteSource.CustomSource
+            textbox.AutoCompleteCustomSource = coleccion
+        Catch ex As Exception
+            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+        End Try
+    End Sub
+
+    Public Sub autocompletar_personal(ParamArray textboxes() As TextBox)
+        If textboxes Is Nothing OrElse textboxes.Length = 0 Then Exit Sub
+        Try
+            Dim coleccion As AutoCompleteStringCollection = ObtenerColeccionAutocompletarPersonal()
+            For Each txt In textboxes
+                If txt IsNot Nothing Then
+                    txt.AutoCompleteMode = AutoCompleteMode.Suggest
+                    txt.AutoCompleteSource = AutoCompleteSource.CustomSource
+                    txt.AutoCompleteCustomSource = coleccion
+                End If
+            Next
+        Catch ex As Exception
+            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
         End Try
     End Sub
 

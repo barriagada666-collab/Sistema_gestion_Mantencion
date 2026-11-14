@@ -1,4 +1,4 @@
-﻿Imports System.Data
+Imports System.Data
 Imports System.Windows.Forms
 
 Public Class FrmAdminUsuarios
@@ -53,17 +53,28 @@ Public Class FrmAdminUsuarios
     End Sub
 
     Private Sub FrmAdminUsuarios_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim usuario As New Usuario
-        Dim DS As New DataSet
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
+        Try
+            Dim usuario As New Usuario
+            Dim DS As New DataSet
 
-        usuario.CrgCmbPerfil(cmbPerfil1)
-        opcActivoSi.Checked = True
-        usuario.CrgPermisosFormUsuario(grillaPerModulos, grillaModOt, grillaPerMp, grillaPerMantenedores)
-        usuario.CrgUsuarios(DS)
-        grillaUsuarios.DataSource = DS.Tables(0)
-        filtro.Table = DS.Tables(0)
-        ConfigurarEstiloGrillaUsuarios()
-        Utilitarios.AjustarColumnasGrilla(grillaUsuarios)
+            usuario.CrgCmbPerfil(cmbPerfil1)
+            opcActivoSi.Checked = True
+            usuario.CrgPermisosFormUsuario(grillaPerModulos, grillaModOt, grillaPerMp, grillaPerMantenedores)
+            usuario.CrgUsuarios(DS)
+            grillaUsuarios.SuspendLayout()
+            Try
+                grillaUsuarios.DataSource = DS.Tables(0)
+                filtro.Table = DS.Tables(0)
+                ConfigurarEstiloGrillaUsuarios()
+            Finally
+                grillaUsuarios.ResumeLayout(False)
+            End Try
+            Utilitarios.AjustarColumnasGrilla(grillaUsuarios)
+        Finally
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Public Sub ConfigurarEstiloGrillaUsuarios()
@@ -273,8 +284,5 @@ Public Class FrmAdminUsuarios
         grillaUsuarios.DataSource = filtro
         ConfigurarEstiloGrillaUsuarios()
         Utilitarios.AjustarColumnasGrilla(grillaUsuarios)
-    End Sub
-
-    Private Sub grillaUsuarios_CellContentClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaUsuarios.CellContentClick
     End Sub
 End Class

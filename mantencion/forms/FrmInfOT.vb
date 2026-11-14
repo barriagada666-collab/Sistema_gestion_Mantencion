@@ -1,4 +1,4 @@
-﻿Imports System.IO
+Imports System.IO
 Imports System.Collections.Generic
 Imports iTextSharp.text
 Imports iTextSharp.text.pdf
@@ -112,25 +112,34 @@ Public Class FrmInfOT
     End Sub
 
     Private Sub FrmInfOT_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
         Dim nd As New Nodo
         Dim nodoRaiz As New TreeNode
         Dim OT As New OT
         Dim cargo As New Cargo
 
-        nodoRaiz.Name = "1"
-        nodoRaiz.Text = "Cambiaso Hnos S.A."
-        nd.CRG_NODO_HIJO(nodoRaiz)
-        arbol5.Nodes.Clear()
-        arbol5.Nodes.Add(nodoRaiz)
-        OT.CrgCmbTipoDet(cmbTipoTrabajoInfOt)
-        cargo.crgTipoInter(cmbTipoDetencion)
+        Try
+            arbol5.BeginUpdate()
+            nodoRaiz.Name = "1"
+            nodoRaiz.Text = "Cambiaso Hnos S.A."
+            nd.CRG_NODO_HIJO(nodoRaiz)
+            arbol5.Nodes.Clear()
+            arbol5.Nodes.Add(nodoRaiz)
+            OT.CrgCmbTipoDet(cmbTipoTrabajoInfOt)
+            cargo.crgTipoInter(cmbTipoDetencion)
 
-        GrpFiltroFechas.Visible = False
-        Label5.Visible = False
-        Label6.Visible = False
-        cmbTipoTrabajoInfOt.Visible = False
-        cmbTipoDetencion.Visible = False
-        PanPlantas.Visible = False
+            GrpFiltroFechas.Visible = False
+            Label5.Visible = False
+            Label6.Visible = False
+            cmbTipoTrabajoInfOt.Visible = False
+            cmbTipoDetencion.Visible = False
+            PanPlantas.Visible = False
+            Utilitarios.AplicarTemaModerno(Me)
+        Finally
+            arbol5.EndUpdate()
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub OpcFechasOt_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles opcFechasOt.CheckedChanged
@@ -462,9 +471,5 @@ Public Class FrmInfOT
         Else
             array_plantas(2) = 0
         End If
-    End Sub
-
-    Private Sub GrpFiltroInfOt2_Paint(ByVal sender As System.Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles GrpFiltroInfOt2.Paint
-
     End Sub
 End Class

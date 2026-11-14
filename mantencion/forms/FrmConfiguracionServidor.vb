@@ -45,6 +45,7 @@ Public Class FrmConfiguracionServidor
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.StartPosition = FormStartPosition.CenterParent
+        Me.DoubleBuffered = True
         Me.BackColor = Utilitarios.ColorFondoForm
         Me.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point)
 

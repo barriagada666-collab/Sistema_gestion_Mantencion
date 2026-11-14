@@ -1,4 +1,4 @@
-﻿Imports System.Data
+Imports System.Data
 Imports System.Drawing
 Imports System.Windows.Forms
 Imports System.Collections.Generic
@@ -28,20 +28,26 @@ Public Class FrmAdminAuditoria
     Private _dtStatFecha As DataTable = Nothing
 
     Private Sub FrmAdminAuditoria_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim formato As New FormatoGrillas()
-        formato.grillasOT(grillaAuditoria)
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
+        Try
+            Dim formato As New FormatoGrillas()
+            formato.grillasOT(grillaAuditoria)
 
-        ' Estilo moderno a todas las grillas estadísticas
-        FormatoGrillas.AplicarEstiloModerno(grillaStatSesion)
-        FormatoGrillas.AplicarEstiloModerno(grillaStatOperacion)
-        FormatoGrillas.AplicarEstiloModerno(grillaStatPc)
-        FormatoGrillas.AplicarEstiloModerno(grillaStatTabla)
-        FormatoGrillas.AplicarEstiloModerno(grillaStatFecha)
+            ' Estilo moderno a todas las grillas estadísticas
+            FormatoGrillas.AplicarEstiloModerno(grillaStatSesion)
+            FormatoGrillas.AplicarEstiloModerno(grillaStatOperacion)
+            FormatoGrillas.AplicarEstiloModerno(grillaStatPc)
+            FormatoGrillas.AplicarEstiloModerno(grillaStatTabla)
+            FormatoGrillas.AplicarEstiloModerno(grillaStatFecha)
 
-        InicializarCombosFiltro()
+            InicializarCombosFiltro()
 
-        Utilitarios.AplicarTemaModerno(Me)
-        ActualizarBarraEstado(0, 0, 0)
+            Utilitarios.AplicarTemaModerno(Me)
+            ActualizarBarraEstado(0, 0, 0)
+        Finally
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub InicializarCombosFiltro()

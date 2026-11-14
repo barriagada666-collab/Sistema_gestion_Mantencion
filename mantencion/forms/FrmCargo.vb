@@ -1,4 +1,4 @@
-﻿Public Class FrmCargo
+Public Class FrmCargo
 
     Private Sub btn_limpiar_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_limpiar.Click
         Dim cargo As New Cargo
@@ -54,7 +54,13 @@
     End Sub
 
     Private Sub FrmCargo_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Utilitarios.AplicarTemaModerno(Me)
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
+        Try
+            Utilitarios.AplicarTemaModerno(Me)
+        Finally
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub btn_buscar_cargo_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_buscar_cargo.Click
@@ -62,20 +68,21 @@
         Dim DST_CARGOS As New DataSet
         Dim formato_grid As New FormatoGrillas
 
-        cargos.CrgCargos(DST_CARGOS)
-        If DST_CARGOS.Tables.Count > 0 Then
-            grillaCargos.DataSource = DST_CARGOS.Tables(0)
-            formato_grid.grillaCargos(grillaCargos)
-            Utilitarios.AjustarColumnasGrilla(grillaCargos)
-        End If
+        Try
+            grillaCargos.SuspendLayout()
+            cargos.CrgCargos(DST_CARGOS)
+            If DST_CARGOS.Tables.Count > 0 Then
+                grillaCargos.DataSource = DST_CARGOS.Tables(0)
+                formato_grid.grillaCargos(grillaCargos)
+                Utilitarios.AjustarColumnasGrilla(grillaCargos)
+            End If
+        Finally
+            grillaCargos.ResumeLayout(False)
+        End Try
     End Sub
 
     Private Sub btn_salir_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_salir.Click
         Me.Close()
-    End Sub
-
-    Private Sub grillaCargos_CellContentClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaCargos.CellContentClick
-       
     End Sub
 
     Private Sub grillaCargos_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaCargos.CellContentDoubleClick

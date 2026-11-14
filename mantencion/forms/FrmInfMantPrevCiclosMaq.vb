@@ -1,17 +1,25 @@
-﻿Public Class FrmInfMantPrevCiclosMaq
+Public Class FrmInfMantPrevCiclosMaq
     Public id_nodo_mp_select As String = ""
     Public nodo_anterior As String = ""
     Public nodo_anterior2 As String = ""
     Private Sub FrmInfMantPrevCiclosMaq_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
         Dim nd As New Nodo
         Dim nodoRaiz As New TreeNode
         Dim mant_preventiva As New MantPreventiva
-        nodoRaiz.Name = "1"
-        nodoRaiz.Text = "Cambiaso Hnos S.A."
-        nd.CRG_NODO_HIJO(nodoRaiz)
-        Arbol7.Nodes.Add(nodoRaiz)
-        mant_preventiva.CrgCmbTipoMpGantt(cmbTipoMpGantt)
-        Utilitarios.AplicarTemaModerno(Me)
+        Try
+            Arbol7.BeginUpdate()
+            nodoRaiz.Name = "1"
+            nodoRaiz.Text = "Cambiaso Hnos S.A."
+            nd.CRG_NODO_HIJO(nodoRaiz)
+            Arbol7.Nodes.Add(nodoRaiz)
+            mant_preventiva.CrgCmbTipoMpGantt(cmbTipoMpGantt)
+            Utilitarios.AplicarTemaModerno(Me)
+        Finally
+            Arbol7.EndUpdate()
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub Arbol7_AfterSelect(ByVal sender As System.Object, ByVal e As System.Windows.Forms.TreeViewEventArgs) Handles Arbol7.AfterSelect
@@ -65,10 +73,6 @@
 
     Private Sub Arbol7_BeforeSelect(ByVal sender As Object, ByVal e As System.Windows.Forms.TreeViewCancelEventArgs) Handles Arbol7.BeforeSelect
         Nodo.LimpiarResaltadoNodos(Arbol7.Nodes)
-    End Sub
-
-    Private Sub Arbol7_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Arbol7.Click
-
     End Sub
 
     Private Sub txtBuscarNodo7_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtBuscarNodo7.KeyUp

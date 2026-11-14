@@ -1,4 +1,4 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Public Class FrmMp
     Public DS2 As New DataSet
     Public DST_TAREAS As New DataSet
@@ -13,25 +13,34 @@ Public Class FrmMp
     Public id_nodo_padre As String
 
     Private Sub FrmMp_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim mantPrev As New MantPreventiva
-        Dim nd As New Nodo
-        Dim nodoRaiz As New TreeNode
-        Dim grillas As New FormatoGrillas
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
+        Try
+            Dim mantPrev As New MantPreventiva
+            Dim nd As New Nodo
+            Dim nodoRaiz As New TreeNode
+            Dim grillas As New FormatoGrillas
 
-        nodoRaiz.Name = "1"
-        nodoRaiz.Text = "Cambiaso Hnos S.A."
-        nd.CRG_NODO_MANT_SI(nodoRaiz)
-        arbol1.Nodes.Add(nodoRaiz)
-        mantPrev.CrgCmbEstadoCiclo(cmbEstadoCiclo)
-        mantPrev.CrgCmbEstadoMp(cmbEstadoMp)
-        mantPrev.CrgCmbTipoMp(cmbTipoMp)
+            nodoRaiz.Name = "1"
+            nodoRaiz.Text = "Cambiaso Hnos S.A."
+            nd.CRG_NODO_MANT_SI(nodoRaiz)
+            arbol1.BeginUpdate()
+            arbol1.Nodes.Clear()
+            arbol1.Nodes.Add(nodoRaiz)
+            arbol1.EndUpdate()
+            mantPrev.CrgCmbEstadoCiclo(cmbEstadoCiclo)
+            mantPrev.CrgCmbEstadoMp(cmbEstadoMp)
+            mantPrev.CrgCmbTipoMp(cmbTipoMp)
 
-        If btnNuevoCiclo.Enabled = False Then
-            btnNuevoCiclo.Enabled = True
-        End If
+            If btnNuevoCiclo.Enabled = False Then
+                btnNuevoCiclo.Enabled = True
+            End If
 
-        lblHrsCiclo.Visible = False
-        hrsCiclo.Visible = False
+            lblHrsCiclo.Visible = False
+            hrsCiclo.Visible = False
+        Finally
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub AgrFila_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnAgrFila.Click
@@ -743,10 +752,6 @@ Public Class FrmMp
             nodo_anterior2 = id_nodo_select
             arbol1.SelectedNode.BackColor = Utilitarios.ColorSeleccion
         End If
-    End Sub
-
-    Private Sub TareasAdMp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TareasAdMp.Click
-
     End Sub
 
     Private Sub btnCambiarTareas_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnCambiarTareas.Click
