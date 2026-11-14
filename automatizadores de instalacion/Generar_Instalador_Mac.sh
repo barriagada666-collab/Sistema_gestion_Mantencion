@@ -104,32 +104,37 @@ cp -r "$ROOT_DIR/mantencion/plantillas"/*.xls "$APP_BUNDLE/Contents/Resources/ap
 # Launcher script universal macOS
 cat << 'EOF' > "$APP_BUNDLE/Contents/MacOS/launcher"
 #!/bin/bash
+# ==============================================================================
 # Launcher Universal para macOS (Apple Silicon M1-M4 & Intel x86_64)
 # Sistema de Gestión Departamento Mantención - Cambiaso Hnos. S.A.C.
+# ==============================================================================
 
 DIR="$(cd "$(dirname "$0")/../Resources/app" && pwd)"
 APP_EXE="$DIR/Sistema de Gestion Mantencion.exe"
 ARCH="$(uname -m)"
 
-# Prefijo WINE aislado y dedicado para el sistema de mantención
-export WINEPREFIX="$HOME/Library/Application Support/SistemaMantencion/wineprefix"
-export WINEARCH=win64
-export WINEDEBUG=-all
-export WINEFSYNC=1
-export WINEESYNC=1
+# 1. Detectar si Whisky está instalado (Frontend preferido para macOS Apple Silicon e Intel)
+WHISKY_APP=""
+if [[ -d "/Applications/Whisky.app" ]]; then
+    WHISKY_APP="/Applications/Whisky.app"
+elif [[ -d "$HOME/Applications/Whisky.app" ]]; then
+    WHISKY_APP="$HOME/Applications/Whisky.app"
+fi
 
-mkdir -p "$WINEPREFIX"
-
-# Búsqueda de Wine / Whisky / CrossOver en rutas estándar de macOS
+# 2. Búsqueda de binarios de Wine CLI en rutas estándar de macOS
 WINE_CMD=""
-
 POSSIBLE_PATHS=(
-    "/Applications/Whisky.app/Contents/Resources/Libraries/Wine/bin/wine64"
     "/opt/homebrew/bin/wine64"
     "/opt/homebrew/bin/wine"
     "/usr/local/bin/wine64"
     "/usr/local/bin/wine"
-    "$HOME/.whisky/Libraries/Wine/bin/wine64"
+    "$HOME/Library/Application Support/com.isaacmarovitz.Whisky/Libraries/Wine/bin/wine64"
+    "$HOME/Library/Application Support/com.isaacmarovitz.Whisky/Libraries/Wine/bin/wine"
+    "$HOME/Library/Containers/com.isaacmarovitz.Whisky/Data/Library/Application Support/com.isaacmarovitz.Whisky/Libraries/Wine/bin/wine64"
+    "$HOME/Library/Application Support/Whisky/Libraries/Wine/bin/wine64"
+    "/Applications/Wine Crossover.app/Contents/Resources/wine/bin/wine64"
+    "/Applications/Wine Crossover.app/Contents/Resources/wine/bin/wine"
+    "/Applications/CrossOver.app/Contents/SharedSupport/CrossOver/bin/wine64"
     "/Applications/CrossOver.app/Contents/SharedSupport/CrossOver/bin/wine"
 )
 
@@ -144,23 +149,50 @@ if [[ -z "$WINE_CMD" ]]; then
     WINE_CMD="$(command -v wine64 2>/dev/null || command -v wine 2>/dev/null || true)"
 fi
 
-# Si no está instalado Wine, guiar amigablemente al usuario con UI nativa
-if [[ -z "$WINE_CMD" ]]; then
-    osascript << 'APPLESCRIPT'
-    display alert "Sistema de Gestión Departamento Mantención" message "Para ejecutar este software en macOS (compatible con Apple Silicon e Intel), se requiere el motor Wine o Whisky.\n\n¿Desea abrir la guía de instalación rápida o instalarlo automáticamente?" buttons {"Cancelar", "Instalar Automáticamente"} default button "Instalar Automáticamente" as informational
-    if button returned of result is "Instalar Automáticamente" then
-        tell application "Terminal"
-            activate
-            do script "echo '=== Instalando Wine para macOS (Homebrew) ===' && brew install --cask wine-stable || brew install --cask whisky"
-        end tell
-    end if
-APPLESCRIPT
-    exit 1
+# 3. Si Whisky está instalado, priorizar ejecución directa a través de Whisky
+if [[ -n "$WHISKY_APP" ]]; then
+    if command -v whisky &>/dev/null; then
+        whisky run "$APP_EXE" "$@" 2>/dev/null && exit 0
+    fi
+    open -a "$WHISKY_APP" "$APP_EXE"
+    exit 0
 fi
 
-# Ejecutar el sistema de mantención
-cd "$DIR"
-exec "$WINE_CMD" "$APP_EXE" "$@"
+# 4. Si se encontró un binario Wine CLI funcional (ej: wine-crossover o CrossOver)
+if [[ -n "$WINE_CMD" ]]; then
+    export WINEPREFIX="$HOME/Library/Application Support/SistemaMantencion/wineprefix"
+    export WINEARCH=win64
+    export WINEDEBUG=-all
+    export WINEFSYNC=1
+    export WINEESYNC=1
+    mkdir -p "$WINEPREFIX"
+
+    WINE_DIR="$(dirname "$WINE_CMD")"
+    if [[ -d "$WINE_DIR/../lib" ]]; then
+        export DYLD_FALLBACK_LIBRARY_PATH="$WINE_DIR/../lib:${DYLD_FALLBACK_LIBRARY_PATH:-}"
+    fi
+
+    cd "$DIR"
+    exec "$WINE_CMD" "$APP_EXE" "$@"
+fi
+
+# 5. Si CrossOver está instalado en /Applications
+if [[ -d "/Applications/CrossOver.app" ]]; then
+    open -a "/Applications/CrossOver.app" "$APP_EXE"
+    exit 0
+fi
+
+# 6. Si no hay ningún motor de compatibilidad, guiar amigablemente al usuario con UI nativa
+osascript << 'APPLESCRIPT'
+display alert "Sistema de Gestión Departamento Mantención" message "Para ejecutar este software en macOS (compatible con Apple Silicon e Intel), se requiere Whisky o Wine.\n\nWhisky es la aplicación recomendada, moderna y gratuita para macOS.\n\n¿Desea instalar Whisky automáticamente ahora con Homebrew?" buttons {"Cancelar", "Instalar Whisky"} default button "Instalar Whisky" as informational
+if button returned of result is "Instalar Whisky" then
+    tell application "Terminal"
+        activate
+        do script "echo '=== Instalando Whisky para macOS ===' && brew install --cask whisky"
+    end tell
+end if
+APPLESCRIPT
+exit 1
 EOF
 
 chmod +x "$APP_BUNDLE/Contents/MacOS/launcher"
@@ -169,8 +201,10 @@ chmod +x "$APP_BUNDLE/Contents/MacOS/launcher"
 echo "[3/4] Creando instalador interactivo Instalar_en_Mac.command..."
 cat << 'EOF' > "$DIST_MAC/Instalar_en_Mac.command"
 #!/bin/bash
+# ==============================================================================
 # Script de Instalación de 1-Clic para macOS
 # Sistema de Gestión Departamento Mantención - Cambiaso Hnos. S.A.C.
+# ==============================================================================
 
 set -e
 cd "$(dirname "$0")"
@@ -199,14 +233,23 @@ echo "[2/3] Configurando permisos y removiendo cuarentena de macOS Gatekeeper...
 xattr -dr com.apple.quarantine "$APP_DEST" 2>/dev/null || true
 chmod -R 755 "$APP_DEST"
 
-echo "[3/3] Verificando motor Wine / Whisky..."
-if command -v wine &>/dev/null || command -v wine64 &>/dev/null || [[ -d "/Applications/Whisky.app" ]] || [[ -x "/opt/homebrew/bin/wine" ]]; then
-    echo "       Motor de compatibilidad detectado correctamente."
-else
+echo "[3/3] Verificando motor de compatibilidad Whisky / Wine..."
+MOTOR_ENCONTRADO=0
+
+if [[ -d "/Applications/Whisky.app" ]] || [[ -d "$HOME/Applications/Whisky.app" ]]; then
+    echo "       ✓ [OK] Whisky detectado en Aplicaciones."
+    MOTOR_ENCONTRADO=1
+fi
+
+if command -v wine &>/dev/null || command -v wine64 &>/dev/null || [[ -x "/opt/homebrew/bin/wine" ]]; then
+    echo "       ✓ [OK] Motor Wine detectado en el sistema."
+    MOTOR_ENCONTRADO=1
+fi
+
+if [[ $MOTOR_ENCONTRADO -eq 0 ]]; then
     echo ""
-    echo "       [AVISO] No se detectó Wine ni Whisky en su sistema."
-    echo "       Para instalarlo automáticamente con Homebrew, ejecute:"
-    echo "       brew install --cask wine-stable"
+    echo "       [AVISO] Se recomienda instalar Whisky para macOS:"
+    echo "       brew install --cask whisky"
     echo ""
 fi
 
@@ -221,6 +264,54 @@ open "$APP_DEST" || true
 EOF
 
 chmod +x "$DIST_MAC/Instalar_en_Mac.command"
+
+# Lanzador directo de Whisky: Iniciar_con_Whisky.command
+cat << 'EOF' > "$DIST_MAC/Iniciar_con_Whisky.command"
+#!/bin/bash
+# ==============================================================================
+# Lanzador directo con Whisky para macOS
+# Sistema de Gestión Departamento Mantención - Cambiaso Hnos. S.A.C.
+# ==============================================================================
+
+DIR="$(cd "$(dirname "$0")" && pwd)"
+APP_EXE="$DIR/Sistema de Gestión Mantención.app/Contents/Resources/app/Sistema de Gestion Mantencion.exe"
+if [[ ! -f "$APP_EXE" ]]; then
+    APP_EXE="/Applications/Sistema de Gestión Mantención.app/Contents/Resources/app/Sistema de Gestion Mantencion.exe"
+fi
+
+clear
+echo "=========================================================="
+echo "  SISTEMA DE GESTIÓN MANTENCIÓN - LANZADOR WHISKY"
+echo "  Cambiaso Hnos. S.A.C. - División Mantención Industrial"
+echo "=========================================================="
+echo ""
+
+WHISKY_PATH=""
+if [[ -d "/Applications/Whisky.app" ]]; then
+    WHISKY_PATH="/Applications/Whisky.app"
+elif [[ -d "$HOME/Applications/Whisky.app" ]]; then
+    WHISKY_PATH="$HOME/Applications/Whisky.app"
+fi
+
+if [[ -n "$WHISKY_PATH" ]]; then
+    echo "✓ Whisky detectado en: $WHISKY_PATH"
+    echo "Iniciando Sistema de Gestión Mantención en Whisky..."
+    open -a "$WHISKY_PATH" "$APP_EXE"
+    echo ""
+    echo "¡Listo! La aplicación se está ejecutando a través de Whisky."
+    sleep 2
+    exit 0
+else
+    echo "[AVISO] Whisky no fue detectado en /Applications."
+    echo "Puede instalar Whisky con Homebrew ejecutando:"
+    echo "brew install --cask whisky"
+    echo ""
+    read -p "Presione Enter para salir..."
+    exit 1
+fi
+EOF
+
+chmod +x "$DIST_MAC/Iniciar_con_Whisky.command"
 
 # 5. Guía HTML interactiva LEAME_MAC.html
 cat << 'EOF' > "$DIST_MAC/LEAME_MAC.html"
@@ -244,7 +335,7 @@ cat << 'EOF' > "$DIST_MAC/LEAME_MAC.html"
   <div class="card">
     <span class="badge">macOS Universal (Apple Silicon M1-M4 &amp; Intel)</span>
     <h1>⚙️ Sistema de Gestión Departamento Mantención</h1>
-    <p>Guía de instalación rápida para usuarios de computadores Mac (MacBook, iMac, Mac mini, Mac Studio, Mac Pro).</p>
+    <p>Guía de instalación rápida para usuarios de computadores Mac (MacBook Air, MacBook Pro, iMac, Mac mini, Mac Studio, Mac Pro).</p>
 
     <div class="step">
       <h3>Paso 1: Instalación con 1 Clic</h3>
@@ -252,15 +343,15 @@ cat << 'EOF' > "$DIST_MAC/LEAME_MAC.html"
     </div>
 
     <div class="step">
-      <h3>Paso 2: Motor de Compatibilidad Wine / Whisky</h3>
-      <p>Si aún no tiene Wine o Whisky instalado, abra la aplicación <strong>Terminal</strong> y pegue el siguiente comando:</p>
-      <p><code>brew install --cask wine-stable</code></p>
-      <p><em>O si prefiere interfaz gráfica moderna, puede instalar Whisky:</em> <code>brew install --cask whisky</code></p>
+      <h3>Paso 2: Motor de Compatibilidad Whisky (Recomendado)</h3>
+      <p>Si aún no tiene Whisky instalado, puede instalarlo en 1 minuto con Homebrew pegando en <strong>Terminal</strong>:</p>
+      <p><code>brew install --cask whisky</code></p>
+      <p><em>O descargándolo directamente desde <a href="https://getwhisky.app" target="_blank" style="color: #38bdf8; text-decoration: underline;">getwhisky.app</a>.</em></p>
     </div>
 
     <div class="step">
       <h3>Paso 3: ¡Listo para Trabajar!</h3>
-      <p>Abra <strong>Sistema de Gestión Mantención</strong> directamente desde Launchpad o la carpeta Aplicaciones de su Mac.</p>
+      <p>Abra <strong>Sistema de Gestión Mantención</strong> directamente desde Launchpad o la carpeta Aplicaciones de su Mac. También puede usar <code>Iniciar_con_Whisky.command</code>.</p>
     </div>
 
     <div class="footer">
@@ -278,7 +369,7 @@ ZIP_OUTPUT="$ROOT_DIR/Instalador/Instalador_Sistema_Mantencion_v2026.1_macOS_Uni
 rm -f "$ZIP_OUTPUT"
 
 cd "$DIST_MAC"
-zip -r -y "$ZIP_OUTPUT" "$APP_NAME.app" "Instalar_en_Mac.command" "LEAME_MAC.html"
+zip -r -y "$ZIP_OUTPUT" "$APP_NAME.app" "Instalar_en_Mac.command" "Iniciar_con_Whisky.command" "LEAME_MAC.html"
 
 # Calcular hash
 ZIP_HASH=$(sha256sum "$ZIP_OUTPUT" | awk '{print $1}')

@@ -154,12 +154,13 @@ El sistema cuenta con un instalador nativo para usuarios de computadores Mac sin
 * **`Sistema de Gestión Mantención.app`:** Paquete de aplicación nativo de macOS estructurado según los estándares de Apple.
 * **`Contents/Info.plist`:** Metadatos de bundle (`cl.cambiaso.mantencion`), alta resolución Retina y categorización empresarial.
 * **`Contents/Resources/app_icon.icns`:** Icono Apple ICNS multirresolución de alta definición (hasta 1024x1024).
-* **`Contents/MacOS/launcher`:** Lanzador bash universal que detecta automáticamente si el Mac es Apple Silicon (`arm64`) o Intel (`x86_64`), aísla el entorno en un prefijo dedicado (`~/Library/Application Support/SistemaMantencion/wineprefix`), optimiza la sincronización (`WINEESYNC=1`, `WINEFSYNC=1`) y se enlaza de forma transparente con motores como Wine, Whisky o CrossOver.
+* **`Contents/MacOS/launcher`:** Lanzador bash universal que detecta automáticamente si el Mac es Apple Silicon (`arm64`) o Intel (`x86_64`), enlaza directamente con **Whisky** si está presente en `/Applications`, o utiliza Wine CLI aislando el prefijo (`~/Library/Application Support/SistemaMantencion/wineprefix`).
 * **`Instalar_en_Mac.command`:** Script de instalación de 1-clic con doble clic que copia la aplicación a `/Applications`, remueve el atributo de cuarentena de Apple Gatekeeper (`xattr -dr com.apple.quarantine`) y valida el entorno.
+* **`Iniciar_con_Whisky.command`:** Lanzador rápido directo de 1-clic para usuarios con Whisky instalado en macOS.
 
 ### Opciones de Descarga para Mac:
-1. **Imagen de Disco Apple (.DMG):** `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` — Monta el volumen virtual en el Finder para arrastrar y soltar.
-2. **Paquete Portable (.ZIP):** `Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip` — Incluye la aplicación y el asistente de 1-clic.
+1. **Imagen de Disco Apple (.DMG):** `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` — Monta el volumen virtual en el Finder para arrastrar y soltar hacia `/Applications`.
+2. **Paquete Portable (.ZIP):** `Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip` — Incluye la aplicación, el asistente `Instalar_en_Mac.command` y el lanzador directo `Iniciar_con_Whisky.command`.
 
 ---
 

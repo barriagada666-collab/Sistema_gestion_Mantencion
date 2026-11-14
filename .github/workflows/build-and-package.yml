@@ -160,6 +160,7 @@ jobs:
           # Checksums
           cd Instalador
           shasum -a 256 "$DMG_NAME" > checksums_mac_sha256.txt
+          shasum -a 256 "Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip" >> checksums_mac_sha256.txt
           cat checksums_mac_sha256.txt
 
       - name: 5. Publicar Artefacto - Instalador macOS (DMG y ZIP)
