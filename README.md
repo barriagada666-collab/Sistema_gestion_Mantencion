@@ -134,23 +134,33 @@ Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en
 ### 🛠️ Para Desarrolladores y Compilación:
 * **SDK:** Microsoft .NET 8.0 SDK (`8.0.x` o superior).
 * **IDE Recomendado:** Visual Studio 2022 (con carga de trabajo *.NET Desktop Development*) o Visual Studio Code en Linux/macOS.
-* **Compilación por consola:**
+* **Compilación y generación de compilados/instaladores:**
   ```bash
+  # Compilar solución (0 advertencias, 0 errores)
   dotnet build mantencion.sln -c Release
+
+  # Publicar paquete autocontenido Windows x64 / macOS ARM64
+  dotnet publish mantencion/mantencion.vbproj -c Release -r win-x64 --self-contained true
+
+  # Empaquetar NuGet (.nupkg)
+  dotnet pack mantencion/mantencion.vbproj -c Release -o nupkg
   ```
+* **Automatizadores oficiales:**
+  * Windows (Inno Setup `LZMA2` ultra): [`automatizadores de instalacion/Compilar_Instalador.ps1`](automatizadores%20de%20instalacion/Compilar_Instalador.ps1)
+  * macOS Universal (`.dmg` `ULMO` + `.zip` `-9`, ARM64 sin Rosetta 2 + Intel): [`automatizadores de instalacion/Generar_Instalador_Mac.sh`](automatizadores%20de%20instalacion/Generar_Instalador_Mac.sh)
 
 ---
 
-## 📦 Descargas Oficiales (v2026.1 LTS)
+## 📦 Descargas Oficiales e Instaladores (v2026.1 LTS)
 
-> **Nota:** Todos los instaladores son **autocontenidos, compactados y libres de dependencias externas**.
+> **Nota:** Todos los instaladores y compilaciones son **100% autocontenidos, compactados y libres de dependencias externas (Zero-Dependency)**.
 
-| Plataforma | Formato | Tamaño | Enlace Directo |
-| :--- | :---: | :---: | :--- |
-| 🪟 **Windows 10 / 11** (64-bit) | `.exe` | `41.37 MB` | [⬇️ **Descargar Instalador Windows**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) |
-| 🍏 **macOS Universal Nativo** (M1–M4 sin Rosetta / Intel) | `.dmg` | `272.56 MB` | [⬇️ **Descargar Imagen DMG para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) |
-| 🍏 **macOS Universal Nativo** (M1–M4 sin Rosetta / Intel) | `.zip` | `344.73 MB` | [⬇️ **Descargar Paquete ZIP para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) |
-| 📦 **GitHub Packages** | `.nupkg` | `2.00 MB` | [⬇️ **Descargar Paquete NuGet**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Sistema.Gestion.Mantencion.2026.1.0.nupkg) |
+| Plataforma / Compilación | Formato y Descripción del Instalador | Tamaño | Enlace Directo |
+| :--- | :--- | :---: | :--- |
+| 🪟 **Windows 10 / 11** (`win-x64`) | **`.exe` (Inno Setup `LZMA2`)** — Instalador autocontenido con .NET 8 Desktop, SQL nativo, Excel XML e `iTextSharp` PDF | `41.37 MB` | [⬇️ **Descargar Instalador Windows**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) |
+| 🍏 **macOS Universal Nativo** (Apple Silicon M1–M4 sin Rosetta 2 + Intel) | **`.dmg` (`ULMO LZMA`)** — Imagen macOS con binario Universal (`arm64` + `x86_64`), motores nativos depurados e instalador en 1 clic (`Instalar_en_Mac.command`) | `272.56 MB` | [⬇️ **Descargar Imagen DMG para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) |
+| 🍏 **macOS Universal Nativo** (Apple Silicon M1–M4 sin Rosetta 2 + Intel) | **`.zip` (`-9`)** — Paquete portátil con `.app` Universal nativo, script instalador y guía HTML | `344.73 MB` | [⬇️ **Descargar Paquete ZIP para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) |
+| 📦 **GitHub Packages / NuGet** | **`.nupkg`** — Paquete compilado .NET 8 con documentación, ícono y metadatos del ensamblado | `2.00 MB` | [⬇️ **Descargar Paquete NuGet**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Sistema.Gestion.Mantencion.2026.1.0.nupkg) |
 
 <details>
 <summary>🔐 Verificación de Integridad (SHA-256 oficial en <code>/Instalador</code>)</summary>
@@ -164,7 +174,7 @@ Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en
 
 </details>
 
-> 📁 *Todos los archivos binarios de instalación y sus checksums SHA-256 (`checksums_sha256.txt` y `checksums_mac_sha256.txt`) se sincronizan automáticamente en la carpeta [`/Instalador`](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/tree/main/Instalador) del repositorio en cada compilación.*
+> 📁 *Todos los binarios, checksums SHA-256 (`checksums_sha256.txt` / `checksums_mac_sha256.txt`) y guía rápida de distribución se sincronizan en [`/Instalador/README.md`](Instalador/README.md).*
 
 ---
 

@@ -667,8 +667,8 @@ cat << 'EOF' > "$DIST_MAC/LEAME_MAC.html"
   <div class="card">
     <span class="badge">Aplicación Universal (Apple Silicon M1–M4 &amp; Intel)</span>
     <span class="badge badge-native">100% Nativo ARM64 — Sin Rosetta 2 (Compatible macOS 27 Golden Gate y 28+)</span>
-    <h1>⚙️ Sistema de Gestión Departamento Mantención</h1>
-    <p>Guía de instalación rápida para computadores Mac (MacBook Air, MacBook Pro, iMac, Mac mini, Mac Studio, Mac Pro).</p>
+    <h1>Sistema de Gestión Departamento Mantención v2026.1 LTS</h1>
+    <p>Plataforma CMMS integral de Cambiaso Hnos. S.A.C. (40 formularios) para MacBook Air, MacBook Pro, iMac, Mac mini, Mac Studio y Mac Pro.</p>
 
     <div class="step">
       <h3>Paso 1: Instalación Automática en 1 Clic (Recomendado)</h3>
@@ -676,17 +676,22 @@ cat << 'EOF' > "$DIST_MAC/LEAME_MAC.html"
     </div>
 
     <div class="step">
-      <h3>Paso 2: Compatibilidad Total con macOS 27 Golden Gate y Futuros macOS</h3>
-      <p>En Mac con chip de Apple (M1, M2, M3, M4), la aplicación ejecuta un binario <strong>Universal (arm64 + x86_64)</strong> junto con motor ARM64 nativo y .NET 8 ARM64. <strong>No requiere ni utiliza Rosetta 2</strong>, garantizando compatibilidad futura con macOS 28 y máximo rendimiento.</p>
+      <h3>Paso 2: Compatibilidad Nativa Apple Silicon (Sin Rosetta 2) &amp; Intel</h3>
+      <p>En Mac con chip de Apple (M1–M4), ejecuta un binario <strong>Universal (arm64 + x86_64)</strong> junto con motor ARM64 nativo y .NET 8 ARM64. <strong>No utiliza Rosetta 2</strong>, eliminando avisos de apps Intel en macOS 27 Golden Gate y garantizando compatibilidad con macOS 28+.</p>
+    </div>
+
+    <div class="step">
+      <h3>Paso 3: Conexión SQL Bajo Demanda y Exportación Cero Dependencias</h3>
+      <p>La pantalla de <strong>Inicio de Sesión</strong> se inicia limpia. Si el servidor SQL no responde (por VPN o red local distinta a <code>SrvMagicInfo</code>), el sistema explicará la causa y le preguntará si desea abrir <strong>Configurar Servidor BD</strong>. Incluye exportación nativa a Excel (<code>.xls</code> XML) y PDF vectorial (<code>iTextSharp</code>) sin requerir Office ni Crystal Reports.</p>
     </div>
 
     <div class="step">
       <h3>Diagnóstico y Logs</h3>
-      <p>Si necesita revisar el registro de ejecución, consulte <code>~/Library/Logs/SistemaMantencion/launcher.log</code> o ejecute <code>Iniciar_con_Whisky.command</code>.</p>
+      <p>Consulte los logs del lanzador en <code>~/Library/Logs/SistemaMantencion/launcher.log</code>, use el menú <strong>Mantenedores &gt; Ver Registro de Errores (Logs)...</strong> dentro de la aplicación, o ejecute <code>Iniciar_con_Whisky.command</code>.</p>
     </div>
 
     <div class="footer">
-      Cambiaso Hnos. S.A.C. — División de Mantención Industrial &copy; 2026
+      Cambiaso Hnos. S.A.C. — División de Mantención Industrial &copy; 2026 &middot; <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion" style="color:#66C9D3;">Repositorio GitHub</a>
     </div>
   </div>
 </body>

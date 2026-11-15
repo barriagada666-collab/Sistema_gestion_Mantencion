@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Script automatizado para publicar o actualizar el instalador oficial en GitHub Releases.
     Sistema de Gestión Departamento Mantención - Cambiaso Hnos. S.A.C.
@@ -88,32 +88,25 @@ try {
 }
 
 $releaseBody = @"
-# 🚀 Sistema de Gestión Departamento Mantención v2026.1 LTS
+## Sistema de Gestión Departamento Mantención — v2026.1 LTS
 **Cambiaso Hnos. S.A.C. — División de Mantención Industrial**  
 📍 *Virginia Bravo Letelier 777, Placilla de Peñuelas, Valparaíso, Chile*  
 👨‍💻 *Creado por Boris Arriagada*
 
 ---
 
-### 📦 Características Principales de esta Versión:
-- **Instalador Autocontenido (Zero-Dependency):** Empaqueta Microsoft .NET 8 (CoreCLR), librerías WinForms x64, dependencias nativas y plantillas Excel institucionales. No requiere conexión a internet ni runtimes previos de Windows.
-- **Gestión Integral de Órdenes de Trabajo (OT):** Emisión, seguimiento, control de tiempos de detención de línea y generación autónoma de reportes vectoriales en PDF de alta resolución.
-- **Planificación de Mantenimiento Preventivo (MP):** Control por ciclos operativos, horómetros y calendarios de maquinaria.
-- **Analítica y Cuadros de Mando Estadísticos:** Cálculo automático de indicadores, ranking de fallas y gráficos recursivos por Planta, Sección, Máquina y Componente.
-- **Carta Gantt y Cronogramas Operativos:** Visualización de intervenciones y exportación interactiva a planillas Microsoft Excel.
-- **Auditoría de Operaciones con KPIs y Drill-Down:** Trazabilidad de eventos de BD, panel de KPIs en tiempo real y exportación avanzada a Excel.
-- **Exportación Excel y PDF Reparada y Optimizada:** Ensamblado office.dll v15 embebido, resolución determinista de plantillas e inserción matricial 2D en bloque ultrarrápida.
-- **Configurador de Servidor BD en Caliente:** Alternancia segura de servidores SQL Server con test de enlace previo y respaldo inmutable.
+### ✨ Características Principales de esta Versión
+- **40 Formularios Unificados (`Segoe UI`):** Paleta corporativa oficial (`#025E87`, `#0191B3`, `#66C9D3`, `#E5EBEB`, `#F2F6F6`, `#0F2D44`), ajuste automático a pantalla y textos sin glifos rotos en Windows/macOS.
+- **Captura Global de Errores y Configuración SQL Bajo Demanda:** Inicio de sesión limpio; si falla la conexión SQL, explica la causa en español, guarda el detalle en `%LOCALAPPDATA%\SistemaMantencion\logs\errores_yyyyMMdd.log` y ofrece abrir **Configurar Servidor BD** automáticamente.
+- **Filtro Obligatorio por Rango de Fechas (`Desde` / `Hasta`):** Selectores activos y validados en OT, Mantención Preventiva, Ciclos por Máquina, Carta Gantt, Resúmenes Estadísticos y Auditoría.
+- **Exportación Excel y PDF con Cero Dependencias:** Respaldo nativo SpreadsheetML (`.xls`) cuando Excel no está presente y generación vectorial PDF directa con `iTextSharp` (sin Crystal Reports ni Office).
+- **Multiplataforma Autocontenida (Zero-Dependency):** Windows 10/11 (`.exe` compactado `LZMA2`) y macOS Universal Nativo (`.dmg` `ULMO` / `.zip` con Apple Silicon ARM64 **sin Rosetta 2** compatible con macOS 27/28+ e Intel `x86_64`).
 
 ---
 
-### ⬇️ Descarga del Instalador Oficial:
-Descargue el archivo ejecutable adjunto en los **Assets**:
-
-- 💾 **Archivo:** $($item.Name)
-- 🖥️ **Plataforma:** Windows 10 / Windows 11 (64 bits - x64)
-- ⚖️ **Tamaño:** $sizeMb MB ($($item.Length) bytes)
-- 🔒 **Checksum SHA-256:** $hash
+### ⬇️ Descarga Oficial:
+- 💾 **Windows (`x64`):** $($item.Name) ($sizeMb MB · SHA-256: `$hash`)
+- 🍏 **macOS Universal & 📦 NuGet:** disponibles en los Assets del Release y sincronizados en la carpeta `/Instalador`.
 "@
 
 if ($null -eq $release) {
