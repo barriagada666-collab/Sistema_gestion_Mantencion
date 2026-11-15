@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
   build-and-package:
@@ -106,17 +107,24 @@ jobs:
           "@
           Set-Content -Path "Instalador\checksums_sha256.txt" -Value $info
 
-      - name: 10. Publicar Artefacto - Instalador Oficial
+      - name: 10. Empaquetar y Publicar en GitHub Packages (NuGet)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          dotnet pack mantencion\mantencion.vbproj -c Release -o nupkg
+          dotnet nuget push nupkg\*.nupkg --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+
+      - name: 11. Publicar Artefacto - Instalador Oficial y Paquete NuGet
         uses: actions/upload-artifact@v4
         with:
           name: Instalador-Sistema-Mantencion-v2026.1
           path: |
             Instalador/Instalador_Sistema_Mantencion_v2026.1.exe
             Instalador/checksums_sha256.txt
-          if-no-files-found: error
+            nupkg/*.nupkg
+          if-no-files-found: warn
           retention-days: 30
 
-      - name: 11. Publicar en GitHub Releases (Oficial)
+      - name: 12. Publicar en GitHub Releases (Oficial)
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
@@ -127,6 +135,7 @@ jobs:
           files: |
             Instalador/Instalador_Sistema_Mantencion_v2026.1.exe
             Instalador/checksums_sha256.txt
+            nupkg/*.nupkg
           token: ${{ secrets.GITHUB_TOKEN }}
 
   build-mac-installer:

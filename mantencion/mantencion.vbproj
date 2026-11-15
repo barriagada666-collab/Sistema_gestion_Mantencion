@@ -29,7 +29,27 @@
 
     <!-- Silencia advertencias obsoletas de VB, compatibilidad de plataforma y serialización para compilación 100% limpia -->
     <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036,SYSLIB0051,CA1416</NoWarn>
+
+    <!-- Metadatos de GitHub Packages / NuGet -->
+    <PackageId>Sistema.Gestion.Mantencion</PackageId>
+    <Version>2026.1.0</Version>
+    <Authors>Boris Arriagada</Authors>
+    <Company>Cambiaso Hnos S.A.C.</Company>
+    <Product>Sistema de Gestión Departamento Mantención</Product>
+    <Description>Sistema de Gestión de Mantención Industrial - Cambiaso Hnos. S.A.C. (.NET 8 Windows y macOS)</Description>
+    <PackageProjectUrl>https://github.com/barriagada666-collab/Sistema_gestion_Mantencion</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/barriagada666-collab/Sistema_gestion_Mantencion</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReleaseNotes>Versión 2026.1 LTS con soporte multiplataforma, iconos modernos Lucide vectoriales y optimización de rendimiento SQL.</PackageReleaseNotes>
+    <PackageTags>mantencion;gestion;industrial;cambiaso;net8;windows;macos</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>app_icon_rounded.png</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="icons\app_icon_rounded.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <!-- Importaciones globales del proyecto (My Project -> Referencias) -->
   <ItemGroup>
