@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class FrmInfMantPrevCiclosMaq
     Inherits System.Windows.Forms.Form
 
@@ -36,6 +36,7 @@ Partial Class FrmInfMantPrevCiclosMaq
         Me.btnSalirInfMp = New System.Windows.Forms.Button
         Me.btnExpGantt = New System.Windows.Forms.Button
         Me.Panel1 = New System.Windows.Forms.Panel
+        Me.btnExpPdfListado = New System.Windows.Forms.Button
         Me.btnExpListado = New System.Windows.Forms.Button
         Me.Panel2 = New System.Windows.Forms.Panel
         Me.Label3 = New System.Windows.Forms.Label
@@ -105,7 +106,7 @@ Partial Class FrmInfMantPrevCiclosMaq
         Me.fecha_ini_inf_mp.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
         Me.fecha_ini_inf_mp.Location = New System.Drawing.Point(6, 35)
         Me.fecha_ini_inf_mp.Name = "fecha_ini_inf_mp"
-        Me.fecha_ini_inf_mp.Size = New System.Drawing.Size(84, 20)
+        Me.fecha_ini_inf_mp.Size = New System.Drawing.Size(106, 23)
         Me.fecha_ini_inf_mp.TabIndex = 3
         '
         'fecha_fin_inf_mp
@@ -114,9 +115,9 @@ Partial Class FrmInfMantPrevCiclosMaq
         Me.fecha_fin_inf_mp.CalendarTitleForeColor = System.Drawing.Color.White
         Me.fecha_fin_inf_mp.CalendarTrailingForeColor = System.Drawing.Color.FromArgb(120, 140, 150)
         Me.fecha_fin_inf_mp.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.fecha_fin_inf_mp.Location = New System.Drawing.Point(106, 35)
+        Me.fecha_fin_inf_mp.Location = New System.Drawing.Point(120, 35)
         Me.fecha_fin_inf_mp.Name = "fecha_fin_inf_mp"
-        Me.fecha_fin_inf_mp.Size = New System.Drawing.Size(82, 20)
+        Me.fecha_fin_inf_mp.Size = New System.Drawing.Size(106, 23)
         Me.fecha_fin_inf_mp.TabIndex = 4
         '
         'Label1
@@ -133,7 +134,7 @@ Partial Class FrmInfMantPrevCiclosMaq
         '
         Me.Label2.AutoSize = True
         Me.Label2.Font = New System.Drawing.Font("Calibri", 9.75!, CType((System.Drawing.FontStyle.Bold Or System.Drawing.FontStyle.Italic), System.Drawing.FontStyle), System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(103, 17)
+        Me.Label2.Location = New System.Drawing.Point(117, 17)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(57, 15)
         Me.Label2.TabIndex = 6
@@ -142,7 +143,7 @@ Partial Class FrmInfMantPrevCiclosMaq
         'btnBuscarCiclos
         '
         Me.btnBuscarCiclos.Image = Global.mantencion.My.Resources.Resources.icono_buscar1
-        Me.btnBuscarCiclos.Location = New System.Drawing.Point(3, 17)
+        Me.btnBuscarCiclos.Location = New System.Drawing.Point(4, 17)
         Me.btnBuscarCiclos.Name = "btnBuscarCiclos"
         Me.btnBuscarCiclos.Size = New System.Drawing.Size(30, 30)
         Me.btnBuscarCiclos.TabIndex = 7
@@ -153,7 +154,7 @@ Partial Class FrmInfMantPrevCiclosMaq
         '
         Me.btnSalirInfMp.BackgroundImage = Global.mantencion.My.Resources.Resources.salir
         Me.btnSalirInfMp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
-        Me.btnSalirInfMp.Location = New System.Drawing.Point(112, 17)
+        Me.btnSalirInfMp.Location = New System.Drawing.Point(148, 17)
         Me.btnSalirInfMp.Name = "btnSalirInfMp"
         Me.btnSalirInfMp.Size = New System.Drawing.Size(30, 30)
         Me.btnSalirInfMp.TabIndex = 8
@@ -164,7 +165,7 @@ Partial Class FrmInfMantPrevCiclosMaq
         '
         Me.btnExpGantt.BackgroundImage = Global.mantencion.My.Resources.Resources.Ícono__Gantt
         Me.btnExpGantt.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
-        Me.btnExpGantt.Location = New System.Drawing.Point(76, 17)
+        Me.btnExpGantt.Location = New System.Drawing.Point(112, 17)
         Me.btnExpGantt.Name = "btnExpGantt"
         Me.btnExpGantt.Size = New System.Drawing.Size(30, 30)
         Me.btnExpGantt.TabIndex = 9
@@ -175,14 +176,26 @@ Partial Class FrmInfMantPrevCiclosMaq
         '
         Me.Panel1.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.Panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Panel1.Controls.Add(Me.btnExpPdfListado)
         Me.Panel1.Controls.Add(Me.btnExpListado)
         Me.Panel1.Controls.Add(Me.btnSalirInfMp)
         Me.Panel1.Controls.Add(Me.btnExpGantt)
         Me.Panel1.Controls.Add(Me.btnBuscarCiclos)
-        Me.Panel1.Location = New System.Drawing.Point(858, 19)
+        Me.Panel1.Location = New System.Drawing.Point(824, 19)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(150, 52)
+        Me.Panel1.Size = New System.Drawing.Size(184, 52)
         Me.Panel1.TabIndex = 10
+        '
+        'btnExpPdfListado
+        '
+        Me.btnExpPdfListado.BackgroundImage = Global.mantencion.My.Resources.Resources.icono_pdf
+        Me.btnExpPdfListado.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
+        Me.btnExpPdfListado.Location = New System.Drawing.Point(76, 17)
+        Me.btnExpPdfListado.Name = "btnExpPdfListado"
+        Me.btnExpPdfListado.Size = New System.Drawing.Size(30, 30)
+        Me.btnExpPdfListado.TabIndex = 11
+        Me.ToolTip4.SetToolTip(Me.btnExpPdfListado, "Exportar listado de ciclos a PDF")
+        Me.btnExpPdfListado.UseVisualStyleBackColor = True
         '
         'btnExpListado
         '
@@ -205,7 +218,7 @@ Partial Class FrmInfMantPrevCiclosMaq
         Me.Panel2.Controls.Add(Me.fecha_fin_inf_mp)
         Me.Panel2.Location = New System.Drawing.Point(259, 15)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(347, 65)
+        Me.Panel2.Size = New System.Drawing.Size(388, 65)
         Me.Panel2.TabIndex = 11
         '
         'Label3
@@ -213,7 +226,7 @@ Partial Class FrmInfMantPrevCiclosMaq
         Me.Label3.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(861, 12)
+        Me.Label3.Location = New System.Drawing.Point(827, 12)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(75, 15)
         Me.Label3.TabIndex = 12
@@ -232,16 +245,16 @@ Partial Class FrmInfMantPrevCiclosMaq
         'cmbTipoMpGantt
         '
         Me.cmbTipoMpGantt.FormattingEnabled = True
-        Me.cmbTipoMpGantt.Location = New System.Drawing.Point(207, 34)
+        Me.cmbTipoMpGantt.Location = New System.Drawing.Point(236, 35)
         Me.cmbTipoMpGantt.Name = "cmbTipoMpGantt"
-        Me.cmbTipoMpGantt.Size = New System.Drawing.Size(121, 21)
+        Me.cmbTipoMpGantt.Size = New System.Drawing.Size(140, 23)
         Me.cmbTipoMpGantt.TabIndex = 7
         '
         'Label5
         '
         Me.Label5.AutoSize = True
         Me.Label5.Font = New System.Drawing.Font("Calibri", 9.75!, CType((System.Drawing.FontStyle.Bold Or System.Drawing.FontStyle.Italic), System.Drawing.FontStyle), System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label5.Location = New System.Drawing.Point(204, 17)
+        Me.Label5.Location = New System.Drawing.Point(233, 17)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(113, 15)
         Me.Label5.TabIndex = 8
@@ -292,6 +305,7 @@ Partial Class FrmInfMantPrevCiclosMaq
     Friend WithEvents ToolTip2 As System.Windows.Forms.ToolTip
     Friend WithEvents ToolTip3 As System.Windows.Forms.ToolTip
     Friend WithEvents btnExpListado As System.Windows.Forms.Button
+    Friend WithEvents btnExpPdfListado As System.Windows.Forms.Button
     Friend WithEvents ToolTip4 As System.Windows.Forms.ToolTip
     Friend WithEvents cmbTipoMpGantt As System.Windows.Forms.ComboBox
     Friend WithEvents Label5 As System.Windows.Forms.Label

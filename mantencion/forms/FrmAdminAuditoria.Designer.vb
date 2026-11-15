@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class FrmAdminAuditoria
     Inherits System.Windows.Forms.Form
 
@@ -46,6 +46,7 @@ Partial Class FrmAdminAuditoria
         Me.btnLimpiarFiltros = New System.Windows.Forms.Button()
         Me.grpAcciones = New System.Windows.Forms.GroupBox()
         Me.btn_exp_excel = New System.Windows.Forms.Button()
+        Me.btn_exp_pdf_aud = New System.Windows.Forms.Button()
         Me.btn_salir_aud = New System.Windows.Forms.Button()
         Me.pnlKpis = New System.Windows.Forms.Panel()
         Me.tblKpis = New System.Windows.Forms.TableLayoutPanel()
@@ -143,7 +144,7 @@ Partial Class FrmAdminAuditoria
         Me.grpRangoFechas.Font = New System.Drawing.Font("Calibri", 8.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.grpRangoFechas.Location = New System.Drawing.Point(3, 1)
         Me.grpRangoFechas.Name = "grpRangoFechas"
-        Me.grpRangoFechas.Size = New System.Drawing.Size(225, 92)
+        Me.grpRangoFechas.Size = New System.Drawing.Size(234, 92)
         Me.grpRangoFechas.TabIndex = 0
         Me.grpRangoFechas.TabStop = False
         Me.grpRangoFechas.Text = "1. Rango de Fechas (BD)"
@@ -163,14 +164,14 @@ Partial Class FrmAdminAuditoria
         Me.fecha_ini_aud.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
         Me.fecha_ini_aud.Location = New System.Drawing.Point(8, 33)
         Me.fecha_ini_aud.Name = "fecha_ini_aud"
-        Me.fecha_ini_aud.Size = New System.Drawing.Size(98, 21)
+        Me.fecha_ini_aud.Size = New System.Drawing.Size(106, 23)
         Me.fecha_ini_aud.TabIndex = 1
         '
         'Label2
         '
         Me.Label2.AutoSize = True
         Me.Label2.Font = New System.Drawing.Font("Calibri", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(115, 17)
+        Me.Label2.Location = New System.Drawing.Point(120, 17)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(47, 13)
         Me.Label2.TabIndex = 2
@@ -179,9 +180,9 @@ Partial Class FrmAdminAuditoria
         'fecha_fin_aud
         '
         Me.fecha_fin_aud.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.fecha_fin_aud.Location = New System.Drawing.Point(115, 33)
+        Me.fecha_fin_aud.Location = New System.Drawing.Point(120, 33)
         Me.fecha_fin_aud.Name = "fecha_fin_aud"
-        Me.fecha_fin_aud.Size = New System.Drawing.Size(98, 21)
+        Me.fecha_fin_aud.Size = New System.Drawing.Size(106, 23)
         Me.fecha_fin_aud.TabIndex = 3
         '
         'btn_buscar_aud
@@ -193,9 +194,9 @@ Partial Class FrmAdminAuditoria
         Me.btn_buscar_aud.ForeColor = System.Drawing.Color.White
         Me.btn_buscar_aud.Image = Global.mantencion.My.Resources.Resources.icono_buscar1
         Me.btn_buscar_aud.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btn_buscar_aud.Location = New System.Drawing.Point(8, 59)
+        Me.btn_buscar_aud.Location = New System.Drawing.Point(8, 60)
         Me.btn_buscar_aud.Name = "btn_buscar_aud"
-        Me.btn_buscar_aud.Size = New System.Drawing.Size(205, 26)
+        Me.btn_buscar_aud.Size = New System.Drawing.Size(218, 26)
         Me.btn_buscar_aud.TabIndex = 4
         Me.btn_buscar_aud.Text = "  Consultar BD"
         Me.btn_buscar_aud.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
@@ -218,9 +219,9 @@ Partial Class FrmAdminAuditoria
         Me.grpFiltrosEnVivo.Controls.Add(Me.txtBusquedaRapida)
         Me.grpFiltrosEnVivo.Controls.Add(Me.btnLimpiarFiltros)
         Me.grpFiltrosEnVivo.Font = New System.Drawing.Font("Calibri", 8.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.grpFiltrosEnVivo.Location = New System.Drawing.Point(234, 1)
+        Me.grpFiltrosEnVivo.Location = New System.Drawing.Point(243, 1)
         Me.grpFiltrosEnVivo.Name = "grpFiltrosEnVivo"
-        Me.grpFiltrosEnVivo.Size = New System.Drawing.Size(745, 92)
+        Me.grpFiltrosEnVivo.Size = New System.Drawing.Size(736, 92)
         Me.grpFiltrosEnVivo.TabIndex = 1
         Me.grpFiltrosEnVivo.TabStop = False
         Me.grpFiltrosEnVivo.Text = "2. Filtros Dinámicos en Vivo y Búsqueda"
@@ -322,7 +323,7 @@ Partial Class FrmAdminAuditoria
         Me.txtBusquedaRapida.Font = New System.Drawing.Font("Segoe UI", 8.5!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtBusquedaRapida.Location = New System.Drawing.Point(105, 60)
         Me.txtBusquedaRapida.Name = "txtBusquedaRapida"
-        Me.txtBusquedaRapida.Size = New System.Drawing.Size(481, 23)
+        Me.txtBusquedaRapida.Size = New System.Drawing.Size(472, 23)
         Me.txtBusquedaRapida.TabIndex = 9
         Me.ToolTip1.SetToolTip(Me.txtBusquedaRapida, "Filtre en tiempo real por Clave Afectada, ID Operación o texto libre")
         '
@@ -334,7 +335,7 @@ Partial Class FrmAdminAuditoria
         Me.btnLimpiarFiltros.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnLimpiarFiltros.Font = New System.Drawing.Font("Calibri", 8.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnLimpiarFiltros.ForeColor = System.Drawing.Color.FromArgb(15, 23, 42)
-        Me.btnLimpiarFiltros.Location = New System.Drawing.Point(595, 58)
+        Me.btnLimpiarFiltros.Location = New System.Drawing.Point(586, 58)
         Me.btnLimpiarFiltros.Name = "btnLimpiarFiltros"
         Me.btnLimpiarFiltros.Size = New System.Drawing.Size(140, 26)
         Me.btnLimpiarFiltros.TabIndex = 10
@@ -346,6 +347,7 @@ Partial Class FrmAdminAuditoria
         '
         Me.grpAcciones.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.grpAcciones.Controls.Add(Me.btn_exp_excel)
+        Me.grpAcciones.Controls.Add(Me.btn_exp_pdf_aud)
         Me.grpAcciones.Controls.Add(Me.btn_salir_aud)
         Me.grpAcciones.Font = New System.Drawing.Font("Calibri", 8.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.grpAcciones.Location = New System.Drawing.Point(985, 1)
@@ -360,18 +362,36 @@ Partial Class FrmAdminAuditoria
         Me.btn_exp_excel.BackColor = System.Drawing.Color.FromArgb(16, 120, 80)
         Me.btn_exp_excel.Cursor = System.Windows.Forms.Cursors.Hand
         Me.btn_exp_excel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btn_exp_excel.Font = New System.Drawing.Font("Calibri", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btn_exp_excel.Font = New System.Drawing.Font("Calibri", 8.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btn_exp_excel.ForeColor = System.Drawing.Color.White
         Me.btn_exp_excel.Image = Global.mantencion.My.Resources.Resources.icono_excel1
         Me.btn_exp_excel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btn_exp_excel.Location = New System.Drawing.Point(10, 20)
+        Me.btn_exp_excel.Location = New System.Drawing.Point(8, 20)
         Me.btn_exp_excel.Name = "btn_exp_excel"
-        Me.btn_exp_excel.Size = New System.Drawing.Size(152, 30)
+        Me.btn_exp_excel.Size = New System.Drawing.Size(76, 30)
         Me.btn_exp_excel.TabIndex = 0
-        Me.btn_exp_excel.Text = "  Exportar Excel"
+        Me.btn_exp_excel.Text = " Excel"
         Me.btn_exp_excel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.ToolTip1.SetToolTip(Me.btn_exp_excel, "Exportar registros filtrados o seleccionados a Excel")
         Me.btn_exp_excel.UseVisualStyleBackColor = False
+        '
+        'btn_exp_pdf_aud
+        '
+        Me.btn_exp_pdf_aud.BackColor = System.Drawing.Color.FromArgb(1, 145, 179)
+        Me.btn_exp_pdf_aud.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.btn_exp_pdf_aud.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btn_exp_pdf_aud.Font = New System.Drawing.Font("Calibri", 8.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btn_exp_pdf_aud.ForeColor = System.Drawing.Color.White
+        Me.btn_exp_pdf_aud.Image = Global.mantencion.My.Resources.Resources.icono_pdf
+        Me.btn_exp_pdf_aud.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btn_exp_pdf_aud.Location = New System.Drawing.Point(88, 20)
+        Me.btn_exp_pdf_aud.Name = "btn_exp_pdf_aud"
+        Me.btn_exp_pdf_aud.Size = New System.Drawing.Size(76, 30)
+        Me.btn_exp_pdf_aud.TabIndex = 1
+        Me.btn_exp_pdf_aud.Text = " PDF"
+        Me.btn_exp_pdf_aud.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.ToolTip1.SetToolTip(Me.btn_exp_pdf_aud, "Exportar registros visibles a PDF")
+        Me.btn_exp_pdf_aud.UseVisualStyleBackColor = False
         '
         'btn_salir_aud
         '
@@ -382,10 +402,10 @@ Partial Class FrmAdminAuditoria
         Me.btn_salir_aud.ForeColor = System.Drawing.Color.White
         Me.btn_salir_aud.Image = Global.mantencion.My.Resources.Resources.salir
         Me.btn_salir_aud.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btn_salir_aud.Location = New System.Drawing.Point(10, 55)
+        Me.btn_salir_aud.Location = New System.Drawing.Point(8, 56)
         Me.btn_salir_aud.Name = "btn_salir_aud"
-        Me.btn_salir_aud.Size = New System.Drawing.Size(152, 28)
-        Me.btn_salir_aud.TabIndex = 1
+        Me.btn_salir_aud.Size = New System.Drawing.Size(156, 28)
+        Me.btn_salir_aud.TabIndex = 2
         Me.btn_salir_aud.Text = "  Cerrar"
         Me.btn_salir_aud.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.ToolTip1.SetToolTip(Me.btn_salir_aud, "Cerrar ventana de auditoría")
@@ -1017,6 +1037,7 @@ Partial Class FrmAdminAuditoria
 
     Friend WithEvents grpAcciones As System.Windows.Forms.GroupBox
     Friend WithEvents btn_exp_excel As System.Windows.Forms.Button
+    Friend WithEvents btn_exp_pdf_aud As System.Windows.Forms.Button
     Friend WithEvents btn_salir_aud As System.Windows.Forms.Button
 
     Friend WithEvents pnlKpis As System.Windows.Forms.Panel

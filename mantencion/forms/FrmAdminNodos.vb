@@ -23,6 +23,7 @@ Public Class FrmAdminNodos
             nd.CRG_NODO_HIJO_TODOS(nodoRaiz)
             arbol4.Nodes.Add(nodoRaiz)
             arbol4.EndUpdate()
+            Utilitarios.AplicarTemaModerno(Me)
         Finally
             Me.ResumeLayout(True)
         End Try

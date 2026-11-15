@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class FrmResumenes
     Inherits System.Windows.Forms.Form
 
@@ -43,6 +43,7 @@ Partial Class FrmResumenes
         Me.Panel2 = New System.Windows.Forms.Panel
         Me.btnBuscarRes = New System.Windows.Forms.Button
         Me.btn_exp_excel_res = New System.Windows.Forms.Button
+        Me.btn_exp_pdf_res = New System.Windows.Forms.Button
         Me.btnSalirRes = New System.Windows.Forms.Button
         Me.Label10 = New System.Windows.Forms.Label
 
@@ -176,14 +177,14 @@ Partial Class FrmResumenes
         Me.Panel1.Controls.Add(Me.Label2)
         Me.Panel1.Location = New System.Drawing.Point(245, 12)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(205, 58)
+        Me.Panel1.Size = New System.Drawing.Size(236, 58)
         Me.Panel1.TabIndex = 2
         '
         'Label1
         '
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Calibri", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(5, 9)
+        Me.Label1.Location = New System.Drawing.Point(6, 9)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(68, 14)
         Me.Label1.TabIndex = 0
@@ -192,24 +193,24 @@ Partial Class FrmResumenes
         'fecha_ini_resumen
         '
         Me.fecha_ini_resumen.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.fecha_ini_resumen.Location = New System.Drawing.Point(5, 27)
+        Me.fecha_ini_resumen.Location = New System.Drawing.Point(6, 27)
         Me.fecha_ini_resumen.Name = "fecha_ini_resumen"
-        Me.fecha_ini_resumen.Size = New System.Drawing.Size(88, 20)
+        Me.fecha_ini_resumen.Size = New System.Drawing.Size(106, 23)
         Me.fecha_ini_resumen.TabIndex = 1
         '
         'fecha_fin_resumen
         '
         Me.fecha_fin_resumen.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.fecha_fin_resumen.Location = New System.Drawing.Point(105, 27)
+        Me.fecha_fin_resumen.Location = New System.Drawing.Point(120, 27)
         Me.fecha_fin_resumen.Name = "fecha_fin_resumen"
-        Me.fecha_fin_resumen.Size = New System.Drawing.Size(88, 20)
+        Me.fecha_fin_resumen.Size = New System.Drawing.Size(106, 23)
         Me.fecha_fin_resumen.TabIndex = 3
         '
         'Label2
         '
         Me.Label2.AutoSize = True
         Me.Label2.Font = New System.Drawing.Font("Calibri", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(105, 9)
+        Me.Label2.Location = New System.Drawing.Point(120, 9)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(66, 14)
         Me.Label2.TabIndex = 2
@@ -230,7 +231,7 @@ Partial Class FrmResumenes
         Me.grpDesglose.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.grpDesglose.Controls.Add(Me.opc_totales_estado)
         Me.grpDesglose.Controls.Add(Me.opc_por_mes)
-        Me.grpDesglose.Location = New System.Drawing.Point(458, 12)
+        Me.grpDesglose.Location = New System.Drawing.Point(489, 12)
         Me.grpDesglose.Name = "grpDesglose"
         Me.grpDesglose.Size = New System.Drawing.Size(155, 58)
         Me.grpDesglose.TabIndex = 4
@@ -264,10 +265,11 @@ Partial Class FrmResumenes
         Me.Panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.Panel2.Controls.Add(Me.btnBuscarRes)
         Me.Panel2.Controls.Add(Me.btn_exp_excel_res)
+        Me.Panel2.Controls.Add(Me.btn_exp_pdf_res)
         Me.Panel2.Controls.Add(Me.btnSalirRes)
-        Me.Panel2.Location = New System.Drawing.Point(621, 12)
+        Me.Panel2.Location = New System.Drawing.Point(652, 12)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(130, 58)
+        Me.Panel2.Size = New System.Drawing.Size(168, 58)
         Me.Panel2.TabIndex = 5
         '
         'btnBuscarRes
@@ -289,21 +291,31 @@ Partial Class FrmResumenes
         Me.btn_exp_excel_res.TabIndex = 1
         Me.btn_exp_excel_res.UseVisualStyleBackColor = True
         '
+        'btn_exp_pdf_res
+        '
+        Me.btn_exp_pdf_res.BackgroundImage = Global.mantencion.My.Resources.Resources.icono_pdf
+        Me.btn_exp_pdf_res.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
+        Me.btn_exp_pdf_res.Location = New System.Drawing.Point(88, 12)
+        Me.btn_exp_pdf_res.Name = "btn_exp_pdf_res"
+        Me.btn_exp_pdf_res.Size = New System.Drawing.Size(32, 32)
+        Me.btn_exp_pdf_res.TabIndex = 2
+        Me.btn_exp_pdf_res.UseVisualStyleBackColor = True
+        '
         'btnSalirRes
         '
         Me.btnSalirRes.BackgroundImage = Global.mantencion.My.Resources.Resources.salir
         Me.btnSalirRes.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
-        Me.btnSalirRes.Location = New System.Drawing.Point(88, 12)
+        Me.btnSalirRes.Location = New System.Drawing.Point(128, 12)
         Me.btnSalirRes.Name = "btnSalirRes"
         Me.btnSalirRes.Size = New System.Drawing.Size(32, 32)
-        Me.btnSalirRes.TabIndex = 2
+        Me.btnSalirRes.TabIndex = 3
         Me.btnSalirRes.UseVisualStyleBackColor = True
         '
         'Label10
         '
         Me.Label10.AutoSize = True
         Me.Label10.Font = New System.Drawing.Font("Calibri", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label10.Location = New System.Drawing.Point(628, 5)
+        Me.Label10.Location = New System.Drawing.Point(659, 5)
         Me.Label10.Name = "Label10"
         Me.Label10.Size = New System.Drawing.Size(68, 14)
         Me.Label10.TabIndex = 6
@@ -1046,6 +1058,7 @@ Partial Class FrmResumenes
     Friend WithEvents Panel2 As System.Windows.Forms.Panel
     Friend WithEvents btnBuscarRes As System.Windows.Forms.Button
     Friend WithEvents btn_exp_excel_res As System.Windows.Forms.Button
+    Friend WithEvents btn_exp_pdf_res As System.Windows.Forms.Button
     Friend WithEvents btnSalirRes As System.Windows.Forms.Button
     Friend WithEvents Label10 As System.Windows.Forms.Label
 

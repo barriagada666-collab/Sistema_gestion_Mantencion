@@ -62,7 +62,9 @@ Public Class principal
                 End If
             Next
 
-            ' 4. Configurar y desplegar el nuevo formulario destino maximizado ocupando toda el área MDI
+            ' 4. Aplicar tema antes de mostrar y desplegar el formulario destino maximizado
+            Utilitarios.AplicarTemaModerno(formularioDestino)
+
             If formularioDestino.MdiParent IsNot Me Then
                 formularioDestino.MdiParent = Me
             End If
@@ -84,7 +86,6 @@ Public Class principal
 
             formularioDestino.BringToFront()
             formularioDestino.Activate()
-            Utilitarios.AplicarTemaModerno(formularioDestino)
         Finally
             Me.ResumeLayout(True)
             ' 5. Reanudar redibujado Win32 atómicamente y refrescar el área MDI limpia de una sola vez
@@ -137,11 +138,6 @@ Public Class principal
         Next
         Utilitarios.RegistrarTemaGlobal()
         Utilitarios.AplicarTemaModerno(Me)
-        Try
-            Me.MenuStrip.Renderer = New MenuCorporativoRenderer()
-            Me.StatusStrip.Renderer = New MenuCorporativoRenderer()
-        Catch
-        End Try
     End Sub
 
     Private Sub principal_MdiChildActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.MdiChildActivate
@@ -215,6 +211,12 @@ Public Class principal
     End Sub
 
     Private Sub CerrarSesiónToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CerrarSesiónToolStripMenuItem.Click
+        For Each child As Form In Me.MdiChildren.ToArray()
+            Try
+                child.Close()
+            Catch
+            End Try
+        Next
         Login.Show()
         Me.Close()
     End Sub

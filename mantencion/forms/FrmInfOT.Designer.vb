@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class FrmInfOT
     Inherits System.Windows.Forms.Form
 
@@ -123,16 +123,16 @@ Partial Class FrmInfOT
         Me.fecha_fin_inf_ot.CalendarTitleBackColor = System.Drawing.Color.FromArgb(2, 94, 135)
         Me.fecha_fin_inf_ot.CalendarTrailingForeColor = System.Drawing.Color.FromArgb(120, 140, 150)
         Me.fecha_fin_inf_ot.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.fecha_fin_inf_ot.Location = New System.Drawing.Point(107, 31)
+        Me.fecha_fin_inf_ot.Location = New System.Drawing.Point(120, 31)
         Me.fecha_fin_inf_ot.Name = "fecha_fin_inf_ot"
-        Me.fecha_fin_inf_ot.Size = New System.Drawing.Size(84, 20)
+        Me.fecha_fin_inf_ot.Size = New System.Drawing.Size(106, 23)
         Me.fecha_fin_inf_ot.TabIndex = 6
         '
         'lblfecha_fin
         '
         Me.lblfecha_fin.AutoSize = True
         Me.lblfecha_fin.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblfecha_fin.Location = New System.Drawing.Point(104, 14)
+        Me.lblfecha_fin.Location = New System.Drawing.Point(117, 12)
         Me.lblfecha_fin.Name = "lblfecha_fin"
         Me.lblfecha_fin.Size = New System.Drawing.Size(87, 15)
         Me.lblfecha_fin.TabIndex = 5
@@ -142,7 +142,7 @@ Partial Class FrmInfOT
         '
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(3, 14)
+        Me.Label1.Location = New System.Drawing.Point(6, 12)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(69, 15)
         Me.Label1.TabIndex = 4
@@ -156,7 +156,7 @@ Partial Class FrmInfOT
         Me.fecha_ini_inf_ot.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
         Me.fecha_ini_inf_ot.Location = New System.Drawing.Point(6, 31)
         Me.fecha_ini_inf_ot.Name = "fecha_ini_inf_ot"
-        Me.fecha_ini_inf_ot.Size = New System.Drawing.Size(84, 20)
+        Me.fecha_ini_inf_ot.Size = New System.Drawing.Size(106, 23)
         Me.fecha_ini_inf_ot.TabIndex = 3
         '
         'opcFechasOt
@@ -224,7 +224,7 @@ Partial Class FrmInfOT
         '
         Me.chkPendientes.AutoSize = True
         Me.chkPendientes.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkPendientes.Location = New System.Drawing.Point(265, 3)
+        Me.chkPendientes.Location = New System.Drawing.Point(296, 4)
         Me.chkPendientes.Name = "chkPendientes"
         Me.chkPendientes.Size = New System.Drawing.Size(88, 19)
         Me.chkPendientes.TabIndex = 7
@@ -235,7 +235,7 @@ Partial Class FrmInfOT
         '
         Me.chkConDetencion.AutoSize = True
         Me.chkConDetencion.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkConDetencion.Location = New System.Drawing.Point(359, 3)
+        Me.chkConDetencion.Location = New System.Drawing.Point(384, 4)
         Me.chkConDetencion.Name = "chkConDetencion"
         Me.chkConDetencion.Size = New System.Drawing.Size(106, 19)
         Me.chkConDetencion.TabIndex = 8
@@ -246,7 +246,7 @@ Partial Class FrmInfOT
         '
         Me.chkTodasFechas.AutoSize = True
         Me.chkTodasFechas.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkTodasFechas.Location = New System.Drawing.Point(202, 3)
+        Me.chkTodasFechas.Location = New System.Drawing.Point(234, 4)
         Me.chkTodasFechas.Name = "chkTodasFechas"
         Me.chkTodasFechas.Size = New System.Drawing.Size(57, 19)
         Me.chkTodasFechas.TabIndex = 9
@@ -272,9 +272,9 @@ Partial Class FrmInfOT
         Me.GrpFiltroFechas.Controls.Add(Me.fecha_fin_inf_ot)
         Me.GrpFiltroFechas.Controls.Add(Me.fecha_ini_inf_ot)
         Me.GrpFiltroFechas.Controls.Add(Me.Label1)
-        Me.GrpFiltroFechas.Location = New System.Drawing.Point(123, 12)
+        Me.GrpFiltroFechas.Location = New System.Drawing.Point(120, 14)
         Me.GrpFiltroFechas.Name = "GrpFiltroFechas"
-        Me.GrpFiltroFechas.Size = New System.Drawing.Size(555, 109)
+        Me.GrpFiltroFechas.Size = New System.Drawing.Size(560, 110)
         Me.GrpFiltroFechas.TabIndex = 4
         '
         'PanPlantas
@@ -283,16 +283,16 @@ Partial Class FrmInfOT
         Me.PanPlantas.Controls.Add(Me.pl_3)
         Me.PanPlantas.Controls.Add(Me.pl_4)
         Me.PanPlantas.Controls.Add(Me.pl_2)
-        Me.PanPlantas.Location = New System.Drawing.Point(270, 66)
+        Me.PanPlantas.Location = New System.Drawing.Point(254, 65)
         Me.PanPlantas.Name = "PanPlantas"
-        Me.PanPlantas.Size = New System.Drawing.Size(280, 38)
+        Me.PanPlantas.Size = New System.Drawing.Size(298, 38)
         Me.PanPlantas.TabIndex = 18
         '
         'pl_3
         '
         Me.pl_3.AutoSize = True
         Me.pl_3.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.pl_3.Location = New System.Drawing.Point(169, 11)
+        Me.pl_3.Location = New System.Drawing.Point(174, 10)
         Me.pl_3.Name = "pl_3"
         Me.pl_3.Size = New System.Drawing.Size(106, 19)
         Me.pl_3.TabIndex = 2
@@ -303,7 +303,7 @@ Partial Class FrmInfOT
         '
         Me.pl_4.AutoSize = True
         Me.pl_4.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.pl_4.Location = New System.Drawing.Point(88, 11)
+        Me.pl_4.Location = New System.Drawing.Point(90, 10)
         Me.pl_4.Name = "pl_4"
         Me.pl_4.Size = New System.Drawing.Size(75, 19)
         Me.pl_4.TabIndex = 1
@@ -314,7 +314,7 @@ Partial Class FrmInfOT
         '
         Me.pl_2.AutoSize = True
         Me.pl_2.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.pl_2.Location = New System.Drawing.Point(6, 11)
+        Me.pl_2.Location = New System.Drawing.Point(6, 10)
         Me.pl_2.Name = "pl_2"
         Me.pl_2.Size = New System.Drawing.Size(76, 19)
         Me.pl_2.TabIndex = 0
@@ -325,7 +325,7 @@ Partial Class FrmInfOT
         '
         Me.chkFiltroPlanta.AutoSize = True
         Me.chkFiltroPlanta.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkFiltroPlanta.Location = New System.Drawing.Point(448, 28)
+        Me.chkFiltroPlanta.Location = New System.Drawing.Point(466, 28)
         Me.chkFiltroPlanta.Name = "chkFiltroPlanta"
         Me.chkFiltroPlanta.Size = New System.Drawing.Size(87, 19)
         Me.chkFiltroPlanta.TabIndex = 17
@@ -336,7 +336,7 @@ Partial Class FrmInfOT
         '
         Me.chkNulas.AutoSize = True
         Me.chkNulas.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkNulas.Location = New System.Drawing.Point(471, 3)
+        Me.chkNulas.Location = New System.Drawing.Point(484, 4)
         Me.chkNulas.Name = "chkNulas"
         Me.chkNulas.Size = New System.Drawing.Size(74, 19)
         Me.chkNulas.TabIndex = 16
@@ -347,7 +347,7 @@ Partial Class FrmInfOT
         '
         Me.Label6.AutoSize = True
         Me.Label6.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label6.Location = New System.Drawing.Point(117, 62)
+        Me.Label6.Location = New System.Drawing.Point(124, 60)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(89, 15)
         Me.Label6.TabIndex = 15
@@ -356,16 +356,16 @@ Partial Class FrmInfOT
         'cmbTipoDetencion
         '
         Me.cmbTipoDetencion.FormattingEnabled = True
-        Me.cmbTipoDetencion.Location = New System.Drawing.Point(120, 78)
+        Me.cmbTipoDetencion.Location = New System.Drawing.Point(124, 78)
         Me.cmbTipoDetencion.Name = "cmbTipoDetencion"
-        Me.cmbTipoDetencion.Size = New System.Drawing.Size(104, 21)
+        Me.cmbTipoDetencion.Size = New System.Drawing.Size(118, 21)
         Me.cmbTipoDetencion.TabIndex = 14
         '
         'chkTipoDetencion
         '
         Me.chkTipoDetencion.AutoSize = True
         Me.chkTipoDetencion.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkTipoDetencion.Location = New System.Drawing.Point(317, 28)
+        Me.chkTipoDetencion.Location = New System.Drawing.Point(344, 28)
         Me.chkTipoDetencion.Name = "chkTipoDetencion"
         Me.chkTipoDetencion.Size = New System.Drawing.Size(125, 19)
         Me.chkTipoDetencion.TabIndex = 13
@@ -376,7 +376,7 @@ Partial Class FrmInfOT
         '
         Me.Label5.AutoSize = True
         Me.Label5.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label5.Location = New System.Drawing.Point(3, 62)
+        Me.Label5.Location = New System.Drawing.Point(6, 60)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(73, 15)
         Me.Label5.TabIndex = 12
@@ -386,7 +386,7 @@ Partial Class FrmInfOT
         '
         Me.chkTipoTrabajo.AutoSize = True
         Me.chkTipoTrabajo.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkTipoTrabajo.Location = New System.Drawing.Point(202, 28)
+        Me.chkTipoTrabajo.Location = New System.Drawing.Point(234, 28)
         Me.chkTipoTrabajo.Name = "chkTipoTrabajo"
         Me.chkTipoTrabajo.Size = New System.Drawing.Size(109, 19)
         Me.chkTipoTrabajo.TabIndex = 11
@@ -398,7 +398,7 @@ Partial Class FrmInfOT
         Me.cmbTipoTrabajoInfOt.FormattingEnabled = True
         Me.cmbTipoTrabajoInfOt.Location = New System.Drawing.Point(6, 78)
         Me.cmbTipoTrabajoInfOt.Name = "cmbTipoTrabajoInfOt"
-        Me.cmbTipoTrabajoInfOt.Size = New System.Drawing.Size(108, 21)
+        Me.cmbTipoTrabajoInfOt.Size = New System.Drawing.Size(112, 21)
         Me.cmbTipoTrabajoInfOt.TabIndex = 10
         '
         'GrpFiltroInfOt2
@@ -419,7 +419,7 @@ Partial Class FrmInfOT
         Me.GrpFiltroInfOt2.Controls.Add(Me.txtNumOtInfOt)
         Me.GrpFiltroInfOt2.Location = New System.Drawing.Point(255, 12)
         Me.GrpFiltroInfOt2.Name = "GrpFiltroInfOt2"
-        Me.GrpFiltroInfOt2.Size = New System.Drawing.Size(753, 126)
+        Me.GrpFiltroInfOt2.Size = New System.Drawing.Size(753, 130)
         Me.GrpFiltroInfOt2.TabIndex = 4
         '
         'btnPdf

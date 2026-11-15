@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class FrmCartaGantt
     Inherits System.Windows.Forms.Form
 
@@ -35,6 +35,7 @@ Partial Class FrmCartaGantt
         Me.fecha_termino = New System.Windows.Forms.DataGridViewTextBoxColumn
         Me.duracion = New System.Windows.Forms.DataGridViewTextBoxColumn
         Me.grillaGraficoGantt = New System.Windows.Forms.DataGridView
+        Me.btnExpPdf = New System.Windows.Forms.Button
         Me.btnExpExcel = New System.Windows.Forms.Button
         Me.btnSalirGantt = New System.Windows.Forms.Button
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
@@ -145,6 +146,18 @@ Partial Class FrmCartaGantt
         Me.grillaGraficoGantt.Size = New System.Drawing.Size(703, 572)
         Me.grillaGraficoGantt.TabIndex = 1
         '
+        'btnExpPdf
+        '
+        Me.btnExpPdf.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnExpPdf.BackgroundImage = Global.mantencion.My.Resources.Resources.icono_pdf
+        Me.btnExpPdf.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
+        Me.btnExpPdf.Location = New System.Drawing.Point(902, 24)
+        Me.btnExpPdf.Name = "btnExpPdf"
+        Me.btnExpPdf.Size = New System.Drawing.Size(30, 30)
+        Me.btnExpPdf.TabIndex = 1
+        Me.ToolTip1.SetToolTip(Me.btnExpPdf, "Exportar a PDF")
+        Me.btnExpPdf.UseVisualStyleBackColor = True
+        '
         'btnExpExcel
         '
         Me.btnExpExcel.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
@@ -233,6 +246,7 @@ Partial Class FrmCartaGantt
         Me.Controls.Add(Me.lblTituloGantt)
         Me.Controls.Add(Me.btnSalirGantt)
         Me.Controls.Add(Me.btnExpExcel)
+        Me.Controls.Add(Me.btnExpPdf)
         Me.Controls.Add(Me.grillaGraficoGantt)
         Me.Controls.Add(Me.grillaInfoGantt)
         Me.Name = "FrmCartaGantt"
@@ -248,6 +262,7 @@ Partial Class FrmCartaGantt
     End Sub
     Friend WithEvents grillaInfoGantt As System.Windows.Forms.DataGridView
     Friend WithEvents grillaGraficoGantt As System.Windows.Forms.DataGridView
+    Friend WithEvents btnExpPdf As System.Windows.Forms.Button
     Friend WithEvents btnExpExcel As System.Windows.Forms.Button
     Friend WithEvents btnSalirGantt As System.Windows.Forms.Button
     Friend WithEvents ToolTip1 As System.Windows.Forms.ToolTip

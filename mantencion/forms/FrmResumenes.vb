@@ -273,6 +273,8 @@ Public Class FrmResumenes
             formato.grillasOT(grillaTotalesPeriodo)
             formato.grillasOT(grillaOtPorDia)
             formato.grillasOT(grillaOtPorMes)
+            Utilitarios.InicializarRangoMesActual(fecha_ini_resumen, fecha_fin_resumen)
+            Utilitarios.AplicarTemaModerno(Me)
         Finally
             Me.ResumeLayout(True)
         End Try
@@ -296,8 +298,13 @@ Public Class FrmResumenes
             Exit Sub
         End If
 
+        If Not Utilitarios.ValidarRangoFechas(fecha_ini_resumen, fecha_fin_resumen) Then
+            Exit Sub
+        End If
+
         id_nodo_res_select = nodosObjetivo(0).Name
         Cursor = Cursors.WaitCursor
+        tabResumenes.SuspendLayout()
 
         Try
             Dim dicJerarquia As Dictionary(Of Integer, InfoNodoJerarquia) = ObtenerJerarquiaNodos()
@@ -691,6 +698,7 @@ Public Class FrmResumenes
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
         Finally
+            tabResumenes.ResumeLayout(False)
             Cursor = Cursors.Default
             Utilitarios.OptimizarMemoria()
         End Try
@@ -724,11 +732,48 @@ Public Class FrmResumenes
 
     Private Sub btn_exp_excel_res_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_exp_excel_res.Click
         Dim informe As New Informes
+        If Not Utilitarios.ValidarRangoFechas(fecha_ini_resumen, fecha_fin_resumen) Then Exit Sub
         Try
             informe.expInfEstadistica(fecha_ini_resumen.Value, fecha_fin_resumen.Value)
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
         End Try
+    End Sub
+
+    Private Sub btn_exp_pdf_res_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_exp_pdf_res.Click
+        If Not Utilitarios.ValidarRangoFechas(fecha_ini_resumen, fecha_fin_resumen) Then Exit Sub
+
+        Dim secciones As New List(Of KeyValuePair(Of String, DataGridView))()
+        If grillaTotalesPeriodo.RowCount > 0 Then secciones.Add(New KeyValuePair(Of String, DataGridView)("Totales del Período por Estado", grillaTotalesPeriodo))
+        If grillaTopMaquinas.RowCount > 0 Then secciones.Add(New KeyValuePair(Of String, DataGridView)("Top Máquinas con más OTs", grillaTopMaquinas))
+        If grillaTopComponentes.RowCount > 0 Then secciones.Add(New KeyValuePair(Of String, DataGridView)("Top Componentes con más OTs", grillaTopComponentes))
+        If grillaOtCerradaPorTec.RowCount > 0 Then secciones.Add(New KeyValuePair(Of String, DataGridView)("OTs Cerradas por Técnico", grillaOtCerradaPorTec))
+        If grillaOtRecibidaPor.RowCount > 0 Then secciones.Add(New KeyValuePair(Of String, DataGridView)("OTs Recibidas por Personal", grillaOtRecibidaPor))
+        If grillaOtPorTipoFalla.RowCount > 0 Then secciones.Add(New KeyValuePair(Of String, DataGridView)("OTs por Tipo de Falla", grillaOtPorTipoFalla))
+        If grillaOtPorTurno.RowCount > 0 Then secciones.Add(New KeyValuePair(Of String, DataGridView)("OTs por Turno", grillaOtPorTurno))
+        If grillaOtPorDia.RowCount > 0 Then secciones.Add(New KeyValuePair(Of String, DataGridView)("OTs por Día", grillaOtPorDia))
+        If grillaOtPorMes.RowCount > 0 Then secciones.Add(New KeyValuePair(Of String, DataGridView)("OTs por Mes", grillaOtPorMes))
+
+        If secciones.Count = 0 Then
+            MsgBox("Debe realizar una búsqueda estadística antes de exportar a PDF.", MsgBoxStyle.Exclamation, "Validación")
+            Exit Sub
+        End If
+
+        Dim rutaPdf As String = Utilitarios.SolicitarRutaGuardadoPdf("Informe_Estadistico_OT")
+        If String.IsNullOrEmpty(rutaPdf) Then Exit Sub
+
+        Dim subtitulo As String = String.Format("Período: {0} al {1}   |   {2}   |   {3}",
+                                                fecha_ini_resumen.Value.ToString("dd-MM-yyyy"),
+                                                fecha_fin_resumen.Value.ToString("dd-MM-yyyy"),
+                                                lblKpiTotal.Text,
+                                                lblKpiCerradas.Text)
+        If Utilitarios.ExportarGrillasAPdfNativo(secciones, rutaPdf, "INFORME ESTADÍSTICO - ÓRDENES DE TRABAJO", subtitulo) Then
+            If MessageBox.Show("Archivo PDF generado exitosamente en:" & Environment.NewLine & rutaPdf & Environment.NewLine & Environment.NewLine & "¿Desea abrir el documento PDF ahora?", "Exportación PDF Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
+                Utilitarios.AbrirDocumento(rutaPdf)
+            End If
+        Else
+            MsgBox("No fue posible generar el archivo PDF.", MsgBoxStyle.Critical, "Exportar PDF")
+        End If
     End Sub
 
     Private Sub grillaOtRecibidaPor_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtRecibidaPor.CellContentDoubleClick

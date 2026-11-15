@@ -46,6 +46,9 @@ Public Class frm_OT
             PanFechaCierreOt.Enabled = False
             cmbEstadoOt.Text = cmbEstadoOt.Items(0)
             cmbEstadoOt.Enabled = False
+            btn_guardar.Enabled = Usuario.PermisoGuardarOt
+            btn_eliminar.Enabled = Usuario.PermisoEliminarOt
+            Utilitarios.AplicarTemaModerno(Me)
         Finally
             Me.ResumeLayout(True)
         End Try

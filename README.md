@@ -1,7 +1,7 @@
 <div align="center">
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/barriagada666-collab/Sistema_gestion_Mantencion/main/mantencion/img/cambiaso_logo_nuevo.png" alt="Cambiaso Hnos. S.A.C." width="290" />
+  <img src="https://raw.githubusercontent.com/barriagada666-collab/Sistema_gestion_Mantencion/main/mantencion/installer_art/cambiaso_logo_nuevo.png" alt="Cambiaso Hnos. S.A.C." width="290" />
 </p>
 
 # Sistema de Gestión Departamento Mantención
@@ -10,14 +10,14 @@
 
 [![CI/CD](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/actions/workflows/build-and-package.yml/badge.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/actions/workflows/build-and-package.yml)
 [![Versión](https://img.shields.io/badge/Versi%C3%B3n-2026.1%20LTS-025E87.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases)
-[![Plataformas](https://img.shields.io/badge/Plataformas-Windows%20%7C%20macOS-0e705b.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases)
+[![Plataformas](https://img.shields.io/badge/Plataformas-Windows%2010%2F11%20%7C%20macOS%20Universal-0191B3.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases)
 [![.NET](https://img.shields.io/badge/.NET-8.0%20LTS-512BD4.svg?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Base de Datos](https://img.shields.io/badge/SQL_Server-2008--2022-CC292B.svg?logo=microsoftsqlserver&logoColor=white)](https://www.microsoft.com/sql-server)
 [![Autor](https://img.shields.io/badge/Desarrollado%20por-Boris%20Arriagada-025E87.svg?logo=github&logoColor=white)](https://github.com/barriagada666-collab)
 
 <p align="center">
-  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe"><img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_WINDOWS-v2026.1_LTS_(55.5_MB)-025E87?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar Windows" /></a>&nbsp;
-  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg"><img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_MAC_(DMG)-v2026.1_Universal_(437_MB)-0e705b?style=for-the-badge&logo=apple&logoColor=white" alt="Descargar Mac DMG" /></a>
+  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe"><img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_WINDOWS-v2026.1_LTS-025E87?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar Windows" /></a>&nbsp;
+  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg"><img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_MAC_(DMG)-v2026.1_Universal-0191B3?style=for-the-badge&logo=apple&logoColor=white" alt="Descargar Mac DMG" /></a>
 </p>
 
 </div>
@@ -28,7 +28,7 @@
 
 El **Sistema de Gestión Departamento Mantención** es una solución informática de clase industrial (CMMS / ERP de Mantenimiento) diseñada específicamente para la administración, programación, control operativo y análisis estadístico del mantenimiento mecánico y eléctrico en las plantas productivas de **Cambiaso Hnos. S.A.C.**
 
-Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en planta: desde la detección de una falla imprevista o la planificación cíclica de mantenciones preventivas, hasta el registro de repuestos, tiempos de detención, personal técnico asignado y reportabilidad ejecutiva para la toma de decisiones.
+Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en planta: desde la detección de una falla imprevista o la planificación cíclica de mantenciones preventivas, hasta el registro de repuestos, tiempos de detención, personal técnico asignado y reportabilidad ejecutiva con **filtrado universal por rango de fechas** para la toma de decisiones.
 
 ---
 
@@ -43,7 +43,7 @@ Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en
 ### 🛠️ 2. Mantención Preventiva (MP) y Planificación Cíclica
 * **Pautas Preventivas:** Configuración de rutinas preventivas por frecuencia en días o por horas acumuladas de operación.
 * **Listas de Chequeo Dinámicas:** Checklists diferenciados para tareas mecánicas y eléctricas con tiempos estándar.
-* **Carta Gantt Interactiva:** Visualización gráfica temporal de las intervenciones preventivas programadas por línea y equipo.
+* **Carta Gantt Interactiva:** Visualización gráfica temporal de las intervenciones preventivas programadas por línea, equipo y rango de fechas, con exportación directa a Excel y PDF.
 * **Planificador de Ciclos:** Despliegue de ciclos futuros con reprogramación automática.
 
 ### 🏭 3. Estructura Jerárquica de Activos (Nodos de Planta)
@@ -54,14 +54,15 @@ Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en
 * **Ficha del Personal:** Administración de técnicos mecánicos, electricistas y supervisores con sus especialidades.
 * **Programación de Turnos:** Generación dinámica de calendarios de turnos rotativos para control de dotación disponible en planta.
 
-### 📊 5. Estadísticas, Informes y Exportación
+### 📊 5. Estadísticas, Informes y Exportación (Cero Dependencias)
+* **Filtro Obligatorio por Rango de Fechas (`Desde` / `Hasta`):** Todos los módulos de informes (`Informe OT`, `Mantención Preventiva`, `Ciclos por Máquina`, `Carta Gantt`, `Resúmenes Estadísticos` y `Auditoría`) mantienen siempre activos y validados (`Desde <= Hasta`) los selectores de fecha con inicialización automática del mes en curso.
 * **Tableros de Control:** Resúmenes estadísticos interactivos de OTs por técnico, por tipo de falla, por turno y por día.
-* **Exportación Nativa a Excel:** Informes directos en formato `.xls` utilizando las plantillas institucionales de Cambiaso Hnos.
-* **Visor Nativo de Informes y PDF:** Generación y previsualización de informes con exportación directa a PDF (mediante iTextSharp, sin requerir Crystal Reports ni software de terceros).
+* **Exportación Dual a Excel (COM + Respaldo Nativo):** Usa plantillas institucionales `.xls` cuando Microsoft Excel está instalado, e incluye un **motor nativo XML SpreadsheetML** para exportar sin depender de Office/Excel en Windows o macOS.
+* **Exportación Autónoma a PDF (iTextSharp):** Generación vectorial directa a PDF en todos los módulos de reportes (OT, MP, Ciclos, Carta Gantt, Resúmenes Estadísticos y Auditoría), sin Crystal Reports ni software de terceros.
 
 ### 🔐 6. Auditoría Integral y Seguridad
 * **Trazabilidad en Tiempo Real:** Registro detallado de cada operación (altas, bajas, modificaciones) con usuario, fecha, hora, equipo (PC) y tabla afectada.
-* **Matriz de Permisos:** Control de acceso granular por perfiles de usuario a cada módulo del sistema.
+* **Matriz de Permisos:** Control de acceso granular por perfiles de usuario a cada módulo y menú del sistema.
 
 ### ⚡ 7. Asistente de Configuración de Servidor SQL
 * **Módulo Integrado:** Permite cambiar el servidor SQL Server, base de datos, credenciales y timeout en tiempo de ejecución.
@@ -73,14 +74,14 @@ Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en
 
 ### 🪟 Para Usuarios en Windows:
 * **Sistema Operativo:** Windows 10 o Windows 11 (ediciones de 64 bits).
-* **Dependencias:** **Ninguna.** La aplicación está publicada en modo **autocontenido** (.NET 8 Runtime integrado). No requiere instalar runtimes ni software adicional.
+* **Dependencias:** **Ninguna (Zero-Dependency).** La aplicación está publicada en modo **autocontenido y depurado** (.NET 8 Runtime integrado). No requiere instalar .NET, SQL Client, Crystal Reports ni Microsoft Office.
 * **Red:** Conexión a la red local de la empresa o VPN corporativa para comunicarse con el servidor SQL Server.
 
 ### 🍏 Para Usuarios en macOS:
-* **Sistema Operativo:** macOS 11 Big Sur hasta macOS 15 Sequoia, **macOS 27 Golden Gate** y **macOS 28+** (futuras versiones sin Rosetta).
+* **Sistema Operativo:** macOS 15 Sequoia o superior en Apple Silicon (incluyendo **macOS 27 Golden Gate** y **macOS 28+** sin Rosetta 2), y macOS 11+ en equipos Intel.
 * **Hardware:** Binario **Universal Nativo (`arm64` + `x86_64`)** compatible con procesadores **Apple Silicon** (M1, M2, M3, M4 — ejecución **100% nativa ARM64 sin Rosetta 2**) y procesadores **Intel**.
 * **Entorno de Ejecución:** **Autocontenido (Cero Dependencias)**. Incluye motor nativo ARM64 (`MetalSharp-Wine v7.0` + `.NET 8 win-arm64`) para Apple Silicon sin alertas de apps Intel, y motor Wine Staging 11.21 + `.NET 8 win-x64` para Macs Intel.
-* **Instalación:** Se incluye imagen `.dmg` y paquete `.zip` con instalador automático en un clic (`Instalar_en_Mac.command`) y acceso directo en el Escritorio.
+* **Instalación:** Se incluye imagen `.dmg` (compresión LZMA) y paquete `.zip` con instalador automático en un clic (`Instalar_en_Mac.command`), que deja en `/Applications` únicamente el motor nativo de su procesador y crea acceso directo en el Escritorio.
 
 ### 🗄️ Para el Servidor de Base de Datos:
 * **Motor:** Microsoft SQL Server 2008, 2012, 2014, 2016, 2019, 2022 o Azure SQL Database.
@@ -103,29 +104,16 @@ Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en
 
 ## 📦 Descargas Oficiales (v2026.1 LTS)
 
-> **Nota:** Todos los instaladores son **autocontenidos** (.NET 8 LTS integrado) y listos para ejecutar.
+> **Nota:** Todos los instaladores son **autocontenidos, compactados y libres de dependencias externas**.
 
-| Plataforma | Formato | Tamaño | Enlace Directo |
-| :--- | :---: | :---: | :--- |
-| 🪟 **Windows 10 / 11** (64-bit) | `.exe` | 55.5 MB | [⬇️ **Descargar Instalador Windows**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) |
-| 🍏 **macOS Universal Nativo** (M1–M4 sin Rosetta / Intel) | `.dmg` | 437 MB | [⬇️ **Descargar Imagen DMG para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) |
-| 🍏 **macOS Universal Nativo** (M1–M4 sin Rosetta / Intel) | `.zip` | 386 MB | [⬇️ **Descargar Paquete ZIP para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) |
-| 📦 **GitHub Packages** | `.nupkg` | 2.3 MB | [⬇️ **Descargar Paquete NuGet**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Sistema.Gestion.Mantencion.2026.1.0.nupkg) |
+| Plataforma | Formato | Enlace Directo |
+| :--- | :---: | :--- |
+| 🪟 **Windows 10 / 11** (64-bit) | `.exe` | [⬇️ **Descargar Instalador Windows**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) |
+| 🍏 **macOS Universal Nativo** (M1–M4 sin Rosetta / Intel) | `.dmg` | [⬇️ **Descargar Imagen DMG para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) |
+| 🍏 **macOS Universal Nativo** (M1–M4 sin Rosetta / Intel) | `.zip` | [⬇️ **Descargar Paquete ZIP para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) |
+| 📦 **GitHub Packages** | `.nupkg` | [⬇️ **Descargar Paquete NuGet**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Sistema.Gestion.Mantencion.2026.1.0.nupkg) |
 
-> 📁 *Todos los archivos binarios de instalación también están disponibles en la carpeta [`/Instalador`](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/tree/main/Instalador) del repositorio.*
-
-<details>
-<summary>🔐 <b>Verificación de Integridad (Hashes SHA-256)</b></summary>
-<br>
-
-```text
-143C65172972D0096918DDBAE0EF2252FEA2E61971F8B6F8F08FEC989B7D2C68  Instalador_Sistema_Mantencion_v2026.1.exe
-5db63c20577b81075c8dcb5e3b502d11144071c61c335ed3d53104154cb156b7  Instalador_Sistema_Mantencion_v2026.1_macOS.dmg
-49266e7b190a8f331ce2d9411dc5dbcbaf7171360375890ba7ae4ce17f664d66  Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip
-bfbece97cca7126e39531fa992662eb36bb15839ac6687d1355a8e97e4e81202  Sistema.Gestion.Mantencion.2026.1.0.nupkg
-```
-
-</details>
+> 📁 *Todos los archivos binarios de instalación y sus checksums SHA-256 (`checksums_sha256.txt` y `checksums_mac_sha256.txt`) se sincronizan automáticamente en la carpeta [`/Instalador`](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/tree/main/Instalador) del repositorio en cada compilación.*
 
 ---
 
@@ -138,8 +126,8 @@ bfbece97cca7126e39531fa992662eb36bb15839ac6687d1355a8e97e4e81202  Sistema.Gestio
 
 ### En Mac (macOS):
 1. Descargue `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` (o el paquete `.zip`).
-2. **Instalación recomendada:** Haga doble clic en `Instalar_en_Mac.command` para instalar en `/Applications`, optimizar únicamente el motor nativo de su procesador (Apple Silicon ARM64 o Intel), quitar restricciones de Gatekeeper y crear acceso directo en el Escritorio.
-3. También puede arrastrar **Sistema de Gestión Mantención** directamente a **Aplicaciones** (ejecuta como **Aplicación Universal** nativa sin Rosetta 2 en Apple Silicon M1–M4 y compatible con macOS 27 Golden Gate y 28+).
+2. **Instalación recomendada:** Haga doble clic en `Instalar_en_Mac.command` para instalar en `/Applications`, conservar únicamente el motor nativo de su procesador (Apple Silicon ARM64 o Intel), quitar restricciones de Gatekeeper y crear acceso directo en el Escritorio.
+3. También puede arrastrar la aplicación directamente a **Aplicaciones** (ejecuta como **Aplicación Universal** nativa sin Rosetta 2 en Apple Silicon M1–M4 y es compatible con macOS 27 Golden Gate y 28+).
 
 ### Conexión a Base de Datos en el Primer Inicio:
 1. Al iniciar la aplicación, si el servidor SQL de su empresa tiene un nombre o IP diferente al predeterminado (`SrvMagicInfo`), vaya al menú superior:  
@@ -163,12 +151,13 @@ dotnet add package Sistema.Gestion.Mantencion --version 2026.1.0
 
 ## 🌟 Novedades de la Versión 2026.1 LTS
 
-* **🚀 Migración Integral a Microsoft .NET 8 LTS:** Modernización de plataforma con arquitectura de 64 bits (`win-x64` y `win-arm64`), eliminando dependencias obsoletas.
-* **🎨 Iconografía Moderna Lucide:** Reemplazo total de la iconografía clásica por gráficos vectoriales de alta resolución de 32 bits con fondo transparente.
-* **⚡ Alto Rendimiento y Conexiones SQL:** Precalentamiento de connection pool, consultas indexadas y eliminación de latencias de carga de formularios.
-* **📑 Reportabilidad sin Crystal Reports:** Motor nativo de informes con exportación directa a PDF (iTextSharp) y hojas Excel estructuradas.
-* **🍏 Soporte Nativo Universal para macOS (Sin Rosetta 2):** Binario Mach-O Universal (`arm64` + `x86_64`) con ejecución 100% nativa en Apple Silicon (M1–M4), eliminando avisos de apps Intel en macOS 27 Golden Gate y garantizando compatibilidad futura con macOS 28+.
-* **🛡️ Cero Advertencias y Cero Errores:** Código fuente 100% verificado y validado bajo estándares modernos de compilación.
+* **🎨 Identidad Visual Corporativa Unificada (`Segoe UI`):** Paleta corporativa oficial (`#025E87`, `#0191B3`, `#66C9D3`, `#E5EBEB`, `#F2F6F6`, `#0F2D44`), renderizador moderno de menús/barras, ajuste automático a pantalla y selectores de fecha ampliados (`106x23`) en todos los formularios.
+* **📅 Filtrado Obligatorio por Rango de Fechas en Todos los Informes:** Selección `Desde` / `Hasta` siempre visible, habilitada y validada en OT, Mantención Preventiva, Ciclos por Máquina, Carta Gantt, Resúmenes Estadísticos y Auditoría.
+* **📑 Exportación Excel y PDF Sin Dependencias:** Motor nativo SpreadsheetML (`.xls`) y motor vectorial iTextSharp (`.pdf`) integrados en todos los informes cuando Microsoft Excel no está presente.
+* **⚡ Transiciones MDI y Consultas Optimizadas:** `DoubleBuffered`, `SuspendLayout`/`ResumeLayout`, caché de catálogos, precalentamiento de pool SQL y búsquedas `O(1)` en generación de Carta Gantt.
+* **📦 Instaladores Ultra-Compactos:** Depuración automática de ensamblados WPF no utilizados, símbolos de depuración, duplicados de plantillas y satélites de idiomas extranjeros; compresión LZMA2 (`Windows`) y ULMO LZMA (`macOS`).
+* **🍏 Soporte Nativo Universal para macOS (Sin Rosetta 2):** Binario Mach-O Universal (`arm64` + `x86_64`) con entorno UTF-8 forzado desde el launcher nativo, ejecución 100% nativa en Apple Silicon (M1–M4), eliminando avisos de apps Intel en macOS 27 Golden Gate y garantizando compatibilidad futura con macOS 28+.
+* **🛡️ Cero Advertencias y Cero Errores:** Código fuente 100% verificado, sin archivos huérfanos y validado bajo estándares modernos de compilación.
 
 ---
 

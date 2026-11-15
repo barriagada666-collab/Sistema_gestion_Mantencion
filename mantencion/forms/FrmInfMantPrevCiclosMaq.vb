@@ -15,6 +15,7 @@ Public Class FrmInfMantPrevCiclosMaq
             nd.CRG_NODO_HIJO(nodoRaiz)
             Arbol7.Nodes.Add(nodoRaiz)
             mant_preventiva.CrgCmbTipoMpGantt(cmbTipoMpGantt)
+            Utilitarios.InicializarRangoMesActual(fecha_ini_inf_mp, fecha_fin_inf_mp)
             Utilitarios.AplicarTemaModerno(Me)
         Finally
             Arbol7.EndUpdate()
@@ -40,8 +41,11 @@ Public Class FrmInfMantPrevCiclosMaq
 
         If String.IsNullOrEmpty(id_nodo_mp_select) OrElse id_nodo_mp_select = "0" Then
             MsgBox("Debe elegir un item para buscar los ciclos", MsgBoxStyle.Exclamation, "Validación")
+        ElseIf Not Utilitarios.ValidarRangoFechas(fecha_ini_inf_mp, fecha_fin_inf_mp) Then
+            Exit Sub
         Else
             Cursor = Cursors.WaitCursor
+            grillaCiclosMaquinas.SuspendLayout()
             Try
                 mant_prev.InfCiclosMaquinasMp(id_nodo_mp_select, fecha_ini_inf_mp.Value, fecha_fin_inf_mp.Value, cmbTipoMpGantt.Text, DS_CICLOS)
                 If DS_CICLOS.Tables.Count > 0 Then
@@ -52,6 +56,7 @@ Public Class FrmInfMantPrevCiclosMaq
             Catch ex As Exception
                 MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
             Finally
+                grillaCiclosMaquinas.ResumeLayout(False)
                 Cursor = Cursors.Default
                 Utilitarios.OptimizarMemoria()
             End Try
@@ -92,6 +97,8 @@ Public Class FrmInfMantPrevCiclosMaq
         Try
             If grillaCiclosMaquinas.RowCount = 0 Then
                 MsgBox("Debe realizar una búsqueda antes de exportar!!!", MsgBoxStyle.Exclamation, "Validación")
+            ElseIf Not Utilitarios.ValidarRangoFechas(fecha_ini_inf_mp, fecha_fin_inf_mp) Then
+                Exit Sub
             Else
                 informe.expInfListadoCiclo(grillaCiclosMaquinas, fecha_ini_inf_mp.Value, fecha_fin_inf_mp.Value)
             End If
@@ -99,5 +106,30 @@ Public Class FrmInfMantPrevCiclosMaq
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
         End Try
+    End Sub
+
+    Private Sub btnExpPdfListado_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnExpPdfListado.Click
+        If grillaCiclosMaquinas.RowCount = 0 Then
+            MsgBox("Debe realizar una búsqueda antes de exportar a PDF.", MsgBoxStyle.Exclamation, "Validación")
+            Exit Sub
+        End If
+        If Not Utilitarios.ValidarRangoFechas(fecha_ini_inf_mp, fecha_fin_inf_mp) Then Exit Sub
+
+        Dim itemNombre As String = If(Arbol7.SelectedNode IsNot Nothing, Arbol7.SelectedNode.Text, "Ciclos MP")
+        Dim rutaPdf As String = Utilitarios.SolicitarRutaGuardadoPdf("Listado_Ciclos_MP_" & itemNombre)
+        If String.IsNullOrEmpty(rutaPdf) Then Exit Sub
+
+        Dim subtitulo As String = String.Format("Ítem: {0}   |   Período: {1} al {2}   |   Tipo: {3}",
+                                                itemNombre,
+                                                fecha_ini_inf_mp.Value.ToString("dd-MM-yyyy"),
+                                                fecha_fin_inf_mp.Value.ToString("dd-MM-yyyy"),
+                                                cmbTipoMpGantt.Text)
+        If Utilitarios.ExportarGrillaAPdf(grillaCiclosMaquinas, rutaPdf, "INFORME CICLOS MANTENCIÓN PREVENTIVA", subtitulo) Then
+            If MessageBox.Show("Archivo PDF generado exitosamente en:" & Environment.NewLine & rutaPdf & Environment.NewLine & Environment.NewLine & "¿Desea abrir el documento PDF ahora?", "Exportación PDF Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
+                Utilitarios.AbrirDocumento(rutaPdf)
+            End If
+        Else
+            MsgBox("No fue posible generar el archivo PDF.", MsgBoxStyle.Critical, "Exportar PDF")
+        End If
     End Sub
 End Class

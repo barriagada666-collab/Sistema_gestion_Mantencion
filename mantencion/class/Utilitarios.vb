@@ -83,7 +83,7 @@ Public Class Utilitarios
 
     ''' <summary>
     ''' Localiza de forma determinista la ruta física de una plantilla Excel (.xls)
-    ''' buscando en el directorio base, subdirectorio plantillas y rutas de instalación.
+    ''' buscando en el subdirectorio plantillas, directorio base y rutas de instalación (con tolerancia a mayúsculas/minúsculas).
     ''' </summary>
     Public Shared Function ObtenerRutaPlantilla(ByVal nombrePlantilla As String) As String
         If String.IsNullOrWhiteSpace(nombrePlantilla) Then Return String.Empty
@@ -93,10 +93,10 @@ Public Class Utilitarios
         Dim appDir As String = Application.StartupPath
 
         Dim candidatos As String() = {
-            Path.Combine(baseDir, soloNombre),
             Path.Combine(baseDir, "plantillas", soloNombre),
-            Path.Combine(appDir, soloNombre),
             Path.Combine(appDir, "plantillas", soloNombre),
+            Path.Combine(baseDir, soloNombre),
+            Path.Combine(appDir, soloNombre),
             Path.Combine(baseDir, "..\..\plantillas", soloNombre)
         }
 
@@ -104,7 +104,52 @@ Public Class Utilitarios
             If File.Exists(ruta) Then Return Path.GetFullPath(ruta)
         Next
 
+        ' Respaldo insensible a mayúsculas/minúsculas para sistemas de archivos case-sensitive (macOS/Wine/Linux)
+        Dim carpetas As String() = {
+            Path.Combine(baseDir, "plantillas"),
+            Path.Combine(appDir, "plantillas"),
+            baseDir,
+            appDir
+        }
+        For Each carpeta In carpetas
+            Try
+                If Directory.Exists(carpeta) Then
+                    For Each archivo As String In Directory.GetFiles(carpeta, "*.xls")
+                        If String.Equals(Path.GetFileName(archivo), soloNombre, StringComparison.OrdinalIgnoreCase) Then
+                            Return Path.GetFullPath(archivo)
+                        End If
+                    Next
+                End If
+            Catch
+            End Try
+        Next
+
         Return String.Empty
+    End Function
+
+    ''' <summary>
+    ''' Inicializa un par de DateTimePicker al rango por defecto del mes en curso (día 1 hasta hoy).
+    ''' </summary>
+    Public Shared Sub InicializarRangoMesActual(ByVal dtpDesde As DateTimePicker, ByVal dtpHasta As DateTimePicker)
+        Dim hoy As DateTime = DateTime.Today
+        Dim inicioMes As New DateTime(hoy.Year, hoy.Month, 1)
+        If dtpDesde IsNot Nothing Then dtpDesde.Value = inicioMes
+        If dtpHasta IsNot Nothing Then dtpHasta.Value = hoy
+    End Sub
+
+    ''' <summary>
+    ''' Verifica que la fecha Desde sea menor o igual que la fecha Hasta.
+    ''' </summary>
+    Public Shared Function ValidarRangoFechas(ByVal dtpDesde As DateTimePicker, ByVal dtpHasta As DateTimePicker, Optional ByVal mostrarAviso As Boolean = True) As Boolean
+        If dtpDesde Is Nothing OrElse dtpHasta Is Nothing Then Return True
+        If dtpDesde.Value.Date > dtpHasta.Value.Date Then
+            If mostrarAviso Then
+                MessageBox.Show("La fecha 'Desde' no puede ser mayor que la fecha 'Hasta'." & Environment.NewLine & "Corrija el rango de fechas antes de consultar o exportar.", "Rango de Fechas Inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            End If
+            dtpDesde.Focus()
+            Return False
+        End If
+        Return True
     End Function
 
     ''' <summary>
@@ -351,6 +396,250 @@ Public Class Utilitarios
     End Function
 
     ''' <summary>
+    ''' Exporta múltiples grillas (DataGridView + subtítulo de sección) en un solo documento PDF corporativo usando iTextSharp.
+    ''' </summary>
+    Public Shared Function ExportarGrillasAPdfNativo(ByVal secciones As IEnumerable(Of KeyValuePair(Of String, DataGridView)), ByVal rutaArchivo As String, ByVal titulo As String, Optional ByVal subtituloGeneral As String = "") As Boolean
+        If secciones Is Nothing OrElse String.IsNullOrEmpty(rutaArchivo) Then Return False
+        Try
+            If File.Exists(rutaArchivo) Then
+                Try
+                    File.Delete(rutaArchivo)
+                Catch
+                    Return False
+                End Try
+            End If
+
+            Dim doc As New iTextSharp.text.Document(iTextSharp.text.PageSize.LETTER.Rotate(), 20.0F, 20.0F, 25.0F, 25.0F)
+            Dim tablasAgregadas As Integer = 0
+
+            Using fs As New FileStream(rutaArchivo, FileMode.Create, FileAccess.Write, FileShare.None)
+                iTextSharp.text.pdf.PdfWriter.GetInstance(doc, fs)
+                doc.Open()
+
+                Dim fontTitulo As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, 13.0F, iTextSharp.text.BaseColor.DarkGray)
+                Dim fontSub As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, 8.5F, iTextSharp.text.BaseColor.Gray)
+                Dim fontSeccion As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, 10.0F, New iTextSharp.text.BaseColor(ColorPrimario.R, ColorPrimario.G, ColorPrimario.B))
+                Dim fontHeader As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, 7.2F, iTextSharp.text.BaseColor.White)
+                Dim fontCell As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, 6.8F, iTextSharp.text.BaseColor.Black)
+
+                Dim pTitulo As New iTextSharp.text.Paragraph(titulo, fontTitulo)
+                pTitulo.SpacingAfter = 3.0F
+                doc.Add(pTitulo)
+
+                Dim meta As String = "Generado el: " & DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+                If Not String.IsNullOrEmpty(subtituloGeneral) Then meta &= "   |   " & subtituloGeneral
+                Dim pMeta As New iTextSharp.text.Paragraph(meta, fontSub)
+                pMeta.SpacingAfter = 8.0F
+                doc.Add(pMeta)
+
+                Dim bgHeader As New iTextSharp.text.BaseColor(ColorPrimario.R, ColorPrimario.G, ColorPrimario.B)
+                Dim bgRowAlt As New iTextSharp.text.BaseColor(ColorFilaAlterna.R, ColorFilaAlterna.G, ColorFilaAlterna.B)
+
+                For Each sec As KeyValuePair(Of String, DataGridView) In secciones
+                    Dim grilla As DataGridView = sec.Value
+                    If grilla Is Nothing OrElse grilla.Columns.Count = 0 Then Continue For
+
+                    Dim colsVis As New List(Of DataGridViewColumn)()
+                    For Each col As DataGridViewColumn In grilla.Columns
+                        If col.Visible Then colsVis.Add(col)
+                    Next
+                    If colsVis.Count = 0 Then Continue For
+
+                    If Not String.IsNullOrWhiteSpace(sec.Key) Then
+                        Dim pSec As New iTextSharp.text.Paragraph(sec.Key, fontSeccion)
+                        pSec.SpacingBefore = 8.0F
+                        pSec.SpacingAfter = 4.0F
+                        doc.Add(pSec)
+                    End If
+
+                    Dim tabla As New iTextSharp.text.pdf.PdfPTable(colsVis.Count)
+                    tabla.WidthPercentage = 100.0F
+                    tabla.HeaderRows = 1
+                    tabla.SpacingAfter = 6.0F
+
+                    For Each col As DataGridViewColumn In colsVis
+                        Dim celdaEnc As New iTextSharp.text.pdf.PdfPCell(New iTextSharp.text.Phrase(col.HeaderText, fontHeader))
+                        celdaEnc.BackgroundColor = bgHeader
+                        celdaEnc.HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER
+                        celdaEnc.VerticalAlignment = iTextSharp.text.Element.ALIGN_MIDDLE
+                        celdaEnc.Padding = 3.5F
+                        tabla.AddCell(celdaEnc)
+                    Next
+
+                    Dim rowCount As Integer = 0
+                    For i As Integer = 0 To grilla.RowCount - 1
+                        If grilla.Rows(i).IsNewRow Then Continue For
+                        Dim isAlt As Boolean = (rowCount Mod 2 = 1)
+                        For Each col As DataGridViewColumn In colsVis
+                            Dim val As Object = grilla.Rows(i).Cells(col.Index).Value
+                            Dim texto As String = If(val Is Nothing OrElse IsDBNull(val), "", val.ToString())
+                            Dim celdaDato As New iTextSharp.text.pdf.PdfPCell(New iTextSharp.text.Phrase(texto, fontCell))
+                            If isAlt Then celdaDato.BackgroundColor = bgRowAlt
+                            celdaDato.VerticalAlignment = iTextSharp.text.Element.ALIGN_TOP
+                            celdaDato.Padding = 2.8F
+                            tabla.AddCell(celdaDato)
+                        Next
+                        rowCount += 1
+                    Next
+
+                    doc.Add(tabla)
+                    tablasAgregadas += 1
+                Next
+
+                doc.Close()
+            End Using
+
+            Return tablasAgregadas > 0 AndAlso File.Exists(rutaArchivo)
+        Catch
+            Return False
+        End Try
+    End Function
+
+    ''' <summary>
+    ''' Solicita al usuario la ruta donde guardar un archivo Excel nativo (.xls).
+    ''' </summary>
+    Public Shared Function SolicitarRutaGuardadoExcel(Optional ByVal prefijoNombre As String = "Informe_Mantencion") As String
+        Using sfd As New SaveFileDialog()
+            sfd.Title = "Guardar Informe en Excel"
+            sfd.Filter = "Libro Excel (*.xls)|*.xls"
+            sfd.DefaultExt = "xls"
+            sfd.AddExtension = True
+            sfd.OverwritePrompt = True
+            sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            Dim limpio As String = prefijoNombre
+            For Each c As Char In Path.GetInvalidFileNameChars()
+                limpio = limpio.Replace(c, "_"c)
+            Next
+            sfd.FileName = limpio & "_" & DateTime.Now.ToString("yyyyMMdd_HHmm") & ".xls"
+            If sfd.ShowDialog() = DialogResult.OK Then
+                Return sfd.FileName
+            End If
+        End Using
+        Return String.Empty
+    End Function
+
+    ''' <summary>
+    ''' Respaldo 100% libre de dependencias para exportar una o más tablas/grillas a Excel (SpreadsheetML .xls)
+    ''' cuando Microsoft Excel COM no está instalado (macOS/Whisky o PCs Windows sin Office).
+    ''' </summary>
+    Public Shared Function ExportarGrillasAExcelNativo(ByVal hojas As IEnumerable(Of KeyValuePair(Of String, DataGridView)), ByVal prefijoNombre As String, ByVal tituloInforme As String, Optional ByVal subtitulo As String = "") As Boolean
+        If hojas Is Nothing Then Return False
+        Dim ruta As String = SolicitarRutaGuardadoExcel(prefijoNombre)
+        If String.IsNullOrEmpty(ruta) Then Return False
+
+        Try
+            Dim sb As New System.Text.StringBuilder(8192)
+            sb.AppendLine("<?xml version=""1.0"" encoding=""utf-8""?>")
+            sb.AppendLine("<?mso-application progid=""Excel.Sheet""?>")
+            sb.AppendLine("<Workbook xmlns=""urn:schemas-microsoft-com:office:spreadsheet"" xmlns:ss=""urn:schemas-microsoft-com:office:spreadsheet"">")
+            sb.AppendLine(" <Styles>")
+            sb.AppendLine("  <Style ss:ID=""Titulo""><Font ss:FontName=""Segoe UI"" ss:Size=""13"" ss:Bold=""1"" ss:Color=""#025E87""/></Style>")
+            sb.AppendLine("  <Style ss:ID=""Subtitulo""><Font ss:FontName=""Segoe UI"" ss:Size=""9"" ss:Italic=""1"" ss:Color=""#475569""/></Style>")
+            sb.AppendLine("  <Style ss:ID=""Header""><Font ss:FontName=""Segoe UI"" ss:Size=""9"" ss:Bold=""1"" ss:Color=""#FFFFFF""/><Interior ss:Color=""#025E87"" ss:Pattern=""Solid""/><Alignment ss:Horizontal=""Center"" ss:Vertical=""Center""/></Style>")
+            sb.AppendLine("  <Style ss:ID=""Cell""><Font ss:FontName=""Segoe UI"" ss:Size=""9"" ss:Color=""#0F172A""/><Borders><Border ss:Position=""Bottom"" ss:LineStyle=""Continuous"" ss:Weight=""1"" ss:Color=""#C8DEDF""/></Borders></Style>")
+            sb.AppendLine("  <Style ss:ID=""CellAlt""><Font ss:FontName=""Segoe UI"" ss:Size=""9"" ss:Color=""#0F172A""/><Interior ss:Color=""#EAF3F5"" ss:Pattern=""Solid""/><Borders><Border ss:Position=""Bottom"" ss:LineStyle=""Continuous"" ss:Weight=""1"" ss:Color=""#C8DEDF""/></Borders></Style>")
+            sb.AppendLine(" </Styles>")
+
+            Dim idxHoja As Integer = 1
+            Dim usados As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+            For Each hoja In hojas
+                Dim g As DataGridView = hoja.Value
+                If g Is Nothing OrElse g.Columns.Count = 0 Then Continue For
+
+                Dim colsVis As New List(Of DataGridViewColumn)()
+                For Each col As DataGridViewColumn In g.Columns
+                    If col.Visible Then colsVis.Add(col)
+                Next
+                If colsVis.Count = 0 Then Continue For
+
+                Dim nombreHoja As String = If(String.IsNullOrWhiteSpace(hoja.Key), "Hoja" & idxHoja, hoja.Key)
+                For Each bad As Char In New Char() {"\"c, "/"c, "?"c, "*"c, "["c, "]"c, ":"c}
+                    nombreHoja = nombreHoja.Replace(bad, " "c)
+                Next
+                nombreHoja = nombreHoja.Trim()
+                If nombreHoja.Length > 28 Then nombreHoja = nombreHoja.Substring(0, 28)
+                If String.IsNullOrEmpty(nombreHoja) Then nombreHoja = "Hoja" & idxHoja
+                While usados.Contains(nombreHoja)
+                    nombreHoja = nombreHoja.Substring(0, Math.Min(25, nombreHoja.Length)) & "_" & idxHoja
+                    idxHoja += 1
+                End While
+                usados.Add(nombreHoja)
+
+                sb.Append(" <Worksheet ss:Name=""").Append(System.Security.SecurityElement.Escape(nombreHoja)).AppendLine(""">")
+                sb.AppendLine("  <Table>")
+                For Each col As DataGridViewColumn In colsVis
+                    Dim w As Integer = Math.Max(75, Math.Min(280, col.Width))
+                    sb.Append("   <Column ss:Width=""").Append(w).AppendLine("""/>")
+                Next
+
+                sb.Append("   <Row><Cell ss:StyleID=""Titulo""><Data ss:Type=""String"">").Append(System.Security.SecurityElement.Escape(tituloInforme)).AppendLine("</Data></Cell></Row>")
+                Dim meta As String = "Generado el " & DateTime.Now.ToString("dd-MM-yyyy HH:mm")
+                If Not String.IsNullOrWhiteSpace(subtitulo) Then meta &= " | " & subtitulo
+                sb.Append("   <Row><Cell ss:StyleID=""Subtitulo""><Data ss:Type=""String"">").Append(System.Security.SecurityElement.Escape(meta)).AppendLine("</Data></Cell></Row>")
+                sb.AppendLine("   <Row/>")
+
+                sb.Append("   <Row>")
+                For Each col As DataGridViewColumn In colsVis
+                    sb.Append("<Cell ss:StyleID=""Header""><Data ss:Type=""String"">").Append(System.Security.SecurityElement.Escape(col.HeaderText)).Append("</Data></Cell>")
+                Next
+                sb.AppendLine("</Row>")
+
+                Dim filaIdx As Integer = 0
+                For r As Integer = 0 To g.RowCount - 1
+                    If g.Rows(r).IsNewRow Then Continue For
+                    Dim st As String = If(filaIdx Mod 2 = 1, "CellAlt", "Cell")
+                    sb.Append("   <Row>")
+                    For Each col As DataGridViewColumn In colsVis
+                        Dim val As Object = g.Rows(r).Cells(col.Index).Value
+                        Dim txt As String = If(val Is Nothing OrElse IsDBNull(val), "", val.ToString())
+                        sb.Append("<Cell ss:StyleID=""").Append(st).Append("""><Data ss:Type=""String"">").Append(System.Security.SecurityElement.Escape(txt)).Append("</Data></Cell>")
+                    Next
+                    sb.AppendLine("</Row>")
+                    filaIdx += 1
+                Next
+
+                sb.AppendLine("  </Table>")
+                sb.AppendLine(" </Worksheet>")
+                idxHoja += 1
+            Next
+
+            sb.AppendLine("</Workbook>")
+            File.WriteAllText(ruta, sb.ToString(), System.Text.Encoding.UTF8)
+
+            If File.Exists(ruta) Then
+                If MessageBox.Show("Libro Excel generado sin dependencias en:" & Environment.NewLine & ruta & Environment.NewLine & Environment.NewLine & "¿Desea abrir el archivo ahora?", "Exportación Excel Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
+                    AbrirDocumento(ruta)
+                End If
+                Return True
+            End If
+        Catch ex As Exception
+            MessageBox.Show("No se pudo guardar el libro Excel: " & ex.Message, "Exportar a Excel", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End Try
+        Return False
+    End Function
+
+    Public Shared Function ExportarGrillaAExcelNativo(ByVal grilla As DataGridView, ByVal prefijoNombre As String, ByVal tituloInforme As String, Optional ByVal subtitulo As String = "") As Boolean
+        If grilla Is Nothing Then Return False
+        Dim hojas As New List(Of KeyValuePair(Of String, DataGridView)) From {
+            New KeyValuePair(Of String, DataGridView)("Informe", grilla)
+        }
+        Return ExportarGrillasAExcelNativo(hojas, prefijoNombre, tituloInforme, subtitulo)
+    End Function
+
+    Public Shared Function ExportarDataTableAExcelNativo(ByVal dt As DataTable, ByVal prefijoNombre As String, ByVal tituloInforme As String, Optional ByVal subtitulo As String = "") As Boolean
+        If dt Is Nothing Then Return False
+        Using dgvTemp As New DataGridView()
+            For Each col As DataColumn In dt.Columns
+                dgvTemp.Columns.Add(col.ColumnName, col.ColumnName)
+            Next
+            For Each row As DataRow In dt.Rows
+                dgvTemp.Rows.Add(row.ItemArray)
+            Next
+            Return ExportarGrillaAExcelNativo(dgvTemp, prefijoNombre, tituloInforme, subtitulo)
+        End Using
+    End Function
+
+    ''' <summary>
     ''' Cierra y libera de forma segura los objetos COM de Excel para no dejar procesos EXCEL.EXE en segundo plano.
     ''' </summary>
     Public Shared Sub LiberarExcel(ByRef workbook As Excel.Workbook, ByRef excelApp As Excel.Application)
@@ -462,6 +751,8 @@ Public Class Utilitarios
     }
 
     Private Shared ReadOnly _formulariosConTema As New HashSet(Of Form)()
+    Private Shared ReadOnly _menuRenderer As New MenuCorporativoRenderer()
+    Private Shared ReadOnly _cacheFuentes As New Dictionary(Of String, Font)(StringComparer.Ordinal)
     Private Shared _temaGlobalRegistrado As Boolean = False
 
     Public Shared Sub RegistrarTemaGlobal()
@@ -474,6 +765,10 @@ Public Class Utilitarios
         Try
             For Each frm As Form In Application.OpenForms
                 If frm IsNot Nothing AndAlso Not frm.IsDisposed AndAlso frm.IsHandleCreated AndAlso Not _formulariosConTema.Contains(frm) Then
+                    If TypeOf frm Is Inicio OrElse TypeOf frm Is FrmConfiguracionServidor Then
+                        _formulariosConTema.Add(frm)
+                        Continue For
+                    End If
                     AplicarTemaModerno(frm)
                 End If
             Next
@@ -486,6 +781,35 @@ Public Class Utilitarios
         If frm Is Nothing Then Exit Sub
         _formulariosConTema.Remove(frm)
         RemoveHandler frm.FormClosed, AddressOf AlCerrarFormularioTema
+    End Sub
+
+    Private Shared Sub UnificarFuenteCorporativa(ByVal ctrl As Control)
+        If ctrl Is Nothing OrElse ctrl.Font Is Nothing Then Exit Sub
+        Dim fam As String = ctrl.Font.FontFamily.Name
+        If String.Equals(fam, "Segoe UI", StringComparison.OrdinalIgnoreCase) OrElse
+           String.Equals(fam, "Consolas", StringComparison.OrdinalIgnoreCase) Then
+            Exit Sub
+        End If
+        If fam.Equals("Calibri", StringComparison.OrdinalIgnoreCase) OrElse
+           fam.Equals("Microsoft Sans Serif", StringComparison.OrdinalIgnoreCase) OrElse
+           fam.Equals("Tahoma", StringComparison.OrdinalIgnoreCase) OrElse
+           fam.Equals("Corbel", StringComparison.OrdinalIgnoreCase) OrElse
+           fam.Equals("Arial", StringComparison.OrdinalIgnoreCase) Then
+            Dim sizePt As Single = ctrl.Font.SizeInPoints
+            If fam.Equals("Calibri", StringComparison.OrdinalIgnoreCase) AndAlso sizePt >= 10.5F AndAlso sizePt <= 12.0F Then
+                sizePt = 9.5F
+            ElseIf fam.Equals("Calibri", StringComparison.OrdinalIgnoreCase) AndAlso sizePt >= 9.0F AndAlso sizePt < 10.5F Then
+                sizePt = 8.75F
+            End If
+            Dim st As FontStyle = ctrl.Font.Style
+            Dim key As String = sizePt.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) & "|" & CInt(st).ToString()
+            Dim cached As Font = Nothing
+            If Not _cacheFuentes.TryGetValue(key, cached) Then
+                cached = New Font("Segoe UI", sizePt, st, GraphicsUnit.Point)
+                _cacheFuentes(key) = cached
+            End If
+            ctrl.Font = cached
+        End If
     End Sub
 
     ''' <summary>
@@ -504,6 +828,7 @@ Public Class Utilitarios
                 frm.BackColor = ColorFondoForm
             End If
             frm.ForeColor = ColorTextoPrincipal
+            UnificarFuenteCorporativa(frm)
             HabilitarDobleBuffer(frm)
         End If
 
@@ -531,6 +856,7 @@ Public Class Utilitarios
 
             ElseIf TypeOf ctrl Is TextBox Then
                 Dim txt As TextBox = DirectCast(ctrl, TextBox)
+                UnificarFuenteCorporativa(txt)
                 txt.ForeColor = ColorTextoPrincipal
                 If txt.ReadOnly OrElse _camposSoloLectura.Contains(txt.Name) Then
                     txt.ReadOnly = True
@@ -543,27 +869,30 @@ Public Class Utilitarios
 
             ElseIf TypeOf ctrl Is ComboBox Then
                 Dim cmb As ComboBox = DirectCast(ctrl, ComboBox)
+                UnificarFuenteCorporativa(cmb)
                 cmb.BackColor = ColorFondoInput
                 cmb.ForeColor = ColorTextoPrincipal
 
             ElseIf TypeOf ctrl Is TreeView Then
                 Dim tv As TreeView = DirectCast(ctrl, TreeView)
+                UnificarFuenteCorporativa(tv)
                 ConfigurarTreeViewModerno(tv)
 
             ElseIf TypeOf ctrl Is MenuStrip Then
                 Dim ms As MenuStrip = DirectCast(ctrl, MenuStrip)
-                ms.Renderer = New MenuCorporativoRenderer()
+                ms.Renderer = _menuRenderer
                 ms.BackColor = Color.FromArgb(15, 45, 68)
                 ms.ForeColor = Color.White
 
             ElseIf TypeOf ctrl Is StatusStrip Then
                 Dim ss As StatusStrip = DirectCast(ctrl, StatusStrip)
-                ss.Renderer = New MenuCorporativoRenderer()
+                ss.Renderer = _menuRenderer
                 ss.BackColor = ColorPrimario
                 ss.ForeColor = Color.White
 
             ElseIf TypeOf ctrl Is DateTimePicker Then
                 Dim dtp As DateTimePicker = DirectCast(ctrl, DateTimePicker)
+                UnificarFuenteCorporativa(dtp)
                 dtp.CalendarTitleBackColor = ColorPrimario
                 dtp.CalendarTitleForeColor = Color.White
                 dtp.CalendarForeColor = ColorTextoPrincipal
@@ -572,16 +901,19 @@ Public Class Utilitarios
 
             ElseIf TypeOf ctrl Is TabPage Then
                 Dim tp As TabPage = DirectCast(ctrl, TabPage)
+                UnificarFuenteCorporativa(tp)
                 tp.UseVisualStyleBackColor = False
                 tp.BackColor = ColorFondoPanel
                 tp.ForeColor = ColorTextoPrincipal
 
             ElseIf TypeOf ctrl Is GroupBox Then
+                UnificarFuenteCorporativa(ctrl)
                 ctrl.ForeColor = ColorPrimario
                 ctrl.BackColor = ColorFondoForm
                 HabilitarDobleBuffer(ctrl)
 
             ElseIf TypeOf ctrl Is Panel Then
+                UnificarFuenteCorporativa(ctrl)
                 ctrl.ForeColor = ColorTextoPrincipal
                 If TypeOf ctrl.Parent Is TabPage Then
                     ctrl.BackColor = ColorFondoPanel
@@ -592,6 +924,7 @@ Public Class Utilitarios
 
             ElseIf TypeOf ctrl Is Button Then
                 Dim btn As Button = DirectCast(ctrl, Button)
+                UnificarFuenteCorporativa(btn)
                 btn.UseVisualStyleBackColor = False
                 btn.FlatStyle = FlatStyle.Flat
                 btn.FlatAppearance.BorderColor = ColorSecundario
@@ -604,6 +937,7 @@ Public Class Utilitarios
 
             ElseIf TypeOf ctrl Is CheckBox Then
                 Dim chk As CheckBox = DirectCast(ctrl, CheckBox)
+                UnificarFuenteCorporativa(chk)
                 If EsColorRojo(chk.ForeColor) Then
                     chk.ForeColor = ColorTextoDestacado
                 Else
@@ -625,6 +959,7 @@ Public Class Utilitarios
 
             ElseIf TypeOf ctrl Is RadioButton Then
                 Dim rdo As RadioButton = DirectCast(ctrl, RadioButton)
+                UnificarFuenteCorporativa(rdo)
                 If EsColorRojo(rdo.ForeColor) Then
                     rdo.ForeColor = ColorTextoDestacado
                 Else
@@ -645,6 +980,7 @@ Public Class Utilitarios
                 End If
 
             ElseIf TypeOf ctrl Is Label Then
+                UnificarFuenteCorporativa(ctrl)
                 If EsColorRojo(ctrl.ForeColor) Then
                     ctrl.ForeColor = ColorTextoDestacado
                 Else
@@ -662,7 +998,7 @@ Public Class Utilitarios
 
             ElseIf TypeOf ctrl Is ToolStrip Then
                 Dim ts As ToolStrip = DirectCast(ctrl, ToolStrip)
-                ts.Renderer = New MenuCorporativoRenderer()
+                ts.Renderer = _menuRenderer
                 ts.BackColor = ColorPrimario
                 ts.ForeColor = Color.White
             End If
@@ -672,111 +1008,6 @@ Public Class Utilitarios
             End If
         Next
     End Sub
-
-    Private Shared Sub ConfigurarSubMenuItems(ByVal item As ToolStripItem)
-        If TypeOf item Is ToolStripDropDownItem Then
-            Dim ddi As ToolStripDropDownItem = DirectCast(item, ToolStripDropDownItem)
-            For Each subItem As ToolStripItem In ddi.DropDownItems
-                subItem.Font = New Font("Calibri", 11.0F, FontStyle.Regular)
-                subItem.ForeColor = ColorTextoPrincipal
-                ConfigurarSubMenuItems(subItem)
-            Next
-        End If
-    End Sub
-
-    Private Class ModernColorTable
-        Inherits ProfessionalColorTable
-
-        Public Overrides ReadOnly Property MenuStripGradientBegin As Color
-            Get
-                Return ColorGrisAzulado
-            End Get
-        End Property
-
-        Public Overrides ReadOnly Property MenuStripGradientEnd As Color
-            Get
-                Return ColorGrisAzulado
-            End Get
-        End Property
-
-        Public Overrides ReadOnly Property MenuItemSelected As Color
-            Get
-                Return ColorAcento
-            End Get
-        End Property
-
-        Public Overrides ReadOnly Property MenuItemSelectedGradientBegin As Color
-            Get
-                Return ColorAcento
-            End Get
-        End Property
-
-        Public Overrides ReadOnly Property MenuItemSelectedGradientEnd As Color
-            Get
-                Return ColorAcento
-            End Get
-        End Property
-
-        Public Overrides ReadOnly Property MenuItemPressedGradientBegin As Color
-            Get
-                Return ColorSecundario
-            End Get
-        End Property
-
-        Public Overrides ReadOnly Property MenuItemPressedGradientEnd As Color
-            Get
-                Return ColorSecundario
-            End Get
-        End Property
-
-        Public Overrides ReadOnly Property ToolStripDropDownBackground As Color
-            Get
-                Return Color.White
-            End Get
-        End Property
-
-        Public Overrides ReadOnly Property ImageMarginGradientBegin As Color
-            Get
-                Return ColorFondoForm
-            End Get
-        End Property
-
-        Public Overrides ReadOnly Property ImageMarginGradientMiddle As Color
-            Get
-                Return ColorFondoForm
-            End Get
-        End Property
-
-        Public Overrides ReadOnly Property ImageMarginGradientEnd As Color
-            Get
-                Return ColorFondoForm
-            End Get
-        End Property
-
-        Public Overrides ReadOnly Property MenuBorder As Color
-            Get
-                Return ColorSecundario
-            End Get
-        End Property
-
-        Public Overrides ReadOnly Property MenuItemBorder As Color
-            Get
-                Return ColorSecundario
-            End Get
-        End Property
-
-        Public Overrides ReadOnly Property StatusStripGradientBegin As Color
-            Get
-                Return ColorPrimario
-            End Get
-        End Property
-
-        Public Overrides ReadOnly Property StatusStripGradientEnd As Color
-            Get
-                Return ColorPrimario
-            End Get
-        End Property
-    End Class
 
     ' ==========================================================================================
     '  AUTOAJUSTE DE FORMULARIOS Y DOBLE BUFFER

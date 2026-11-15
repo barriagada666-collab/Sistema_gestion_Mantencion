@@ -65,14 +65,19 @@ jobs:
           }
           dotnet publish mantencion\mantencion.vbproj -c Release -r win-x64 --self-contained true -o $publishDir --nologo -v m
 
-          # Depurar ensamblados satélites innecesarios conservando español ('es')
-          $foreignLocales = @("cs", "de", "fr", "it", "ja", "ko", "pl", "pt-BR", "ru", "tr", "zh-Hans", "zh-Hant")
-          foreach ($locale in $foreignLocales) {
-              $path = Join-Path $publishDir $locale
-              if (Test-Path $path) {
-                  Remove-Item $path -Recurse -Force
-              }
+          # Depurar ensamblados WPF, símbolos de depuración e idiomas extranjeros conservando español ('es')
+          python "automatizadores de instalacion\depurar_publicacion.py" $publishDir
+
+          # Prueba rápida de arranque en Windows (valida deps.json y ausencia de ensamblados faltantes)
+          $exePath = Join-Path $publishDir "Sistema de Gestion Mantencion.exe"
+          $proc = Start-Process -FilePath $exePath -WorkingDirectory $publishDir -PassThru
+          Start-Sleep -Seconds 5
+          if ($proc.HasExited) {
+              Write-Error "El ejecutable Windows finalizó prematuramente con código $($proc.ExitCode)"
+              exit 1
           }
+          Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+          Write-Host "✓ Arranque en Windows 64-bit verificado tras depuración."
 
       - name: 8. Compilar Instalador con Inno Setup
         run: |
@@ -165,14 +170,14 @@ jobs:
           dotnet publish mantencion/mantencion.vbproj -c Release -r win-arm64 --self-contained true -o mantencion/bin/Release/net8-selfcontained-arm64 -p:EnableWindowsTargeting=true --nologo -v m
           dotnet publish mantencion/mantencion.vbproj -c Release -r win-x64 --self-contained true -o mantencion/bin/Release/net8-selfcontained-x64 -p:EnableWindowsTargeting=true --nologo -v m
 
-      - name: 5. Generar macOS App Bundle Universal Nativo y DMG con hdiutil
+      - name: 5. Generar macOS App Bundle Universal Nativo y DMG con hdiutil (LZMA compacto)
         run: |
           chmod +x "automatizadores de instalacion/Generar_Instalador_Mac.sh"
           "./automatizadores de instalacion/Generar_Instalador_Mac.sh"
 
-          # Generar DMG oficial de macOS con hdiutil nativo
+          # Generar DMG oficial de macOS con compresión LZMA (ULMO)
           DMG_NAME="Instalador_Sistema_Mantencion_v2026.1_macOS.dmg"
-          hdiutil create -volname "Sistema Mantencion" -srcfolder "dist-mac" -ov -format UDZO "Instalador/$DMG_NAME"
+          hdiutil create -volname "Sistema Mantencion" -srcfolder "dist-mac" -ov -format ULMO "Instalador/$DMG_NAME"
 
           # Checksums
           cd Instalador
@@ -182,7 +187,7 @@ jobs:
 
       - name: 6. Pruebas Exhaustivas en Apple Silicon (ARM64 sin Rosetta 2)
         run: |
-          APP_BUNDLE="dist-mac/Sistema de Gestión Mantención.app"
+          APP_BUNDLE="dist-mac/Sistema de Gestion Mantencion.app"
           echo "=== Arquitectura del Runner: $(uname -m) ==="
 
           # 1. Verificar Mach-O Universal (arm64 + x86_64) en Contents/MacOS/launcher
@@ -204,46 +209,40 @@ jobs:
           codesign --verify --strict "$APP_BUNDLE"
           echo "✓ codesign verificado."
 
-          # 4. Prueba funcional de arranque nativo ARM64 en Apple Silicon (sin Rosetta 2)
+          # 4. Prueba funcional real del launcher Universal en entorno Finder limpio (sin LANG/LC_ALL)
           if [ "$(uname -m)" = "arm64" ]; then
             WINE_ARM="$APP_BUNDLE/Contents/Resources/wine-arm64"
-            TEST_PREFIX="/tmp/ci-wineprefix-arm64"
-            rm -rf "$TEST_PREFIX"
-            mkdir -p "$TEST_PREFIX"
-            export WINEPREFIX="$TEST_PREFIX"
-            export WINEARCH=win64
-            export WINEDEBUG=-all
-            export WINEDLLOVERRIDES="mscoree,mshtml="
-            export DOTNET_SYSTEM_GLOBALIZATION_USENLS=1
-            export DYLD_FALLBACK_LIBRARY_PATH="$WINE_ARM/lib"
-            export WINEDLLPATH="$WINE_ARM/lib/wine"
-            export WINESERVER="$WINE_ARM/bin/wineserver"
-            export WINELOADER="$WINE_ARM/bin/wine-launcher"
-            export VK_DRIVER_FILES="$WINE_ARM/share/vulkan/icd.d/MoltenVK_icd.json"
+            rm -rf "$HOME/Library/Application Support/SistemaMantencion/wineprefix-arm64" "$HOME/Library/Logs/SistemaMantencion"
 
-            echo "Inicializando wineprefix ARM64 nativo..."
-            "$WINE_ARM/bin/wine-launcher" wineboot --init || true
-            CMD_OUT=$("$WINE_ARM/bin/wine-launcher" cmd.exe /c echo ARM64_WINE_OK | tr -d '\r')
-            echo "Resultado cmd.exe ARM64: $CMD_OUT"
-            echo "$CMD_OUT" | grep -q "ARM64_WINE_OK"
-
-            echo "Verificando arranque .NET 8 win-arm64 bajo wine-arm64..."
-            "$WINE_ARM/bin/wine-launcher" "$APP_BUNDLE/Contents/Resources/app-arm64/Sistema de Gestion Mantencion.exe" >/tmp/ci-app-arm64.log 2>&1 &
+            echo "Lanzando Contents/MacOS/launcher simulando entorno limpio Finder/launchd..."
+            env -i HOME="$HOME" PATH="/usr/bin:/bin:/usr/sbin:/sbin" "$APP_BUNDLE/Contents/MacOS/launcher" >/tmp/ci-launcher-stdout.log 2>&1 &
             APP_PID=$!
-            sleep 8
-            if kill -0 "$APP_PID" 2>/dev/null; then
-              echo "✓ Proceso .NET 8 win-arm64 en ejecución nativa estable (PID $APP_PID)."
+            sleep 12
+
+            LOG_FILE="$HOME/Library/Logs/SistemaMantencion/launcher.log"
+            echo "=== Contenido de launcher.log ==="
+            cat "$LOG_FILE" || true
+            cat /tmp/ci-launcher-stdout.log || true
+
+            if grep -Eqi "Unhandled exception|FileNotFoundException|Could not load|Fatal error|ICU data|ApplicationException" "$LOG_FILE" /tmp/ci-launcher-stdout.log 2>/dev/null; then
+              echo "[ERROR] Se detectó una excepción de arranque en macOS ARM64."
               kill "$APP_PID" 2>/dev/null || true
-            else
-              wait "$APP_PID" || APP_EXIT=$?
-              echo "[ERROR] Proceso finalizó prematuramente con código: ${APP_EXIT:-0}"
-              cat /tmp/ci-app-arm64.log || true
               "$WINE_ARM/bin/wineserver" -k 2>/dev/null || true
               exit 1
             fi
-            cat /tmp/ci-app-arm64.log || true
+
+            if kill -0 "$APP_PID" 2>/dev/null; then
+              echo "✓ Proceso .NET 8 win-arm64 en ejecución nativa estable sin excepciones (PID $APP_PID)."
+              kill "$APP_PID" 2>/dev/null || true
+            else
+              wait "$APP_PID" || APP_EXIT=$?
+              echo "[ERROR] Launcher finalizó prematuramente con código: ${APP_EXIT:-0}"
+              "$WINE_ARM/bin/wineserver" -k 2>/dev/null || true
+              exit 1
+            fi
+
             "$WINE_ARM/bin/wineserver" -k 2>/dev/null || true
-            rm -rf "$TEST_PREFIX" /tmp/ci-app-arm64.log
+            rm -rf "$HOME/Library/Application Support/SistemaMantencion" "$HOME/Library/Logs/SistemaMantencion" /tmp/ci-launcher-stdout.log
           fi
 
       - name: 7. Publicar Artefacto - Instalador macOS (DMG y ZIP)

@@ -1325,6 +1325,16 @@ Public Class MantPreventiva
         Catch ex As Exception
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
+            Dim hojas As New List(Of KeyValuePair(Of String, DataGridView))()
+            If grilla_mp IsNot Nothing AndAlso grilla_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Mantención", grilla_mp))
+            If grilla_ciclo IsNot Nothing AndAlso grilla_ciclo.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Ciclos", grilla_ciclo))
+            If grilla_tareas_r IsNot Nothing AndAlso grilla_tareas_r.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Tareas Realizadas", grilla_tareas_r))
+            If grilla_tareas_pend IsNot Nothing AndAlso grilla_tareas_pend.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Tareas Pendientes", grilla_tareas_pend))
+            If grilla_personal IsNot Nothing AndAlso grilla_personal.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Personal", grilla_personal))
+            If grilla_insumos IsNot Nothing AndAlso grilla_insumos.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Insumos", grilla_insumos))
+            If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_MP_" & item, "INFORME DE MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) Then
+                Exit Sub
+            End If
             MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
@@ -1385,6 +1395,10 @@ Public Class MantPreventiva
         Catch ex As Exception
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
+            If grilla_tareas_realizadas IsNot Nothing AndAlso grilla_tareas_realizadas.RowCount > 0 AndAlso
+               Utilitarios.ExportarGrillaAExcelNativo(grilla_tareas_realizadas, "Informe_MP_Realizadas_" & item, "MANTENCIÓN PREVENTIVA - TAREAS REALIZADAS", "Ítem / Máquina: " & item) Then
+                Exit Sub
+            End If
             MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
@@ -1444,6 +1458,10 @@ Public Class MantPreventiva
         Catch ex As Exception
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
+            If grilla_tareas_pend IsNot Nothing AndAlso grilla_tareas_pend.RowCount > 0 AndAlso
+               Utilitarios.ExportarGrillaAExcelNativo(grilla_tareas_pend, "Informe_MP_Pendientes_" & item, "MANTENCIÓN PREVENTIVA - TAREAS PENDIENTES", "Ítem / Máquina: " & item) Then
+                Exit Sub
+            End If
             MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
@@ -1720,8 +1738,14 @@ Public Class MantPreventiva
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             ' Respaldo 100% nativo con iTextSharp si Excel no está disponible o falla
             Try
-                Dim grillaPrincipal As DataGridView = If(grilla_tareas_r IsNot Nothing AndAlso grilla_tareas_r.RowCount > 0, grilla_tareas_r, grilla_tareas_pend)
-                If grillaPrincipal IsNot Nothing AndAlso Utilitarios.ExportarGrillaAPdf(grillaPrincipal, rutaPdf, "INFORME DE MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) Then
+                Dim secciones As New List(Of KeyValuePair(Of String, DataGridView))()
+                If grilla_mp IsNot Nothing AndAlso grilla_mp.RowCount > 0 Then secciones.Add(New KeyValuePair(Of String, DataGridView)("Mantenciones Preventivas", grilla_mp))
+                If grilla_ciclo IsNot Nothing AndAlso grilla_ciclo.RowCount > 0 Then secciones.Add(New KeyValuePair(Of String, DataGridView)("Detalle de Ciclos", grilla_ciclo))
+                If grilla_tareas_r IsNot Nothing AndAlso grilla_tareas_r.RowCount > 0 Then secciones.Add(New KeyValuePair(Of String, DataGridView)("Tareas Realizadas", grilla_tareas_r))
+                If grilla_tareas_pend IsNot Nothing AndAlso grilla_tareas_pend.RowCount > 0 Then secciones.Add(New KeyValuePair(Of String, DataGridView)("Tareas Pendientes", grilla_tareas_pend))
+                If grilla_personal IsNot Nothing AndAlso grilla_personal.RowCount > 0 Then secciones.Add(New KeyValuePair(Of String, DataGridView)("Personal Asignado", grilla_personal))
+                If grilla_insumos IsNot Nothing AndAlso grilla_insumos.RowCount > 0 Then secciones.Add(New KeyValuePair(Of String, DataGridView)("Insumos Utilizados", grilla_insumos))
+                If secciones.Count > 0 AndAlso Utilitarios.ExportarGrillasAPdfNativo(secciones, rutaPdf, "INFORME DE MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) Then
                     If MessageBox.Show("Archivo PDF generado exitosamente mediante motor nativo en:" & Environment.NewLine & rutaPdf & Environment.NewLine & Environment.NewLine & "¿Desea abrir el documento PDF ahora?", "Exportación PDF Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
                         Utilitarios.AbrirDocumento(rutaPdf)
                     End If

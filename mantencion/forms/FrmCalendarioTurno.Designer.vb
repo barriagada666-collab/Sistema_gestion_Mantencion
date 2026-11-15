@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class FrmCalendarioTurno
     Inherits System.Windows.Forms.Form
 
@@ -75,7 +75,7 @@ Partial Class FrmCalendarioTurno
         Me.grpTurnosPersonal.Controls.Add(Me.txtPersonalTurno)
         Me.grpTurnosPersonal.Location = New System.Drawing.Point(12, 110)
         Me.grpTurnosPersonal.Name = "grpTurnosPersonal"
-        Me.grpTurnosPersonal.Size = New System.Drawing.Size(580, 88)
+        Me.grpTurnosPersonal.Size = New System.Drawing.Size(606, 88)
         Me.grpTurnosPersonal.TabIndex = 0
         '
         'Label4
@@ -92,7 +92,7 @@ Partial Class FrmCalendarioTurno
         '
         Me.lblTurno.AutoSize = True
         Me.lblTurno.Font = New System.Drawing.Font("Calibri", 9.75!, CType((System.Drawing.FontStyle.Bold Or System.Drawing.FontStyle.Italic), System.Drawing.FontStyle), System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblTurno.Location = New System.Drawing.Point(389, 25)
+        Me.lblTurno.Location = New System.Drawing.Point(405, 25)
         Me.lblTurno.Name = "lblTurno"
         Me.lblTurno.Size = New System.Drawing.Size(39, 15)
         Me.lblTurno.TabIndex = 6
@@ -102,7 +102,7 @@ Partial Class FrmCalendarioTurno
         '
         Me.cmbTurno.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmbTurno.FormattingEnabled = True
-        Me.cmbTurno.Location = New System.Drawing.Point(392, 40)
+        Me.cmbTurno.Location = New System.Drawing.Point(408, 40)
         Me.cmbTurno.Name = "cmbTurno"
         Me.cmbTurno.Size = New System.Drawing.Size(121, 21)
         Me.cmbTurno.TabIndex = 5
@@ -111,7 +111,7 @@ Partial Class FrmCalendarioTurno
         '
         Me.Label2.AutoSize = True
         Me.Label2.Font = New System.Drawing.Font("Calibri", 9.75!, CType((System.Drawing.FontStyle.Bold Or System.Drawing.FontStyle.Italic), System.Drawing.FontStyle), System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(284, 24)
+        Me.Label2.Location = New System.Drawing.Point(286, 24)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(73, 15)
         Me.Label2.TabIndex = 4
@@ -121,7 +121,7 @@ Partial Class FrmCalendarioTurno
         '
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Calibri", 9.75!, CType((System.Drawing.FontStyle.Bold Or System.Drawing.FontStyle.Italic), System.Drawing.FontStyle), System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(178, 23)
+        Me.Label1.Location = New System.Drawing.Point(166, 23)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(73, 15)
         Me.Label1.TabIndex = 3
@@ -133,9 +133,9 @@ Partial Class FrmCalendarioTurno
         Me.fecha_hasta.CalendarTitleForeColor = System.Drawing.Color.White
         Me.fecha_hasta.CalendarTrailingForeColor = System.Drawing.Color.FromArgb(120, 140, 150)
         Me.fecha_hasta.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.fecha_hasta.Location = New System.Drawing.Point(284, 39)
+        Me.fecha_hasta.Location = New System.Drawing.Point(286, 39)
         Me.fecha_hasta.Name = "fecha_hasta"
-        Me.fecha_hasta.Size = New System.Drawing.Size(87, 20)
+        Me.fecha_hasta.Size = New System.Drawing.Size(106, 23)
         Me.fecha_hasta.TabIndex = 2
         '
         'fecha_desde
@@ -144,9 +144,9 @@ Partial Class FrmCalendarioTurno
         Me.fecha_desde.CalendarTitleForeColor = System.Drawing.Color.White
         Me.fecha_desde.CalendarTrailingForeColor = System.Drawing.Color.FromArgb(120, 140, 150)
         Me.fecha_desde.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.fecha_desde.Location = New System.Drawing.Point(181, 39)
+        Me.fecha_desde.Location = New System.Drawing.Point(169, 39)
         Me.fecha_desde.Name = "fecha_desde"
-        Me.fecha_desde.Size = New System.Drawing.Size(87, 20)
+        Me.fecha_desde.Size = New System.Drawing.Size(106, 23)
         Me.fecha_desde.TabIndex = 1
         '
         'txtPersonalTurno
@@ -271,7 +271,7 @@ Partial Class FrmCalendarioTurno
         Me.grpFechasIniciales.Controls.Add(Me.fecha_desde_cal)
         Me.grpFechasIniciales.Location = New System.Drawing.Point(12, 13)
         Me.grpFechasIniciales.Name = "grpFechasIniciales"
-        Me.grpFechasIniciales.Size = New System.Drawing.Size(337, 65)
+        Me.grpFechasIniciales.Size = New System.Drawing.Size(372, 65)
         Me.grpFechasIniciales.TabIndex = 5
         '
         'Label5
@@ -287,7 +287,7 @@ Partial Class FrmCalendarioTurno
         'btn_agregar_personal
         '
         Me.btn_agregar_personal.Image = Global.mantencion.My.Resources.Resources.add
-        Me.btn_agregar_personal.Location = New System.Drawing.Point(534, 38)
+        Me.btn_agregar_personal.Location = New System.Drawing.Point(544, 38)
         Me.btn_agregar_personal.Name = "btn_agregar_personal"
         Me.btn_agregar_personal.Size = New System.Drawing.Size(23, 23)
         Me.btn_agregar_personal.TabIndex = 8
@@ -311,7 +311,7 @@ Partial Class FrmCalendarioTurno
         Me.fecha_desde_cal.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
         Me.fecha_desde_cal.Location = New System.Drawing.Point(10, 30)
         Me.fecha_desde_cal.Name = "fecha_desde_cal"
-        Me.fecha_desde_cal.Size = New System.Drawing.Size(86, 20)
+        Me.fecha_desde_cal.Size = New System.Drawing.Size(106, 23)
         Me.fecha_desde_cal.TabIndex = 0
         '
         'fecha_hasta_cal
@@ -319,9 +319,9 @@ Partial Class FrmCalendarioTurno
         Me.fecha_hasta_cal.CalendarTitleBackColor = System.Drawing.Color.FromArgb(2, 94, 135)
         Me.fecha_hasta_cal.CalendarTrailingForeColor = System.Drawing.Color.FromArgb(120, 140, 150)
         Me.fecha_hasta_cal.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.fecha_hasta_cal.Location = New System.Drawing.Point(110, 30)
+        Me.fecha_hasta_cal.Location = New System.Drawing.Point(126, 30)
         Me.fecha_hasta_cal.Name = "fecha_hasta_cal"
-        Me.fecha_hasta_cal.Size = New System.Drawing.Size(86, 20)
+        Me.fecha_hasta_cal.Size = New System.Drawing.Size(106, 23)
         Me.fecha_hasta_cal.TabIndex = 1
         '
         'Label7
@@ -338,7 +338,7 @@ Partial Class FrmCalendarioTurno
         '
         Me.Label8.AutoSize = True
         Me.Label8.Font = New System.Drawing.Font("Calibri", 9.75!, CType((System.Drawing.FontStyle.Bold Or System.Drawing.FontStyle.Italic), System.Drawing.FontStyle), System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label8.Location = New System.Drawing.Point(107, 15)
+        Me.Label8.Location = New System.Drawing.Point(123, 15)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(73, 15)
         Me.Label8.TabIndex = 3
@@ -346,9 +346,9 @@ Partial Class FrmCalendarioTurno
         '
         'btn_crear_fechas
         '
-        Me.btn_crear_fechas.Location = New System.Drawing.Point(232, 27)
+        Me.btn_crear_fechas.Location = New System.Drawing.Point(248, 27)
         Me.btn_crear_fechas.Name = "btn_crear_fechas"
-        Me.btn_crear_fechas.Size = New System.Drawing.Size(75, 23)
+        Me.btn_crear_fechas.Size = New System.Drawing.Size(90, 23)
         Me.btn_crear_fechas.TabIndex = 4
         Me.btn_crear_fechas.Text = "Crear"
         Me.btn_crear_fechas.UseVisualStyleBackColor = True

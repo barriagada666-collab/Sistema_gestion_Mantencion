@@ -129,33 +129,39 @@ End Class
 Public Class MenuCorporativoRenderer
     Inherits ToolStripProfessionalRenderer
 
+    Private Shared ReadOnly _fontMenuTop As New Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point)
+    Private Shared ReadOnly _fontMenuItem As New Font("Segoe UI", 9.25F, FontStyle.Regular, GraphicsUnit.Point)
+    Private Shared ReadOnly _colorTextoDeshabilitadoTop As Color = Color.FromArgb(148, 178, 194)
+
     Public Sub New()
         MyBase.New(New MenuCorporativoColorTable())
         Me.RoundedEdges = True
     End Sub
 
     Protected Overrides Sub OnRenderItemText(ByVal e As ToolStripItemTextRenderEventArgs)
-        ' En la barra superior del MenuStrip, el texto siempre es blanco de alto contraste
+        ' En la barra superior del MenuStrip, el texto siempre es blanco de alto contraste (o atenuado si está deshabilitado)
         If TypeOf e.ToolStrip Is MenuStrip AndAlso Not e.Item.IsOnDropDown Then
-            e.TextColor = Color.White
-            e.TextFont = New Font("Segoe UI", 10.0F, FontStyle.Bold, GraphicsUnit.Point)
+            e.TextColor = If(e.Item.Enabled, Color.White, _colorTextoDeshabilitadoTop)
+            e.TextFont = _fontMenuTop
         Else
-            e.TextColor = Utilitarios.ColorTextoPrincipal
-            e.TextFont = New Font("Segoe UI", 9.25F, FontStyle.Regular, GraphicsUnit.Point)
+            e.TextColor = If(e.Item.Enabled, Utilitarios.ColorTextoPrincipal, Utilitarios.ColorTextoAtenuado)
+            e.TextFont = _fontMenuItem
         End If
         MyBase.OnRenderItemText(e)
     End Sub
 
     Protected Overrides Sub OnRenderMenuItemBackground(ByVal e As ToolStripItemRenderEventArgs)
+        If Not e.Item.Enabled Then Exit Sub
+
         If TypeOf e.ToolStrip Is MenuStrip AndAlso Not e.Item.IsOnDropDown Then
             ' Botones superiores del Menú Principal
             If e.Item.Selected OrElse e.Item.Pressed Then
                 Dim rect As New Rectangle(2, 2, e.Item.Width - 4, e.Item.Height - 4)
-                Dim bg As Color = If(e.Item.Pressed, Color.FromArgb(14, 116, 144), Color.FromArgb(1, 145, 179))
+                Dim bg As Color = If(e.Item.Pressed, Color.FromArgb(14, 116, 144), Utilitarios.ColorSecundario)
                 Using b As New SolidBrush(bg)
                     e.Graphics.FillRectangle(b, rect)
                 End Using
-                Using p As New Pen(Color.FromArgb(102, 201, 211), 1)
+                Using p As New Pen(Utilitarios.ColorAcento, 1)
                     e.Graphics.DrawRectangle(p, rect.X, rect.Y, rect.Width - 1, rect.Height - 1)
                 End Using
             End If
@@ -163,11 +169,11 @@ Public Class MenuCorporativoRenderer
             ' Ítems dentro de los desplegables
             If e.Item.Selected Then
                 Dim rect As New Rectangle(2, 1, e.Item.Width - 4, e.Item.Height - 2)
-                Using b As New SolidBrush(Color.FromArgb(224, 244, 246))
+                Using b As New SolidBrush(Utilitarios.ColorFondoFoco)
                     e.Graphics.FillRectangle(b, rect)
                 End Using
                 ' Indicador de acento lateral corporativo
-                Using bAcento As New SolidBrush(Color.FromArgb(1, 145, 179))
+                Using bAcento As New SolidBrush(Utilitarios.ColorSecundario)
                     e.Graphics.FillRectangle(bAcento, 2, 1, 4, e.Item.Height - 2)
                 End Using
             Else

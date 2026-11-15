@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class FrmAdminNodos
     Inherits System.Windows.Forms.Form
 
@@ -221,7 +221,7 @@ Partial Class FrmAdminNodos
         Me.fecha_instalacion.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
         Me.fecha_instalacion.Location = New System.Drawing.Point(178, 96)
         Me.fecha_instalacion.Name = "fecha_instalacion"
-        Me.fecha_instalacion.Size = New System.Drawing.Size(86, 20)
+        Me.fecha_instalacion.Size = New System.Drawing.Size(108, 23)
         Me.fecha_instalacion.TabIndex = 8
         '
         'Label7
@@ -462,7 +462,7 @@ Partial Class FrmAdminNodos
         Me.fecha_instalacion2.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
         Me.fecha_instalacion2.Location = New System.Drawing.Point(187, 104)
         Me.fecha_instalacion2.Name = "fecha_instalacion2"
-        Me.fecha_instalacion2.Size = New System.Drawing.Size(86, 20)
+        Me.fecha_instalacion2.Size = New System.Drawing.Size(104, 23)
         Me.fecha_instalacion2.TabIndex = 13
         '
         'Label5

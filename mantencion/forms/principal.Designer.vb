@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class principal
     Inherits System.Windows.Forms.Form
 
@@ -81,56 +81,60 @@ Partial Class principal
         '
         Me.OrdenesDeTrabajoToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.IngresarOtToolStripMenuItem})
         Me.OrdenesDeTrabajoToolStripMenuItem.Name = "OrdenesDeTrabajoToolStripMenuItem"
-        Me.OrdenesDeTrabajoToolStripMenuItem.Size = New System.Drawing.Size(141, 22)
-        Me.OrdenesDeTrabajoToolStripMenuItem.Text = "Ordenes de Trabajo"
+        Me.OrdenesDeTrabajoToolStripMenuItem.Size = New System.Drawing.Size(145, 22)
+        Me.OrdenesDeTrabajoToolStripMenuItem.Text = "Órdenes de Trabajo"
         '
         'IngresarOtToolStripMenuItem
         '
         Me.IngresarOtToolStripMenuItem.Image = Global.mantencion.My.Resources.Resources.notas
         Me.IngresarOtToolStripMenuItem.Name = "IngresarOtToolStripMenuItem"
-        Me.IngresarOtToolStripMenuItem.Size = New System.Drawing.Size(256, 22)
-        Me.IngresarOtToolStripMenuItem.Text = "Gestión Ordenes de Trabajo"
+        Me.IngresarOtToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.O), System.Windows.Forms.Keys)
+        Me.IngresarOtToolStripMenuItem.Size = New System.Drawing.Size(270, 22)
+        Me.IngresarOtToolStripMenuItem.Text = "Gestión Órdenes de Trabajo"
         '
         'MantPreventivaToolStripMenuItem
         '
         Me.MantPreventivaToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.IngresarMpToolStripMenuItem, Me.TareasMaquinasToolStripMenuItem})
         Me.MantPreventivaToolStripMenuItem.Name = "MantPreventivaToolStripMenuItem"
-        Me.MantPreventivaToolStripMenuItem.Size = New System.Drawing.Size(123, 22)
-        Me.MantPreventivaToolStripMenuItem.Text = "Mant.Preventiva"
+        Me.MantPreventivaToolStripMenuItem.Size = New System.Drawing.Size(130, 22)
+        Me.MantPreventivaToolStripMenuItem.Text = "Mant. Preventiva"
         '
         'IngresarMpToolStripMenuItem
         '
         Me.IngresarMpToolStripMenuItem.Image = Global.mantencion.My.Resources.Resources.checklist
         Me.IngresarMpToolStripMenuItem.Name = "IngresarMpToolStripMenuItem"
-        Me.IngresarMpToolStripMenuItem.Size = New System.Drawing.Size(279, 22)
-        Me.IngresarMpToolStripMenuItem.Text = "Gestión Mant.Preventivas"
+        Me.IngresarMpToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.M), System.Windows.Forms.Keys)
+        Me.IngresarMpToolStripMenuItem.Size = New System.Drawing.Size(290, 22)
+        Me.IngresarMpToolStripMenuItem.Text = "Gestión Mant. Preventivas"
         '
         'TareasMaquinasToolStripMenuItem
         '
         Me.TareasMaquinasToolStripMenuItem.Image = Global.mantencion.My.Resources.Resources._15tareas
         Me.TareasMaquinasToolStripMenuItem.Name = "TareasMaquinasToolStripMenuItem"
-        Me.TareasMaquinasToolStripMenuItem.Size = New System.Drawing.Size(279, 22)
-        Me.TareasMaquinasToolStripMenuItem.Text = "Gestión Tareas Item / Maquinas"
+        Me.TareasMaquinasToolStripMenuItem.Size = New System.Drawing.Size(290, 22)
+        Me.TareasMaquinasToolStripMenuItem.Text = "Gestión Tareas Ítem / Máquinas"
         '
         'InformesToolStripMenuItem
         '
         Me.InformesToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.InformeOrdenesDeTrabajoToolStripMenuItem, Me.InformeResumenOrdenDeTrabajoToolStripMenuItem, Me.InformeMantenciónPreventivaToolStripMenuItem})
         Me.InformesToolStripMenuItem.Name = "InformesToolStripMenuItem"
-        Me.InformesToolStripMenuItem.Size = New System.Drawing.Size(76, 22)
+        Me.InformesToolStripMenuItem.Size = New System.Drawing.Size(80, 22)
         Me.InformesToolStripMenuItem.Text = "Informes"
         '
         'InformeOrdenesDeTrabajoToolStripMenuItem
         '
         Me.InformeOrdenesDeTrabajoToolStripMenuItem.Image = Global.mantencion.My.Resources.Resources.informe
         Me.InformeOrdenesDeTrabajoToolStripMenuItem.Name = "InformeOrdenesDeTrabajoToolStripMenuItem"
-        Me.InformeOrdenesDeTrabajoToolStripMenuItem.Size = New System.Drawing.Size(312, 22)
-        Me.InformeOrdenesDeTrabajoToolStripMenuItem.Text = "Informe Ordenes de Trabajo"
+        Me.InformeOrdenesDeTrabajoToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.I), System.Windows.Forms.Keys)
+        Me.InformeOrdenesDeTrabajoToolStripMenuItem.Size = New System.Drawing.Size(320, 22)
+        Me.InformeOrdenesDeTrabajoToolStripMenuItem.Text = "Informe Órdenes de Trabajo"
         '
         'InformeResumenOrdenDeTrabajoToolStripMenuItem
         '
         Me.InformeResumenOrdenDeTrabajoToolStripMenuItem.Image = Global.mantencion.My.Resources.Resources.informe
         Me.InformeResumenOrdenDeTrabajoToolStripMenuItem.Name = "InformeResumenOrdenDeTrabajoToolStripMenuItem"
-        Me.InformeResumenOrdenDeTrabajoToolStripMenuItem.Size = New System.Drawing.Size(312, 22)
+        Me.InformeResumenOrdenDeTrabajoToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.E), System.Windows.Forms.Keys)
+        Me.InformeResumenOrdenDeTrabajoToolStripMenuItem.Size = New System.Drawing.Size(320, 22)
         Me.InformeResumenOrdenDeTrabajoToolStripMenuItem.Text = "Informe Estadístico Orden de Trabajo"
         '
         'InformeMantenciónPreventivaToolStripMenuItem
@@ -138,26 +142,26 @@ Partial Class principal
         Me.InformeMantenciónPreventivaToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.PorMaquinaToolStripMenuItem, Me.VariasMaquinasToolStripMenuItem})
         Me.InformeMantenciónPreventivaToolStripMenuItem.Image = Global.mantencion.My.Resources.Resources.informe
         Me.InformeMantenciónPreventivaToolStripMenuItem.Name = "InformeMantenciónPreventivaToolStripMenuItem"
-        Me.InformeMantenciónPreventivaToolStripMenuItem.Size = New System.Drawing.Size(312, 22)
+        Me.InformeMantenciónPreventivaToolStripMenuItem.Size = New System.Drawing.Size(320, 22)
         Me.InformeMantenciónPreventivaToolStripMenuItem.Text = "Informe Mantención Preventiva"
         '
         'PorMaquinaToolStripMenuItem
         '
         Me.PorMaquinaToolStripMenuItem.Name = "PorMaquinaToolStripMenuItem"
-        Me.PorMaquinaToolStripMenuItem.Size = New System.Drawing.Size(203, 22)
-        Me.PorMaquinaToolStripMenuItem.Text = "Maquina Individual"
+        Me.PorMaquinaToolStripMenuItem.Size = New System.Drawing.Size(210, 22)
+        Me.PorMaquinaToolStripMenuItem.Text = "Máquina Individual"
         '
         'VariasMaquinasToolStripMenuItem
         '
         Me.VariasMaquinasToolStripMenuItem.Name = "VariasMaquinasToolStripMenuItem"
-        Me.VariasMaquinasToolStripMenuItem.Size = New System.Drawing.Size(203, 22)
-        Me.VariasMaquinasToolStripMenuItem.Text = "Varias Maquinas"
+        Me.VariasMaquinasToolStripMenuItem.Size = New System.Drawing.Size(210, 22)
+        Me.VariasMaquinasToolStripMenuItem.Text = "Varias Máquinas"
         '
         'MantenedorToolStripMenuItem
         '
         Me.MantenedorToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.NodosToolStripMenuItem, Me.PersonalToolStripMenuItem, Me.ItemsToolStripMenuItem, Me.UsuariosToolStripMenuItem, Me.ToolStripSeparatorMantenedor, Me.ConfigurarServidorToolStripMenuItem})
         Me.MantenedorToolStripMenuItem.Name = "MantenedorToolStripMenuItem"
-        Me.MantenedorToolStripMenuItem.Size = New System.Drawing.Size(111, 22)
+        Me.MantenedorToolStripMenuItem.Size = New System.Drawing.Size(115, 22)
         Me.MantenedorToolStripMenuItem.Text = "Mantenedores"
         '
         'ToolStripSeparatorMantenedor
@@ -177,32 +181,32 @@ Partial Class principal
         Me.NodosToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MantenedorItemsMaquinasToolStripMenuItem, Me.GestiónDatosTécnicosToolStripMenuItem, Me.AsocDatosTécnicosItemsToolStripMenuItem})
         Me.NodosToolStripMenuItem.Image = Global.mantencion.My.Resources.Resources.icono_dock_bol_museo
         Me.NodosToolStripMenuItem.Name = "NodosToolStripMenuItem"
-        Me.NodosToolStripMenuItem.Size = New System.Drawing.Size(196, 22)
-        Me.NodosToolStripMenuItem.Text = "Nodos / Maquinas"
+        Me.NodosToolStripMenuItem.Size = New System.Drawing.Size(210, 22)
+        Me.NodosToolStripMenuItem.Text = "Nodos / Máquinas"
         '
         'MantenedorItemsMaquinasToolStripMenuItem
         '
         Me.MantenedorItemsMaquinasToolStripMenuItem.Name = "MantenedorItemsMaquinasToolStripMenuItem"
-        Me.MantenedorItemsMaquinasToolStripMenuItem.Size = New System.Drawing.Size(276, 22)
-        Me.MantenedorItemsMaquinasToolStripMenuItem.Text = "Mantenedor Nodos / Maquinas"
+        Me.MantenedorItemsMaquinasToolStripMenuItem.Size = New System.Drawing.Size(280, 22)
+        Me.MantenedorItemsMaquinasToolStripMenuItem.Text = "Mantenedor Nodos / Máquinas"
         '
         'GestiónDatosTécnicosToolStripMenuItem
         '
         Me.GestiónDatosTécnicosToolStripMenuItem.Name = "GestiónDatosTécnicosToolStripMenuItem"
-        Me.GestiónDatosTécnicosToolStripMenuItem.Size = New System.Drawing.Size(276, 22)
+        Me.GestiónDatosTécnicosToolStripMenuItem.Size = New System.Drawing.Size(280, 22)
         Me.GestiónDatosTécnicosToolStripMenuItem.Text = "Gestión Datos Técnicos"
         '
         'AsocDatosTécnicosItemsToolStripMenuItem
         '
         Me.AsocDatosTécnicosItemsToolStripMenuItem.Name = "AsocDatosTécnicosItemsToolStripMenuItem"
-        Me.AsocDatosTécnicosItemsToolStripMenuItem.Size = New System.Drawing.Size(276, 22)
+        Me.AsocDatosTécnicosItemsToolStripMenuItem.Size = New System.Drawing.Size(280, 22)
         Me.AsocDatosTécnicosItemsToolStripMenuItem.Text = "Asociar Datos Técnicos / Nodos"
         '
         'PersonalToolStripMenuItem
         '
         Me.PersonalToolStripMenuItem.Image = Global.mantencion.My.Resources.Resources.personal_icono_5904_96
         Me.PersonalToolStripMenuItem.Name = "PersonalToolStripMenuItem"
-        Me.PersonalToolStripMenuItem.Size = New System.Drawing.Size(196, 22)
+        Me.PersonalToolStripMenuItem.Size = New System.Drawing.Size(210, 22)
         Me.PersonalToolStripMenuItem.Text = "Personal"
         '
         'ItemsToolStripMenuItem
@@ -210,28 +214,28 @@ Partial Class principal
         Me.ItemsToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.PlantaToolStripMenuItem, Me.SeccionesToolStripMenuItem, Me.CargosToolStripMenuItem})
         Me.ItemsToolStripMenuItem.Image = Global.mantencion.My.Resources.Resources.items
         Me.ItemsToolStripMenuItem.Name = "ItemsToolStripMenuItem"
-        Me.ItemsToolStripMenuItem.Size = New System.Drawing.Size(196, 22)
-        Me.ItemsToolStripMenuItem.Text = "Items "
+        Me.ItemsToolStripMenuItem.Size = New System.Drawing.Size(210, 22)
+        Me.ItemsToolStripMenuItem.Text = "Ítems"
         '
         'PlantaToolStripMenuItem
         '
         Me.PlantaToolStripMenuItem.Image = Global.mantencion.My.Resources.Resources.icono_fabrica_ezg_2
         Me.PlantaToolStripMenuItem.Name = "PlantaToolStripMenuItem"
-        Me.PlantaToolStripMenuItem.Size = New System.Drawing.Size(145, 22)
+        Me.PlantaToolStripMenuItem.Size = New System.Drawing.Size(150, 22)
         Me.PlantaToolStripMenuItem.Text = "Planta"
         '
         'SeccionesToolStripMenuItem
         '
         Me.SeccionesToolStripMenuItem.Image = Global.mantencion.My.Resources.Resources.icono_seccion
         Me.SeccionesToolStripMenuItem.Name = "SeccionesToolStripMenuItem"
-        Me.SeccionesToolStripMenuItem.Size = New System.Drawing.Size(145, 22)
+        Me.SeccionesToolStripMenuItem.Size = New System.Drawing.Size(150, 22)
         Me.SeccionesToolStripMenuItem.Text = "Secciones"
         '
         'CargosToolStripMenuItem
         '
         Me.CargosToolStripMenuItem.Image = Global.mantencion.My.Resources.Resources.puesto_trabajo
         Me.CargosToolStripMenuItem.Name = "CargosToolStripMenuItem"
-        Me.CargosToolStripMenuItem.Size = New System.Drawing.Size(145, 22)
+        Me.CargosToolStripMenuItem.Size = New System.Drawing.Size(150, 22)
         Me.CargosToolStripMenuItem.Text = "Cargos"
         '
         'UsuariosToolStripMenuItem
@@ -239,48 +243,49 @@ Partial Class principal
         Me.UsuariosToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AdministraciónUsuariosToolStripMenuItem})
         Me.UsuariosToolStripMenuItem.Image = Global.mantencion.My.Resources.Resources.icono_usuarios
         Me.UsuariosToolStripMenuItem.Name = "UsuariosToolStripMenuItem"
-        Me.UsuariosToolStripMenuItem.Size = New System.Drawing.Size(196, 22)
+        Me.UsuariosToolStripMenuItem.Size = New System.Drawing.Size(210, 22)
         Me.UsuariosToolStripMenuItem.Text = "Usuarios"
         '
         'AdministraciónUsuariosToolStripMenuItem
         '
         Me.AdministraciónUsuariosToolStripMenuItem.Name = "AdministraciónUsuariosToolStripMenuItem"
-        Me.AdministraciónUsuariosToolStripMenuItem.Size = New System.Drawing.Size(234, 22)
+        Me.AdministraciónUsuariosToolStripMenuItem.Size = New System.Drawing.Size(240, 22)
         Me.AdministraciónUsuariosToolStripMenuItem.Text = "Administración Usuarios"
         '
         'AuditoriaToolStripMenuItem
         '
         Me.AuditoriaToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AuditoriaDeOperacionesToolStripMenuItem})
         Me.AuditoriaToolStripMenuItem.Name = "AuditoriaToolStripMenuItem"
-        Me.AuditoriaToolStripMenuItem.Size = New System.Drawing.Size(137, 22)
+        Me.AuditoriaToolStripMenuItem.Size = New System.Drawing.Size(140, 22)
         Me.AuditoriaToolStripMenuItem.Text = "Control de Eventos"
         '
         'AuditoriaDeOperacionesToolStripMenuItem
         '
         Me.AuditoriaDeOperacionesToolStripMenuItem.Image = Global.mantencion.My.Resources.Resources.operations
         Me.AuditoriaDeOperacionesToolStripMenuItem.Name = "AuditoriaDeOperacionesToolStripMenuItem"
-        Me.AuditoriaDeOperacionesToolStripMenuItem.Size = New System.Drawing.Size(242, 22)
-        Me.AuditoriaDeOperacionesToolStripMenuItem.Text = "Auditoria de Operaciones"
+        Me.AuditoriaDeOperacionesToolStripMenuItem.Size = New System.Drawing.Size(250, 22)
+        Me.AuditoriaDeOperacionesToolStripMenuItem.Text = "Auditoría de Operaciones"
         '
         'SalirToolStripMenuItem
         '
         Me.SalirToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CerrarSesiónToolStripMenuItem, Me.SalirToolStripMenuItem1})
         Me.SalirToolStripMenuItem.Name = "SalirToolStripMenuItem"
-        Me.SalirToolStripMenuItem.Size = New System.Drawing.Size(47, 22)
+        Me.SalirToolStripMenuItem.Size = New System.Drawing.Size(50, 22)
         Me.SalirToolStripMenuItem.Text = "Salir"
         '
         'CerrarSesiónToolStripMenuItem
         '
         Me.CerrarSesiónToolStripMenuItem.Image = Global.mantencion.My.Resources.Resources.cerrar_sesion
         Me.CerrarSesiónToolStripMenuItem.Name = "CerrarSesiónToolStripMenuItem"
-        Me.CerrarSesiónToolStripMenuItem.Size = New System.Drawing.Size(166, 22)
+        Me.CerrarSesiónToolStripMenuItem.Size = New System.Drawing.Size(190, 22)
         Me.CerrarSesiónToolStripMenuItem.Text = "Cerrar Sesión"
         '
         'SalirToolStripMenuItem1
         '
         Me.SalirToolStripMenuItem1.Image = Global.mantencion.My.Resources.Resources.salir
         Me.SalirToolStripMenuItem1.Name = "SalirToolStripMenuItem1"
-        Me.SalirToolStripMenuItem1.Size = New System.Drawing.Size(166, 22)
+        Me.SalirToolStripMenuItem1.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Q), System.Windows.Forms.Keys)
+        Me.SalirToolStripMenuItem1.Size = New System.Drawing.Size(190, 22)
         Me.SalirToolStripMenuItem1.Text = "Salir"
         '
         'StatusStrip
@@ -295,15 +300,15 @@ Partial Class principal
         '
         'lblStatusStrip
         '
-        Me.lblStatusStrip.Font = New System.Drawing.Font("Calibri", 11.25!, CType((System.Drawing.FontStyle.Bold Or System.Drawing.FontStyle.Italic), System.Drawing.FontStyle), System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblStatusStrip.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblStatusStrip.ForeColor = System.Drawing.Color.White
         Me.lblStatusStrip.Name = "lblStatusStrip"
-        Me.lblStatusStrip.Size = New System.Drawing.Size(102, 18)
-        Me.lblStatusStrip.Text = "Esta en Sesión :"
+        Me.lblStatusStrip.Size = New System.Drawing.Size(105, 18)
+        Me.lblStatusStrip.Text = "Sesión activa:"
         '
         'StatusLabel2
         '
-        Me.StatusLabel2.Font = New System.Drawing.Font("Calibri", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.StatusLabel2.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.StatusLabel2.ForeColor = System.Drawing.Color.White
         Me.StatusLabel2.Name = "StatusLabel2"
         Me.StatusLabel2.Size = New System.Drawing.Size(0, 18)
@@ -311,9 +316,10 @@ Partial Class principal
         '
         'lblUsuario
         '
+        Me.lblUsuario.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblUsuario.ForeColor = System.Drawing.Color.White
         Me.lblUsuario.Name = "lblUsuario"
-        Me.lblUsuario.Size = New System.Drawing.Size(43, 18)
+        Me.lblUsuario.Size = New System.Drawing.Size(55, 18)
         Me.lblUsuario.Text = "Usuario"
         '
         'principal
@@ -330,7 +336,7 @@ Partial Class principal
         Me.MainMenuStrip = Me.MenuStrip
         Me.Name = "principal"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "Menu Principal"
+        Me.Text = "Menú Principal — Sistema de Gestión de Mantención"
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
         Me.MenuStrip.ResumeLayout(False)
         Me.MenuStrip.PerformLayout()

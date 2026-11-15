@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class FrmPlanificarCiclos
     Inherits System.Windows.Forms.Form
 
@@ -117,7 +117,7 @@ Partial Class FrmPlanificarCiclos
         Me.fecha_inicio_ult_ciclo.Format = System.Windows.Forms.DateTimePickerFormat.Custom
         Me.fecha_inicio_ult_ciclo.Location = New System.Drawing.Point(15, 95)
         Me.fecha_inicio_ult_ciclo.Name = "fecha_inicio_ult_ciclo"
-        Me.fecha_inicio_ult_ciclo.Size = New System.Drawing.Size(112, 20)
+        Me.fecha_inicio_ult_ciclo.Size = New System.Drawing.Size(134, 23)
         Me.fecha_inicio_ult_ciclo.TabIndex = 6
         '
         'Label4
@@ -259,16 +259,16 @@ Partial Class FrmPlanificarCiclos
         Me.fecha_fin_ult_ciclo.CustomFormat = "dd-MM-yyyy HH:mm"
         Me.fecha_fin_ult_ciclo.Enabled = False
         Me.fecha_fin_ult_ciclo.Format = System.Windows.Forms.DateTimePickerFormat.Custom
-        Me.fecha_fin_ult_ciclo.Location = New System.Drawing.Point(162, 95)
+        Me.fecha_fin_ult_ciclo.Location = New System.Drawing.Point(169, 95)
         Me.fecha_fin_ult_ciclo.Name = "fecha_fin_ult_ciclo"
-        Me.fecha_fin_ult_ciclo.Size = New System.Drawing.Size(114, 20)
+        Me.fecha_fin_ult_ciclo.Size = New System.Drawing.Size(134, 23)
         Me.fecha_fin_ult_ciclo.TabIndex = 15
         '
         'Label7
         '
         Me.Label7.AutoSize = True
         Me.Label7.Font = New System.Drawing.Font("Calibri", 9.75!, CType((System.Drawing.FontStyle.Bold Or System.Drawing.FontStyle.Italic), System.Drawing.FontStyle), System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label7.Location = New System.Drawing.Point(159, 62)
+        Me.Label7.Location = New System.Drawing.Point(166, 62)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(90, 30)
         Me.Label7.TabIndex = 16

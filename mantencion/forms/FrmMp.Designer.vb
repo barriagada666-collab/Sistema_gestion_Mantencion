@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class FrmMp
     Inherits System.Windows.Forms.Form
 
@@ -526,7 +526,7 @@ Partial Class FrmMp
         Me.lblEstadoCiclo.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblEstadoCiclo.AutoSize = True
         Me.lblEstadoCiclo.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblEstadoCiclo.Location = New System.Drawing.Point(515, 27)
+        Me.lblEstadoCiclo.Location = New System.Drawing.Point(530, 27)
         Me.lblEstadoCiclo.Name = "lblEstadoCiclo"
         Me.lblEstadoCiclo.Size = New System.Drawing.Size(71, 15)
         Me.lblEstadoCiclo.TabIndex = 15
@@ -537,9 +537,9 @@ Partial Class FrmMp
         Me.cmbEstadoCiclo.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmbEstadoCiclo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmbEstadoCiclo.FormattingEnabled = True
-        Me.cmbEstadoCiclo.Location = New System.Drawing.Point(518, 43)
+        Me.cmbEstadoCiclo.Location = New System.Drawing.Point(532, 43)
         Me.cmbEstadoCiclo.Name = "cmbEstadoCiclo"
-        Me.cmbEstadoCiclo.Size = New System.Drawing.Size(116, 21)
+        Me.cmbEstadoCiclo.Size = New System.Drawing.Size(108, 21)
         Me.cmbEstadoCiclo.TabIndex = 10
         '
         'lblObsCiclo
@@ -565,7 +565,7 @@ Partial Class FrmMp
         '
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(435, 27)
+        Me.Label1.Location = New System.Drawing.Point(476, 27)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(55, 15)
         Me.Label1.TabIndex = 11
@@ -576,29 +576,29 @@ Partial Class FrmMp
         Me.txtDuracionCiclo.BackColor = System.Drawing.Color.FromArgb(215, 230, 234)
         Me.txtDuracionCiclo.ForeColor = System.Drawing.Color.FromArgb(15, 23, 42)
         Me.txtDuracionCiclo.ReadOnly = True
-        Me.txtDuracionCiclo.Location = New System.Drawing.Point(438, 44)
+        Me.txtDuracionCiclo.Location = New System.Drawing.Point(478, 44)
         Me.txtDuracionCiclo.Name = "txtDuracionCiclo"
-        Me.txtDuracionCiclo.Size = New System.Drawing.Size(47, 20)
+        Me.txtDuracionCiclo.Size = New System.Drawing.Size(44, 20)
         Me.txtDuracionCiclo.TabIndex = 10
         '
         'lblHrFinCiclo
         '
         Me.lblHrFinCiclo.AutoSize = True
         Me.lblHrFinCiclo.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblHrFinCiclo.Location = New System.Drawing.Point(347, 26)
+        Me.lblHrFinCiclo.Location = New System.Drawing.Point(398, 26)
         Me.lblHrFinCiclo.Name = "lblHrFinCiclo"
         Me.lblHrFinCiclo.Size = New System.Drawing.Size(82, 15)
         Me.lblHrFinCiclo.TabIndex = 9
-        Me.lblHrFinCiclo.Text = "Hora Termino"
+        Me.lblHrFinCiclo.Text = "Hora Término"
         '
         'HrFinCiclo
         '
         Me.HrFinCiclo.CustomFormat = "HH:mm"
         Me.HrFinCiclo.Format = System.Windows.Forms.DateTimePickerFormat.Custom
-        Me.HrFinCiclo.Location = New System.Drawing.Point(350, 44)
+        Me.HrFinCiclo.Location = New System.Drawing.Point(400, 44)
         Me.HrFinCiclo.Name = "HrFinCiclo"
         Me.HrFinCiclo.ShowUpDown = True
-        Me.HrFinCiclo.Size = New System.Drawing.Size(62, 20)
+        Me.HrFinCiclo.Size = New System.Drawing.Size(68, 23)
         Me.HrFinCiclo.TabIndex = 8
         Me.HrFinCiclo.Value = New Date(2012, 5, 30, 0, 0, 0, 0)
         '
@@ -606,7 +606,7 @@ Partial Class FrmMp
         '
         Me.lblFechaFinCiclo.AutoSize = True
         Me.lblFechaFinCiclo.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblFechaFinCiclo.Location = New System.Drawing.Point(247, 26)
+        Me.lblFechaFinCiclo.Location = New System.Drawing.Point(279, 26)
         Me.lblFechaFinCiclo.Name = "lblFechaFinCiclo"
         Me.lblFechaFinCiclo.Size = New System.Drawing.Size(87, 15)
         Me.lblFechaFinCiclo.TabIndex = 7
@@ -617,16 +617,16 @@ Partial Class FrmMp
         Me.fechaFinCicloMp.CalendarTitleBackColor = System.Drawing.Color.FromArgb(2, 94, 135)
         Me.fechaFinCicloMp.CalendarTrailingForeColor = System.Drawing.Color.FromArgb(120, 140, 150)
         Me.fechaFinCicloMp.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.fechaFinCicloMp.Location = New System.Drawing.Point(250, 44)
+        Me.fechaFinCicloMp.Location = New System.Drawing.Point(282, 44)
         Me.fechaFinCicloMp.Name = "fechaFinCicloMp"
-        Me.fechaFinCicloMp.Size = New System.Drawing.Size(80, 20)
+        Me.fechaFinCicloMp.Size = New System.Drawing.Size(108, 23)
         Me.fechaFinCicloMp.TabIndex = 7
         '
         'lblHrInicioCiclo
         '
         Me.lblHrInicioCiclo.AutoSize = True
         Me.lblHrInicioCiclo.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblHrInicioCiclo.Location = New System.Drawing.Point(172, 26)
+        Me.lblHrInicioCiclo.Location = New System.Drawing.Point(199, 26)
         Me.lblHrInicioCiclo.Name = "lblHrInicioCiclo"
         Me.lblHrInicioCiclo.Size = New System.Drawing.Size(64, 15)
         Me.lblHrInicioCiclo.TabIndex = 5
@@ -636,10 +636,10 @@ Partial Class FrmMp
         '
         Me.HrInicioCiclo.CustomFormat = "HH:mm"
         Me.HrInicioCiclo.Format = System.Windows.Forms.DateTimePickerFormat.Custom
-        Me.HrInicioCiclo.Location = New System.Drawing.Point(175, 44)
+        Me.HrInicioCiclo.Location = New System.Drawing.Point(202, 44)
         Me.HrInicioCiclo.Name = "HrInicioCiclo"
         Me.HrInicioCiclo.ShowUpDown = True
-        Me.HrInicioCiclo.Size = New System.Drawing.Size(59, 20)
+        Me.HrInicioCiclo.Size = New System.Drawing.Size(68, 23)
         Me.HrInicioCiclo.TabIndex = 6
         Me.HrInicioCiclo.Value = New Date(2012, 5, 30, 0, 0, 0, 0)
         '
@@ -661,7 +661,7 @@ Partial Class FrmMp
         Me.FechaIniCiclo.Format = System.Windows.Forms.DateTimePickerFormat.Custom
         Me.FechaIniCiclo.Location = New System.Drawing.Point(84, 44)
         Me.FechaIniCiclo.Name = "FechaIniCiclo"
-        Me.FechaIniCiclo.Size = New System.Drawing.Size(79, 20)
+        Me.FechaIniCiclo.Size = New System.Drawing.Size(108, 23)
         Me.FechaIniCiclo.TabIndex = 5
         '
         'lblIdCiclo

@@ -1,4 +1,4 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Imports Excel = Microsoft.Office.Interop.Excel
 Public Class Informes
     Public Sub CrgInfGanttCiclosMaq()
@@ -7,8 +7,7 @@ Public Class Informes
         Dim fecha_fin As DateTime
         Dim fecha As DateTime
         Dim fecha_ini As DateTime
-        Dim num_mant As Integer
-        Dim cont_celda_pintada As Integer
+        Dim fecha_end As DateTime
 
         With FrmInfMantPrev
             If .grillaDetalleCicloMp.RowCount = 0 Then Return
@@ -43,31 +42,33 @@ Public Class Informes
                 fecha_inicio = Now.Date
                 fecha_fin = Now.Date
             End If
-            fecha = fecha_inicio
 
+            Dim colPorFecha As New Dictionary(Of DateTime, Integer)()
+            fecha = fecha_inicio
             While fecha <= fecha_fin
                 Dim colKey As String = fecha.ToString("yyyyMMdd")
-                FrmCartaGantt.grillaGraficoGantt.Columns.Add(colKey, fecha.ToString("dd-MM-yy"))
-                FrmCartaGantt.grillaGraficoGantt.Columns(colKey).Width = 55
-                fecha = DateAdd(DateInterval.Day, 1, fecha)
+                Dim colIdx As Integer = FrmCartaGantt.grillaGraficoGantt.Columns.Add(colKey, fecha.ToString("dd-MM-yy"))
+                FrmCartaGantt.grillaGraficoGantt.Columns(colIdx).Width = 55
+                colPorFecha(fecha.Date) = colIdx
+                fecha = fecha.AddDays(1)
             End While
 
+            Dim colorMant As Color = Utilitarios.ColorGanttBarra
             For i = 0 To FrmCartaGantt.grillaInfoGantt.RowCount - 1
                 FrmCartaGantt.grillaGraficoGantt.Rows.Add()
-                fecha_ini = CDate(FrmCartaGantt.grillaInfoGantt.Rows(i).Cells(3).Value).Date
-                num_mant = DateDiff(DateInterval.Day, fecha_ini, CDate(FrmCartaGantt.grillaInfoGantt.Rows(i).Cells(4).Value).Date) + 1
-
-                For j = 0 To FrmCartaGantt.grillaGraficoGantt.Columns.Count - 1
-                    If fecha_ini.ToString("yyyyMMdd") = FrmCartaGantt.grillaGraficoGantt.Columns(j).Name Then
-                        FrmCartaGantt.grillaGraficoGantt.Rows(i).Cells(j).Style.BackColor = Utilitarios.ColorGanttBarra
-                        FrmCartaGantt.grillaGraficoGantt.Rows(i).Cells(j).Style.ForeColor = Color.White
-                        cont_celda_pintada = cont_celda_pintada + 1
-                        If cont_celda_pintada < num_mant Then
-                            fecha_ini = DateAdd(DateInterval.Day, 1, fecha_ini)
+                If DateTime.TryParse(Convert.ToString(FrmCartaGantt.grillaInfoGantt.Rows(i).Cells(3).Value), fecha_ini) AndAlso
+                   DateTime.TryParse(Convert.ToString(FrmCartaGantt.grillaInfoGantt.Rows(i).Cells(4).Value), fecha_end) Then
+                    Dim d As DateTime = fecha_ini.Date
+                    Dim dFin As DateTime = fecha_end.Date
+                    While d <= dFin
+                        Dim j As Integer
+                        If colPorFecha.TryGetValue(d, j) Then
+                            FrmCartaGantt.grillaGraficoGantt.Rows(i).Cells(j).Style.BackColor = colorMant
+                            FrmCartaGantt.grillaGraficoGantt.Rows(i).Cells(j).Style.ForeColor = Color.White
                         End If
-                    End If
-                Next
-                cont_celda_pintada = 0
+                        d = d.AddDays(1)
+                    End While
+                End If
             Next
         End With
     End Sub
@@ -78,8 +79,7 @@ Public Class Informes
         Dim fecha_fin As DateTime
         Dim fecha As DateTime
         Dim fecha_ini As DateTime
-        Dim num_mant As Integer
-        Dim cont_celda_pintada As Integer
+        Dim fecha_end As DateTime
 
         With FrmInfMantPrevCiclosMaq
             If .grillaCiclosMaquinas.RowCount = 0 Then Return
@@ -114,46 +114,41 @@ Public Class Informes
                 fecha_inicio = Now.Date
                 fecha_fin = Now.Date
             End If
-            fecha = fecha_inicio
 
+            Dim colPorFecha As New Dictionary(Of DateTime, Integer)()
+            Dim colsFds As New List(Of Integer)()
+            fecha = fecha_inicio
             While fecha <= fecha_fin
                 Dim colKey As String = fecha.ToString("yyyyMMdd")
-                FrmCartaGantt.grillaGraficoGantt.Columns.Add(colKey, fecha.ToString("dd-MM-yy"))
-                FrmCartaGantt.grillaGraficoGantt.Columns(colKey).Width = 55
-                fecha = DateAdd(DateInterval.Day, 1, fecha)
+                Dim colIdx As Integer = FrmCartaGantt.grillaGraficoGantt.Columns.Add(colKey, fecha.ToString("dd-MM-yy"))
+                FrmCartaGantt.grillaGraficoGantt.Columns(colIdx).Width = 55
+                colPorFecha(fecha.Date) = colIdx
+                If fecha.DayOfWeek = DayOfWeek.Saturday OrElse fecha.DayOfWeek = DayOfWeek.Sunday Then
+                    colsFds.Add(colIdx)
+                End If
+                fecha = fecha.AddDays(1)
             End While
 
-            For i = 0 To FrmCartaGantt.grillaInfoGantt.RowCount - 1
-                FrmCartaGantt.grillaGraficoGantt.Rows.Add()
-                fecha_ini = CDate(FrmCartaGantt.grillaInfoGantt.Rows(i).Cells(3).Value).Date
-                num_mant = DateDiff(DateInterval.Day, fecha_ini, CDate(FrmCartaGantt.grillaInfoGantt.Rows(i).Cells(4).Value).Date) + 1
-
-                For j = 0 To FrmCartaGantt.grillaGraficoGantt.Columns.Count - 1
-                    If fecha_ini.ToString("yyyyMMdd") = FrmCartaGantt.grillaGraficoGantt.Columns(j).Name Then
-                        FrmCartaGantt.grillaGraficoGantt.Rows(i).Cells(j).Style.BackColor = Utilitarios.ColorGanttBarra
-                        FrmCartaGantt.grillaGraficoGantt.Rows(i).Cells(j).Style.ForeColor = Color.White
-                        cont_celda_pintada = cont_celda_pintada + 1
-                        If cont_celda_pintada < num_mant Then
-                            fecha_ini = DateAdd(DateInterval.Day, 1, fecha_ini)
-                        End If
-                    End If
-                Next
-                cont_celda_pintada = 0
-            Next
-
-            Dim fecha_fds As DateTime
             Dim colorMant As Color = Utilitarios.ColorGanttBarra
             Dim colorFds As Color = Utilitarios.ColorFondoSoloLectura
-            For i = 0 To FrmCartaGantt.grillaGraficoGantt.Columns.Count - 1
-                fecha_fds = DateTime.ParseExact(FrmCartaGantt.grillaGraficoGantt.Columns(i).Name, "yyyyMMdd", Globalization.CultureInfo.InvariantCulture)
-
-                If fecha_fds.DayOfWeek = DayOfWeek.Saturday OrElse fecha_fds.DayOfWeek = DayOfWeek.Sunday Then
-                    For j = 0 To FrmCartaGantt.grillaGraficoGantt.RowCount - 1
-                        If FrmCartaGantt.grillaGraficoGantt.Rows(j).Cells(i).Style.BackColor <> colorMant Then
-                            FrmCartaGantt.grillaGraficoGantt.Rows(j).Cells(i).Style.BackColor = colorFds
-                            FrmCartaGantt.grillaGraficoGantt.Rows(j).Cells(i).Style.ForeColor = Utilitarios.ColorTextoPrincipal
+            For i = 0 To FrmCartaGantt.grillaInfoGantt.RowCount - 1
+                FrmCartaGantt.grillaGraficoGantt.Rows.Add()
+                For Each jFds As Integer In colsFds
+                    FrmCartaGantt.grillaGraficoGantt.Rows(i).Cells(jFds).Style.BackColor = colorFds
+                    FrmCartaGantt.grillaGraficoGantt.Rows(i).Cells(jFds).Style.ForeColor = Utilitarios.ColorTextoPrincipal
+                Next
+                If DateTime.TryParse(Convert.ToString(FrmCartaGantt.grillaInfoGantt.Rows(i).Cells(3).Value), fecha_ini) AndAlso
+                   DateTime.TryParse(Convert.ToString(FrmCartaGantt.grillaInfoGantt.Rows(i).Cells(4).Value), fecha_end) Then
+                    Dim d As DateTime = fecha_ini.Date
+                    Dim dFin As DateTime = fecha_end.Date
+                    While d <= dFin
+                        Dim j As Integer
+                        If colPorFecha.TryGetValue(d, j) Then
+                            FrmCartaGantt.grillaGraficoGantt.Rows(i).Cells(j).Style.BackColor = colorMant
+                            FrmCartaGantt.grillaGraficoGantt.Rows(i).Cells(j).Style.ForeColor = Color.White
                         End If
-                    Next
+                        d = d.AddDays(1)
+                    End While
                 End If
             Next
         End With
@@ -214,6 +209,12 @@ Public Class Informes
         Catch ex As Exception
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
+            Dim hojas As New List(Of KeyValuePair(Of String, DataGridView))()
+            If grilla_info_mp IsNot Nothing AndAlso grilla_info_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Mantención", grilla_info_mp))
+            If grilla_ciclos_mp IsNot Nothing AndAlso grilla_ciclos_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Ciclos Gantt", grilla_ciclos_mp))
+            If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_Gantt_" & item, "INFORME CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) Then
+                Exit Sub
+            End If
             MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
@@ -313,6 +314,12 @@ Public Class Informes
         Catch ex As Exception
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
+            Dim hojas As New List(Of KeyValuePair(Of String, DataGridView))()
+            If grilla_info_mp IsNot Nothing AndAlso grilla_info_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Mantención", grilla_info_mp))
+            If grilla_ciclos_mp IsNot Nothing AndAlso grilla_ciclos_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Ciclos Gantt", grilla_ciclos_mp))
+            If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Grafico_Gantt_" & item, "GRÁFICO CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) Then
+                Exit Sub
+            End If
             MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
@@ -444,6 +451,12 @@ Public Class Informes
         Catch ex As Exception
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
+            Dim hojas As New List(Of KeyValuePair(Of String, DataGridView))()
+            If grilla_info_mp IsNot Nothing AndAlso grilla_info_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Mantención", grilla_info_mp))
+            If grilla_ciclos_mp IsNot Nothing AndAlso grilla_ciclos_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Ciclos Gantt", grilla_ciclos_mp))
+            If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_Gantt_Completo_" & item, "INFORME COMPLETO CARTA GANTT", "Ítem / Máquina: " & item) Then
+                Exit Sub
+            End If
             MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
@@ -545,6 +558,10 @@ Public Class Informes
         Catch ex As Exception
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
+            If grilla_ciclos_mp IsNot Nothing AndAlso grilla_ciclos_mp.RowCount > 0 AndAlso
+               Utilitarios.ExportarGrillaAExcelNativo(grilla_ciclos_mp, "Carta_Gantt_" & item_gantt, "CALENDARIO CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem: " & item_gantt & " | Período: " & fecha_desde & " al " & fecha_hasta) Then
+                Exit Sub
+            End If
             MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
@@ -637,12 +654,63 @@ Public Class Informes
             MsgBox(String.Format("Auditoría exportada exitosamente a Excel.{0}Total de registros: {1:N0}", vbCrLf, totalFilas), MsgBoxStyle.Information, "Exportar Auditoría")
             excelApp.Visible = True
         Catch ex As Exception
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
+            Dim hojas As New List(Of KeyValuePair(Of String, DataGridView))()
+            Dim tempGrillas As New List(Of DataGridView)()
+            Try
+                If filasPersonalizadas IsNot Nothing AndAlso filasPersonalizadas.Count > 0 AndAlso grilla_auditoria IsNot Nothing Then
+                    Dim dgvSel As New DataGridView()
+                    For Each col As DataGridViewColumn In grilla_auditoria.Columns
+                        If col.Visible Then dgvSel.Columns.Add(col.Name, col.HeaderText)
+                    Next
+                    For Each r As DataGridViewRow In filasPersonalizadas
+                        Dim vals As New List(Of Object)()
+                        For Each col As DataGridViewColumn In grilla_auditoria.Columns
+                            If col.Visible Then vals.Add(r.Cells(col.Index).Value)
+                        Next
+                        dgvSel.Rows.Add(vals.ToArray())
+                    Next
+                    tempGrillas.Add(dgvSel)
+                    hojas.Add(New KeyValuePair(Of String, DataGridView)("Auditoría", dgvSel))
+                ElseIf grilla_auditoria IsNot Nothing AndAlso grilla_auditoria.RowCount > 0 Then
+                    hojas.Add(New KeyValuePair(Of String, DataGridView)("Auditoría", grilla_auditoria))
+                End If
+
+                If incluirEstadisticas AndAlso dsEstadisticas IsNot Nothing Then
+                    For Each dt As DataTable In dsEstadisticas.Tables
+                        If dt IsNot Nothing AndAlso dt.Rows.Count > 0 Then
+                            Dim dgvStat As DataGridView = CrearGrillaDesdeDataTable(dt)
+                            tempGrillas.Add(dgvStat)
+                            hojas.Add(New KeyValuePair(Of String, DataGridView)(dt.TableName, dgvStat))
+                        End If
+                    Next
+                End If
+
+                If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Auditoria_Operaciones", "INFORME AUDITORÍA DE OPERACIONES", "Período: " & fecha_inicio.ToString("dd-MM-yyyy") & " al " & fecha_fin.ToString("dd-MM-yyyy")) Then
+                    Exit Sub
+                End If
+            Finally
+                For Each tg In tempGrillas
+                    tg.Dispose()
+                Next
+            End Try
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
     End Sub
+
+    Private Function CrearGrillaDesdeDataTable(ByVal dt As DataTable) As DataGridView
+        Dim dgv As New DataGridView()
+        For Each col As DataColumn In dt.Columns
+            dgv.Columns.Add(col.ColumnName, col.ColumnName)
+        Next
+        For Each row As DataRow In dt.Rows
+            dgv.Rows.Add(row.ItemArray)
+        Next
+        Return dgv
+    End Function
 
     Public Sub expSoloEstadisticasAuditoria(ByVal dsEstadisticas As DataSet, ByVal fecha_inicio As DateTime, ByVal fecha_fin As DateTime, Optional ByVal totalOps As Integer = 0)
         Dim excelApp As Excel.Application = Nothing
@@ -668,7 +736,28 @@ Public Class Informes
             MsgBox("Reporte estadístico generado exitosamente.", MsgBoxStyle.Information, "Estadísticas Auditoría")
             excelApp.Visible = True
         Catch ex As Exception
+            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
+            If dsEstadisticas IsNot Nothing AndAlso dsEstadisticas.Tables.Count > 0 Then
+                Dim hojas As New List(Of KeyValuePair(Of String, DataGridView))()
+                Dim tempGrillas As New List(Of DataGridView)()
+                Try
+                    For Each dt As DataTable In dsEstadisticas.Tables
+                        If dt IsNot Nothing AndAlso dt.Rows.Count > 0 Then
+                            Dim dgvStat As DataGridView = CrearGrillaDesdeDataTable(dt)
+                            tempGrillas.Add(dgvStat)
+                            hojas.Add(New KeyValuePair(Of String, DataGridView)(dt.TableName, dgvStat))
+                        End If
+                    Next
+                    If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Estadisticas_Auditoria", "ESTADÍSTICAS DE AUDITORÍA", "Período: " & fecha_inicio.ToString("dd-MM-yyyy") & " al " & fecha_fin.ToString("dd-MM-yyyy") & " | Ops: " & totalOps.ToString("N0")) Then
+                        Exit Sub
+                    End If
+                Finally
+                    For Each tg In tempGrillas
+                        tg.Dispose()
+                    Next
+                End Try
+            End If
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Estadísticas")
         Finally
             Utilitarios.OptimizarMemoria()
@@ -1055,6 +1144,21 @@ Public Class Informes
         Catch ex As Exception
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
+            With FrmResumenes
+                Dim hojas As New List(Of KeyValuePair(Of String, DataGridView))()
+                If .grillaTotalesPeriodo.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Totales Estado", .grillaTotalesPeriodo))
+                If .grillaTopMaquinas.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Top Máquinas", .grillaTopMaquinas))
+                If .grillaTopComponentes.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Top Componentes", .grillaTopComponentes))
+                If .grillaOtCerradaPorTec.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Cerradas por Técnico", .grillaOtCerradaPorTec))
+                If .grillaOtRecibidaPor.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Recibidas por", .grillaOtRecibidaPor))
+                If .grillaOtPorTipoFalla.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Por Tipo Falla", .grillaOtPorTipoFalla))
+                If .grillaOtPorTurno.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Por Turno", .grillaOtPorTurno))
+                If .grillaOtPorDia.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Por Día", .grillaOtPorDia))
+                If .grillaOtPorMes.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Por Mes", .grillaOtPorMes))
+                If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_Estadistico_OT", "INFORME ESTADÍSTICO DE ÓRDENES DE TRABAJO", "Período: " & fecha_inicio.ToString("dd-MM-yyyy") & " al " & fecha_fin.ToString("dd-MM-yyyy")) Then
+                    Exit Sub
+                End If
+            End With
             MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
@@ -1220,6 +1324,10 @@ Public Class Informes
         Catch ex As Exception
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
+            If grilla_datos_tecnicos IsNot Nothing AndAlso grilla_datos_tecnicos.RowCount > 0 AndAlso
+               Utilitarios.ExportarGrillaAExcelNativo(grilla_datos_tecnicos, "Datos_Tecnicos", "INFORME DE DATOS TÉCNICOS") Then
+                Exit Sub
+            End If
             MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()
@@ -1275,6 +1383,10 @@ Public Class Informes
         Catch ex As Exception
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
+            If grilla_ciclos_mp IsNot Nothing AndAlso grilla_ciclos_mp.RowCount > 0 AndAlso
+               Utilitarios.ExportarGrillaAExcelNativo(grilla_ciclos_mp, "Listado_Ciclos_MP", "LISTADO DE CICLOS MANTENCIÓN PREVENTIVA", "Período: " & fecha_desde.ToString("dd-MM-yyyy") & " al " & fecha_hasta.ToString("dd-MM-yyyy")) Then
+                Exit Sub
+            End If
             MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
         Finally
             Utilitarios.OptimizarMemoria()

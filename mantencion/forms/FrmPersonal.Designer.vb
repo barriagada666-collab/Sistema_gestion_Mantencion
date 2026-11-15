@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class FrmPersonal
     Inherits System.Windows.Forms.Form
 
@@ -133,7 +133,7 @@ Partial Class FrmPersonal
         Me.fecha_ingreso.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
         Me.fecha_ingreso.Location = New System.Drawing.Point(362, 157)
         Me.fecha_ingreso.Name = "fecha_ingreso"
-        Me.fecha_ingreso.Size = New System.Drawing.Size(97, 23)
+        Me.fecha_ingreso.Size = New System.Drawing.Size(110, 23)
         Me.fecha_ingreso.TabIndex = 24
         '
         'Label14
@@ -301,7 +301,7 @@ Partial Class FrmPersonal
         Me.fecha_nac.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
         Me.fecha_nac.Location = New System.Drawing.Point(13, 104)
         Me.fecha_nac.Name = "fecha_nac"
-        Me.fecha_nac.Size = New System.Drawing.Size(94, 23)
+        Me.fecha_nac.Size = New System.Drawing.Size(110, 23)
         Me.fecha_nac.TabIndex = 12
         '
         'Label6

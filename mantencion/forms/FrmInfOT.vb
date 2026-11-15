@@ -129,12 +129,18 @@ Public Class FrmInfOT
             OT.CrgCmbTipoDet(cmbTipoTrabajoInfOt)
             cargo.crgTipoInter(cmbTipoDetencion)
 
-            GrpFiltroFechas.Visible = False
+            Utilitarios.InicializarRangoMesActual(fecha_ini_inf_ot, fecha_fin_inf_ot)
+            GrpFiltroFechas.Visible = True
+            Label1.Visible = True
+            fecha_ini_inf_ot.Visible = True
+            lblfecha_fin.Visible = True
+            fecha_fin_inf_ot.Visible = True
             Label5.Visible = False
             Label6.Visible = False
             cmbTipoTrabajoInfOt.Visible = False
             cmbTipoDetencion.Visible = False
             PanPlantas.Visible = False
+            ActualizarEstadoFiltrosModo()
             Utilitarios.AplicarTemaModerno(Me)
         Finally
             arbol5.EndUpdate()
@@ -142,28 +148,109 @@ Public Class FrmInfOT
         End Try
     End Sub
 
-    Private Sub OpcFechasOt_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles opcFechasOt.CheckedChanged
-        If opcFechasOt.Checked Then
-            GrpFiltroFechas.Visible = True
-            Label2.Visible = False
-            txtNumOtInfOt.Visible = False
+    Private Sub ActualizarEstadoFiltrosModo()
+        Dim modoFechas As Boolean = opcFechasOt.Checked
+        GrpFiltroFechas.Visible = True
+        Label1.Visible = True
+        fecha_ini_inf_ot.Visible = True
+        fecha_ini_inf_ot.Enabled = True
+        lblfecha_fin.Visible = True
+        fecha_fin_inf_ot.Visible = True
+        fecha_fin_inf_ot.Enabled = True
+
+        Label2.Visible = Not modoFechas
+        txtNumOtInfOt.Visible = Not modoFechas
+        If modoFechas Then
             txtNumOtInfOt.ResetText()
             chkTodasFechas.Checked = True
+        End If
+
+        chkTodasFechas.Enabled = modoFechas
+        chkFiltroPlanta.Enabled = modoFechas
+        If Not modoFechas Then
+            chkPendientes.Enabled = False
+            chkConDetencion.Enabled = False
+            chkTipoDetencion.Enabled = False
+            chkTipoTrabajo.Enabled = False
+            chkNulas.Enabled = False
+            PanPlantas.Visible = False
         Else
-            GrpFiltroFechas.Visible = False
-            Label2.Visible = True
-            txtNumOtInfOt.Visible = True
+            Dim subFiltros As Boolean = Not chkTodasFechas.Checked
+            chkPendientes.Enabled = subFiltros
+            chkConDetencion.Enabled = subFiltros
+            chkTipoDetencion.Enabled = subFiltros
+            chkTipoTrabajo.Enabled = subFiltros
+            chkNulas.Enabled = subFiltros
         End If
     End Sub
 
+    Private Sub OpcFechasOt_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles opcFechasOt.CheckedChanged
+        ActualizarEstadoFiltrosModo()
+    End Sub
+
+    Private Sub ConsultarOtConHistorico(ByVal OT As OT, ByVal idNodoStr As String, ByVal numOtTxt As String, ByVal opcion As Integer, ByVal DST_DESTINO As DataSet, ByVal otsExistentes As HashSet(Of String))
+        Dim fecha_comp As New DateTime(2011, 12, 31)
+        Dim fecha_comp_2 As New DateTime(2012, 1, 1)
+        Dim DST_TEMP As New DataSet
+
+        If fecha_ini_inf_ot.Value.Date > fecha_comp Then
+            OT.infOt(idNodoStr, numOtTxt, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, estado_ot, detencion, opcion, cmbTipoTrabajoInfOt.Text, cmbTipoDetencion.Text, DST_TEMP)
+        ElseIf fecha_ini_inf_ot.Value.Date < fecha_comp_2 AndAlso fecha_fin_inf_ot.Value.Date > fecha_comp Then
+            Dim DST_HIST As New DataSet
+            OT.infOt(idNodoStr, numOtTxt, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, estado_ot, detencion, opcion, cmbTipoTrabajoInfOt.Text, cmbTipoDetencion.Text, DST_TEMP)
+            OT.infOtHistorico(idNodoStr, numOtTxt, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, estado_ot, detencion, opcion, cmbTipoTrabajoInfOt.Text, cmbTipoDetencion.Text, DST_HIST)
+            If DST_HIST.Tables.Count > 0 AndAlso DST_HIST.Tables(0).Rows.Count > 0 Then
+                DST_TEMP.Merge(DST_HIST)
+            End If
+            DST_HIST.Dispose()
+        Else
+            OT.infOtHistorico(idNodoStr, numOtTxt, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, estado_ot, detencion, opcion, cmbTipoTrabajoInfOt.Text, cmbTipoDetencion.Text, DST_TEMP)
+        End If
+
+        FusionarDataSetsOT(DST_DESTINO, DST_TEMP, otsExistentes)
+        DST_TEMP.Dispose()
+    End Sub
+
+    Private Sub FiltrarDataTableOtPorFechas(ByVal dt As DataTable)
+        If dt Is Nothing OrElse dt.Rows.Count = 0 Then Exit Sub
+        Dim colFecha As DataColumn = Nothing
+        For Each dc As DataColumn In dt.Columns
+            If dc.DataType Is GetType(DateTime) AndAlso dc.ColumnName.IndexOf("Inicio", StringComparison.OrdinalIgnoreCase) >= 0 Then
+                colFecha = dc
+                Exit For
+            End If
+        Next
+        If colFecha Is Nothing Then
+            For Each dc As DataColumn In dt.Columns
+                If dc.DataType Is GetType(DateTime) OrElse dc.ColumnName.IndexOf("Fecha", StringComparison.OrdinalIgnoreCase) >= 0 Then
+                    colFecha = dc
+                    Exit For
+                End If
+            Next
+        End If
+        If colFecha Is Nothing Then Exit Sub
+
+        Dim fDesde As DateTime = fecha_ini_inf_ot.Value.Date
+        Dim fHasta As DateTime = fecha_fin_inf_ot.Value.Date
+        For i As Integer = dt.Rows.Count - 1 To 0 Step -1
+            Dim val As Object = dt.Rows(i)(colFecha)
+            Dim fechaFila As DateTime
+            If val IsNot Nothing AndAlso Not IsDBNull(val) AndAlso DateTime.TryParse(val.ToString(), fechaFila) Then
+                If fechaFila.Date < fDesde OrElse fechaFila.Date > fHasta Then
+                    dt.Rows.RemoveAt(i)
+                End If
+            End If
+        Next
+    End Sub
+
     Private Sub btnBuscarOt_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnBuscarOt.Click
+        If Not Utilitarios.ValidarRangoFechas(fecha_ini_inf_ot, fecha_fin_inf_ot) Then Exit Sub
+
         Dim OT As New OT
         Dim DST_OT As New DataSet
         Dim DST_PER As New DataSet
         Dim opcion As Integer
         Dim formato_grid As New FormatoGrillas
-        Dim fecha_comp As New DateTime(2011, 12, 31)
-        Dim fecha_comp_2 As New DateTime(2012, 1, 1)
         estado_ot = ""
         detencion = ""
         grillaInfOt.Columns.Clear()
@@ -195,53 +282,16 @@ Public Class FrmInfOT
                 DST_OT.Tables.Clear()
                 DST_PER.Tables.Clear()
 
+                Dim otsExistentes As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
                 If tienePlanta Then
-                    Dim DST_PL_2 As New DataSet
-                    Dim DST_PL_4 As New DataSet
-                    Dim DST_PL_3 As New DataSet
-
-                    If array_plantas(0) = 2 Then
-                        OT.infOt(array_plantas(0).ToString, txtNumOtInfOt.Text, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, estado_ot, detencion, opcion, cmbTipoTrabajoInfOt.Text, cmbTipoDetencion.Text, DST_PL_2)
-                    End If
-
-                    If array_plantas(1) = 4 Then
-                        OT.infOt(array_plantas(1).ToString, txtNumOtInfOt.Text, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, estado_ot, detencion, opcion, cmbTipoTrabajoInfOt.Text, cmbTipoDetencion.Text, DST_PL_4)
-                    End If
-
-                    If array_plantas(2) = 3 Then
-                        OT.infOt(array_plantas(2).ToString, txtNumOtInfOt.Text, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, estado_ot, detencion, opcion, cmbTipoTrabajoInfOt.Text, cmbTipoDetencion.Text, DST_PL_3)
-                    End If
-
-                    Dim otsPlantas As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
-                    FusionarDataSetsOT(DST_OT, DST_PL_2, otsPlantas)
-                    FusionarDataSetsOT(DST_OT, DST_PL_4, otsPlantas)
-                    FusionarDataSetsOT(DST_OT, DST_PL_3, otsPlantas)
-
-                    DST_PL_2.Dispose()
-                    DST_PL_3.Dispose()
-                    DST_PL_4.Dispose()
-                Else
-                    Dim otsExistentes As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
-                    For Each nd As TreeNode In nodosObjetivo
-                        Dim idNodoStr As String = nd.Name
-                        Dim DST_TEMP As New DataSet
-
-                        If fecha_ini_inf_ot.Value.Date > fecha_comp Then
-                            OT.infOt(idNodoStr, txtNumOtInfOt.Text, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, estado_ot, detencion, opcion, cmbTipoTrabajoInfOt.Text, cmbTipoDetencion.Text, DST_TEMP)
-                        ElseIf fecha_ini_inf_ot.Value.Date < fecha_comp_2 AndAlso fecha_fin_inf_ot.Value.Date > fecha_comp Then
-                            Dim DST_HIST As New DataSet
-                            OT.infOt(idNodoStr, txtNumOtInfOt.Text, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, estado_ot, detencion, opcion, cmbTipoTrabajoInfOt.Text, cmbTipoDetencion.Text, DST_TEMP)
-                            OT.infOtHistorico(idNodoStr, txtNumOtInfOt.Text, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, estado_ot, detencion, opcion, cmbTipoTrabajoInfOt.Text, cmbTipoDetencion.Text, DST_HIST)
-                            If DST_HIST.Tables.Count > 0 AndAlso DST_HIST.Tables(0).Rows.Count > 0 Then
-                                DST_TEMP.Merge(DST_HIST)
-                            End If
-                            DST_HIST.Dispose()
-                        Else
-                            OT.infOtHistorico(idNodoStr, txtNumOtInfOt.Text, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, estado_ot, detencion, opcion, cmbTipoTrabajoInfOt.Text, cmbTipoDetencion.Text, DST_TEMP)
+                    For Each idPlanta As Integer In array_plantas
+                        If idPlanta > 0 Then
+                            ConsultarOtConHistorico(OT, idPlanta.ToString(), txtNumOtInfOt.Text, opcion, DST_OT, otsExistentes)
                         End If
-
-                        FusionarDataSetsOT(DST_OT, DST_TEMP, otsExistentes)
-                        DST_TEMP.Dispose()
+                    Next
+                Else
+                    For Each nd As TreeNode In nodosObjetivo
+                        ConsultarOtConHistorico(OT, nd.Name, txtNumOtInfOt.Text, opcion, DST_OT, otsExistentes)
                     Next
                 End If
 
@@ -252,13 +302,18 @@ Public Class FrmInfOT
                         DST_OT.Tables(0).DefaultView.Sort = "Fecha/Hora_Inicio ASC"
                     Catch
                     End Try
-                    grillaInfOt.DataSource = DST_OT.Tables(0)
-                    grillaInfOt.Columns.Add("Personal_1", "Personal_1")
-                    grillaInfOt.Columns.Add("Personal_2", "Personal_2")
-                    grillaInfOt.Columns.Add("Personal_3", "Personal_3")
-                    formato_grid.grillasOT(grillaInfOt)
-                    AsignarPersonalGrilla(DST_PER)
-                    Utilitarios.AjustarColumnasGrilla(grillaInfOt)
+                    grillaInfOt.SuspendLayout()
+                    Try
+                        grillaInfOt.DataSource = DST_OT.Tables(0)
+                        grillaInfOt.Columns.Add("Personal_1", "Personal_1")
+                        grillaInfOt.Columns.Add("Personal_2", "Personal_2")
+                        grillaInfOt.Columns.Add("Personal_3", "Personal_3")
+                        formato_grid.grillasOT(grillaInfOt)
+                        AsignarPersonalGrilla(DST_PER)
+                        Utilitarios.AjustarColumnasGrilla(grillaInfOt)
+                    Finally
+                        grillaInfOt.ResumeLayout(False)
+                    End Try
                 Else
                     MsgBox("No se encontraron registros", MsgBoxStyle.Exclamation, "Validación")
                 End If
@@ -266,7 +321,7 @@ Public Class FrmInfOT
                 DST_PER.Dispose()
                 '======================================================================================================================================================
             Else
-                'Informe ordenes de trabajo por numero de orden
+                'Informe ordenes de trabajo por numero de orden dentro del rango de fechas seleccionado
                 '================================================================================================
                 If txtNumOtInfOt.Text = "" Then
                     MsgBox("Debe ingresar el N° de OT antes de buscar", MsgBoxStyle.Exclamation, "Validación")
@@ -279,27 +334,34 @@ Public Class FrmInfOT
 
                     If nodosObjetivo.Count > 0 Then
                         For Each nd As TreeNode In nodosObjetivo
-                            Dim DST_TEMP As New DataSet
-                            OT.infOt(nd.Name, txtNumOtInfOt.Text, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, estado_ot, detencion, opcion, cmbTipoTrabajoInfOt.Text, cmbTipoDetencion.Text, DST_TEMP)
-                            FusionarDataSetsOT(DST_OT, DST_TEMP, otsExistentes)
-                            DST_TEMP.Dispose()
+                            ConsultarOtConHistorico(OT, nd.Name, txtNumOtInfOt.Text, opcion, DST_OT, otsExistentes)
                         Next
                     Else
-                        OT.infOt(id_nodo_select, txtNumOtInfOt.Text, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, estado_ot, detencion, opcion, cmbTipoTrabajoInfOt.Text, cmbTipoDetencion.Text, DST_OT)
+                        Dim idNodoBase As String = If(String.IsNullOrWhiteSpace(id_nodo_select), "1", id_nodo_select)
+                        ConsultarOtConHistorico(OT, idNodoBase, txtNumOtInfOt.Text, opcion, DST_OT, otsExistentes)
+                    End If
+
+                    If DST_OT.Tables.Count > 0 Then
+                        FiltrarDataTableOtPorFechas(DST_OT.Tables(0))
                     End If
 
                     OT.infPersonalOt(fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, DST_PER)
 
                     If DST_OT.Tables.Count > 0 AndAlso DST_OT.Tables(0).Rows.Count > 0 Then
-                        grillaInfOt.DataSource = DST_OT.Tables(0)
-                        grillaInfOt.Columns.Add("Personal_1", "Personal_1")
-                        grillaInfOt.Columns.Add("Personal_2", "Personal_2")
-                        grillaInfOt.Columns.Add("Personal_3", "Personal_3")
-                        formato_grid.grillasOT(grillaInfOt)
-                        AsignarPersonalGrilla(DST_PER)
-                        Utilitarios.AjustarColumnasGrilla(grillaInfOt)
+                        grillaInfOt.SuspendLayout()
+                        Try
+                            grillaInfOt.DataSource = DST_OT.Tables(0)
+                            grillaInfOt.Columns.Add("Personal_1", "Personal_1")
+                            grillaInfOt.Columns.Add("Personal_2", "Personal_2")
+                            grillaInfOt.Columns.Add("Personal_3", "Personal_3")
+                            formato_grid.grillasOT(grillaInfOt)
+                            AsignarPersonalGrilla(DST_PER)
+                            Utilitarios.AjustarColumnasGrilla(grillaInfOt)
+                        Finally
+                            grillaInfOt.ResumeLayout(False)
+                        End Try
                     Else
-                        MsgBox("No se encontraron registros para la OT N° " & txtNumOtInfOt.Text, MsgBoxStyle.Exclamation, "Validación")
+                        MsgBox("No se encontraron registros para la OT N° " & txtNumOtInfOt.Text & " en el rango de fechas seleccionado", MsgBoxStyle.Exclamation, "Validación")
                     End If
 
                     DST_PER.Dispose()
@@ -326,8 +388,10 @@ Public Class FrmInfOT
 
     Private Sub chkTipoDetencion_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkTipoDetencion.CheckedChanged
         If chkTipoDetencion.Checked Then
+            Label6.Visible = True
             cmbTipoDetencion.Visible = True
         Else
+            Label6.Visible = False
             cmbTipoDetencion.Visible = False
         End If
     End Sub

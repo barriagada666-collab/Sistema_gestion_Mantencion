@@ -42,7 +42,7 @@ Public Class FrmAdminAuditoria
             FormatoGrillas.AplicarEstiloModerno(grillaStatFecha)
 
             InicializarCombosFiltro()
-
+            Utilitarios.InicializarRangoMesActual(fecha_ini_aud, fecha_fin_aud)
             Utilitarios.AplicarTemaModerno(Me)
             ActualizarBarraEstado(0, 0, 0)
         Finally
@@ -91,6 +91,8 @@ Public Class FrmAdminAuditoria
     End Sub
 
     Private Sub btn_buscar_aud_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_buscar_aud.Click
+        If Not Utilitarios.ValidarRangoFechas(fecha_ini_aud, fecha_fin_aud) Then Exit Sub
+
         Dim auditoria As New Auditoria
         Dim DST_AUD As New DataSet
 
@@ -665,6 +667,28 @@ Public Class FrmAdminAuditoria
         If _dtStatFecha IsNot Nothing Then ds.Tables.Add(_dtStatFecha.Copy())
         Return ds
     End Function
+
+    Private Sub btn_exp_pdf_aud_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_exp_pdf_aud.Click
+        If grillaAuditoria.RowCount = 0 Then
+            MsgBox("No hay registros visibles para exportar a PDF.", MsgBoxStyle.Exclamation, "Auditoría de Operaciones")
+            Exit Sub
+        End If
+
+        Dim rutaPdf As String = Utilitarios.SolicitarRutaGuardadoPdf("Auditoria_Operaciones")
+        If String.IsNullOrEmpty(rutaPdf) Then Exit Sub
+
+        Dim subtitulo As String = String.Format("Período: {0} al {1}   |   Registros: {2:N0}",
+                                                fecha_ini_aud.Value.ToString("dd-MM-yyyy"),
+                                                fecha_fin_aud.Value.ToString("dd-MM-yyyy"),
+                                                grillaAuditoria.RowCount)
+        If Utilitarios.ExportarGrillaAPdf(grillaAuditoria, rutaPdf, "INFORME DE AUDITORÍA DE OPERACIONES", subtitulo) Then
+            If MessageBox.Show("Archivo PDF generado exitosamente en:" & Environment.NewLine & rutaPdf & Environment.NewLine & Environment.NewLine & "¿Desea abrir el documento PDF ahora?", "Exportación PDF Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
+                Utilitarios.AbrirDocumento(rutaPdf)
+            End If
+        Else
+            MsgBox("No fue posible generar el archivo PDF.", MsgBoxStyle.Critical, "Exportar PDF")
+        End If
+    End Sub
 
     Private Sub btn_salir_aud_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_salir_aud.Click
         Me.Close()

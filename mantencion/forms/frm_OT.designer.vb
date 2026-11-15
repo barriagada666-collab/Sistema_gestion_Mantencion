@@ -132,7 +132,7 @@ Partial Class frm_OT
         Me.txtNot.Location = New System.Drawing.Point(12, 42)
         Me.txtNot.MaxLength = 7
         Me.txtNot.Name = "txtNot"
-        Me.txtNot.Size = New System.Drawing.Size(80, 20)
+        Me.txtNot.Size = New System.Drawing.Size(76, 20)
         Me.txtNot.TabIndex = 1
         '
         'dt_fecha_rec
@@ -142,11 +142,11 @@ Partial Class frm_OT
         Me.dt_fecha_rec.CalendarTitleForeColor = System.Drawing.Color.White
         Me.dt_fecha_rec.CalendarTrailingForeColor = System.Drawing.Color.FromArgb(120, 140, 150)
         Me.dt_fecha_rec.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.dt_fecha_rec.Location = New System.Drawing.Point(119, 42)
+        Me.dt_fecha_rec.Location = New System.Drawing.Point(98, 42)
         Me.dt_fecha_rec.MaxDate = New Date(2050, 12, 31, 0, 0, 0, 0)
         Me.dt_fecha_rec.MinDate = New Date(2006, 1, 1, 0, 0, 0, 0)
         Me.dt_fecha_rec.Name = "dt_fecha_rec"
-        Me.dt_fecha_rec.Size = New System.Drawing.Size(89, 20)
+        Me.dt_fecha_rec.Size = New System.Drawing.Size(106, 23)
         Me.dt_fecha_rec.TabIndex = 2
         '
         'dt_fecha_ini
@@ -156,11 +156,11 @@ Partial Class frm_OT
         Me.dt_fecha_ini.CalendarTitleForeColor = System.Drawing.Color.White
         Me.dt_fecha_ini.CalendarTrailingForeColor = System.Drawing.Color.FromArgb(120, 140, 150)
         Me.dt_fecha_ini.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.dt_fecha_ini.Location = New System.Drawing.Point(301, 42)
+        Me.dt_fecha_ini.Location = New System.Drawing.Point(291, 42)
         Me.dt_fecha_ini.MaxDate = New Date(2050, 12, 31, 0, 0, 0, 0)
         Me.dt_fecha_ini.MinDate = New Date(2006, 1, 1, 0, 0, 0, 0)
         Me.dt_fecha_ini.Name = "dt_fecha_ini"
-        Me.dt_fecha_ini.Size = New System.Drawing.Size(85, 20)
+        Me.dt_fecha_ini.Size = New System.Drawing.Size(106, 23)
         Me.dt_fecha_ini.TabIndex = 4
         '
         'GroupBox1
@@ -332,7 +332,7 @@ Partial Class frm_OT
         '
         Me.Label11.AutoSize = True
         Me.Label11.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label11.Location = New System.Drawing.Point(539, 24)
+        Me.Label11.Location = New System.Drawing.Point(536, 24)
         Me.Label11.Name = "Label11"
         Me.Label11.Size = New System.Drawing.Size(63, 15)
         Me.Label11.TabIndex = 49
@@ -342,7 +342,7 @@ Partial Class frm_OT
         '
         Me.Label10.AutoSize = True
         Me.Label10.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label10.Location = New System.Drawing.Point(614, 24)
+        Me.Label10.Location = New System.Drawing.Point(604, 24)
         Me.Label10.Name = "Label10"
         Me.Label10.Size = New System.Drawing.Size(88, 15)
         Me.Label10.TabIndex = 48
@@ -352,7 +352,7 @@ Partial Class frm_OT
         '
         Me.Label9.AutoSize = True
         Me.Label9.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label9.Location = New System.Drawing.Point(483, 24)
+        Me.Label9.Location = New System.Drawing.Point(485, 24)
         Me.Label9.Name = "Label9"
         Me.Label9.Size = New System.Drawing.Size(38, 15)
         Me.Label9.TabIndex = 47
@@ -362,7 +362,7 @@ Partial Class frm_OT
         '
         Me.Label8.AutoSize = True
         Me.Label8.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label8.Location = New System.Drawing.Point(405, 9)
+        Me.Label8.Location = New System.Drawing.Point(406, 9)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(53, 30)
         Me.Label8.TabIndex = 46
@@ -372,7 +372,7 @@ Partial Class frm_OT
         '
         Me.Label4.AutoSize = True
         Me.Label4.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label4.Location = New System.Drawing.Point(304, 9)
+        Me.Label4.Location = New System.Drawing.Point(291, 9)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(53, 30)
         Me.Label4.TabIndex = 45
@@ -382,7 +382,7 @@ Partial Class frm_OT
         '
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(220, 9)
+        Me.Label3.Location = New System.Drawing.Point(213, 9)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(62, 30)
         Me.Label3.TabIndex = 44
@@ -392,7 +392,7 @@ Partial Class frm_OT
         '
         Me.Label2.AutoSize = True
         Me.Label2.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(119, 24)
+        Me.Label2.Location = New System.Drawing.Point(98, 24)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(80, 15)
         Me.Label2.TabIndex = 43
@@ -415,17 +415,17 @@ Partial Class frm_OT
         Me.dt_hr_ini.Location = New System.Drawing.Point(408, 42)
         Me.dt_hr_ini.Name = "dt_hr_ini"
         Me.dt_hr_ini.ShowUpDown = True
-        Me.dt_hr_ini.Size = New System.Drawing.Size(55, 20)
+        Me.dt_hr_ini.Size = New System.Drawing.Size(66, 23)
         Me.dt_hr_ini.TabIndex = 5
         '
         'dt_hr_rec
         '
         Me.dt_hr_rec.CustomFormat = "HH:mm"
         Me.dt_hr_rec.Format = System.Windows.Forms.DateTimePickerFormat.Custom
-        Me.dt_hr_rec.Location = New System.Drawing.Point(223, 42)
+        Me.dt_hr_rec.Location = New System.Drawing.Point(216, 42)
         Me.dt_hr_rec.Name = "dt_hr_rec"
         Me.dt_hr_rec.ShowUpDown = True
-        Me.dt_hr_rec.Size = New System.Drawing.Size(57, 20)
+        Me.dt_hr_rec.Size = New System.Drawing.Size(66, 23)
         Me.dt_hr_rec.TabIndex = 3
         '
         'cmb_det
@@ -434,9 +434,9 @@ Partial Class frm_OT
         Me.cmb_det.ForeColor = System.Drawing.Color.FromArgb(15, 23, 42)
         Me.cmb_det.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmb_det.FormattingEnabled = True
-        Me.cmb_det.Location = New System.Drawing.Point(542, 41)
+        Me.cmb_det.Location = New System.Drawing.Point(538, 41)
         Me.cmb_det.Name = "cmb_det"
-        Me.cmb_det.Size = New System.Drawing.Size(56, 21)
+        Me.cmb_det.Size = New System.Drawing.Size(54, 21)
         Me.cmb_det.TabIndex = 6
         '
         'cmb_Tipo_trab
@@ -467,9 +467,9 @@ Partial Class frm_OT
         Me.cmb_Tipo_Det.ForeColor = System.Drawing.Color.FromArgb(15, 23, 42)
         Me.cmb_Tipo_Det.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmb_Tipo_Det.FormattingEnabled = True
-        Me.cmb_Tipo_Det.Location = New System.Drawing.Point(613, 41)
+        Me.cmb_Tipo_Det.Location = New System.Drawing.Point(604, 41)
         Me.cmb_Tipo_Det.Name = "cmb_Tipo_Det"
-        Me.cmb_Tipo_Det.Size = New System.Drawing.Size(112, 21)
+        Me.cmb_Tipo_Det.Size = New System.Drawing.Size(116, 21)
         Me.cmb_Tipo_Det.TabIndex = 7
         '
         'text_turno
@@ -477,7 +477,7 @@ Partial Class frm_OT
         Me.text_turno.BackColor = System.Drawing.Color.FromArgb(215, 230, 234)
         Me.text_turno.ReadOnly = True
         Me.text_turno.ForeColor = System.Drawing.Color.FromArgb(15, 23, 42)
-        Me.text_turno.Location = New System.Drawing.Point(482, 42)
+        Me.text_turno.Location = New System.Drawing.Point(485, 42)
         Me.text_turno.Name = "text_turno"
         Me.text_turno.Size = New System.Drawing.Size(40, 20)
         Me.text_turno.TabIndex = 7
@@ -544,14 +544,14 @@ Partial Class frm_OT
         Me.PanFechaCierreOt.Controls.Add(Me.txtCerradoPor)
         Me.PanFechaCierreOt.Location = New System.Drawing.Point(28, 19)
         Me.PanFechaCierreOt.Name = "PanFechaCierreOt"
-        Me.PanFechaCierreOt.Size = New System.Drawing.Size(614, 54)
+        Me.PanFechaCierreOt.Size = New System.Drawing.Size(674, 54)
         Me.PanFechaCierreOt.TabIndex = 15
         '
         'Label6
         '
         Me.Label6.AutoSize = True
         Me.Label6.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label6.Location = New System.Drawing.Point(13, 4)
+        Me.Label6.Location = New System.Drawing.Point(10, 4)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(86, 15)
         Me.Label6.TabIndex = 44
@@ -562,11 +562,11 @@ Partial Class frm_OT
         Me.dt_fecha_ter.CalendarTitleBackColor = System.Drawing.Color.FromArgb(2, 94, 135)
         Me.dt_fecha_ter.CalendarTrailingForeColor = System.Drawing.Color.FromArgb(120, 140, 150)
         Me.dt_fecha_ter.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.dt_fecha_ter.Location = New System.Drawing.Point(13, 20)
+        Me.dt_fecha_ter.Location = New System.Drawing.Point(10, 20)
         Me.dt_fecha_ter.MaxDate = New Date(2050, 12, 31, 0, 0, 0, 0)
         Me.dt_fecha_ter.MinDate = New Date(2006, 1, 1, 0, 0, 0, 0)
         Me.dt_fecha_ter.Name = "dt_fecha_ter"
-        Me.dt_fecha_ter.Size = New System.Drawing.Size(86, 20)
+        Me.dt_fecha_ter.Size = New System.Drawing.Size(106, 23)
         Me.dt_fecha_ter.TabIndex = 14
         '
         'dt_fecha_cierre
@@ -575,38 +575,38 @@ Partial Class frm_OT
         Me.dt_fecha_cierre.CalendarTitleForeColor = System.Drawing.Color.White
         Me.dt_fecha_cierre.CalendarTrailingForeColor = System.Drawing.Color.FromArgb(120, 140, 150)
         Me.dt_fecha_cierre.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.dt_fecha_cierre.Location = New System.Drawing.Point(207, 20)
+        Me.dt_fecha_cierre.Location = New System.Drawing.Point(206, 20)
         Me.dt_fecha_cierre.MaxDate = New Date(2050, 12, 31, 0, 0, 0, 0)
         Me.dt_fecha_cierre.MinDate = New Date(2006, 1, 1, 0, 0, 0, 0)
         Me.dt_fecha_cierre.Name = "dt_fecha_cierre"
-        Me.dt_fecha_cierre.Size = New System.Drawing.Size(83, 20)
+        Me.dt_fecha_cierre.Size = New System.Drawing.Size(106, 23)
         Me.dt_fecha_cierre.TabIndex = 16
         '
         'dt_hr_ter
         '
         Me.dt_hr_ter.CustomFormat = "HH:mm"
         Me.dt_hr_ter.Format = System.Windows.Forms.DateTimePickerFormat.Custom
-        Me.dt_hr_ter.Location = New System.Drawing.Point(122, 20)
+        Me.dt_hr_ter.Location = New System.Drawing.Point(128, 20)
         Me.dt_hr_ter.Name = "dt_hr_ter"
         Me.dt_hr_ter.ShowUpDown = True
-        Me.dt_hr_ter.Size = New System.Drawing.Size(56, 20)
+        Me.dt_hr_ter.Size = New System.Drawing.Size(66, 23)
         Me.dt_hr_ter.TabIndex = 15
         '
         'dt_hr_cierre
         '
         Me.dt_hr_cierre.CustomFormat = "HH:mm"
         Me.dt_hr_cierre.Format = System.Windows.Forms.DateTimePickerFormat.Custom
-        Me.dt_hr_cierre.Location = New System.Drawing.Point(315, 20)
+        Me.dt_hr_cierre.Location = New System.Drawing.Point(322, 20)
         Me.dt_hr_cierre.Name = "dt_hr_cierre"
         Me.dt_hr_cierre.ShowUpDown = True
-        Me.dt_hr_cierre.Size = New System.Drawing.Size(57, 20)
+        Me.dt_hr_cierre.Size = New System.Drawing.Size(66, 23)
         Me.dt_hr_cierre.TabIndex = 17
         '
         'Label20
         '
         Me.Label20.AutoSize = True
         Me.Label20.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label20.Location = New System.Drawing.Point(386, 4)
+        Me.Label20.Location = New System.Drawing.Point(400, 4)
         Me.Label20.Name = "Label20"
         Me.Label20.Size = New System.Drawing.Size(84, 15)
         Me.Label20.TabIndex = 59
@@ -616,7 +616,7 @@ Partial Class frm_OT
         '
         Me.Label7.AutoSize = True
         Me.Label7.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label7.Location = New System.Drawing.Point(119, 4)
+        Me.Label7.Location = New System.Drawing.Point(126, 4)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(68, 15)
         Me.Label7.TabIndex = 45
@@ -627,16 +627,16 @@ Partial Class frm_OT
         Me.txtDuracionOt.BackColor = System.Drawing.Color.FromArgb(215, 230, 234)
         Me.txtDuracionOt.ForeColor = System.Drawing.Color.FromArgb(15, 23, 42)
         Me.txtDuracionOt.ReadOnly = True
-        Me.txtDuracionOt.Location = New System.Drawing.Point(389, 21)
+        Me.txtDuracionOt.Location = New System.Drawing.Point(403, 21)
         Me.txtDuracionOt.Name = "txtDuracionOt"
-        Me.txtDuracionOt.Size = New System.Drawing.Size(45, 20)
+        Me.txtDuracionOt.Size = New System.Drawing.Size(60, 20)
         Me.txtDuracionOt.TabIndex = 58
         '
         'Label16
         '
         Me.Label16.AutoSize = True
         Me.Label16.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label16.Location = New System.Drawing.Point(204, 4)
+        Me.Label16.Location = New System.Drawing.Point(206, 4)
         Me.Label16.Name = "Label16"
         Me.Label16.Size = New System.Drawing.Size(91, 15)
         Me.Label16.TabIndex = 46
@@ -646,7 +646,7 @@ Partial Class frm_OT
         '
         Me.Label19.AutoSize = True
         Me.Label19.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label19.Location = New System.Drawing.Point(487, 4)
+        Me.Label19.Location = New System.Drawing.Point(496, 4)
         Me.Label19.Name = "Label19"
         Me.Label19.Size = New System.Drawing.Size(73, 15)
         Me.Label19.TabIndex = 57
@@ -656,7 +656,7 @@ Partial Class frm_OT
         '
         Me.Label5.AutoSize = True
         Me.Label5.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label5.Location = New System.Drawing.Point(315, 4)
+        Me.Label5.Location = New System.Drawing.Point(322, 4)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(57, 15)
         Me.Label5.TabIndex = 47
@@ -666,10 +666,10 @@ Partial Class frm_OT
         '
         Me.txtCerradoPor.BackColor = System.Drawing.Color.White
         Me.txtCerradoPor.ForeColor = System.Drawing.Color.FromArgb(15, 23, 42)
-        Me.txtCerradoPor.Location = New System.Drawing.Point(490, 20)
+        Me.txtCerradoPor.Location = New System.Drawing.Point(499, 20)
         Me.txtCerradoPor.MaxLength = 30
         Me.txtCerradoPor.Name = "txtCerradoPor"
-        Me.txtCerradoPor.Size = New System.Drawing.Size(110, 20)
+        Me.txtCerradoPor.Size = New System.Drawing.Size(130, 20)
         Me.txtCerradoPor.TabIndex = 18
         '
         'btnDelFilaOt

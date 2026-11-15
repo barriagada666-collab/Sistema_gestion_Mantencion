@@ -72,6 +72,7 @@ Public Class FrmAdminUsuarios
                 grillaUsuarios.ResumeLayout(False)
             End Try
             Utilitarios.AjustarColumnasGrilla(grillaUsuarios)
+            Utilitarios.AplicarTemaModerno(Me)
         Finally
             Me.ResumeLayout(True)
         End Try

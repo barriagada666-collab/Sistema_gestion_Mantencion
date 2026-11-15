@@ -1,7 +1,13 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Public Class Usuario
     Public Shared PermisoGuardarOt As Boolean = True
     Public Shared PermisoEliminarOt As Boolean = True
+    Public Shared PermisoIngMp As Boolean = True
+    Public Shared PermisoGuardarMp As Boolean = True
+    Public Shared PermisoEliminarCicloMp As Boolean = True
+    Public Shared PermisoEliminarMp As Boolean = True
+    Public Shared PermisoCambiarTareasMp As Boolean = False
+    Public Shared PermisoCambiarIdModTareas As Boolean = False
 
     Public Sub buscarUsuario(ByVal usuario As String, ByVal pass As String, ByRef cod_resp As Integer, ByRef resp As String)
         Dim conexion As New Conexion
@@ -236,7 +242,7 @@ Public Class Usuario
                 DA.Fill(DS)
             End Using
 
-            '------- Carga los permisos de usuario de forma segura ---------------------------------
+            '------- Carga los permisos de usuario de forma segura (sin instanciar formularios hijos en el login) ---------------------------------
             Dim dtPerm As DataTable = If(DS.Tables.Count > 0, DS.Tables(0), Nothing)
             principal.OrdenesDeTrabajoToolStripMenuItem.Enabled = ObtenerPermisoSeguro(dtPerm, 0, True)
             principal.MantPreventivaToolStripMenuItem.Enabled = ObtenerPermisoSeguro(dtPerm, 1, True)
@@ -244,12 +250,10 @@ Public Class Usuario
             principal.MantenedorToolStripMenuItem.Enabled = ObtenerPermisoSeguro(dtPerm, 3, True)
             PermisoGuardarOt = ObtenerPermisoSeguro(dtPerm, 4, True) OrElse ObtenerPermisoSeguro(dtPerm, 5, True)
             PermisoEliminarOt = ObtenerPermisoSeguro(dtPerm, 6, True)
-            frm_OT.btn_guardar.Enabled = PermisoGuardarOt
-            frm_OT.btn_eliminar.Enabled = PermisoEliminarOt
-            FrmMp.btnIngMp.Enabled = ObtenerPermisoSeguro(dtPerm, 8, True)
-            FrmMp.btnGuardarMp.Enabled = ObtenerPermisoSeguro(dtPerm, 9, True)
-            FrmMp.btnEliminarCiclo.Enabled = ObtenerPermisoSeguro(dtPerm, 10, True)
-            FrmMp.btnEliminarMp.Enabled = ObtenerPermisoSeguro(dtPerm, 11, True)
+            PermisoIngMp = ObtenerPermisoSeguro(dtPerm, 8, True)
+            PermisoGuardarMp = ObtenerPermisoSeguro(dtPerm, 9, True)
+            PermisoEliminarCicloMp = ObtenerPermisoSeguro(dtPerm, 10, True)
+            PermisoEliminarMp = ObtenerPermisoSeguro(dtPerm, 11, True)
             principal.NodosToolStripMenuItem.Enabled = ObtenerPermisoSeguro(dtPerm, 12, True)
             principal.PersonalToolStripMenuItem.Enabled = ObtenerPermisoSeguro(dtPerm, 13, True)
             principal.ItemsToolStripMenuItem.Enabled = ObtenerPermisoSeguro(dtPerm, 14, True)
@@ -257,8 +261,8 @@ Public Class Usuario
             principal.TareasMaquinasToolStripMenuItem.Enabled = ObtenerPermisoSeguro(dtPerm, 16, True)
             principal.InformeResumenOrdenDeTrabajoToolStripMenuItem.Enabled = ObtenerPermisoSeguro(dtPerm, 17, True)
             principal.AuditoriaToolStripMenuItem.Enabled = ObtenerPermisoSeguro(dtPerm, 18, True)
-            FrmMp.btnCambiarTareas.Visible = ObtenerPermisoSeguro(dtPerm, 19, False)
-            FrmAdminTareasNodo.btnCambiarIDMod.Visible = ObtenerPermisoSeguro(dtPerm, 20, False)
+            PermisoCambiarTareasMp = ObtenerPermisoSeguro(dtPerm, 19, False)
+            PermisoCambiarIdModTareas = ObtenerPermisoSeguro(dtPerm, 20, False)
         Catch ex As Exception
             MsgBox(ex.Message)
         Finally

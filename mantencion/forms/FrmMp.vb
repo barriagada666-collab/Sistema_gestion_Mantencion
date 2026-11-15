@@ -38,6 +38,12 @@ Public Class FrmMp
 
             lblHrsCiclo.Visible = False
             hrsCiclo.Visible = False
+            btnIngMp.Enabled = Usuario.PermisoIngMp
+            btnGuardarMp.Enabled = Usuario.PermisoGuardarMp
+            btnEliminarCiclo.Enabled = Usuario.PermisoEliminarCicloMp
+            btnEliminarMp.Enabled = Usuario.PermisoEliminarMp
+            btnCambiarTareas.Visible = Usuario.PermisoCambiarTareasMp
+            Utilitarios.AplicarTemaModerno(Me)
         Finally
             Me.ResumeLayout(True)
         End Try

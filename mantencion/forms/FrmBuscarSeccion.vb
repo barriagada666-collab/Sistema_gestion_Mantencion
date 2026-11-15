@@ -11,6 +11,7 @@ Public Class FrmBuscarSeccion
             seccion.crgSeccion(DST)
             grilla_buscar_seccion.DataSource = DST.Tables(0)
             Utilitarios.AjustarColumnasGrilla(grilla_buscar_seccion)
+            Utilitarios.AplicarTemaModerno(Me)
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
         Finally

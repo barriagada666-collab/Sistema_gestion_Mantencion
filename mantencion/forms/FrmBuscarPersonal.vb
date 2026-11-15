@@ -38,6 +38,7 @@ Public Class FrmBuscarPersonal
                     formato_grid.grillaPersonal(grillaPersonal)
             End Select
             Utilitarios.AjustarColumnasGrilla(grillaPersonal)
+            Utilitarios.AplicarTemaModerno(Me)
         Finally
             Me.ResumeLayout(True)
         End Try

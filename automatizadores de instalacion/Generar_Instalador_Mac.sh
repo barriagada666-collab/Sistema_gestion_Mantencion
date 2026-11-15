@@ -25,7 +25,7 @@ echo ""
 PUBLISH_DIR_ARM64="$ROOT_DIR/mantencion/bin/Release/net8-selfcontained-arm64"
 PUBLISH_DIR_X64="$ROOT_DIR/mantencion/bin/Release/net8-selfcontained-x64"
 DIST_MAC="$ROOT_DIR/dist-mac"
-APP_NAME="Sistema de Gestión Mantención"
+APP_NAME="Sistema de Gestion Mantencion"
 APP_BUNDLE="$DIST_MAC/$APP_NAME.app"
 
 export PATH="/home/antigravity/.dotnet:$HOME/.dotnet:/opt/homebrew/bin:/usr/local/bin:$PATH"
@@ -63,8 +63,10 @@ rm -rf "$DIST_MAC"
 mkdir -p "$APP_BUNDLE/Contents/MacOS"
 mkdir -p "$APP_BUNDLE/Contents/Resources/app-arm64"
 mkdir -p "$APP_BUNDLE/Contents/Resources/app-x64"
+mkdir -p "$APP_BUNDLE/Contents/Resources/Base.lproj"
+mkdir -p "$APP_BUNDLE/Contents/Resources/es.lproj"
 
-# Info.plist con prioridad nativa ARM64 (sin Rosetta) y soporte Universal
+# Info.plist con prioridad nativa ARM64 (sin Rosetta) y nombre visible localizado
 cat << 'EOF' > "$APP_BUNDLE/Contents/Info.plist"
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -97,6 +99,8 @@ cat << 'EOF' > "$APP_BUNDLE/Contents/Info.plist"
         <string>arm64</string>
         <string>x86_64</string>
     </array>
+    <key>LSHasLocalizedDisplayName</key>
+    <true/>
     <key>LSMinimumSystemVersion</key>
     <string>11.0.0</string>
     <key>NSHighResolutionCapable</key>
@@ -109,24 +113,27 @@ cat << 'EOF' > "$APP_BUNDLE/Contents/Info.plist"
 </plist>
 EOF
 
+cat << 'EOF' > "$APP_BUNDLE/Contents/Resources/Base.lproj/InfoPlist.strings"
+"CFBundleDisplayName" = "Sistema de Gestión Mantención";
+"CFBundleName" = "Sistema de Gestión Mantención";
+EOF
+cp "$APP_BUNDLE/Contents/Resources/Base.lproj/InfoPlist.strings" "$APP_BUNDLE/Contents/Resources/es.lproj/InfoPlist.strings"
+
 # PkgInfo
 printf "APPL????" > "$APP_BUNDLE/Contents/PkgInfo"
 
 # Icono ICNS
 cp "$ICNS_FILE" "$APP_BUNDLE/Contents/Resources/app_icon.icns"
 
-# Copiar binarios .NET 8 ARM64 y x64 depurando idiomas extranjeros (conservando 'es')
-echo "       Copiando binarios .NET 8 (win-arm64 + win-x64) y plantillas..."
+# Copiar binarios .NET 8 ARM64 y x64 depurando WPF/símbolos/idiomas (conservando 'es')
+echo "       Copiando y compactando binarios .NET 8 (win-arm64 + win-x64) y plantillas..."
 cp -R "$PUBLISH_DIR_ARM64"/* "$APP_BUNDLE/Contents/Resources/app-arm64/"
 cp -R "$PUBLISH_DIR_X64"/* "$APP_BUNDLE/Contents/Resources/app-x64/"
 
 for target_app in "$APP_BUNDLE/Contents/Resources/app-arm64" "$APP_BUNDLE/Contents/Resources/app-x64"; do
-    for loc in cs de fr it ja ko pl pt-BR ru tr zh-Hans zh-Hant; do
-        rm -rf "$target_app/$loc" 2>/dev/null || true
-    done
+    python3 "$SCRIPT_DIR/depurar_publicacion.py" "$target_app"
     mkdir -p "$target_app/plantillas"
     cp "$ROOT_DIR/mantencion/plantillas"/*.xls "$target_app/plantillas/" 2>/dev/null || true
-    cp "$ROOT_DIR/mantencion/plantillas"/*.xls "$target_app/" 2>/dev/null || true
 done
 
 # 4. Compilar Launcher Mach-O Universal Nativo (arm64 + x86_64)
@@ -274,13 +281,26 @@ mkdir -p "$TMP_X64_DL"
 
 echo "       Descargando motor Intel x86_64 (Wine Staging 11.21)..."
 if curl -fSL --retry 3 "$WINE_X64_URL" | tar -xJf - \
+        --exclude="Wine Staging.app/Contents/Resources/wine/include" \
+        --exclude="Wine Staging.app/Contents/Resources/wine/share/man" \
+        --exclude="Wine Staging.app/Contents/Resources/wine/share/doc" \
         --exclude="Wine Staging.app/Contents/Resources/wine/lib/GStreamer.framework" \
         --exclude="Wine Staging.app/Contents/Resources/wine/share/wine/gecko" \
         --exclude="Wine Staging.app/Contents/Resources/wine/share/wine/mono" \
         --exclude="Wine Staging.app/Contents/Resources/wine/lib/wine/i386-windows" \
+        --exclude="Wine Staging.app/Contents/Resources/wine/lib/wine/x86_64-windows/*.a" \
         -C "$TMP_X64_DL" 2>/dev/null; then
     if [[ -d "$TMP_X64_DL/Wine Staging.app/Contents/Resources/wine" ]]; then
         mv "$TMP_X64_DL/Wine Staging.app/Contents/Resources/wine" "$WINE_X64_DIR"
+        rm -f "$WINE_X64_DIR/lib/wine/x86_64-unix/winegstreamer.so" \
+              "$WINE_X64_DIR/lib/wine/x86_64-unix/winedmo.so" \
+              "$WINE_X64_DIR/lib/wine/x86_64-unix/lsteamclient.so" \
+              "$WINE_X64_DIR/lib/wine/x86_64-windows/lsteamclient.dll" 2>/dev/null || true
+        if [[ -n "$LLVM_STRIP" ]]; then
+            find "$WINE_X64_DIR/lib/wine/x86_64-windows" -type f \
+                \( -name "*.dll" -o -name "*.exe" -o -name "*.drv" -o -name "*.cpl" -o -name "*.sys" -o -name "*.ocx" \) \
+                -print0 | xargs -0 -P 4 "$LLVM_STRIP" --strip-debug 2>/dev/null || true
+        fi
         find "$WINE_X64_DIR" -name '._*' -delete 2>/dev/null || true
         chmod +x "$WINE_X64_DIR/bin/"* 2>/dev/null || true
         echo "       ✓ Motor Wine Intel x86_64 integrado ($(du -sh "$WINE_X64_DIR" | cut -f1))."
@@ -300,6 +320,14 @@ cat << 'EOF' > "$APP_BUNDLE/Contents/Resources/launch_wine.sh"
 
 set -u
 
+# Finder/launchd arranca apps sin LANG ni LC_ALL; forzar UTF-8 evita que Wine corrompa rutas Unicode
+if [[ -z "${LANG:-}" || "${LANG:-}" == "C" || "${LANG:-}" == "POSIX" ]]; then
+    export LANG="en_US.UTF-8"
+fi
+if [[ -z "${LC_ALL:-}" || "${LC_ALL:-}" == "C" || "${LC_ALL:-}" == "POSIX" ]]; then
+    export LC_ALL="en_US.UTF-8"
+fi
+
 ARCH_SLICE="${1:-$(uname -m)}"
 if [[ $# -gt 0 ]]; then
     shift
@@ -315,6 +343,7 @@ LOG_FILE="$LOG_DIR/launcher.log"
     echo "Fecha: $(date)"
     echo "Host uname -m: $(uname -m)"
     echo "Slice compilado activo: $ARCH_SLICE"
+    echo "Locale: LANG=$LANG LC_ALL=$LC_ALL"
     echo "macOS: $(sw_vers -productVersion 2>/dev/null || echo 'Desconocido')"
 } > "$LOG_FILE"
 
@@ -432,9 +461,9 @@ if [[ ! -d "$WINEPREFIX/drive_c/windows" ]]; then
     "$WINE_CMD" wineboot --init >> "$LOG_FILE" 2>&1 || true
 fi
 
-echo "[INFO] Lanzando $APP_EXE..." >> "$LOG_FILE"
+echo "[INFO] Lanzando Sistema de Gestion Mantencion.exe desde $APP_DIR..." >> "$LOG_FILE"
 cd "$APP_DIR"
-exec "$WINE_CMD" "$APP_EXE" "$@" >> "$LOG_FILE" 2>&1
+exec "$WINE_CMD" "Sistema de Gestion Mantencion.exe" "$@" >> "$LOG_FILE" 2>&1
 EOF
 
 chmod +x "$APP_BUNDLE/Contents/Resources/launch_wine.sh"
@@ -479,8 +508,9 @@ echo "  macOS: $(sw_vers -productVersion 2>/dev/null || echo 'macOS')"
 echo "=========================================================="
 echo ""
 
-APP_SRC="Sistema de Gestión Mantención.app"
-APP_DEST="/Applications/Sistema de Gestión Mantención.app"
+APP_SRC="Sistema de Gestion Mantencion.app"
+APP_DEST="/Applications/Sistema de Gestion Mantencion.app"
+OLD_APP_DEST="/Applications/Sistema de Gestión Mantención.app"
 
 if [[ ! -d "$APP_SRC" ]]; then
     echo "[ERROR] No se encontró '$APP_SRC' en el directorio actual."
@@ -489,7 +519,7 @@ if [[ ! -d "$APP_SRC" ]]; then
 fi
 
 echo "[1/4] Copiando aplicación hacia /Applications..."
-rm -rf "$APP_DEST"
+rm -rf "$OLD_APP_DEST" "$APP_DEST"
 cp -R "$APP_SRC" "$APP_DEST"
 echo "       ✓ Aplicación copiada exitosamente."
 
@@ -498,7 +528,7 @@ if [[ "$ARCH" == "arm64" ]]; then
     # Eliminar payload Intel x86_64 para ahorrar espacio y garantizar cero componentes Intel
     rm -rf "$APP_DEST/Contents/Resources/wine-x64" "$APP_DEST/Contents/Resources/app-x64"
     echo "       ✓ Chip Apple Silicon (ARM64) — Ejecución 100% nativa SIN Rosetta 2."
-    echo "       ✓ Compatible con macOS 11+, macOS 27 Golden Gate y macOS 28+."
+    echo "       ✓ Compatible con macOS 15+, macOS 27 Golden Gate y macOS 28+."
 else
     # Eliminar payload ARM64 en Macs Intel
     rm -rf "$APP_DEST/Contents/Resources/wine-arm64" "$APP_DEST/Contents/Resources/app-arm64"
@@ -514,7 +544,12 @@ fi
 if [[ -d "$APP_DEST/Contents/Resources/wine-x64/bin" ]]; then
     chmod +x "$APP_DEST/Contents/Resources/wine-x64/bin/"* 2>/dev/null || true
 fi
-codesign --force --deep --sign - "$APP_DEST" >/dev/null 2>&1 || true
+while IFS= read -r -d '' macho_file; do
+    if file "$macho_file" 2>/dev/null | grep -q "Mach-O"; then
+        codesign --force --sign - "$macho_file" >/dev/null 2>&1 || true
+    fi
+done < <(find "$APP_DEST/Contents/Resources" -type f \( -perm -0100 -o -name "*.dylib" -o -name "*.so" \) -print0)
+codesign --force --sign - "$APP_DEST" >/dev/null 2>&1 || true
 echo "       ✓ Permisos y firma configurados."
 
 echo "[4/4] Creando acceso directo en el Escritorio..."
@@ -522,7 +557,7 @@ DESKTOP_DIR="$HOME/Desktop"
 if [[ -d "$DESKTOP_DIR" ]]; then
     cat << 'LAUNCH_SCRIPT' > "$DESKTOP_DIR/Sistema de Mantención.command"
 #!/bin/bash
-open -a "/Applications/Sistema de Gestión Mantención.app"
+open -a "/Applications/Sistema de Gestion Mantencion.app"
 LAUNCH_SCRIPT
     chmod +x "$DESKTOP_DIR/Sistema de Mantención.command"
     echo "       ✓ Acceso directo creado en el Escritorio."
@@ -565,7 +600,10 @@ echo "=========================================================="
 echo ""
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
-APP_PATH="$DIR/Sistema de Gestión Mantención.app"
+APP_PATH="$DIR/Sistema de Gestion Mantencion.app"
+if [[ ! -d "$APP_PATH" ]]; then
+    APP_PATH="/Applications/Sistema de Gestion Mantencion.app"
+fi
 if [[ ! -d "$APP_PATH" ]]; then
     APP_PATH="/Applications/Sistema de Gestión Mantención.app"
 fi
@@ -588,7 +626,7 @@ EOF
 
 chmod +x "$DIST_MAC/Iniciar_con_Whisky.command"
 
-# Guía HTML interactiva LEAME_MAC.html
+# Guía HTML interactiva LEAME_MAC.html (Paleta Corporativa Oficial)
 cat << 'EOF' > "$DIST_MAC/LEAME_MAC.html"
 <!DOCTYPE html>
 <html lang="es">
@@ -596,15 +634,15 @@ cat << 'EOF' > "$DIST_MAC/LEAME_MAC.html"
   <meta charset="UTF-8">
   <title>Instalación en macOS - Sistema de Mantención Cambiaso Hnos.</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 40px; background: #0f172a; color: #f8fafc; line-height: 1.6; }
-    .card { max-width: 780px; margin: 0 auto; background: #1e293b; border-radius: 16px; padding: 32px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
-    h1 { color: #38bdf8; font-size: 24px; margin-top: 0; display: flex; align-items: center; gap: 12px; }
-    .step { background: #0f172a; border-radius: 12px; padding: 18px; margin-bottom: 16px; border-left: 4px solid #10b981; }
-    .step h3 { margin: 0 0 8px 0; color: #10b981; font-size: 16px; }
-    code { background: #334155; padding: 3px 8px; border-radius: 6px; font-family: monospace; color: #fcd34d; }
-    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #0284c7; color: white; margin-bottom: 20px; }
-    .badge-native { background: #059669; margin-left: 8px; }
-    .footer { margin-top: 24px; text-align: center; color: #64748b; font-size: 12px; }
+    body { font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; margin: 40px; background: #0F2D44; color: #F2F6F6; line-height: 1.6; }
+    .card { max-width: 780px; margin: 0 auto; background: #0F172A; border-radius: 16px; padding: 32px; border: 1px solid #025E87; box-shadow: 0 12px 30px rgba(0,0,0,0.45); }
+    h1 { color: #66C9D3; font-size: 24px; margin-top: 0; display: flex; align-items: center; gap: 12px; }
+    .step { background: #0B2235; border-radius: 12px; padding: 18px; margin-bottom: 16px; border-left: 4px solid #0191B3; }
+    .step h3 { margin: 0 0 8px 0; color: #66C9D3; font-size: 16px; }
+    code { background: #163A54; padding: 3px 8px; border-radius: 6px; font-family: monospace; color: #E5EBEB; }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #025E87; color: white; margin-bottom: 20px; }
+    .badge-native { background: #0191B3; margin-left: 8px; }
+    .footer { margin-top: 24px; text-align: center; color: #A0C5CF; font-size: 12px; }
   </style>
 </head>
 <body>
@@ -637,13 +675,13 @@ cat << 'EOF' > "$DIST_MAC/LEAME_MAC.html"
 </html>
 EOF
 
-# Comprimir paquete Universal ZIP
+# Comprimir paquete Universal ZIP con máxima compresión (-9)
 mkdir -p "$ROOT_DIR/Instalador"
 ZIP_OUTPUT="$ROOT_DIR/Instalador/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip"
 rm -f "$ZIP_OUTPUT"
 
 cd "$DIST_MAC"
-zip -r -y "$ZIP_OUTPUT" "$APP_NAME.app" "Instalar_en_Mac.command" "Iniciar_con_Whisky.command" "LEAME_MAC.html"
+zip -9 -r -y "$ZIP_OUTPUT" "$APP_NAME.app" "Instalar_en_Mac.command" "Iniciar_con_Whisky.command" "LEAME_MAC.html"
 
 ZIP_HASH=$( (command -v sha256sum >/dev/null && sha256sum "$ZIP_OUTPUT" || shasum -a 256 "$ZIP_OUTPUT") | awk '{print $1}' )
 ZIP_SIZE_MB=$(du -m "$ZIP_OUTPUT" | awk '{print $1}')

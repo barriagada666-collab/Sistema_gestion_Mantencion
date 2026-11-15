@@ -83,6 +83,16 @@ int main(int argc, char *argv[]) {
     }
     new_argv[argc + 2] = NULL;
 
+    /* Finder/launchd inicia procesos GUI sin LANG ni LC_ALL; forzar UTF-8 evita que Wine corrompa rutas */
+    const char *cur_lang = getenv("LANG");
+    if (cur_lang == NULL || cur_lang[0] == '\0' || strcmp(cur_lang, "C") == 0 || strcmp(cur_lang, "POSIX") == 0) {
+        setenv("LANG", "en_US.UTF-8", 1);
+    }
+    const char *cur_lcall = getenv("LC_ALL");
+    if (cur_lcall == NULL || cur_lcall[0] == '\0' || strcmp(cur_lcall, "C") == 0 || strcmp(cur_lcall, "POSIX") == 0) {
+        setenv("LC_ALL", "en_US.UTF-8", 1);
+    }
+
     execv("/bin/bash", new_argv);
 
     perror("execv /bin/bash");

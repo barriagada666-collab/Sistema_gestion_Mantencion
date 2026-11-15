@@ -21,6 +21,8 @@ Public Class FrmAdminTareasNodo
             arbol6.Nodes.Add(nodoRaiz)
             arbol6.EndUpdate()
             MP.CrgCmbTipoMp(cmbTipoMP)
+            btnCambiarIDMod.Visible = Usuario.PermisoCambiarIdModTareas
+            Utilitarios.AplicarTemaModerno(Me)
         Finally
             Me.ResumeLayout(True)
         End Try

@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class FrmInfMantPrev
     Inherits System.Windows.Forms.Form
 
@@ -173,16 +173,16 @@ Partial Class FrmInfMantPrev
         '
         Me.f_ini_inf_mp.CalendarTitleBackColor = System.Drawing.Color.FromArgb(2, 94, 135)
         Me.f_ini_inf_mp.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.f_ini_inf_mp.Location = New System.Drawing.Point(238, 36)
+        Me.f_ini_inf_mp.Location = New System.Drawing.Point(220, 35)
         Me.f_ini_inf_mp.Name = "f_ini_inf_mp"
-        Me.f_ini_inf_mp.Size = New System.Drawing.Size(89, 23)
+        Me.f_ini_inf_mp.Size = New System.Drawing.Size(106, 23)
         Me.f_ini_inf_mp.TabIndex = 4
         '
         'lblFechaIniInfMp
         '
         Me.lblFechaIniInfMp.AutoSize = True
         Me.lblFechaIniInfMp.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblFechaIniInfMp.Location = New System.Drawing.Point(235, 20)
+        Me.lblFechaIniInfMp.Location = New System.Drawing.Point(217, 18)
         Me.lblFechaIniInfMp.Name = "lblFechaIniInfMp"
         Me.lblFechaIniInfMp.Size = New System.Drawing.Size(69, 15)
         Me.lblFechaIniInfMp.TabIndex = 5
@@ -192,16 +192,16 @@ Partial Class FrmInfMantPrev
         '
         Me.f_fin_inf_mp.CalendarTitleBackColor = System.Drawing.Color.FromArgb(2, 94, 135)
         Me.f_fin_inf_mp.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.f_fin_inf_mp.Location = New System.Drawing.Point(238, 83)
+        Me.f_fin_inf_mp.Location = New System.Drawing.Point(220, 82)
         Me.f_fin_inf_mp.Name = "f_fin_inf_mp"
-        Me.f_fin_inf_mp.Size = New System.Drawing.Size(89, 23)
+        Me.f_fin_inf_mp.Size = New System.Drawing.Size(106, 23)
         Me.f_fin_inf_mp.TabIndex = 6
         '
         'lblFechaFinInfMp
         '
         Me.lblFechaFinInfMp.AutoSize = True
         Me.lblFechaFinInfMp.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblFechaFinInfMp.Location = New System.Drawing.Point(235, 65)
+        Me.lblFechaFinInfMp.Location = New System.Drawing.Point(217, 65)
         Me.lblFechaFinInfMp.Name = "lblFechaFinInfMp"
         Me.lblFechaFinInfMp.Size = New System.Drawing.Size(57, 15)
         Me.lblFechaFinInfMp.TabIndex = 7
@@ -210,16 +210,16 @@ Partial Class FrmInfMantPrev
         'CmbTipoMp
         '
         Me.CmbTipoMp.FormattingEnabled = True
-        Me.CmbTipoMp.Location = New System.Drawing.Point(358, 36)
+        Me.CmbTipoMp.Location = New System.Drawing.Point(336, 35)
         Me.CmbTipoMp.Name = "CmbTipoMp"
-        Me.CmbTipoMp.Size = New System.Drawing.Size(95, 23)
+        Me.CmbTipoMp.Size = New System.Drawing.Size(124, 23)
         Me.CmbTipoMp.TabIndex = 8
         '
         'lbltipoMpInf
         '
         Me.lbltipoMpInf.AutoSize = True
         Me.lbltipoMpInf.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lbltipoMpInf.Location = New System.Drawing.Point(355, 20)
+        Me.lbltipoMpInf.Location = New System.Drawing.Point(333, 18)
         Me.lbltipoMpInf.Name = "lbltipoMpInf"
         Me.lbltipoMpInf.Size = New System.Drawing.Size(98, 15)
         Me.lbltipoMpInf.TabIndex = 9
@@ -305,9 +305,9 @@ Partial Class FrmInfMantPrev
         '
         Me.GrpFiltroTareas.Controls.Add(Me.OpcTareasPend)
         Me.GrpFiltroTareas.Controls.Add(Me.OpcTareasOk)
-        Me.GrpFiltroTareas.Location = New System.Drawing.Point(488, 16)
+        Me.GrpFiltroTareas.Location = New System.Drawing.Point(470, 16)
         Me.GrpFiltroTareas.Name = "GrpFiltroTareas"
-        Me.GrpFiltroTareas.Size = New System.Drawing.Size(144, 66)
+        Me.GrpFiltroTareas.Size = New System.Drawing.Size(156, 68)
         Me.GrpFiltroTareas.TabIndex = 12
         Me.GrpFiltroTareas.TabStop = False
         Me.GrpFiltroTareas.Text = "Mostrar Tareas"

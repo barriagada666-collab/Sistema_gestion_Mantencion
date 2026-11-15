@@ -18,20 +18,93 @@ Public Class FrmInfMantPrev
             nd.CRG_NODO_HIJO(nodoRaiz)
             Arbol2.Nodes.Add(nodoRaiz)
             mantPrev.CrgCmbTipoMp(CmbTipoMp)
-            CmbTipoMp.Text = CmbTipoMp.Items(0)
-            lblFechaIniInfMp.Visible = False
-            f_ini_inf_mp.Visible = False
-            lblFechaFinInfMp.Visible = False
-            f_fin_inf_mp.Visible = False
-            lbltipoMpInf.Visible = False
-            CmbTipoMp.Visible = False
-            GrpFiltroTareas.Visible = False
+            If CmbTipoMp.Items.Count > 0 Then
+                CmbTipoMp.Text = CmbTipoMp.Items(0).ToString()
+            End If
+            Utilitarios.InicializarRangoMesActual(f_ini_inf_mp, f_fin_inf_mp)
+            opcFechas.Checked = True
+            ActualizarVisibilidadFiltros()
             Utilitarios.AplicarTemaModerno(Me)
         Finally
             Arbol2.EndUpdate()
             Me.ResumeLayout(True)
         End Try
     End Sub
+
+    Private Sub ActualizarVisibilidadFiltros()
+        ' El filtro por rango de fechas siempre permanece visible y habilitado en todos los modos
+        lblFechaIniInfMp.Visible = True
+        f_ini_inf_mp.Visible = True
+        f_ini_inf_mp.Enabled = True
+        lblFechaFinInfMp.Visible = True
+        f_fin_inf_mp.Visible = True
+        f_fin_inf_mp.Enabled = True
+
+        Dim mostrarTipo As Boolean = opcTipoMp.Checked
+        lbltipoMpInf.Visible = mostrarTipo
+        CmbTipoMp.Visible = mostrarTipo
+        CmbTipoMp.Enabled = mostrarTipo
+
+        Dim mostrarTareas As Boolean = opcfiltroTareas.Checked
+        GrpFiltroTareas.Visible = mostrarTareas
+        If mostrarTareas AndAlso Not OpcTareasOk.Checked AndAlso Not OpcTareasPend.Checked Then
+            OpcTareasOk.Checked = True
+        End If
+    End Sub
+
+    Private Function FiltrarTablaPorRangoFechas(ByVal dt As DataTable, ByVal fechaDesde As DateTime, ByVal fechaHasta As DateTime) As DataTable
+        If dt Is Nothing OrElse dt.Rows.Count = 0 Then Return dt
+
+        Dim colsFecha As New List(Of DataColumn)()
+        For Each col As DataColumn In dt.Columns
+            Dim nombreLower As String = col.ColumnName.ToLowerInvariant()
+            If col.DataType Is GetType(DateTime) OrElse
+               nombreLower.Contains("fecha") OrElse
+               nombreLower.Contains("creacion") OrElse
+               nombreLower.Contains("creación") OrElse
+               nombreLower.Contains("inicio") OrElse
+               nombreLower.Contains("termino") OrElse
+               nombreLower.Contains("término") Then
+                colsFecha.Add(col)
+            End If
+        Next
+        If colsFecha.Count = 0 Then Return dt
+
+        Dim desde As DateTime = fechaDesde.Date
+        Dim hasta As DateTime = fechaHasta.Date
+        Dim dtFiltrado As DataTable = dt.Clone()
+
+        For Each fila As DataRow In dt.Rows
+            Dim tieneAlgunaFechaValida As Boolean = False
+            Dim coincideRango As Boolean = False
+
+            For Each col As DataColumn In colsFecha
+                Dim val As Object = fila(col)
+                If val Is Nothing OrElse IsDBNull(val) Then Continue For
+                Dim fechaFila As DateTime
+                If TypeOf val Is DateTime Then
+                    fechaFila = DirectCast(val, DateTime).Date
+                    tieneAlgunaFechaValida = True
+                ElseIf DateTime.TryParse(val.ToString(), fechaFila) Then
+                    fechaFila = fechaFila.Date
+                    tieneAlgunaFechaValida = True
+                Else
+                    Continue For
+                End If
+
+                If fechaFila >= desde AndAlso fechaFila <= hasta Then
+                    coincideRango = True
+                    Exit For
+                End If
+            Next
+
+            If coincideRango OrElse Not tieneAlgunaFechaValida Then
+                dtFiltrado.ImportRow(fila)
+            End If
+        Next
+
+        Return dtFiltrado
+    End Function
 
     Private Sub Arbol2_AfterSelect(ByVal sender As System.Object, ByVal e As System.Windows.Forms.TreeViewEventArgs) Handles Arbol2.AfterSelect
         If Arbol2.SelectedNode Is Nothing Then Exit Sub
@@ -42,36 +115,11 @@ Public Class FrmInfMantPrev
     End Sub
 
     Private Sub opcFechas_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles opcFechas.CheckedChanged
-        If opcFechas.Checked Then
-            lblFechaIniInfMp.Visible = True
-            f_ini_inf_mp.Visible = True
-            lblFechaFinInfMp.Visible = True
-            f_fin_inf_mp.Visible = True
-        Else
-            lblFechaIniInfMp.Visible = False
-            f_ini_inf_mp.Visible = False
-            lblFechaFinInfMp.Visible = False
-            f_fin_inf_mp.Visible = False
-        End If
+        If opcFechas.Checked Then ActualizarVisibilidadFiltros()
     End Sub
 
     Private Sub opcTodos_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles opcTodos.CheckedChanged
-        If opcTodos.Checked Then
-            lblFechaIniInfMp.Visible = False
-            f_ini_inf_mp.Visible = False
-            lblFechaFinInfMp.Visible = False
-            f_fin_inf_mp.Visible = False
-            lbltipoMpInf.Visible = False
-            CmbTipoMp.Visible = False
-            GrpFiltroTareas.Visible = False
-        Else
-            lblFechaIniInfMp.Visible = False
-            f_ini_inf_mp.Visible = False
-            lblFechaFinInfMp.Visible = False
-            f_fin_inf_mp.Visible = False
-            lbltipoMpInf.Visible = False
-            CmbTipoMp.Visible = False
-        End If
+        If opcTodos.Checked Then ActualizarVisibilidadFiltros()
     End Sub
 
     Private Sub btnBuscarMp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnBuscarMp.Click
@@ -87,26 +135,43 @@ Public Class FrmInfMantPrev
             Exit Sub
         End If
 
+        If Not Utilitarios.ValidarRangoFechas(f_ini_inf_mp, f_fin_inf_mp) Then
+            Exit Sub
+        End If
+
         Cursor = Cursors.WaitCursor
+        grillaInfMant.SuspendLayout()
+        grillaDetalleCicloMp.SuspendLayout()
+        grillaTareasInfMp.SuspendLayout()
+        grillaTareasPendInfMp.SuspendLayout()
         Try
             If opcFechas.Checked Then
                 opcion = 1
                 mant_prev.InfMpFechas(id_nodo_select, f_ini_inf_mp.Value, f_fin_inf_mp.Value, CmbTipoMp.Text, opcion, DST)
-                grillaInfMant.DataSource = DST.Tables(0)
-                formato_grid.grillasMp(grillaInfMant)
-                Utilitarios.AjustarColumnasGrilla(grillaInfMant)
+                If DST.Tables.Count > 0 Then
+                    grillaInfMant.DataSource = DST.Tables(0)
+                    formato_grid.grillasMp(grillaInfMant)
+                    Utilitarios.AjustarColumnasGrilla(grillaInfMant)
+                End If
+                btnGantt.Enabled = (grillaDetalleCicloMp.RowCount > 0)
             ElseIf opcTipoMp.Checked Then
                 opcion = 2
                 mant_prev.InfMpFechas(id_nodo_select, f_ini_inf_mp.Value, f_fin_inf_mp.Value, CmbTipoMp.Text, opcion, DST)
-                grillaInfMant.DataSource = DST.Tables(0)
-                formato_grid.grillasMp(grillaInfMant)
-                Utilitarios.AjustarColumnasGrilla(grillaInfMant)
+                If DST.Tables.Count > 0 Then
+                    grillaInfMant.DataSource = FiltrarTablaPorRangoFechas(DST.Tables(0), f_ini_inf_mp.Value, f_fin_inf_mp.Value)
+                    formato_grid.grillasMp(grillaInfMant)
+                    Utilitarios.AjustarColumnasGrilla(grillaInfMant)
+                End If
+                btnGantt.Enabled = (grillaDetalleCicloMp.RowCount > 0)
             ElseIf opcTodos.Checked Then
                 opcion = 3
-                mant_prev.InfMpTodos(id_nodo_select, Now, Now, CmbTipoMp.Text, opcion, DST)
-                grillaInfMant.DataSource = DST.Tables(0)
-                formato_grid.grillasMp(grillaInfMant)
-                Utilitarios.AjustarColumnasGrilla(grillaInfMant)
+                mant_prev.InfMpTodos(id_nodo_select, f_ini_inf_mp.Value, f_fin_inf_mp.Value, CmbTipoMp.Text, opcion, DST)
+                If DST.Tables.Count > 0 Then
+                    grillaInfMant.DataSource = FiltrarTablaPorRangoFechas(DST.Tables(0), f_ini_inf_mp.Value, f_fin_inf_mp.Value)
+                    formato_grid.grillasMp(grillaInfMant)
+                    Utilitarios.AjustarColumnasGrilla(grillaInfMant)
+                End If
+                btnGantt.Enabled = (grillaDetalleCicloMp.RowCount > 0)
 
             ElseIf OpcTareasOk.Checked Then
                 If grillaInfMant.RowCount > 0 Then
@@ -120,11 +185,15 @@ Public Class FrmInfMantPrev
                 If grillaTareasPendInfMp.RowCount > 0 Then
                     grillaTareasPendInfMp.DataSource = Nothing
                 End If
+                btnGantt.Enabled = False
                 opcion_tareas = 1
                 mant_prev.InfSoloTareasMp(opcion_tareas, id_nodo_select, DST)
-                grillaTareasInfMp.DataSource = DST.Tables(0)
-                formato_grid.grillasMp(grillaTareasInfMp)
-                Utilitarios.AjustarColumnasGrilla(grillaTareasInfMp)
+                If DST.Tables.Count > 0 Then
+                    grillaTareasInfMp.DataSource = FiltrarTablaPorRangoFechas(DST.Tables(0), f_ini_inf_mp.Value, f_fin_inf_mp.Value)
+                    formato_grid.grillasMp(grillaTareasInfMp)
+                    Utilitarios.AjustarColumnasGrilla(grillaTareasInfMp)
+                End If
+                TabDetalleCicloMp.SelectedTab = TabDetalleCicloMp.TabPages(0)
 
             ElseIf OpcTareasPend.Checked Then
                 opcion_tareas = 2
@@ -140,15 +209,22 @@ Public Class FrmInfMantPrev
                 If grillaDetalleCicloMp.RowCount > 0 Then
                     grillaDetalleCicloMp.DataSource = Nothing
                 End If
-                grillaTareasPendInfMp.DataSource = DST.Tables(0)
-                formato_grid.grillasMp(grillaTareasPendInfMp)
-                utilitario.numero_fila_grilla(grillaTareasPendInfMp)
-                Utilitarios.AjustarColumnasGrilla(grillaTareasPendInfMp)
+                btnGantt.Enabled = False
+                If DST.Tables.Count > 0 Then
+                    grillaTareasPendInfMp.DataSource = FiltrarTablaPorRangoFechas(DST.Tables(0), f_ini_inf_mp.Value, f_fin_inf_mp.Value)
+                    formato_grid.grillasMp(grillaTareasPendInfMp)
+                    utilitario.numero_fila_grilla(grillaTareasPendInfMp)
+                    Utilitarios.AjustarColumnasGrilla(grillaTareasPendInfMp)
+                End If
                 TabDetalleCicloMp.SelectedTab = TabDetalleCicloMp.TabPages(1)
             End If
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
         Finally
+            grillaTareasPendInfMp.ResumeLayout(False)
+            grillaTareasInfMp.ResumeLayout(False)
+            grillaDetalleCicloMp.ResumeLayout(False)
+            grillaInfMant.ResumeLayout(False)
             Cursor = Cursors.Default
             Utilitarios.OptimizarMemoria()
         End Try
@@ -160,33 +236,24 @@ Public Class FrmInfMantPrev
         Try
             If e.RowIndex < 0 Then Exit Sub
             Dim DST As New DataSet
+            grillaDetalleCicloMp.SuspendLayout()
             mant_prev.InfCicloMp(grillaInfMant.Rows(e.RowIndex).Cells(0).Value, DST)
-            grillaDetalleCicloMp.DataSource = DST.Tables(0)
-            formato_grid.grillasMp(grillaDetalleCicloMp)
-            Utilitarios.AjustarColumnasGrilla(grillaDetalleCicloMp)
+            If DST.Tables.Count > 0 Then
+                grillaDetalleCicloMp.DataSource = DST.Tables(0)
+                formato_grid.grillasMp(grillaDetalleCicloMp)
+                Utilitarios.AjustarColumnasGrilla(grillaDetalleCicloMp)
+            End If
+            btnGantt.Enabled = (grillaDetalleCicloMp.RowCount > 0)
         Catch ex As Exception
             MsgBox(ex.Message)
+        Finally
+            grillaDetalleCicloMp.ResumeLayout(False)
         End Try
 
     End Sub
 
     Private Sub opcTipoMp_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles opcTipoMp.CheckedChanged
-        If opcTipoMp.Checked Then
-            lblFechaIniInfMp.Visible = False
-            f_ini_inf_mp.Visible = False
-            lblFechaFinInfMp.Visible = False
-            f_fin_inf_mp.Visible = False
-            GrpFiltroTareas.Visible = False
-            lbltipoMpInf.Visible = True
-            CmbTipoMp.Visible = True
-        Else
-            lblFechaIniInfMp.Visible = False
-            f_ini_inf_mp.Visible = False
-            lblFechaFinInfMp.Visible = False
-            f_fin_inf_mp.Visible = False
-            lbltipoMpInf.Visible = False
-            CmbTipoMp.Visible = False
-        End If
+        If opcTipoMp.Checked Then ActualizarVisibilidadFiltros()
     End Sub
 
     Private Sub grillaDetalleCicloMp_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaDetalleCicloMp.CellContentDoubleClick
@@ -198,6 +265,7 @@ Public Class FrmInfMantPrev
         Dim DST5 As New DataSet
         Try
             If e.RowIndex < 0 OrElse grillaInfMant.CurrentRow Is Nothing OrElse grillaDetalleCicloMp.CurrentRow Is Nothing Then Exit Sub
+            TabDetalleCicloMp.SuspendLayout()
             mant_prev.InfTareasCicloMp(grillaInfMant.Rows(grillaInfMant.CurrentRow.Index).Cells(0).Value, grillaDetalleCicloMp.Rows(grillaDetalleCicloMp.CurrentRow.Index).Cells(0).Value, id_nodo_select, DST2)
             mant_prev.InfTareasPendCicloMp(grillaInfMant.Rows(grillaInfMant.CurrentRow.Index).Cells(0).Value, grillaDetalleCicloMp.Rows(grillaDetalleCicloMp.CurrentRow.Index).Cells(0).Value, id_nodo_select, DST5)
             mant_prev.InfPersonalCicloMp(grillaInfMant.Rows(grillaInfMant.CurrentRow.Index).Cells(0).Value, grillaDetalleCicloMp.Rows(grillaDetalleCicloMp.CurrentRow.Index).Cells(0).Value, DST3)
@@ -230,6 +298,7 @@ Public Class FrmInfMantPrev
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
         Finally
+            TabDetalleCicloMp.ResumeLayout(False)
             Utilitarios.OptimizarMemoria()
         End Try
 
@@ -241,13 +310,7 @@ Public Class FrmInfMantPrev
 
     Private Sub opcfiltroTareas_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles opcfiltroTareas.CheckedChanged
         If opcfiltroTareas.Checked Then
-            GrpFiltroTareas.Visible = True
-            lblFechaIniInfMp.Visible = False
-            f_ini_inf_mp.Visible = False
-            lblFechaFinInfMp.Visible = False
-            f_fin_inf_mp.Visible = False
-            lbltipoMpInf.Visible = False
-            CmbTipoMp.Visible = False
+            ActualizarVisibilidadFiltros()
 
             If grillaTareasInfMp.RowCount > 0 Then
                 grillaTareasInfMp.DataSource = Nothing
@@ -269,11 +332,14 @@ Public Class FrmInfMantPrev
 
     Private Sub btnExpExcel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnExpExcel.Click
         Dim MP As New MantPreventiva
+        If Not Utilitarios.ValidarRangoFechas(f_ini_inf_mp, f_fin_inf_mp) Then Exit Sub
         If opcfiltroTareas.Checked Then
-            If opcfiltroTareas.Checked And OpcTareasPend.Checked Then
+            If OpcTareasPend.Checked Then
                 MP.expInfMpExcelSoloPend(grillaTareasPendInfMp, nombre_nodo_select)
-            ElseIf opcfiltroTareas.Checked And OpcTareasOk.Checked Then
+            ElseIf OpcTareasOk.Checked Then
                 MP.expInfMpExcelSoloRealizadas(grillaTareasInfMp, nombre_nodo_select)
+            Else
+                MsgBox("Seleccione si desea exportar tareas realizadas o pendientes.", MsgBoxStyle.Exclamation, "Validación")
             End If
         Else
             If nombre_nodo_select = "" Or grillaInfMant.RowCount = 0 Or grillaDetalleCicloMp.RowCount = 0 Then
@@ -296,11 +362,14 @@ Public Class FrmInfMantPrev
 
     Private Sub btnExpPdf_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnExpPdf.Click
         Dim MP As New MantPreventiva
+        If Not Utilitarios.ValidarRangoFechas(f_ini_inf_mp, f_fin_inf_mp) Then Exit Sub
         If opcfiltroTareas.Checked Then
-            If opcfiltroTareas.Checked And OpcTareasPend.Checked Then
+            If OpcTareasPend.Checked Then
                 MP.expInfMpPDFSoloPend(grillaTareasPendInfMp, nombre_nodo_select)
-            ElseIf opcfiltroTareas.Checked And OpcTareasOk.Checked Then
+            ElseIf OpcTareasOk.Checked Then
                 MP.expInfMpPDFSoloRealizadas(grillaTareasInfMp, nombre_nodo_select)
+            Else
+                MsgBox("Seleccione si desea exportar tareas realizadas o pendientes.", MsgBoxStyle.Exclamation, "Validación")
             End If
         Else
             If nombre_nodo_select = "" Or grillaInfMant.RowCount = 0 Or grillaDetalleCicloMp.RowCount = 0 Then
@@ -333,8 +402,6 @@ Public Class FrmInfMantPrev
     End Sub
 
     Private Sub btn_Limpiar_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_Limpiar.Click
-        Dim formato_grid As New FormatoGrillas
-
         If grillaInfMant.ColumnCount > 0 Then
             grillaInfMant.Columns.Clear()
         End If
@@ -355,5 +422,10 @@ Public Class FrmInfMantPrev
             grillaPersonalInfMp.Columns.Clear()
         End If
 
+        If grillaInsumosInfMp.ColumnCount > 0 Then
+            grillaInsumosInfMp.Columns.Clear()
+        End If
+
+        btnGantt.Enabled = False
     End Sub
 End Class

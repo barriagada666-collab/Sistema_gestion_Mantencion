@@ -30,17 +30,21 @@
     <!-- Silencia advertencias obsoletas de VB, compatibilidad de plataforma y serialización para compilación 100% limpia -->
     <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036,SYSLIB0051,CA1416</NoWarn>
 
+    <!-- Compilación Release compacta sin archivos .pdb -->
+    <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
+    <DebugSymbols Condition="'$(Configuration)' == 'Release'">false</DebugSymbols>
+
     <!-- Metadatos de GitHub Packages / NuGet -->
     <PackageId>Sistema.Gestion.Mantencion</PackageId>
     <Version>2026.1.0</Version>
     <Authors>Boris Arriagada</Authors>
     <Company>Cambiaso Hnos S.A.C.</Company>
     <Product>Sistema de Gestión Departamento Mantención</Product>
-    <Description>Sistema CMMS de Gestión de Mantención Industrial para Cambiaso Hnos. S.A.C. Control integral de órdenes de trabajo (OT), mantención preventiva (MP), carta Gantt, activos técnicos, turnos de personal y reportabilidad avanzada (.NET 8 LTS Windows y macOS).</Description>
+    <Description>Sistema CMMS de Gestión de Mantención Industrial para Cambiaso Hnos. S.A.C. Control integral de órdenes de trabajo (OT), mantención preventiva (MP), carta Gantt, activos técnicos, turnos de personal y reportabilidad avanzada con filtro obligatorio por rango de fechas (.NET 8 LTS Windows y macOS).</Description>
     <PackageProjectUrl>https://github.com/barriagada666-collab/Sistema_gestion_Mantencion</PackageProjectUrl>
     <RepositoryUrl>https://github.com/barriagada666-collab/Sistema_gestion_Mantencion</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Versión 2026.1 LTS con soporte multiplataforma (.NET 8 Windows y macOS vía Whisky), iconografía vectorial Lucide HD, optimización de velocidad de carga y conexiones SQL Server con pooling precalentado.</PackageReleaseNotes>
+    <PackageReleaseNotes>Versión 2026.1 LTS: soporte nativo Apple Silicon ARM64 (sin Rosetta 2, compatible macOS 27/28+), Intel x86_64 y Windows 10/11; filtros obligatorios de rango de fechas en todos los informes; exportación nativa a Excel y PDF sin dependencias externas; transiciones MDI optimizadas, menú unificado Segoe UI y paleta corporativa; instaladores compactos.</PackageReleaseNotes>
     <PackageTags>mantencion;gestion;industrial;cambiaso;cmms;mantenimiento;ot;preventivo;sqlserver;net8;windows;macos</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>app_icon_rounded.png</PackageIcon>
@@ -105,38 +109,27 @@
     </None>
   </ItemGroup>
 
-  <!-- Plantillas Excel de Informes en la raíz de salida -->
+  <!-- Plantillas Excel de Informes en subcarpeta plantillas\ -->
   <ItemGroup>
     <Content Include="plantillas\inf_ot.xls">
-      <Link>inf_ot.xls</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="plantillas\inf_MP.xls">
-      <Link>inf_MP.xls</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="plantillas\inf_listado_ciclo_mp.xls">
-      <Link>inf_listado_ciclo_mp.xls</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="plantillas\inf_estadistico.xls">
-      <Link>inf_estadistico.xls</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="plantillas\inf_datos_tecnicos.xls">
-      <Link>inf_datos_tecnicos.xls</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="plantillas\inf_auditoria.xls">
-      <Link>inf_auditoria.xls</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="plantillas\inf_gantt.xls">
-      <Link>inf_gantt.xls</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="plantillas\InfGantt.xls">
-      <Link>InfGantt.xls</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

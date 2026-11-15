@@ -1210,6 +1210,7 @@ Public Class OT
             End If
 
         End With
+        If opcion = 0 Then opcion = 4
         Return opcion
     End Function
 
@@ -1325,7 +1326,9 @@ Public Class OT
         Catch ex As Exception
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            Dim subtitulo As String = "Período: " & fecha_inicio.ToString("dd-MM-yyyy") & " al " & fecha_fin.ToString("dd-MM-yyyy")
+            If Not String.IsNullOrWhiteSpace(planta) Then subtitulo &= " | " & planta
+            Utilitarios.ExportarGrillaAExcelNativo(grilla, "Informe_OT", "INFORME DE ÓRDENES DE TRABAJO (OT)", subtitulo)
         End Try
     End Sub
 
