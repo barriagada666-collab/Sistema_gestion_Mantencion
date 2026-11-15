@@ -125,7 +125,7 @@ def main() -> int:
     after_bytes = dir_size_bytes(pub_dir)
     saved_mb = (before_bytes - after_bytes) / (1024 * 1024)
     after_mb = after_bytes / (1024 * 1024)
-    print(f"✓ Publicación depurada ({pub_dir}): -{saved_mb:.2f} MB ahorrados -> {after_mb:.2f} MB finales.")
+    print(f"[OK] Publicacion depurada ({pub_dir}): -{saved_mb:.2f} MB ahorrados -> {after_mb:.2f} MB finales.")
     return 0
 
 
