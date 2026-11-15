@@ -447,7 +447,7 @@ export WINEARCH=win64
 export WINEDEBUG=-all
 export WINEFSYNC=1
 export WINEESYNC=1
-# Desactiva diálogos de descarga de Wine Mono y Wine Gecko (.NET 8 ya es autocontenido)
+# Desactiva diálogos de descarga de Wine Mono y Wine Gecko durante inicialización de prefijo
 export WINEDLLOVERRIDES="mscoree,mshtml="
 # Usa tablas NLS nativas de Wine en lugar de icu.dll (evita "Could not load ICU data. UErrorCode: 2")
 export DOTNET_SYSTEM_GLOBALIZATION_USENLS=1
@@ -467,12 +467,17 @@ if [[ -f "$WINE_DIR/share/vulkan/icd.d/MoltenVK_icd.json" ]]; then
     export VK_DRIVER_FILES="$WINE_DIR/share/vulkan/icd.d/MoltenVK_icd.json"
 fi
 
-# Primer inicio: inicializar Wineprefix limpio
+# Primer inicio: inicializar Wineprefix limpio (sin prompts de Mono/Gecko)
 if [[ ! -d "$WINEPREFIX/drive_c/windows" ]]; then
     echo "[INFO] Primer inicio detectado. Inicializando Wineprefix ($ARCH_SLICE)..." >> "$LOG_FILE"
     osascript -e 'display notification "Configurando entorno nativo por primera vez... Espere unos segundos." with title "Sistema de Gestión Mantención"' 2>/dev/null || true
     "$WINE_CMD" wineboot --init >> "$LOG_FILE" 2>&1 || true
 fi
+
+# CRÍTICO para .NET 8 autocontenido en Wine:
+# Wine ntdll (fixup_imports_ilonly) requiere mscoree.dll builtin presente para mapear ensamblados IL-only (como System.Runtime.dll).
+# Si mscoree se deja vacío ("mscoree="), Wine falla con "mscoree.dll not found, IL-only binary cannot be loaded".
+export WINEDLLOVERRIDES="mshtml=;mscoree=b"
 
 echo "[INFO] Lanzando Sistema de Gestion Mantencion.exe desde $APP_DIR..." >> "$LOG_FILE"
 cd "$APP_DIR"

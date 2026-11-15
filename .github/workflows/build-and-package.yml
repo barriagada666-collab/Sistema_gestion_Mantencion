@@ -224,64 +224,36 @@ jobs:
             cat "$LOG_FILE" || true
             cat /tmp/ci-launcher-stdout.log || true
 
-            if grep -Eqi "Unhandled exception|FileNotFoundException|Could not load|Fatal error|ICU data|ApplicationException" "$LOG_FILE" /tmp/ci-launcher-stdout.log 2>/dev/null; then
+            if grep -Eqi "Unhandled exception|FileNotFoundException|Could not load|Fatal error|ICU data|ApplicationException|starting debugger|winedbg" "$LOG_FILE" /tmp/ci-launcher-stdout.log 2>/dev/null; then
               echo "[ERROR] Se detectó una excepción de arranque en macOS ARM64."
               kill "$APP_PID" 2>/dev/null || true
               "$WINE_ARM/bin/wineserver" -k 2>/dev/null || true
 
-              echo "=== 1) DIAGNÓSTICO DETALLADO (WINEDEBUG=+loaddll,+module,+err) ==="
-              WINEDEBUG=+loaddll,+module,+err WINEPREFIX="$HOME/Library/Application Support/SistemaMantencion/wineprefix-arm64" \
-                WINEARCH=win64 WINEDLLOVERRIDES="mscoree,mshtml=" DOTNET_SYSTEM_GLOBALIZATION_USENLS=1 \
+              echo "=== DIAGNÓSTICO DE ERROR (WINEDEBUG=err) ==="
+              WINEDEBUG=err WINEPREFIX="$HOME/Library/Application Support/SistemaMantencion/wineprefix-arm64" \
+                WINEARCH=win64 WINEDLLOVERRIDES="mshtml=;mscoree=b" DOTNET_SYSTEM_GLOBALIZATION_USENLS=1 \
                 DYLD_FALLBACK_LIBRARY_PATH="$WINE_ARM/lib" WINEDLLPATH="$WINE_ARM/lib/wine" \
                 WINESERVER="$WINE_ARM/bin/wineserver" WINELOADER="$WINE_ARM/bin/wine-launcher" \
                 "$WINE_ARM/bin/wine-launcher" "$APP_BUNDLE/Contents/Resources/app-arm64/Sistema de Gestion Mantencion.exe" >/tmp/ci-diag-arm64.log 2>&1 &
               DIAG_PID=$!
-              sleep 6
+              sleep 8
               kill "$DIAG_PID" 2>/dev/null || true
               "$WINE_ARM/bin/wineserver" -k 2>/dev/null || true
-              grep -iE "System\.Runtime|coreclr|hostfxr|hostpolicy|err:|Unhandled|FileNotFound|Exception|load_dll.*Sistema" /tmp/ci-diag-arm64.log | tail -n 80 || true
+              tail -n 100 /tmp/ci-diag-arm64.log || true
+              exit 1
+            fi
 
-              echo "=== 2) PRUEBA COMPARATIVA: app-x64 bajo wine-arm64 (FEX sin Rosetta) ==="
-              mkdir -p "$HOME/.ci-prefix-fex"
-              (
-                cd "$APP_BUNDLE/Contents/Resources/app-x64"
-                WINEDEBUG=err WINEPREFIX="$HOME/.ci-prefix-fex" \
-                  WINEARCH=win64 WINEDLLOVERRIDES="mscoree,mshtml=" DOTNET_SYSTEM_GLOBALIZATION_USENLS=1 \
-                  DYLD_FALLBACK_LIBRARY_PATH="$WINE_ARM/lib" WINEDLLPATH="$WINE_ARM/lib/wine" \
-                  WINESERVER="$WINE_ARM/bin/wineserver" WINELOADER="$WINE_ARM/bin/wine-launcher" \
-                  "$WINE_ARM/bin/wine-launcher" "Sistema de Gestion Mantencion.exe"
-              ) >/tmp/ci-diag-x64.log 2>&1 &
-              FEX_PID=$!
-              sleep 10
-              if kill -0 "$FEX_PID" 2>/dev/null; then
-                echo "app-x64 bajo FEX PID vivo ($FEX_PID)"
-                kill "$FEX_PID" 2>/dev/null || true
-              fi
+            if pgrep -f "winedbg" >/dev/null 2>&1; then
+              echo "[ERROR] winedbg está activo: la aplicación crasheó en Wine ARM64."
               "$WINE_ARM/bin/wineserver" -k 2>/dev/null || true
-              cat /tmp/ci-diag-x64.log || true
+              exit 1
+            fi
 
-              echo "=== 3) PRUEBA COMPARATIVA: PublishSingleFile=true win-arm64 bajo wine-arm64 ==="
-              dotnet publish mantencion/mantencion.vbproj -c Release -r win-arm64 --self-contained true \
-                -p:PublishSingleFile=true -p:EnableWindowsTargeting=true -o "$HOME/.ci-sf-arm64" --nologo -v m
-              mkdir -p "$HOME/.ci-prefix-sf" "$HOME/.ci-sf-arm64/plantillas"
-              cp mantencion/plantillas/*.xls "$HOME/.ci-sf-arm64/plantillas/" 2>/dev/null || true
-              (
-                cd "$HOME/.ci-sf-arm64"
-                WINEDEBUG=err WINEPREFIX="$HOME/.ci-prefix-sf" \
-                  WINEARCH=win64 WINEDLLOVERRIDES="mscoree,mshtml=" DOTNET_SYSTEM_GLOBALIZATION_USENLS=1 \
-                  DYLD_FALLBACK_LIBRARY_PATH="$WINE_ARM/lib" WINEDLLPATH="$WINE_ARM/lib/wine" \
-                  WINESERVER="$WINE_ARM/bin/wineserver" WINELOADER="$WINE_ARM/bin/wine-launcher" \
-                  "$WINE_ARM/bin/wine-launcher" "Sistema de Gestion Mantencion.exe"
-              ) >/tmp/ci-diag-sf.log 2>&1 &
-              SF_PID=$!
-              sleep 10
-              if kill -0 "$SF_PID" 2>/dev/null; then
-                echo "PublishSingleFile win-arm64 PID vivo ($SF_PID)"
-                kill "$SF_PID" 2>/dev/null || true
-              fi
+            RUNTIME_ERR=$(find "$HOME/Library/Application Support/SistemaMantencion/wineprefix-arm64" -name "error_runtime.log" 2>/dev/null | head -n 1)
+            if [ -n "$RUNTIME_ERR" ] && [ -s "$RUNTIME_ERR" ]; then
+              echo "[ERROR] ApplicationEvents.vb registró un error de ejecución en tiempo de arranque:"
+              cat "$RUNTIME_ERR"
               "$WINE_ARM/bin/wineserver" -k 2>/dev/null || true
-              cat /tmp/ci-diag-sf.log || true
-
               exit 1
             fi
 
