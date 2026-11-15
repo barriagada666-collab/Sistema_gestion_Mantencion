@@ -36,12 +36,12 @@
     <Authors>Boris Arriagada</Authors>
     <Company>Cambiaso Hnos S.A.C.</Company>
     <Product>Sistema de Gestión Departamento Mantención</Product>
-    <Description>Sistema de Gestión de Mantención Industrial - Cambiaso Hnos. S.A.C. (.NET 8 Windows y macOS)</Description>
+    <Description>Sistema CMMS de Gestión de Mantención Industrial para Cambiaso Hnos. S.A.C. Control integral de órdenes de trabajo (OT), mantención preventiva (MP), carta Gantt, activos técnicos, turnos de personal y reportabilidad avanzada (.NET 8 LTS Windows y macOS).</Description>
     <PackageProjectUrl>https://github.com/barriagada666-collab/Sistema_gestion_Mantencion</PackageProjectUrl>
     <RepositoryUrl>https://github.com/barriagada666-collab/Sistema_gestion_Mantencion</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Versión 2026.1 LTS con soporte multiplataforma, iconos modernos Lucide vectoriales y optimización de rendimiento SQL.</PackageReleaseNotes>
-    <PackageTags>mantencion;gestion;industrial;cambiaso;net8;windows;macos</PackageTags>
+    <PackageReleaseNotes>Versión 2026.1 LTS con soporte multiplataforma (.NET 8 Windows y macOS vía Whisky), iconografía vectorial Lucide HD, optimización de velocidad de carga y conexiones SQL Server con pooling precalentado.</PackageReleaseNotes>
+    <PackageTags>mantencion;gestion;industrial;cambiaso;cmms;mantenimiento;ot;preventivo;sqlserver;net8;windows;macos</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>app_icon_rounded.png</PackageIcon>
   </PropertyGroup>
