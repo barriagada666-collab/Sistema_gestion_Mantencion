@@ -162,9 +162,11 @@ Public Class FrmDatosTecnicosNodo
             Exit Sub
         End If
 
-        columna_clave(0) = DST_NODOS.Tables(0).Columns("idnodo")
-        DST_NODOS.Tables(0).PrimaryKey = columna_clave
-        fila = DST_NODOS.Tables(0).Rows.Find(id_nodo_select)
+        If DST_NODOS.Tables.Count > 0 AndAlso DST_NODOS.Tables(0).Columns.Contains("idnodo") Then
+            columna_clave(0) = DST_NODOS.Tables(0).Columns("idnodo")
+            DST_NODOS.Tables(0).PrimaryKey = columna_clave
+            fila = DST_NODOS.Tables(0).Rows.Find(id_nodo_select)
+        End If
 
         nivel = arbol9.SelectedNode.Level
         DST_DATOS_TECNICOS_NODO.Tables.Clear()
@@ -173,11 +175,13 @@ Public Class FrmDatosTecnicosNodo
         Try
             grillaDatosTecnicosNodo.SuspendLayout()
             grillaDatosTecnicosNodo.Columns.Clear()
-            grillaDatosTecnicosNodo.DataSource = DST_DATOS_TECNICOS_NODO.Tables(0)
-            filtro_datos_tecnicos.Table = DST_DATOS_TECNICOS_NODO.Tables(0)
-            formato_grid.grillaDatosTecnicos(grillaDatosTecnicosNodo)
-            lblGrillaDatosTecnicos.Text = "Datos Técnicos Asociados a " & arbol9.SelectedNode.Text
-            grpFiltroDatosTecnicos.Enabled = True
+            If DST_DATOS_TECNICOS_NODO.Tables.Count > 0 Then
+                grillaDatosTecnicosNodo.DataSource = DST_DATOS_TECNICOS_NODO.Tables(0)
+                filtro_datos_tecnicos.Table = DST_DATOS_TECNICOS_NODO.Tables(0)
+                formato_grid.grillaDatosTecnicos(grillaDatosTecnicosNodo)
+                lblGrillaDatosTecnicos.Text = "Datos Técnicos Asociados a " & arbol9.SelectedNode.Text
+                grpFiltroDatosTecnicos.Enabled = True
+            End If
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Datos Técnicos por Nodo (Buscar Dato Técnico)", True, Me)
         Finally
@@ -205,22 +209,21 @@ Public Class FrmDatosTecnicosNodo
         Dim id_nodo As Integer = 0
 
         With grillaDatosTecnicosNodo
-            If MsgBox("¿Esta seguro de eliminar el dato tecnico :" & .Rows(.CurrentRow.Index).Cells(3).Value & " ?", MsgBoxStyle.YesNo, "Confirmación") = MsgBoxResult.Yes Then
+            If .CurrentRow Is Nothing OrElse .CurrentRow.IsNewRow Then
+                MsgBox("Debe seleccionar una fila válida antes de eliminar.", MsgBoxStyle.Exclamation, "Validación")
+                Exit Sub
+            End If
+            If MsgBox("¿Esta seguro de eliminar el dato tecnico :" & Convert.ToString(.CurrentRow.Cells(3).Value) & " ?", MsgBoxStyle.YesNo, "Confirmación") = MsgBoxResult.Yes Then
                 Try
-                    id_dato_tecnico = CInt(.Rows(.CurrentRow.Index).Cells(0).Value)
-                    id_nodo = CInt(.Rows(.CurrentRow.Index).Cells(1).Value)
+                    id_dato_tecnico = CInt(.CurrentRow.Cells(0).Value)
+                    id_nodo = CInt(.CurrentRow.Cells(1).Value)
 
-                    If del_dato_tecnico.Length = 0 Then
-                        del_dato_tecnico(0, 0) = id_dato_tecnico
-                        del_dato_tecnico(0, 1) = id_nodo
-                        fila_del_dato_tecnico = fila_del_dato_tecnico + 1
-                        .Rows.Remove(.CurrentRow)
-                    Else
+                    If fila_del_dato_tecnico <= del_dato_tecnico.GetUpperBound(0) Then
                         del_dato_tecnico(fila_del_dato_tecnico, 0) = id_dato_tecnico
                         del_dato_tecnico(fila_del_dato_tecnico, 1) = id_nodo
                         fila_del_dato_tecnico = fila_del_dato_tecnico + 1
-                        .Rows.Remove(.CurrentRow)
                     End If
+                    .Rows.Remove(.CurrentRow)
                 Catch ex As Exception
                     RegistroErrores.MostrarYRegistrar(ex, "Datos Técnicos por Nodo (Eliminar Dato Técnico)", True, Me)
                 End Try

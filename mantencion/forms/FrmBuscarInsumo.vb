@@ -24,6 +24,7 @@ Public Class FrmBuscarInsumo
     End Sub
 
     Private Sub txtFiltro_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtFiltro.TextChanged
+        If filtro_insumos.Table Is Nothing Then Exit Sub
         Dim valorLimpio As String = Utilitarios.EscaparLike(txtFiltro.Text.Trim())
         If opcCodSap.Checked Then
             filtro_insumos.RowFilter = "Codigo_SAP like '%" & valorLimpio & "%' "
@@ -38,8 +39,8 @@ Public Class FrmBuscarInsumo
         If e.RowIndex < 0 Then Exit Sub
         Select Case nombre_form
             Case "MP"
-                Dim fila_mp As Integer = 0
-                fila_mp = FrmMp.grillaInsumosMp.CurrentRow.Index
+                If FrmMp.grillaInsumosMp.CurrentRow Is Nothing Then Exit Sub
+                Dim fila_mp As Integer = FrmMp.grillaInsumosMp.CurrentRow.Index
                 FrmMp.grillaInsumosMp.Rows(fila_mp).Cells(0).Value = grillaInsumos.Rows(e.RowIndex).Cells(0).Value
                 FrmMp.grillaInsumosMp.Rows(fila_mp).Cells(1).Value = grillaInsumos.Rows(e.RowIndex).Cells(1).Value
                 FrmMp.grillaInsumosMp.Rows(fila_mp).Cells(2).Value = grillaInsumos.Rows(e.RowIndex).Cells(2).Value
@@ -47,8 +48,8 @@ Public Class FrmBuscarInsumo
 
                 Me.Close()
             Case "OT"
-                Dim fila_ot As Integer = 0
-                fila_ot = frm_OT.grillaInsumosOt.CurrentRow.Index
+                If frm_OT.grillaInsumosOt.CurrentRow Is Nothing Then Exit Sub
+                Dim fila_ot As Integer = frm_OT.grillaInsumosOt.CurrentRow.Index
                 frm_OT.grillaInsumosOt.Rows(fila_ot).Cells(0).Value = grillaInsumos.Rows(e.RowIndex).Cells(0).Value
                 frm_OT.grillaInsumosOt.Rows(fila_ot).Cells(1).Value = grillaInsumos.Rows(e.RowIndex).Cells(1).Value
                 frm_OT.grillaInsumosOt.Rows(fila_ot).Cells(2).Value = grillaInsumos.Rows(e.RowIndex).Cells(2).Value

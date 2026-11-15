@@ -491,7 +491,8 @@ Public Class Utilitarios
             End Using
 
             Return tablasAgregadas > 0 AndAlso File.Exists(rutaArchivo)
-        Catch
+        Catch ex As Exception
+            RegistroErrores.RegistrarError(ex, "Exportar Grillas a PDF Nativo")
             Return False
         End Try
     End Function
@@ -523,10 +524,16 @@ Public Class Utilitarios
     ''' Respaldo 100% libre de dependencias para exportar una o más tablas/grillas a Excel (SpreadsheetML .xls)
     ''' cuando Microsoft Excel COM no está instalado (macOS/Whisky o PCs Windows sin Office).
     ''' </summary>
+    Public Shared UltimaExportacionCancelada As Boolean = False
+
     Public Shared Function ExportarGrillasAExcelNativo(ByVal hojas As IEnumerable(Of KeyValuePair(Of String, DataGridView)), ByVal prefijoNombre As String, ByVal tituloInforme As String, Optional ByVal subtitulo As String = "") As Boolean
+        UltimaExportacionCancelada = False
         If hojas Is Nothing Then Return False
         Dim ruta As String = SolicitarRutaGuardadoExcel(prefijoNombre)
-        If String.IsNullOrEmpty(ruta) Then Return False
+        If String.IsNullOrEmpty(ruta) Then
+            UltimaExportacionCancelada = True
+            Return False
+        End If
 
         Try
             Dim sb As New System.Text.StringBuilder(8192)
@@ -731,10 +738,11 @@ Public Class Utilitarios
     End Sub
 
     Public Sub crgComboTurnos(ByRef cmb As ComboBox)
+        If cmb Is Nothing Then Exit Sub
         cmb.Items.Add("Noche")
         cmb.Items.Add("Mañana")
         cmb.Items.Add("Tarde")
-        cmb.Text = cmb.Items(0)
+        If cmb.Items.Count > 0 Then cmb.Text = cmb.Items(0).ToString()
     End Sub
 
     Public Sub ValidarPersonalOT(ByVal e As System.Windows.Forms.KeyPressEventArgs)

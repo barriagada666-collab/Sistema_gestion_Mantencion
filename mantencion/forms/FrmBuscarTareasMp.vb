@@ -13,10 +13,12 @@ Public Class FrmBuscarTareasMp
         Try
             grillaTareasNodoMp.SuspendLayout()
             nodo.CRG_TAREAS_MP(nodo_padre, tipo_mp, DST_TAREAS_MP)
-            grillaTareasNodoMp.DataSource = DST_TAREAS_MP.Tables(0)
-            filtro_tareas.Table = DST_TAREAS_MP.Tables(0)
-            formato_grid.grillasMp(grillaTareasNodoMp)
-            Utilitarios.AjustarColumnasGrilla(grillaTareasNodoMp)
+            If DST_TAREAS_MP.Tables.Count > 0 Then
+                grillaTareasNodoMp.DataSource = DST_TAREAS_MP.Tables(0)
+                filtro_tareas.Table = DST_TAREAS_MP.Tables(0)
+                formato_grid.grillasMp(grillaTareasNodoMp)
+                Utilitarios.AjustarColumnasGrilla(grillaTareasNodoMp)
+            End If
             Utilitarios.AplicarTemaModerno(Me)
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Buscar Tareas MP", True, Me)
@@ -28,6 +30,7 @@ Public Class FrmBuscarTareasMp
     End Sub
 
     Private Sub txtFiltroTarea_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtFiltroTarea.TextChanged
+        If filtro_tareas.Table Is Nothing Then Exit Sub
         Try
             Dim valorLimpio As String = Utilitarios.EscaparLike(txtFiltroTarea.Text.Trim())
             filtro_tareas.RowFilter = "Descripción like '%" & valorLimpio & "%' "
@@ -43,7 +46,7 @@ Public Class FrmBuscarTareasMp
 
         With FrmMp
             If .grillaTareasCicloMp.RowCount > 0 Then
-
+                If .DST_TAREAS.Tables.Count = 0 Then Exit Sub
                 For i = 0 To grillaTareasNodoMp.RowCount - 1
                     If True.Equals(grillaTareasNodoMp.Rows(i).Cells(0).Value) Then
                         For j = 0 To .grillaTareasCicloMp.RowCount - 1
@@ -68,6 +71,7 @@ Public Class FrmBuscarTareasMp
                     grillaTareasNodoMp.Rows(i).Cells(0).Value = False
                 Next
             Else
+                If DST_TAREAS_MP.Tables.Count = 0 Then Exit Sub
                 .DST_TAREAS = DST_TAREAS_MP.Clone
                 .DST_TAREAS.Tables(0).Columns.Add("tiempo")
                 .DST_TAREAS.Tables(0).Columns.Add("observacion_ciclo")

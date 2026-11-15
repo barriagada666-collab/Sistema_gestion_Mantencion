@@ -20,9 +20,11 @@ Public Class FrmDetalleOtPendientes
             grillaDetalleOtPend.SuspendLayout()
             Utilitarios.AplicarTemaModerno(Me)
             OT.CrgDetalleResumenOt(personal, fecha_inicio, fecha_termino, opcion, tipo_falla, turno, fecha, estado, nodo_padre, DST_OT_PEND)
-            grillaDetalleOtPend.DataSource = DST_OT_PEND.Tables(0)
-            formato_grid.grillasOT(grillaDetalleOtPend)
-            Utilitarios.AjustarColumnasGrilla(grillaDetalleOtPend)
+            If DST_OT_PEND.Tables.Count > 0 Then
+                grillaDetalleOtPend.DataSource = DST_OT_PEND.Tables(0)
+                formato_grid.grillasOT(grillaDetalleOtPend)
+                Utilitarios.AjustarColumnasGrilla(grillaDetalleOtPend)
+            End If
             Label1.Text = "OT Recibidas Pendientes de " & personal
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Detalle OT Pendientes", True, Me)

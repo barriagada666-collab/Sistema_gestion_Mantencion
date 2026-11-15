@@ -365,7 +365,7 @@ Public Class OT
             .Items.Clear()
             .Items.Add("SI")
             .Items.Add("NO")
-            .Text = .Items(0)
+            If .Items.Count > 0 Then .Text = .Items(0).ToString()
         End With
     End Sub
 
@@ -377,7 +377,7 @@ Public Class OT
             .Items.Add("Electrónica")
             .Items.Add("Soldadura")
             .Items.Add("Servicios Generales")
-            .Text = .Items(0)
+            If .Items.Count > 0 Then .Text = .Items(0).ToString()
         End With
     End Sub
 
@@ -487,7 +487,7 @@ Public Class OT
             .txtCerradoPor.Clear()
             .txtBuscarNodo.Clear()
             .chkOtCierre.Checked = False
-            .cmbEstadoOt.Text = .cmbEstadoOt.Items(0)
+            If .cmbEstadoOt.Items.Count > 0 Then .cmbEstadoOt.Text = .cmbEstadoOt.Items(0).ToString()
             .cmbEstadoOt.Enabled = False
             .chkOtMpInterna.Checked = False
             .btn_guardar.Enabled = Usuario.PermisoGuardarOt
@@ -1337,7 +1337,10 @@ Public Class OT
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
             Dim subtitulo As String = "Período: " & fecha_inicio.ToString("dd-MM-yyyy") & " al " & fecha_fin.ToString("dd-MM-yyyy")
             If Not String.IsNullOrWhiteSpace(planta) Then subtitulo &= " | " & planta
-            Utilitarios.ExportarGrillaAExcelNativo(grilla, "Informe_OT", "INFORME DE ÓRDENES DE TRABAJO (OT)", subtitulo)
+            If Not Utilitarios.ExportarGrillaAExcelNativo(grilla, "Informe_OT", "INFORME DE ÓRDENES DE TRABAJO (OT)", subtitulo) AndAlso
+               Not Utilitarios.UltimaExportacionCancelada Then
+                RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe OT a Excel")
+            End If
         End Try
     End Sub
 

@@ -1,4 +1,4 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Public Class CalendarioPersonal
     Public Sub agregarPersonalCalendario(ByVal personal As String, ByVal fecha_desde_turno As DateTime, ByVal fecha_hasta_turno As DateTime, ByVal turno As String)
         Dim fecha As DateTime = fecha_desde_turno.Date
@@ -49,7 +49,9 @@ Public Class CalendarioPersonal
             .txtPersonalTurno.ResetText()
             .fecha_desde.Value = Now
             .fecha_hasta.Value = Now
-            .cmbTurno.Text = .cmbTurno.Items(0)
+            If .cmbTurno.Items.Count > 0 Then
+                .cmbTurno.SelectedIndex = 0
+            End If
         End With
     End Sub
 End Class

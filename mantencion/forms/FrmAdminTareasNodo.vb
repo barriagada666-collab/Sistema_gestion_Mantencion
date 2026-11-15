@@ -50,14 +50,18 @@ Public Class FrmAdminTareasNodo
         Dim resp As String = ""
         Dim formato_grid As New FormatoGrillas
 
+        Dim ordenDespliegue As Integer = 0
         If txtIdTarea.Text = "" Or txtDescTarea.Text = "" Or txtOrdenDespliegue.Text = "" Or txtOrdenDespliegue.Text = "0" Then
             MsgBox("Debe generar el codigo de la tarea o ingresar la descripción", MsgBoxStyle.Exclamation, "Validación")
             txtDescTarea.Focus()
+        ElseIf Not Integer.TryParse(txtOrdenDespliegue.Text.Trim(), ordenDespliegue) OrElse ordenDespliegue <= 0 Then
+            MsgBox("El orden de despliegue debe ser un número entero mayor a 0", MsgBoxStyle.Exclamation, "Validación")
+            txtOrdenDespliegue.Focus()
         ElseIf txtIdModulo.Text = "" Then
             MsgBox("Debe Seleccionar el modulo o la maquina antes de guardar", MsgBoxStyle.Exclamation, "Validación")
             Exit Sub
         Else
-            nodo.IngTareaNodo(txtIdTarea.Text, txtIdModulo.Text, txtDescTarea.Text, cmbTipoMP.Text, CInt(txtOrdenDespliegue.Text), principal.lblUsuario.Text, cod_resp, resp)
+            nodo.IngTareaNodo(txtIdTarea.Text, txtIdModulo.Text, txtDescTarea.Text, cmbTipoMP.Text, ordenDespliegue, principal.lblUsuario.Text, cod_resp, resp)
 
             If cod_resp = 1 Then
                 MsgBox(resp, MsgBoxStyle.Information, "Validación")
@@ -65,15 +69,17 @@ Public Class FrmAdminTareasNodo
                 grillaTareasNodo.Columns.Clear()
                 DST_TN.Tables.Clear()
                 nodo.CRG_TAREAS_NODO(id_nodo_select, cmbTipoMP.Text, DST_TN)
-                grillaTareasNodo.DataSource = DST_TN.Tables(0)
-                formato_grid.grillasTareasNodo(grillaTareasNodo)
-                Utilitarios.AjustarColumnasGrilla(grillaTareasNodo)
+                If DST_TN.Tables.Count > 0 Then
+                    grillaTareasNodo.DataSource = DST_TN.Tables(0)
+                    formato_grid.grillasTareasNodo(grillaTareasNodo)
+                    Utilitarios.AjustarColumnasGrilla(grillaTareasNodo)
+                End If
                 txtIdTarea.ResetText()
                 txtDescTarea.ResetText()
                 txtIdModulo.ResetText()
                 txtOrdenDespliegue.ResetText()
                 form_limpio = True
-            Else
+            ElseIf cod_resp <> -1 Then
                 MsgBox(resp, MsgBoxStyle.Critical, "Validación")
             End If
         End If
@@ -115,13 +121,15 @@ Public Class FrmAdminTareasNodo
                     grillaTareasNodo.DataSource = Nothing
                     DST_TN.Tables.Clear()
                     nodo.CRG_TAREAS_NODO(id_nodo_select, cmbTipoMP.Text, DST_TN)
-                    grillaTareasNodo.DataSource = DST_TN.Tables(0)
-                    formato_grid.grillasTareasNodo(grillaTareasNodo)
-                    Utilitarios.AjustarColumnasGrilla(grillaTareasNodo)
+                    If DST_TN.Tables.Count > 0 Then
+                        grillaTareasNodo.DataSource = DST_TN.Tables(0)
+                        formato_grid.grillasTareasNodo(grillaTareasNodo)
+                        Utilitarios.AjustarColumnasGrilla(grillaTareasNodo)
+                    End If
                     txtIdTarea.ResetText()
                     txtDescTarea.ResetText()
                     form_limpio = True
-                Else
+                ElseIf cod_resp <> -1 Then
                     MsgBox(resp, MsgBoxStyle.Exclamation, "Validación")
                 End If
             End If
@@ -139,9 +147,11 @@ Public Class FrmAdminTareasNodo
         nodo.CRG_TAREAS_NODO(id_nodo_select, cmbTipoMP.Text, DST_TN)
 
         Try
-            grillaTareasNodo.DataSource = DST_TN.Tables(0)
-            formato_grid.grillasTareasNodo(grillaTareasNodo)
-            Utilitarios.AjustarColumnasGrilla(grillaTareasNodo)
+            If DST_TN.Tables.Count > 0 Then
+                grillaTareasNodo.DataSource = DST_TN.Tables(0)
+                formato_grid.grillasTareasNodo(grillaTareasNodo)
+                Utilitarios.AjustarColumnasGrilla(grillaTareasNodo)
+            End If
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Tareas de Nodos/Máquinas (Buscar Tarea)", True, Me)
         Finally

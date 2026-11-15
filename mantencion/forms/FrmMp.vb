@@ -582,9 +582,11 @@ Public Class FrmMp
             Dim DST_TAREAS As New DataSet
 
             MP.CrgTareasNodoTodas(DST_TAREAS)
-            grillaTareasAdMp.DataSource = DST_TAREAS.Tables(0)
-            formato_grid.grillasMp(grillaTareasAdMp)
-            filtro_tareas.Table = DST_TAREAS.Tables(0)
+            If DST_TAREAS.Tables.Count > 0 Then
+                grillaTareasAdMp.DataSource = DST_TAREAS.Tables(0)
+                formato_grid.grillasMp(grillaTareasAdMp)
+                filtro_tareas.Table = DST_TAREAS.Tables(0)
+            End If
         End If
     End Sub
 
@@ -649,6 +651,7 @@ Public Class FrmMp
 
                 DST_TAREAS.Tables.Clear()
                 mant_prev.CrgTareasCicloMp(73, 1, 2, DST_TAREAS)
+                If DST_TAREAS.Tables.Count = 0 Then Exit Sub
                 grillaTareasCicloMp.DataSource = DST_TAREAS.Tables(0)
                 DST_TAREAS.Tables(0).Rows.Clear()
                 grillas.grillasMp(grillaTareasCicloMp)

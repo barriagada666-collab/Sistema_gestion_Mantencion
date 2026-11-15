@@ -20,9 +20,11 @@ Public Class FrmDetalleOTPorTecnico
             grillaDetalleOtTecnicos.SuspendLayout()
             Utilitarios.AplicarTemaModerno(Me)
             OT.CrgDetalleResumenOt(personal, fecha_inicio, fecha_termino, opcion, tipo_falla, turno, fecha, estado, nodo_padre, DST_OT_TECNICOS)
-            grillaDetalleOtTecnicos.DataSource = DST_OT_TECNICOS.Tables(0)
-            formato_grid.grillasOT(grillaDetalleOtTecnicos)
-            Utilitarios.AjustarColumnasGrilla(grillaDetalleOtTecnicos)
+            If DST_OT_TECNICOS.Tables.Count > 0 Then
+                grillaDetalleOtTecnicos.DataSource = DST_OT_TECNICOS.Tables(0)
+                formato_grid.grillasOT(grillaDetalleOtTecnicos)
+                Utilitarios.AjustarColumnasGrilla(grillaDetalleOtTecnicos)
+            End If
             Label1.Text = "OT Ejecutadas de " & personal
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Detalle OT por Técnico", True, Me)

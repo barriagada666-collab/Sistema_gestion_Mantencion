@@ -338,9 +338,10 @@ Public Class MantPreventiva
     End Sub
 
     Public Sub CrgCmbEstadoCiclo(ByRef combo As ComboBox)
+        If combo Is Nothing Then Exit Sub
         combo.Items.Add("Terminado")
         combo.Items.Add("Pendiente")
-        combo.Text = combo.Items(0)
+        If combo.Items.Count > 0 Then combo.Text = combo.Items(0).ToString()
     End Sub
 
     Public Sub CrgCmbEstadoMp(ByRef combo As ComboBox)
@@ -350,7 +351,7 @@ Public Class MantPreventiva
             combo.Items.Clear()
             combo.Items.Add("Activa")
             combo.Items.Add("Cerrada")
-            combo.Text = combo.Items(0)
+            If combo.Items.Count > 0 Then combo.Text = combo.Items(0).ToString()
         Finally
             combo.EndUpdate()
         End Try
@@ -366,7 +367,7 @@ Public Class MantPreventiva
             combo.Items.Add("Electrica")
             combo.Items.Add("Electrica Mayor")
             combo.Items.Add("Electronica")
-            combo.Text = combo.Items(0)
+            If combo.Items.Count > 0 Then combo.Text = combo.Items(0).ToString()
         Finally
             combo.EndUpdate()
         End Try
@@ -383,7 +384,7 @@ Public Class MantPreventiva
             combo.Items.Add("Electrica Mayor")
             combo.Items.Add("Electronica")
             combo.Items.Add("Todos")
-            combo.Text = combo.Items(0)
+            If combo.Items.Count > 0 Then combo.Text = combo.Items(0).ToString()
         Finally
             combo.EndUpdate()
         End Try
@@ -495,9 +496,11 @@ Public Class MantPreventiva
                 Dim DS As New DataSet
 
                 DA.Fill(DS)
-                combo.DataSource = DS.Tables(0)
-                combo.DisplayMember = "idciclo"
-                combo.ValueMember = "idciclo"
+                If DS.Tables.Count > 0 Then
+                    combo.DataSource = DS.Tables(0)
+                    combo.DisplayMember = "idciclo"
+                    combo.ValueMember = "idciclo"
+                End If
             End Using
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Cargar Combo Ciclo MP")
@@ -1341,7 +1344,7 @@ Public Class MantPreventiva
             If grilla_tareas_pend IsNot Nothing AndAlso grilla_tareas_pend.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Tareas Pendientes", grilla_tareas_pend))
             If grilla_personal IsNot Nothing AndAlso grilla_personal.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Personal", grilla_personal))
             If grilla_insumos IsNot Nothing AndAlso grilla_insumos.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Insumos", grilla_insumos))
-            If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_MP_" & item, "INFORME DE MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) Then
+            If hojas.Count > 0 AndAlso (Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_MP_" & item, "INFORME DE MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) OrElse Utilitarios.UltimaExportacionCancelada) Then
                 Exit Sub
             End If
             RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe MP Excel")
@@ -1405,7 +1408,7 @@ Public Class MantPreventiva
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
             If grilla_tareas_realizadas IsNot Nothing AndAlso grilla_tareas_realizadas.RowCount > 0 AndAlso
-               Utilitarios.ExportarGrillaAExcelNativo(grilla_tareas_realizadas, "Informe_MP_Realizadas_" & item, "MANTENCIÓN PREVENTIVA - TAREAS REALIZADAS", "Ítem / Máquina: " & item) Then
+               (Utilitarios.ExportarGrillaAExcelNativo(grilla_tareas_realizadas, "Informe_MP_Realizadas_" & item, "MANTENCIÓN PREVENTIVA - TAREAS REALIZADAS", "Ítem / Máquina: " & item) OrElse Utilitarios.UltimaExportacionCancelada) Then
                 Exit Sub
             End If
             RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe MP Excel Solo Realizadas")
@@ -1468,7 +1471,7 @@ Public Class MantPreventiva
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
             If grilla_tareas_pend IsNot Nothing AndAlso grilla_tareas_pend.RowCount > 0 AndAlso
-               Utilitarios.ExportarGrillaAExcelNativo(grilla_tareas_pend, "Informe_MP_Pendientes_" & item, "MANTENCIÓN PREVENTIVA - TAREAS PENDIENTES", "Ítem / Máquina: " & item) Then
+               (Utilitarios.ExportarGrillaAExcelNativo(grilla_tareas_pend, "Informe_MP_Pendientes_" & item, "MANTENCIÓN PREVENTIVA - TAREAS PENDIENTES", "Ítem / Máquina: " & item) OrElse Utilitarios.UltimaExportacionCancelada) Then
                 Exit Sub
             End If
             RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe MP Excel Solo Pendientes")

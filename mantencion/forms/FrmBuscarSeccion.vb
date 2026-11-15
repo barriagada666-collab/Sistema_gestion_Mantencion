@@ -9,8 +9,10 @@ Public Class FrmBuscarSeccion
         Try
             grilla_buscar_seccion.SuspendLayout()
             seccion.crgSeccion(DST)
-            grilla_buscar_seccion.DataSource = DST.Tables(0)
-            Utilitarios.AjustarColumnasGrilla(grilla_buscar_seccion)
+            If DST.Tables.Count > 0 Then
+                grilla_buscar_seccion.DataSource = DST.Tables(0)
+                Utilitarios.AjustarColumnasGrilla(grilla_buscar_seccion)
+            End If
             Utilitarios.AplicarTemaModerno(Me)
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Buscar Sección", True, Me)

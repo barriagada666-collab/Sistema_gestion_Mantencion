@@ -597,7 +597,7 @@ Partial Class FrmResumenes
         Me.tabTopEquipos.Padding = New System.Windows.Forms.Padding(6)
         Me.tabTopEquipos.Size = New System.Drawing.Size(757, 494)
         Me.tabTopEquipos.TabIndex = 0
-        Me.tabTopEquipos.Text = "  🏆 Top Máquinas y Componentes  "
+        Me.tabTopEquipos.Text = "  Top Máquinas y Componentes  "
         '
         'tblEquipos
         '
@@ -683,7 +683,7 @@ Partial Class FrmResumenes
         Me.tabPersonal.Padding = New System.Windows.Forms.Padding(6)
         Me.tabPersonal.Size = New System.Drawing.Size(757, 494)
         Me.tabPersonal.TabIndex = 1
-        Me.tabPersonal.Text = "  👷 Personal y Rendimiento  "
+        Me.tabPersonal.Text = "  Personal y Rendimiento  "
         '
         'tblPersonal
         '
@@ -769,7 +769,7 @@ Partial Class FrmResumenes
         Me.tabOperacional.Padding = New System.Windows.Forms.Padding(6)
         Me.tabOperacional.Size = New System.Drawing.Size(757, 494)
         Me.tabOperacional.TabIndex = 2
-        Me.tabOperacional.Text = "  📊 Desglose por Fallas y Turnos  "
+        Me.tabOperacional.Text = "  Desglose por Fallas y Turnos  "
         '
         'tblOperacional
         '
@@ -887,7 +887,7 @@ Partial Class FrmResumenes
         Me.tabTemporal.Padding = New System.Windows.Forms.Padding(6)
         Me.tabTemporal.Size = New System.Drawing.Size(757, 494)
         Me.tabTemporal.TabIndex = 3
-        Me.tabTemporal.Text = "  📅 Tendencia por Día y Mes  "
+        Me.tabTemporal.Text = "  Tendencia por Día y Mes  "
         '
         'tblTemporal
         '

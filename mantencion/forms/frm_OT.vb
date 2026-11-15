@@ -441,8 +441,10 @@ Public Class frm_OT
                             grillaPersonalOt.Columns.Clear()
 
                             OT.CrgPersonalOt(txtNot.Text, DSPOT)
-                            grillaPersonalOt.DataSource = DSPOT.Tables(0)
-                            formato_grid.grillasOT(grillaPersonalOt)
+                            If DSPOT.Tables.Count > 0 Then
+                                grillaPersonalOt.DataSource = DSPOT.Tables(0)
+                                formato_grid.grillasOT(grillaPersonalOt)
+                            End If
                         End If
 
                     ElseIf DST_OT.Tables(0).Rows(0).Item(17).ToString = "cerrada" Then
@@ -490,13 +492,15 @@ Public Class frm_OT
                             grillaPersonalOt.Columns.Clear()
 
                             OT.CrgPersonalOt(txtNot.Text, DSPOT)
-                            grillaPersonalOt.DataSource = DSPOT.Tables(0)
-                            formato_grid.grillasOT(grillaPersonalOt)
+                            If DSPOT.Tables.Count > 0 Then
+                                grillaPersonalOt.DataSource = DSPOT.Tables(0)
+                                formato_grid.grillasOT(grillaPersonalOt)
+                            End If
                         End If
 
                         If DSIOT.Tables.Count = 0 Then
                             OT.CrgInsumosOt(txtNot.Text, DSIOT)
-                            If DSIOT.Tables(0).Rows.Count > 0 Then
+                            If DSIOT.Tables.Count > 0 AndAlso DSIOT.Tables(0).Rows.Count > 0 Then
                                 Dim j As Integer = 0
                                 For i = 0 To DSIOT.Tables(0).Rows.Count - 1
                                     grillaInsumosOt.Rows.Add()
@@ -515,8 +519,10 @@ Public Class frm_OT
                         If DSOEXOT.Tables.Count = 0 Then
                             OT.CrgOtExterna(txtNot.Text, DSOEXOT)
                             grillaOtExternas.Columns.Clear()
-                            grillaOtExternas.DataSource = DSOEXOT.Tables(0)
-                            formato_grid.grillasOT(grillaOtExternas)
+                            If DSOEXOT.Tables.Count > 0 Then
+                                grillaOtExternas.DataSource = DSOEXOT.Tables(0)
+                                formato_grid.grillasOT(grillaOtExternas)
+                            End If
                         End If
                     ElseIf DST_OT.Tables(0).Rows(0).Item(17).ToString = "nula" Then
                         cmbEstadoOt.Enabled = True
@@ -564,13 +570,15 @@ Public Class frm_OT
                             grillaPersonalOt.Columns.Clear()
 
                             OT.CrgPersonalOt(txtNot.Text, DSPOT)
-                            grillaPersonalOt.DataSource = DSPOT.Tables(0)
-                            formato_grid.grillasOT(grillaPersonalOt)
+                            If DSPOT.Tables.Count > 0 Then
+                                grillaPersonalOt.DataSource = DSPOT.Tables(0)
+                                formato_grid.grillasOT(grillaPersonalOt)
+                            End If
                         End If
 
                         If DSIOT.Tables.Count = 0 Then
                             OT.CrgInsumosOt(txtNot.Text, DSIOT)
-                            If DSIOT.Tables(0).Rows.Count > 0 Then
+                            If DSIOT.Tables.Count > 0 AndAlso DSIOT.Tables(0).Rows.Count > 0 Then
                                 Dim j As Integer = 0
                                 For i = 0 To DSIOT.Tables(0).Rows.Count - 1
                                     grillaInsumosOt.Rows.Add()
@@ -589,8 +597,10 @@ Public Class frm_OT
                         If DSOEXOT.Tables.Count = 0 Then
                             OT.CrgOtExterna(txtNot.Text, DSOEXOT)
                             grillaOtExternas.Columns.Clear()
-                            grillaOtExternas.DataSource = DSOEXOT.Tables(0)
-                            formato_grid.grillasOT(grillaOtExternas)
+                            If DSOEXOT.Tables.Count > 0 Then
+                                grillaOtExternas.DataSource = DSOEXOT.Tables(0)
+                                formato_grid.grillasOT(grillaOtExternas)
+                            End If
                         End If
                     End If
                     ot_cargada_actual = txtNot.Text.Trim()

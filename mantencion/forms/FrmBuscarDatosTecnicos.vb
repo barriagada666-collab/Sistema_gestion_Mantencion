@@ -13,8 +13,10 @@ Public Class FrmBuscarDatosTecnicos
             Try
                 If nombre_form = "FrmDatosTecnicos" Then
                     datos_tecnicos.CrgDatosTecnicos(DST_DATOS_TECNICOS)
-                    grillaDatosTecnicos.DataSource = DST_DATOS_TECNICOS.Tables(0)
-                    formato_grid.grillaDatosTecnicos(grillaDatosTecnicos)
+                    If DST_DATOS_TECNICOS.Tables.Count > 0 Then
+                        grillaDatosTecnicos.DataSource = DST_DATOS_TECNICOS.Tables(0)
+                        formato_grid.grillaDatosTecnicos(grillaDatosTecnicos)
+                    End If
                     btnAgregar.Visible = False
                     chkSelTodo.Visible = False
                 ElseIf nombre_form = "FrmDatosTecnicosNodo" Then
@@ -23,8 +25,10 @@ Public Class FrmBuscarDatosTecnicos
                     columnaCheckBox.Name = "sel_datos"
                     columnaCheckBox.HeaderText = "Sel."
                     grillaDatosTecnicos.Columns.Add(columnaCheckBox)
-                    grillaDatosTecnicos.DataSource = DST_DATOS_TECNICOS.Tables(0)
-                    formato_grid.grillaDatosTecnicos(grillaDatosTecnicos)
+                    If DST_DATOS_TECNICOS.Tables.Count > 0 Then
+                        grillaDatosTecnicos.DataSource = DST_DATOS_TECNICOS.Tables(0)
+                        formato_grid.grillaDatosTecnicos(grillaDatosTecnicos)
+                    End If
                     btnAgregar.Visible = True
                     btnCambiarEstado.Visible = False
                 End If

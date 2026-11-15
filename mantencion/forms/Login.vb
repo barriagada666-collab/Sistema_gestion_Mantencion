@@ -51,18 +51,6 @@ Public Class Login
         Utilitarios.AplicarTemaModerno(Me)
     End Sub
 
-    Private Sub btnConfigServidor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnConfigServidor.Click
-        Try
-            Using frmCfg As New FrmConfiguracionServidor()
-                If frmCfg.ShowDialog(Me) = DialogResult.OK Then
-                    Conexion.PrecalentarPool()
-                End If
-            End Using
-        Catch ex As Exception
-            RegistroErrores.MostrarYRegistrar(ex, "Configurar Servidor SQL desde Login", True, Me, False)
-        End Try
-    End Sub
-
     Private Sub Cancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Cancel.Click
         Me.Close()
     End Sub

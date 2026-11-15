@@ -49,16 +49,18 @@ Public Class FrmBuscarCiclo
             '################################# CARGA DE TAREAS CICLO ######################################################
             FrmMp.DST_TAREAS.Tables.Clear()
             mant_prev.CrgTareasCicloMp(FrmMp.txtIdMant.Text, FrmMp.txtIdCiclo.Text, FrmMp.id_nodo_select, FrmMp.DST_TAREAS)
-            FrmMp.grillaTareasCicloMp.DataSource = FrmMp.DST_TAREAS.Tables(0)
-            formato_grid.grillasMp(FrmMp.grillaTareasCicloMp)
+            If FrmMp.DST_TAREAS.Tables.Count > 0 Then
+                FrmMp.grillaTareasCicloMp.DataSource = FrmMp.DST_TAREAS.Tables(0)
+                formato_grid.grillasMp(FrmMp.grillaTareasCicloMp)
 
-            With FrmMp.grillaTareasCicloMp
-                For i = 0 To .Rows.Count - 1
-                    If .Rows(i).Cells(5).Value > 0 Then
-                        .Rows(i).Cells(0).Value = True
-                    End If
-                Next
-            End With
+                With FrmMp.grillaTareasCicloMp
+                    For i = 0 To .Rows.Count - 1
+                        If IsNumeric(.Rows(i).Cells(5).Value) AndAlso Convert.ToDouble(.Rows(i).Cells(5).Value) > 0 Then
+                            .Rows(i).Cells(0).Value = True
+                        End If
+                    Next
+                End With
+            End If
             '###############################################################################################################
 
             '################################## CARGA DE PERSONAL MP #######################################################
@@ -68,21 +70,23 @@ Public Class FrmBuscarCiclo
 
             mant_prev.CrgPersonalCicloMp(FrmMp.txtIdMant.Text, FrmMp.txtIdCiclo.Text, FrmMp.DS2)
 
-            If FrmMp.grillaPersonalMp.DataSource IsNot Nothing Then
-                FrmMp.grillaPersonalMp.DataSource = FrmMp.DS2.Tables(0)
-                grillas.grillasMp(FrmMp.grillaPersonalMp)
-            Else
-                FrmMp.grillaPersonalMp.Columns.Remove("rut_personal")
-                FrmMp.grillaPersonalMp.Columns.Remove("nombre_personal")
-                FrmMp.grillaPersonalMp.DataSource = FrmMp.DS2.Tables(0)
-                grillas.grillasMp(FrmMp.grillaPersonalMp)
+            If FrmMp.DS2.Tables.Count > 0 Then
+                If FrmMp.grillaPersonalMp.DataSource IsNot Nothing Then
+                    FrmMp.grillaPersonalMp.DataSource = FrmMp.DS2.Tables(0)
+                    grillas.grillasMp(FrmMp.grillaPersonalMp)
+                Else
+                    If FrmMp.grillaPersonalMp.Columns.Contains("rut_personal") Then FrmMp.grillaPersonalMp.Columns.Remove("rut_personal")
+                    If FrmMp.grillaPersonalMp.Columns.Contains("nombre_personal") Then FrmMp.grillaPersonalMp.Columns.Remove("nombre_personal")
+                    FrmMp.grillaPersonalMp.DataSource = FrmMp.DS2.Tables(0)
+                    grillas.grillasMp(FrmMp.grillaPersonalMp)
+                End If
             End If
             FrmMp.btnIngMp.Enabled = False
             '###############################################################################################################
 
             '################################## CARGA DE INSUMOS MP ########################################################
             mant_prev.CrgInsumosCicloMp(FrmMp.txtIdMant.Text, FrmMp.txtIdCiclo.Text, DST3)
-            If DST3.Tables(0).Rows.Count > 0 Then
+            If DST3.Tables.Count > 0 AndAlso DST3.Tables(0).Rows.Count > 0 Then
                 j = 0
                 For i = 0 To DST3.Tables(0).Rows.Count - 1
                     FrmMp.grillaInsumosMp.Rows.Add()

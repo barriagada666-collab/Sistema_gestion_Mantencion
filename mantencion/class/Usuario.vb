@@ -29,8 +29,8 @@ Public Class Usuario
 
                 Using DR As SqlDataReader = com.ExecuteReader
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(IsDBNull(DR(1)), "", DR(1).ToString())
                     End If
                 End Using
             End Using
@@ -69,8 +69,8 @@ Public Class Usuario
 
                 Using DR As SqlDataReader = com.ExecuteReader
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(IsDBNull(DR(1)), "", DR(1).ToString())
                     End If
                 End Using
             End Using
@@ -131,8 +131,8 @@ Public Class Usuario
 
                 Using DR As SqlDataReader = com.ExecuteReader
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(IsDBNull(DR(1)), "", DR(1).ToString())
                     End If
                 End Using
             End Using
@@ -183,8 +183,8 @@ Public Class Usuario
 
                 Using DR As SqlDataReader = com.ExecuteReader
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(IsDBNull(DR(1)), "", DR(1).ToString())
                     End If
                 End Using
             End Using
@@ -205,9 +205,11 @@ Public Class Usuario
             Using DA As New SqlDataAdapter("CRG_CMB_PERFILES", cnx)
                 Dim DS As New DataSet
                 DA.Fill(DS)
-                combo.DataSource = DS.Tables(0)
-                combo.DisplayMember = "desc_perfil"
-                combo.ValueMember = "idperfil"
+                If DS.Tables.Count > 0 Then
+                    combo.DataSource = DS.Tables(0)
+                    combo.DisplayMember = "desc_perfil"
+                    combo.ValueMember = "idperfil"
+                End If
             End Using
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Cargar Perfiles de Usuario")
@@ -341,19 +343,27 @@ Public Class Usuario
         Dim DST_PER As New DataSet
 
         CrgPermisos(DST_PER, "modulos")
-        ConfigurarGrillaPermisosIndividual(grilla_modulos, DST_PER.Tables(0))
+        If DST_PER.Tables.Count > 0 Then
+            ConfigurarGrillaPermisosIndividual(grilla_modulos, DST_PER.Tables(0))
+        End If
 
         DST_PER.Tables.Clear()
         CrgPermisos(DST_PER, "OT")
-        ConfigurarGrillaPermisosIndividual(grilla_mod_ot, DST_PER.Tables(0))
+        If DST_PER.Tables.Count > 0 Then
+            ConfigurarGrillaPermisosIndividual(grilla_mod_ot, DST_PER.Tables(0))
+        End If
 
         DST_PER.Tables.Clear()
         CrgPermisos(DST_PER, "MP")
-        ConfigurarGrillaPermisosIndividual(grilla_mod_mp, DST_PER.Tables(0))
+        If DST_PER.Tables.Count > 0 Then
+            ConfigurarGrillaPermisosIndividual(grilla_mod_mp, DST_PER.Tables(0))
+        End If
 
         DST_PER.Tables.Clear()
         CrgPermisos(DST_PER, "mantenedores")
-        ConfigurarGrillaPermisosIndividual(grilla_mantenedores, DST_PER.Tables(0))
+        If DST_PER.Tables.Count > 0 Then
+            ConfigurarGrillaPermisosIndividual(grilla_mantenedores, DST_PER.Tables(0))
+        End If
     End Sub
 
     Private Sub ConfigurarGrillaPermisosIndividual(ByVal grilla As DataGridView, ByVal dt As DataTable)
@@ -396,10 +406,12 @@ Public Class Usuario
             End If
 
             CrgUsuarios(DST_USUARIO)
-            .grillaUsuarios.DataSource = DST_USUARIO.Tables(0)
-            .filtro.Table = DST_USUARIO.Tables(0)
-            .ConfigurarEstiloGrillaUsuarios()
-            Utilitarios.AjustarColumnasGrilla(.grillaUsuarios)
+            If DST_USUARIO.Tables.Count > 0 Then
+                .grillaUsuarios.DataSource = DST_USUARIO.Tables(0)
+                .filtro.Table = DST_USUARIO.Tables(0)
+                .ConfigurarEstiloGrillaUsuarios()
+                Utilitarios.AjustarColumnasGrilla(.grillaUsuarios)
+            End If
         End With
 
     End Sub

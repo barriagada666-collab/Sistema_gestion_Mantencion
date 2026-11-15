@@ -65,9 +65,9 @@ Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en
 * **Matriz de Permisos:** Control de acceso granular por perfiles de usuario a cada módulo y menú del sistema.
 
 ### ⚡ 7. Asistente de Configuración SQL y Diagnóstico de Errores
-* **Acceso Directo desde Login y Menú:** Permite ajustar servidor/IP SQL, base de datos, credenciales y timeout desde la pantalla **Inicio de Sesión** (`⚙ Servidor SQL`) o desde **Mantenedores > Configurar Servidor BD...**.
+* **Configuración Bajo Demanda y desde Menú:** La pantalla **Inicio de Sesión** se mantiene limpia; si ocurre un fallo de conexión SQL, el sistema explica la causa y pregunta automáticamente si desea abrir **Configurar Servidor BD**. También puede ajustarse manualmente una vez dentro desde **Mantenedores > Configurar Servidor BD...**.
 * **Mensajes Comprensibles en Español:** Captura automática de excepciones UI/dominio y fallos SQL (p. ej. error 40, red/VPN desconectada, credenciales o permisos), explicando la causa y ofreciendo abrir la configuración SQL en un clic.
-* **Registro Persistente para Depuración:** Guarda automáticamente el detalle técnico completo (`errores_yyyyMMdd.log` con depuración a 30 días) en `%LOCALAPPDATA%\SistemaMantencion\logs\`, accesible desde **Mantenedores > Ver Registro de Errores (Logs)...** o desde el botón **📋 Logs**.
+* **Registro Persistente para Depuración:** Guarda automáticamente el detalle técnico completo (`errores_yyyyMMdd.log` con depuración a 30 días) en `%LOCALAPPDATA%\SistemaMantencion\logs\`, accesible desde **Mantenedores > Ver Registro de Errores (Logs)...** o desde el botón **Ver Logs**.
 
 ---
 
@@ -143,9 +143,9 @@ Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en
 3. También puede arrastrar la aplicación directamente a **Aplicaciones** (ejecuta como **Aplicación Universal** nativa sin Rosetta 2 en Apple Silicon M1–M4 y es compatible con macOS 27 Golden Gate y 28+).
 
 ### Conexión a Base de Datos en el Primer Inicio:
-1. Al iniciar la aplicación, si el servidor SQL de su empresa tiene un nombre o IP diferente al predeterminado (`SrvMagicInfo`, frecuente fuera de la red LAN corporativa o en macOS), presione **⚙ Servidor SQL** directamente en la pantalla de **Inicio de Sesión**, o una vez dentro vaya a **Mantenedores > Configurar Servidor BD...**.
+1. Al iniciar sesión, si ocurre un fallo de conexión o el servidor SQL de su empresa usa otro nombre o IP distinto a `SrvMagicInfo` (frecuente fuera de la red LAN corporativa o en macOS), el sistema explicará la causa y le ofrecerá abrir automáticamente **Configurar Servidor BD**. Una vez dentro del sistema también puede acceder desde **Mantenedores > Configurar Servidor BD...**.
 2. Ingrese el Host/IP, Base de Datos y Credenciales.
-3. Presione **⚡ Probar Conexión** y luego **💾 Guardar y Aplicar**.
+3. Presione **Probar Conexión** y luego **Guardar y Aplicar**.
 
 ---
 

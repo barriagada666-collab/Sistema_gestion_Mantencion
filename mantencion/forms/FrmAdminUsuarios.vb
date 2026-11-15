@@ -65,9 +65,11 @@ Public Class FrmAdminUsuarios
             usuario.CrgUsuarios(DS)
             grillaUsuarios.SuspendLayout()
             Try
-                grillaUsuarios.DataSource = DS.Tables(0)
-                filtro.Table = DS.Tables(0)
-                ConfigurarEstiloGrillaUsuarios()
+                If DS.Tables.Count > 0 Then
+                    grillaUsuarios.DataSource = DS.Tables(0)
+                    filtro.Table = DS.Tables(0)
+                    ConfigurarEstiloGrillaUsuarios()
+                End If
             Finally
                 grillaUsuarios.ResumeLayout(False)
             End Try

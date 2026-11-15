@@ -204,25 +204,25 @@ Public Class FrmConfiguracionServidor
         panBotones.BackColor = Color.FromArgb(242, 246, 246)
 
         btnProbar = New Button()
-        btnProbar.Text = "⚡ Probar Conexión"
+        btnProbar.Text = "Probar Conexión"
         btnProbar.Location = New Point(16, 14)
         btnProbar.Size = New Size(134, 36)
         btnProbar.Font = New Font("Segoe UI", 8.75F, FontStyle.Bold)
 
         btnRestaurar = New Button()
-        btnRestaurar.Text = "↺ Original"
+        btnRestaurar.Text = "Original"
         btnRestaurar.Location = New Point(156, 14)
         btnRestaurar.Size = New Size(96, 36)
         btnRestaurar.Font = New Font("Segoe UI", 8.75F)
 
         btnVerLogs = New Button()
-        btnVerLogs.Text = "📋 Logs"
+        btnVerLogs.Text = "Ver Logs"
         btnVerLogs.Location = New Point(258, 14)
         btnVerLogs.Size = New Size(86, 36)
         btnVerLogs.Font = New Font("Segoe UI", 8.75F)
 
         btnGuardar = New Button()
-        btnGuardar.Text = "💾 Guardar y Aplicar"
+        btnGuardar.Text = "Guardar y Aplicar"
         btnGuardar.Location = New Point(358, 14)
         btnGuardar.Size = New Size(148, 36)
         btnGuardar.Font = New Font("Segoe UI", 8.75F, FontStyle.Bold)
@@ -303,11 +303,11 @@ Public Class FrmConfiguracionServidor
 
         Me.Cursor = Cursors.Default
         If resultado.Exito Then
-            lblEstado.Text = " ✓ " & resultado.Mensaje
+            lblEstado.Text = " [OK] " & resultado.Mensaje
             lblEstado.BackColor = Color.FromArgb(220, 252, 231)
             lblEstado.ForeColor = Color.FromArgb(22, 101, 52)
         Else
-            lblEstado.Text = " ✗ Error de conexión: " & resultado.Mensaje
+            lblEstado.Text = " [ERROR] " & resultado.Mensaje
             lblEstado.BackColor = Color.FromArgb(254, 226, 226)
             lblEstado.ForeColor = Color.FromArgb(153, 27, 27)
         End If

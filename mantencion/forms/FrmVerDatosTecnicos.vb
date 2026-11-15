@@ -11,9 +11,11 @@ Public Class FrmVerDatosTecnicos
         Try
             grillaDatosTecnicosAsoc.SuspendLayout()
             datos_tecnicos.CrgDatosTecnicosNodo(id_nodo, nivel, DST_DATOS_TECNICOS)
-            grillaDatosTecnicosAsoc.DataSource = DST_DATOS_TECNICOS.Tables(0)
-            formato_grid.grillaDatosTecnicos(grillaDatosTecnicosAsoc)
-            Utilitarios.AjustarColumnasGrilla(grillaDatosTecnicosAsoc)
+            If DST_DATOS_TECNICOS.Tables.Count > 0 Then
+                grillaDatosTecnicosAsoc.DataSource = DST_DATOS_TECNICOS.Tables(0)
+                formato_grid.grillaDatosTecnicos(grillaDatosTecnicosAsoc)
+                Utilitarios.AjustarColumnasGrilla(grillaDatosTecnicosAsoc)
+            End If
             Utilitarios.AplicarTemaModerno(Me)
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Ver Datos Técnicos", True, Me)

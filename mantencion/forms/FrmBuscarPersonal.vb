@@ -14,18 +14,22 @@ Public Class FrmBuscarPersonal
                 Case Is = "personal"
                     Dim ds As New DataSet
                     Personal.CrgPersonal(ds)
-                    filtro.Table = ds.Tables(0)
-                    grillaPersonal.DataSource = ds.Tables(0)
-                    formato_grid.grillaPersonal(grillaPersonal)
+                    If ds.Tables.Count > 0 Then
+                        filtro.Table = ds.Tables(0)
+                        grillaPersonal.DataSource = ds.Tables(0)
+                        formato_grid.grillaPersonal(grillaPersonal)
+                    End If
                 Case Is = "mp"
                     Dim DS As New DataSet
                     grilla_personal_2.Visible = True
                     btn_agregar_personal.Visible = True
                     btn_limpiar.Visible = True
                     Personal.BuscarPersonalMp2(DS)
-                    grillaPersonal.DataSource = DS.Tables(0)
-                    filtro.Table = DS.Tables(0)
-                    formato_grid.grillaPersonal(grillaPersonal)
+                    If DS.Tables.Count > 0 Then
+                        grillaPersonal.DataSource = DS.Tables(0)
+                        filtro.Table = DS.Tables(0)
+                        formato_grid.grillaPersonal(grillaPersonal)
+                    End If
 
                 Case Is = "frm_OT"
                     grilla_personal_2.Visible = True
@@ -33,9 +37,11 @@ Public Class FrmBuscarPersonal
                     btn_limpiar.Visible = True
                     Dim DS As New DataSet
                     Personal.BuscarPersonalMp2(DS)
-                    grillaPersonal.DataSource = DS.Tables(0)
-                    filtro.Table = DS.Tables(0)
-                    formato_grid.grillaPersonal(grillaPersonal)
+                    If DS.Tables.Count > 0 Then
+                        grillaPersonal.DataSource = DS.Tables(0)
+                        filtro.Table = DS.Tables(0)
+                        formato_grid.grillaPersonal(grillaPersonal)
+                    End If
             End Select
             Utilitarios.AjustarColumnasGrilla(grillaPersonal)
             Utilitarios.AplicarTemaModerno(Me)
@@ -57,15 +63,15 @@ Public Class FrmBuscarPersonal
             Case Is = "mp"
                 With grilla_personal_2
                     .Rows.Add()
-                    .Rows(.RowCount - 1).Cells(0).Value = grillaPersonal.Rows(grillaPersonal.CurrentRow.Index).Cells(0).Value
-                    .Rows(.RowCount - 1).Cells(1).Value = grillaPersonal.Rows(grillaPersonal.CurrentRow.Index).Cells(1).Value
+                    .Rows(.RowCount - 1).Cells(0).Value = grillaPersonal.Rows(e.RowIndex).Cells(0).Value
+                    .Rows(.RowCount - 1).Cells(1).Value = grillaPersonal.Rows(e.RowIndex).Cells(1).Value
                 End With
 
             Case Is = "frm_OT"
                 With grilla_personal_2
                     .Rows.Add()
-                    .Rows(.RowCount - 1).Cells(0).Value = grillaPersonal.Rows(grillaPersonal.CurrentRow.Index).Cells(0).Value
-                    .Rows(.RowCount - 1).Cells(1).Value = grillaPersonal.Rows(grillaPersonal.CurrentRow.Index).Cells(1).Value
+                    .Rows(.RowCount - 1).Cells(0).Value = grillaPersonal.Rows(e.RowIndex).Cells(0).Value
+                    .Rows(.RowCount - 1).Cells(1).Value = grillaPersonal.Rows(e.RowIndex).Cells(1).Value
                 End With
         End Select
 
@@ -73,6 +79,7 @@ Public Class FrmBuscarPersonal
     End Sub
 
     Private Sub txtBuscarPersonal_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtBuscarPersonal.TextChanged
+        If filtro.Table Is Nothing Then Exit Sub
         Dim valorLimpio As String = Utilitarios.EscaparLike(txtBuscarPersonal.Text.Trim())
         If nombre_form = "personal" Then
             filtro.RowFilter = "NOMBRE like '%" & valorLimpio & "%' "

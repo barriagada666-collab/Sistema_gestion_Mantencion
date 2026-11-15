@@ -26,24 +26,27 @@ Public Class FrmPlanificarCiclos
         Dim hora_fin As TimeSpan
         Dim num_ciclos As Integer = 0
         Dim ciclo As Integer = 0
+        Dim frecuenciaHoras As Double = 0
+        Dim duracionHoras As Double = 0
         Dim cont_ciclos As Integer = 1
 
-        If Not IsNumeric(cmbNumCiclos.Text) OrElse Not IsNumeric(txtUltimoCiclo.Text) OrElse Not IsNumeric(txtFrecuenciaPlan.Text) OrElse Not IsNumeric(txtDuracionPlan.Text) Then
+        If Not Integer.TryParse(cmbNumCiclos.Text.Trim(), num_ciclos) OrElse num_ciclos <= 0 OrElse
+           Not Integer.TryParse(txtUltimoCiclo.Text.Trim(), ciclo) OrElse
+           Not Double.TryParse(txtFrecuenciaPlan.Text.Trim(), frecuenciaHoras) OrElse
+           Not Double.TryParse(txtDuracionPlan.Text.Trim(), duracionHoras) Then
             MsgBox("Verifique los valores numéricos de planificación", MsgBoxStyle.Exclamation, "Validación")
             Exit Sub
         End If
 
         grillaVistaPrevia.Rows.Clear()
 
-        num_ciclos = CInt(cmbNumCiclos.Text)
-        ciclo = CInt(txtUltimoCiclo.Text)
         fecha_inicio = fecha_inicio_ult_ciclo.Value.Date
         hora_inicio = New TimeSpan(fecha_inicio_ult_ciclo.Value.Hour, fecha_inicio_ult_ciclo.Value.Minute, 0)
         hora_fin = New TimeSpan(fecha_fin_ult_ciclo.Value.Hour, fecha_fin_ult_ciclo.Value.Minute, 0)
 
         While cont_ciclos <= num_ciclos
-            fecha_inicio = fecha_inicio.AddHours(CDbl(txtFrecuenciaPlan.Text)).Date
-            fecha_fin = fecha_inicio.AddHours(CDbl(txtDuracionPlan.Text)).Date
+            fecha_inicio = fecha_inicio.AddHours(frecuenciaHoras).Date
+            fecha_fin = fecha_inicio.AddHours(duracionHoras).Date
             ciclo = ciclo + 1
             Dim dtIniCompleta As DateTime = fecha_inicio.Add(hora_inicio)
             Dim dtFinCompleta As DateTime = fecha_fin.Add(hora_fin)

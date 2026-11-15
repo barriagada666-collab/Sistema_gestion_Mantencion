@@ -20,9 +20,11 @@ Public Class FrmDetalleOTDia
             grillaOtDetalleDia.SuspendLayout()
             Utilitarios.AplicarTemaModerno(Me)
             OT.CrgDetalleResumenOt(personal, fecha_inicio, fecha_termino, opcion, tipo_falla, turno, fecha, estado, nodo_padre, DST_OT_DIA)
-            grillaOtDetalleDia.DataSource = DST_OT_DIA.Tables(0)
-            formato_grid.grillasOT(grillaOtDetalleDia)
-            Utilitarios.AjustarColumnasGrilla(grillaOtDetalleDia)
+            If DST_OT_DIA.Tables.Count > 0 Then
+                grillaOtDetalleDia.DataSource = DST_OT_DIA.Tables(0)
+                formato_grid.grillasOT(grillaOtDetalleDia)
+                Utilitarios.AjustarColumnasGrilla(grillaOtDetalleDia)
+            End If
             Label1.Text = "OT Recibidas En : " & fecha
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Detalle OT por Día", True, Me)

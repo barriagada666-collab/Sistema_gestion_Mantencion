@@ -20,7 +20,6 @@ Partial Class Login
     Friend WithEvents Password As System.Windows.Forms.TextBox
     Friend WithEvents OK As System.Windows.Forms.Button
     Friend WithEvents Cancel As System.Windows.Forms.Button
-    Friend WithEvents btnConfigServidor As System.Windows.Forms.Button
 
     'Requerido por el Diseñador de Windows Forms
     Private components As System.ComponentModel.IContainer
@@ -37,7 +36,6 @@ Partial Class Login
         Me.Password = New System.Windows.Forms.TextBox
         Me.OK = New System.Windows.Forms.Button
         Me.Cancel = New System.Windows.Forms.Button
-        Me.btnConfigServidor = New System.Windows.Forms.Button
         Me.SuspendLayout()
         '
         'UsernameLabel
@@ -81,7 +79,7 @@ Partial Class Login
         '
         'OK
         '
-        Me.OK.Location = New System.Drawing.Point(194, 152)
+        Me.OK.Location = New System.Drawing.Point(194, 150)
         Me.OK.Name = "OK"
         Me.OK.Size = New System.Drawing.Size(90, 30)
         Me.OK.TabIndex = 4
@@ -90,20 +88,11 @@ Partial Class Login
         'Cancel
         '
         Me.Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.Cancel.Location = New System.Drawing.Point(292, 152)
+        Me.Cancel.Location = New System.Drawing.Point(292, 150)
         Me.Cancel.Name = "Cancel"
         Me.Cancel.Size = New System.Drawing.Size(90, 30)
         Me.Cancel.TabIndex = 5
         Me.Cancel.Text = "&Cancelar"
-        '
-        'btnConfigServidor
-        '
-        Me.btnConfigServidor.Location = New System.Drawing.Point(14, 152)
-        Me.btnConfigServidor.Name = "btnConfigServidor"
-        Me.btnConfigServidor.Size = New System.Drawing.Size(134, 30)
-        Me.btnConfigServidor.TabIndex = 6
-        Me.btnConfigServidor.TabStop = False
-        Me.btnConfigServidor.Text = "⚙ Servidor SQL"
         '
         'Login
         '
@@ -113,8 +102,7 @@ Partial Class Login
         Me.BackgroundImage = CType(resources.GetObject("$this.BackgroundImage"), System.Drawing.Image)
         Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
         Me.CancelButton = Me.Cancel
-        Me.ClientSize = New System.Drawing.Size(404, 198)
-        Me.Controls.Add(Me.btnConfigServidor)
+        Me.ClientSize = New System.Drawing.Size(404, 196)
         Me.Controls.Add(Me.Cancel)
         Me.Controls.Add(Me.OK)
         Me.Controls.Add(Me.Password)

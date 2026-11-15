@@ -212,7 +212,7 @@ Public Class Informes
             Dim hojas As New List(Of KeyValuePair(Of String, DataGridView))()
             If grilla_info_mp IsNot Nothing AndAlso grilla_info_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Mantención", grilla_info_mp))
             If grilla_ciclos_mp IsNot Nothing AndAlso grilla_ciclos_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Ciclos Gantt", grilla_ciclos_mp))
-            If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_Gantt_" & item, "INFORME CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) Then
+            If hojas.Count > 0 AndAlso (Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_Gantt_" & item, "INFORME CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) OrElse Utilitarios.UltimaExportacionCancelada) Then
                 Exit Sub
             End If
             RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Gantt")
@@ -317,7 +317,7 @@ Public Class Informes
             Dim hojas As New List(Of KeyValuePair(Of String, DataGridView))()
             If grilla_info_mp IsNot Nothing AndAlso grilla_info_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Mantención", grilla_info_mp))
             If grilla_ciclos_mp IsNot Nothing AndAlso grilla_ciclos_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Ciclos Gantt", grilla_ciclos_mp))
-            If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Grafico_Gantt_" & item, "GRÁFICO CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) Then
+            If hojas.Count > 0 AndAlso (Utilitarios.ExportarGrillasAExcelNativo(hojas, "Grafico_Gantt_" & item, "GRÁFICO CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) OrElse Utilitarios.UltimaExportacionCancelada) Then
                 Exit Sub
             End If
             RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Gráfico Gantt")
@@ -454,7 +454,7 @@ Public Class Informes
             Dim hojas As New List(Of KeyValuePair(Of String, DataGridView))()
             If grilla_info_mp IsNot Nothing AndAlso grilla_info_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Mantención", grilla_info_mp))
             If grilla_ciclos_mp IsNot Nothing AndAlso grilla_ciclos_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Ciclos Gantt", grilla_ciclos_mp))
-            If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_Gantt_Completo_" & item, "INFORME COMPLETO CARTA GANTT", "Ítem / Máquina: " & item) Then
+            If hojas.Count > 0 AndAlso (Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_Gantt_Completo_" & item, "INFORME COMPLETO CARTA GANTT", "Ítem / Máquina: " & item) OrElse Utilitarios.UltimaExportacionCancelada) Then
                 Exit Sub
             End If
             RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Gantt Todo")
@@ -559,7 +559,7 @@ Public Class Informes
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
             If grilla_ciclos_mp IsNot Nothing AndAlso grilla_ciclos_mp.RowCount > 0 AndAlso
-               Utilitarios.ExportarGrillaAExcelNativo(grilla_ciclos_mp, "Carta_Gantt_" & item_gantt, "CALENDARIO CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem: " & item_gantt & " | Período: " & fecha_desde & " al " & fecha_hasta) Then
+               (Utilitarios.ExportarGrillaAExcelNativo(grilla_ciclos_mp, "Carta_Gantt_" & item_gantt, "CALENDARIO CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem: " & item_gantt & " | Período: " & fecha_desde & " al " & fecha_hasta) OrElse Utilitarios.UltimaExportacionCancelada) Then
                 Exit Sub
             End If
             RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Gráfico Gantt Varias Máquinas")
@@ -687,7 +687,7 @@ Public Class Informes
                     Next
                 End If
 
-                If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Auditoria_Operaciones", "INFORME AUDITORÍA DE OPERACIONES", "Período: " & fecha_inicio.ToString("dd-MM-yyyy") & " al " & fecha_fin.ToString("dd-MM-yyyy")) Then
+                If hojas.Count > 0 AndAlso (Utilitarios.ExportarGrillasAExcelNativo(hojas, "Auditoria_Operaciones", "INFORME AUDITORÍA DE OPERACIONES", "Período: " & fecha_inicio.ToString("dd-MM-yyyy") & " al " & fecha_fin.ToString("dd-MM-yyyy")) OrElse Utilitarios.UltimaExportacionCancelada) Then
                     Exit Sub
                 End If
             Finally
@@ -749,7 +749,7 @@ Public Class Informes
                             hojas.Add(New KeyValuePair(Of String, DataGridView)(dt.TableName, dgvStat))
                         End If
                     Next
-                    If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Estadisticas_Auditoria", "ESTADÍSTICAS DE AUDITORÍA", "Período: " & fecha_inicio.ToString("dd-MM-yyyy") & " al " & fecha_fin.ToString("dd-MM-yyyy") & " | Ops: " & totalOps.ToString("N0")) Then
+                    If hojas.Count > 0 AndAlso (Utilitarios.ExportarGrillasAExcelNativo(hojas, "Estadisticas_Auditoria", "ESTADÍSTICAS DE AUDITORÍA", "Período: " & fecha_inicio.ToString("dd-MM-yyyy") & " al " & fecha_fin.ToString("dd-MM-yyyy") & " | Ops: " & totalOps.ToString("N0")) OrElse Utilitarios.UltimaExportacionCancelada) Then
                         Exit Sub
                     End If
                 Finally
@@ -1155,7 +1155,7 @@ Public Class Informes
                 If .grillaOtPorTurno.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Por Turno", .grillaOtPorTurno))
                 If .grillaOtPorDia.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Por Día", .grillaOtPorDia))
                 If .grillaOtPorMes.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Por Mes", .grillaOtPorMes))
-                If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_Estadistico_OT", "INFORME ESTADÍSTICO DE ÓRDENES DE TRABAJO", "Período: " & fecha_inicio.ToString("dd-MM-yyyy") & " al " & fecha_fin.ToString("dd-MM-yyyy")) Then
+                If hojas.Count > 0 AndAlso (Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_Estadistico_OT", "INFORME ESTADÍSTICO DE ÓRDENES DE TRABAJO", "Período: " & fecha_inicio.ToString("dd-MM-yyyy") & " al " & fecha_fin.ToString("dd-MM-yyyy")) OrElse Utilitarios.UltimaExportacionCancelada) Then
                     Exit Sub
                 End If
             End With
@@ -1325,7 +1325,7 @@ Public Class Informes
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
             If grilla_datos_tecnicos IsNot Nothing AndAlso grilla_datos_tecnicos.RowCount > 0 AndAlso
-               Utilitarios.ExportarGrillaAExcelNativo(grilla_datos_tecnicos, "Datos_Tecnicos", "INFORME DE DATOS TÉCNICOS") Then
+               (Utilitarios.ExportarGrillaAExcelNativo(grilla_datos_tecnicos, "Datos_Tecnicos", "INFORME DE DATOS TÉCNICOS") OrElse Utilitarios.UltimaExportacionCancelada) Then
                 Exit Sub
             End If
             RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Datos Técnicos")
@@ -1384,7 +1384,7 @@ Public Class Informes
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
             If grilla_ciclos_mp IsNot Nothing AndAlso grilla_ciclos_mp.RowCount > 0 AndAlso
-               Utilitarios.ExportarGrillaAExcelNativo(grilla_ciclos_mp, "Listado_Ciclos_MP", "LISTADO DE CICLOS MANTENCIÓN PREVENTIVA", "Período: " & fecha_desde.ToString("dd-MM-yyyy") & " al " & fecha_hasta.ToString("dd-MM-yyyy")) Then
+               (Utilitarios.ExportarGrillaAExcelNativo(grilla_ciclos_mp, "Listado_Ciclos_MP", "LISTADO DE CICLOS MANTENCIÓN PREVENTIVA", "Período: " & fecha_desde.ToString("dd-MM-yyyy") & " al " & fecha_hasta.ToString("dd-MM-yyyy")) OrElse Utilitarios.UltimaExportacionCancelada) Then
                 Exit Sub
             End If
             RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Listado Ciclo")

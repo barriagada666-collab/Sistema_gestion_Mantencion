@@ -20,9 +20,11 @@ Public Class FrmDetalleOtTurno
             grillaOtDetalleTurno.SuspendLayout()
             Utilitarios.AplicarTemaModerno(Me)
             OT.CrgDetalleResumenOt(personal, fecha_inicio, fecha_termino, opcion, tipo_falla, turno, fecha, estado, nodo_padre, DST_OT_TURNO)
-            grillaOtDetalleTurno.DataSource = DST_OT_TURNO.Tables(0)
-            formato_grid.grillasOT(grillaOtDetalleTurno)
-            Utilitarios.AjustarColumnasGrilla(grillaOtDetalleTurno)
+            If DST_OT_TURNO.Tables.Count > 0 Then
+                grillaOtDetalleTurno.DataSource = DST_OT_TURNO.Tables(0)
+                formato_grid.grillasOT(grillaOtDetalleTurno)
+                Utilitarios.AjustarColumnasGrilla(grillaOtDetalleTurno)
+            End If
             Label1.Text = "OT Recibidas En : " & turno
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Detalle OT por Turno", True, Me)

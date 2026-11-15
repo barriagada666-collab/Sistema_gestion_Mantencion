@@ -1,4 +1,4 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Public Class DatosTecnicos
     Public Sub IngDatoTecnico(ByVal id_dato_tecnico As String, ByVal desc_dato_tecnico As String, ByVal estado_dato_tecnico As Boolean, ByVal sesion As String, ByRef cod_resp As Integer, ByRef resp As String)
         Dim cnx As New SqlConnection
@@ -45,7 +45,7 @@ Public Class DatosTecnicos
                 End Using
             End Using
         Catch ex As Exception
-            RegistroErrores.MostrarYRegistrar(ex, "Nuev I Dat Técnico")
+            RegistroErrores.MostrarYRegistrar(ex, "Nuevo ID Dato Técnico")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -180,9 +180,11 @@ Public Class DatosTecnicos
             Using DA As New SqlDataAdapter("CRG_CMB_DATOS_TECNICOS", cnx)
                 Dim DS As New DataSet
                 DA.Fill(DS)
-                combo.DataSource = DS.Tables(0)
-                combo.DisplayMember = "desc_dato_tecnico"
-                combo.ValueMember = "id_dato_tecnico"
+                If DS.Tables.Count > 0 Then
+                    combo.DataSource = DS.Tables(0)
+                    combo.DisplayMember = "desc_dato_tecnico"
+                    combo.ValueMember = "id_dato_tecnico"
+                End If
             End Using
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Cargar Combo Datos Técnicos")
