@@ -9,9 +9,8 @@ Public Class FrmCargo
     Private Sub btn_guardar_cargo_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_guardar_cargo.Click
         Dim cargo As New Cargo
         Dim resp As String = ""
-        Dim cod_resp As String = 0
-
-        cod_resp = cargo.BuscarCargo(txtCodCargo.Text)
+        Dim cod_resp As Integer = cargo.BuscarCargo(txtCodCargo.Text)
+        If cod_resp = -1 Then Exit Sub
 
         If cod_resp = 0 Then
             cod_resp = 0
@@ -20,7 +19,7 @@ Public Class FrmCargo
             If cod_resp = 1 Then
                 MsgBox(resp, MsgBoxStyle.Information, "Validación")
                 cargo.LimpiarFrmCargo()
-            Else
+            ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                 MsgBox(resp, MsgBoxStyle.Critical, "Error")
             End If
         Else
@@ -30,7 +29,7 @@ Public Class FrmCargo
             If cod_resp = 1 Then
                 MsgBox(resp, MsgBoxStyle.Information, "Validación")
                 cargo.LimpiarFrmCargo()
-            Else
+            ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                 MsgBox(resp, MsgBoxStyle.Critical, "Error")
             End If
         End If
@@ -47,7 +46,7 @@ Public Class FrmCargo
             If cod_resp = 1 Then
                 MsgBox(resp, MsgBoxStyle.Information, "Validación")
                 cargo.LimpiarFrmCargo()
-            Else
+            ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                 MsgBox(resp, MsgBoxStyle.Critical, "Error")
             End If
         End If
@@ -93,7 +92,7 @@ Public Class FrmCargo
                 txtDescCargo.Text = .Rows(.CurrentRow.Index).Cells(1).Value
             End With
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargos (Grilla Cargos)", True, Me)
         End Try
     End Sub
 End Class

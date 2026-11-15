@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 <Global.System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726")> _
 Partial Class Login
     Inherits System.Windows.Forms.Form
@@ -20,6 +20,7 @@ Partial Class Login
     Friend WithEvents Password As System.Windows.Forms.TextBox
     Friend WithEvents OK As System.Windows.Forms.Button
     Friend WithEvents Cancel As System.Windows.Forms.Button
+    Friend WithEvents btnConfigServidor As System.Windows.Forms.Button
 
     'Requerido por el Diseñador de Windows Forms
     Private components As System.ComponentModel.IContainer
@@ -36,6 +37,7 @@ Partial Class Login
         Me.Password = New System.Windows.Forms.TextBox
         Me.OK = New System.Windows.Forms.Button
         Me.Cancel = New System.Windows.Forms.Button
+        Me.btnConfigServidor = New System.Windows.Forms.Button
         Me.SuspendLayout()
         '
         'UsernameLabel
@@ -43,9 +45,9 @@ Partial Class Login
         Me.UsernameLabel.BackColor = System.Drawing.Color.Transparent
         Me.UsernameLabel.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.UsernameLabel.ForeColor = System.Drawing.Color.FromArgb(30, 41, 59)
-        Me.UsernameLabel.Location = New System.Drawing.Point(172, 24)
+        Me.UsernameLabel.Location = New System.Drawing.Point(172, 22)
         Me.UsernameLabel.Name = "UsernameLabel"
-        Me.UsernameLabel.Size = New System.Drawing.Size(200, 20)
+        Me.UsernameLabel.Size = New System.Drawing.Size(210, 20)
         Me.UsernameLabel.TabIndex = 0
         Me.UsernameLabel.Text = "&Usuario"
         Me.UsernameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -55,9 +57,9 @@ Partial Class Login
         Me.PasswordLabel.BackColor = System.Drawing.Color.Transparent
         Me.PasswordLabel.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.PasswordLabel.ForeColor = System.Drawing.Color.FromArgb(30, 41, 59)
-        Me.PasswordLabel.Location = New System.Drawing.Point(172, 81)
+        Me.PasswordLabel.Location = New System.Drawing.Point(172, 78)
         Me.PasswordLabel.Name = "PasswordLabel"
-        Me.PasswordLabel.Size = New System.Drawing.Size(200, 20)
+        Me.PasswordLabel.Size = New System.Drawing.Size(210, 20)
         Me.PasswordLabel.TabIndex = 2
         Me.PasswordLabel.Text = "&Contraseña"
         Me.PasswordLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -66,33 +68,42 @@ Partial Class Login
         '
         Me.User.Location = New System.Drawing.Point(174, 44)
         Me.User.Name = "User"
-        Me.User.Size = New System.Drawing.Size(192, 20)
+        Me.User.Size = New System.Drawing.Size(208, 24)
         Me.User.TabIndex = 1
         '
         'Password
         '
-        Me.Password.Location = New System.Drawing.Point(174, 101)
+        Me.Password.Location = New System.Drawing.Point(174, 100)
         Me.Password.Name = "Password"
         Me.Password.PasswordChar = Global.Microsoft.VisualBasic.ChrW(42)
-        Me.Password.Size = New System.Drawing.Size(192, 20)
+        Me.Password.Size = New System.Drawing.Size(208, 24)
         Me.Password.TabIndex = 3
         '
         'OK
         '
-        Me.OK.Location = New System.Drawing.Point(197, 153)
+        Me.OK.Location = New System.Drawing.Point(194, 152)
         Me.OK.Name = "OK"
-        Me.OK.Size = New System.Drawing.Size(65, 23)
+        Me.OK.Size = New System.Drawing.Size(90, 30)
         Me.OK.TabIndex = 4
         Me.OK.Text = "&Aceptar"
         '
         'Cancel
         '
         Me.Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.Cancel.Location = New System.Drawing.Point(285, 153)
+        Me.Cancel.Location = New System.Drawing.Point(292, 152)
         Me.Cancel.Name = "Cancel"
-        Me.Cancel.Size = New System.Drawing.Size(65, 23)
+        Me.Cancel.Size = New System.Drawing.Size(90, 30)
         Me.Cancel.TabIndex = 5
         Me.Cancel.Text = "&Cancelar"
+        '
+        'btnConfigServidor
+        '
+        Me.btnConfigServidor.Location = New System.Drawing.Point(14, 152)
+        Me.btnConfigServidor.Name = "btnConfigServidor"
+        Me.btnConfigServidor.Size = New System.Drawing.Size(134, 30)
+        Me.btnConfigServidor.TabIndex = 6
+        Me.btnConfigServidor.TabStop = False
+        Me.btnConfigServidor.Text = "⚙ Servidor SQL"
         '
         'Login
         '
@@ -100,8 +111,10 @@ Partial Class Login
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BackgroundImage = CType(resources.GetObject("$this.BackgroundImage"), System.Drawing.Image)
+        Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
         Me.CancelButton = Me.Cancel
-        Me.ClientSize = New System.Drawing.Size(394, 188)
+        Me.ClientSize = New System.Drawing.Size(404, 198)
+        Me.Controls.Add(Me.btnConfigServidor)
         Me.Controls.Add(Me.Cancel)
         Me.Controls.Add(Me.OK)
         Me.Controls.Add(Me.Password)

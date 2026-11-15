@@ -25,7 +25,7 @@ Public Class FrmDetalleOTPorTecnico
             Utilitarios.AjustarColumnasGrilla(grillaDetalleOtTecnicos)
             Label1.Text = "OT Ejecutadas de " & personal
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Detalle OT por Técnico", True, Me)
         Finally
             grillaDetalleOtTecnicos.ResumeLayout(False)
             Me.Cursor = Cursors.Default

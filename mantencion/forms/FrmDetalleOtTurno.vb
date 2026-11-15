@@ -25,7 +25,7 @@ Public Class FrmDetalleOtTurno
             Utilitarios.AjustarColumnasGrilla(grillaOtDetalleTurno)
             Label1.Text = "OT Recibidas En : " & turno
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Detalle OT por Turno", True, Me)
         Finally
             grillaOtDetalleTurno.ResumeLayout(False)
             Me.Cursor = Cursors.Default

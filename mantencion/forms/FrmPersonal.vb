@@ -17,7 +17,7 @@ Public Class FrmPersonal
             If cod_resp = 1 Then
                 MsgBox(resp, MsgBoxStyle.Information, "Validación")
                 personal.limpiarFormPersonal(Me)
-            Else
+            ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                 MsgBox(resp, MsgBoxStyle.Critical, "Validación")
             End If
         End If
@@ -65,7 +65,7 @@ Public Class FrmPersonal
                 If cod_resp = 1 Then
                     MsgBox(resp, MsgBoxStyle.Information, "Validación")
                     personal.limpiarFormPersonal(Me)
-                Else
+                ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                     MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                 End If
             End If

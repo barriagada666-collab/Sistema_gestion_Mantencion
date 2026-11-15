@@ -29,7 +29,7 @@ Public Class FrmBuscarDatosTecnicos
                     btnCambiarEstado.Visible = False
                 End If
             Catch ex As Exception
-                MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+                RegistroErrores.MostrarYRegistrar(ex, "Buscar Datos Técnicos", True, Me)
             Finally
                 grillaDatosTecnicos.ResumeLayout(False)
             End Try
@@ -58,7 +58,7 @@ Public Class FrmBuscarDatosTecnicos
             End If
            
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Datos Técnicos (Grilla Datos Técnicos)", True, Me)
         End Try
     End Sub
 
@@ -135,7 +135,7 @@ Public Class FrmBuscarDatosTecnicos
                     Me.Close()
                 End If
             Catch ex As Exception
-                MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+                RegistroErrores.MostrarYRegistrar(ex, "Buscar Datos Técnicos (Agregar)", True, Me)
             End Try
         End If
     End Sub
@@ -152,7 +152,7 @@ Public Class FrmBuscarDatosTecnicos
                 Next
             End If
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Datos Técnicos (Seleccionar Todo)", True, Me)
         End Try
 
     End Sub
@@ -179,11 +179,11 @@ Public Class FrmBuscarDatosTecnicos
 
             If cod_resp = 1 Then
                 MsgBox(respuesta, MsgBoxStyle.Information, "Confirmación Actualización")
-            Else
+            ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(respuesta) Then
                 MsgBox(respuesta, MsgBoxStyle.Critical, "Error")
             End If
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Datos Técnicos (Cambiar Estado)", True, Me)
         End Try
         
     End Sub

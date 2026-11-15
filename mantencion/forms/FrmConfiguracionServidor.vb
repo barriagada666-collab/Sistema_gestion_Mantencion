@@ -30,6 +30,7 @@ Public Class FrmConfiguracionServidor
     Private panBotones As Panel
     Private WithEvents btnProbar As Button
     Private WithEvents btnRestaurar As Button
+    Private WithEvents btnVerLogs As Button
     Private WithEvents btnGuardar As Button
     Private WithEvents btnCancelar As Button
 
@@ -39,8 +40,8 @@ Public Class FrmConfiguracionServidor
 
     Private Sub InitializeComponent()
         Me.Text = "Configuración de Servidor de Base de Datos"
-        Me.Size = New Size(620, 560)
-        Me.MinimumSize = New Size(620, 560)
+        Me.Size = New Size(640, 575)
+        Me.MinimumSize = New Size(640, 575)
         Me.FormBorderStyle = FormBorderStyle.FixedDialog
         Me.MaximizeBox = False
         Me.MinimizeBox = False
@@ -78,7 +79,7 @@ Public Class FrmConfiguracionServidor
         grpParametros.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold, GraphicsUnit.Point)
         grpParametros.ForeColor = Utilitarios.ColorPrimario
         grpParametros.Location = New Point(16, 75)
-        grpParametros.Size = New Size(572, 280)
+        grpParametros.Size = New Size(592, 280)
         grpParametros.BackColor = Color.White
 
         ' Servidor
@@ -91,7 +92,7 @@ Public Class FrmConfiguracionServidor
 
         txtServidor = New TextBox()
         txtServidor.Location = New Point(165, 29)
-        txtServidor.Size = New Size(380, 24)
+        txtServidor.Size = New Size(400, 24)
         txtServidor.Font = New Font("Segoe UI", 9.0F)
 
         ' Catálogo / BD
@@ -104,7 +105,7 @@ Public Class FrmConfiguracionServidor
 
         txtCatalogo = New TextBox()
         txtCatalogo.Location = New Point(165, 65)
-        txtCatalogo.Size = New Size(380, 24)
+        txtCatalogo.Size = New Size(400, 24)
         txtCatalogo.Font = New Font("Segoe UI", 9.0F)
 
         ' Usuario
@@ -117,7 +118,7 @@ Public Class FrmConfiguracionServidor
 
         txtUsuario = New TextBox()
         txtUsuario.Location = New Point(165, 101)
-        txtUsuario.Size = New Size(380, 24)
+        txtUsuario.Size = New Size(400, 24)
         txtUsuario.Font = New Font("Segoe UI", 9.0F)
 
         ' Contraseña
@@ -130,13 +131,13 @@ Public Class FrmConfiguracionServidor
 
         txtPassword = New TextBox()
         txtPassword.Location = New Point(165, 137)
-        txtPassword.Size = New Size(240, 24)
+        txtPassword.Size = New Size(250, 24)
         txtPassword.Font = New Font("Segoe UI", 9.0F)
         txtPassword.PasswordChar = "*"c
 
         chkMostrarPassword = New CheckBox()
         chkMostrarPassword.Text = "Mostrar"
-        chkMostrarPassword.Location = New Point(415, 138)
+        chkMostrarPassword.Location = New Point(425, 138)
         chkMostrarPassword.Size = New Size(80, 22)
         chkMostrarPassword.Font = New Font("Segoe UI", 8.5F)
         chkMostrarPassword.ForeColor = Utilitarios.ColorTextoPrincipal
@@ -167,7 +168,7 @@ Public Class FrmConfiguracionServidor
 
         txtPreview = New TextBox()
         txtPreview.Location = New Point(20, 232)
-        txtPreview.Size = New Size(525, 36)
+        txtPreview.Size = New Size(545, 36)
         txtPreview.Multiline = True
         txtPreview.ReadOnly = True
         txtPreview.Font = New Font("Consolas", 8.0F)
@@ -186,12 +187,14 @@ Public Class FrmConfiguracionServidor
         ' 3. Estado de conexión
         lblEstado = New Label()
         lblEstado.Location = New Point(16, 362)
-        lblEstado.Size = New Size(572, 38)
-        lblEstado.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
+        lblEstado.Size = New Size(592, 52)
+        lblEstado.Padding = New Padding(6, 4, 6, 4)
+        lblEstado.Font = New Font("Segoe UI", 8.75F, FontStyle.Bold)
         lblEstado.TextAlign = ContentAlignment.MiddleLeft
+        lblEstado.AutoEllipsis = True
         lblEstado.BackColor = Color.White
         lblEstado.BorderStyle = BorderStyle.FixedSingle
-        lblEstado.Text = " Ingrese los datos del servidor y presione 'Probar Conexión' o 'Guardar'."
+        lblEstado.Text = "Ingrese los datos del servidor y presione 'Probar Conexión' o 'Guardar'."
         lblEstado.ForeColor = Utilitarios.ColorTextoPrincipal
 
         ' 4. Panel de botones
@@ -203,30 +206,36 @@ Public Class FrmConfiguracionServidor
         btnProbar = New Button()
         btnProbar.Text = "⚡ Probar Conexión"
         btnProbar.Location = New Point(16, 14)
-        btnProbar.Size = New Size(130, 36)
-        btnProbar.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
+        btnProbar.Size = New Size(134, 36)
+        btnProbar.Font = New Font("Segoe UI", 8.75F, FontStyle.Bold)
 
         btnRestaurar = New Button()
-        btnRestaurar.Text = "↺ Servidor Original"
-        btnRestaurar.Location = New Point(152, 14)
-        btnRestaurar.Size = New Size(130, 36)
-        btnRestaurar.Font = New Font("Segoe UI", 9.0F)
+        btnRestaurar.Text = "↺ Original"
+        btnRestaurar.Location = New Point(156, 14)
+        btnRestaurar.Size = New Size(96, 36)
+        btnRestaurar.Font = New Font("Segoe UI", 8.75F)
+
+        btnVerLogs = New Button()
+        btnVerLogs.Text = "📋 Logs"
+        btnVerLogs.Location = New Point(258, 14)
+        btnVerLogs.Size = New Size(86, 36)
+        btnVerLogs.Font = New Font("Segoe UI", 8.75F)
 
         btnGuardar = New Button()
         btnGuardar.Text = "💾 Guardar y Aplicar"
-        btnGuardar.Location = New Point(325, 14)
-        btnGuardar.Size = New Size(150, 36)
-        btnGuardar.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
+        btnGuardar.Location = New Point(358, 14)
+        btnGuardar.Size = New Size(148, 36)
+        btnGuardar.Font = New Font("Segoe UI", 8.75F, FontStyle.Bold)
         btnGuardar.BackColor = Utilitarios.ColorPrimario
         btnGuardar.ForeColor = Color.White
 
         btnCancelar = New Button()
         btnCancelar.Text = "Cancelar"
-        btnCancelar.Location = New Point(482, 14)
-        btnCancelar.Size = New Size(105, 36)
-        btnCancelar.Font = New Font("Segoe UI", 9.0F)
+        btnCancelar.Location = New Point(512, 14)
+        btnCancelar.Size = New Size(96, 36)
+        btnCancelar.Font = New Font("Segoe UI", 8.75F)
 
-        panBotones.Controls.AddRange(New Control() {btnProbar, btnRestaurar, btnGuardar, btnCancelar})
+        panBotones.Controls.AddRange(New Control() {btnProbar, btnRestaurar, btnVerLogs, btnGuardar, btnCancelar})
 
         Me.Controls.AddRange(New Control() {panHeader, grpParametros, lblEstado, panBotones})
 
@@ -354,6 +363,10 @@ Public Class FrmConfiguracionServidor
         Else
             MessageBox.Show(resultado.Mensaje, "Error al Guardar", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End If
+    End Sub
+
+    Private Sub btnVerLogs_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnVerLogs.Click
+        RegistroErrores.AbrirCarpetaLogs()
     End Sub
 
     Private Sub btnCancelar_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnCancelar.Click

@@ -25,7 +25,7 @@ Public Class FrmDetalleOtPendientes
             Utilitarios.AjustarColumnasGrilla(grillaDetalleOtPend)
             Label1.Text = "OT Recibidas Pendientes de " & personal
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Detalle OT Pendientes", True, Me)
         Finally
             grillaDetalleOtPend.ResumeLayout(False)
             Me.Cursor = Cursors.Default

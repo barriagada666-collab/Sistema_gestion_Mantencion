@@ -54,7 +54,7 @@ Public Class FrmInfMantPrevCiclosMaq
                     Utilitarios.AjustarColumnasGrilla(grillaCiclosMaquinas)
                 End If
             Catch ex As Exception
-                MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+                RegistroErrores.MostrarYRegistrar(ex, "Informe Ciclos MP Varias Máquinas (Buscar Ciclos)", True, Me)
             Finally
                 grillaCiclosMaquinas.ResumeLayout(False)
                 Cursor = Cursors.Default
@@ -104,7 +104,7 @@ Public Class FrmInfMantPrevCiclosMaq
             End If
 
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Ciclos MP Varias Máquinas (Exportar Listado)", True, Me)
         End Try
     End Sub
 

@@ -16,7 +16,7 @@ Public Class FrmBuscarCiclo
             End If
             Utilitarios.AplicarTemaModerno(Me)
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Ciclo MP", True, Me)
         Finally
             Me.ResumeLayout(True)
         End Try
@@ -118,7 +118,7 @@ Public Class FrmBuscarCiclo
             End With
             Me.Close()
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Ciclo MP (Grilla Buscar Ciclo)", True, Me)
         End Try
         
     End Sub

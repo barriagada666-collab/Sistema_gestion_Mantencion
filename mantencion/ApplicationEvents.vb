@@ -1,29 +1,48 @@
+Imports System.Threading
+Imports System.Windows.Forms
+Imports Microsoft.VisualBasic.ApplicationServices
+
 Namespace My
 
     ' Los siguientes eventos están disponibles para MyApplication:
-    ' 
-    ' Inicio: se desencadena cuando se inicia la aplicación, antes de que se cree el formulario de inicio.
-    ' Apagado: se desencadena después de cerrar todos los formularios de la aplicación. Este evento no se desencadena si la aplicación se termina de forma anómala.
+    '
+    ' Inicio (Startup): se desencadena antes de crear el formulario principal.
     ' UnhandledException: se desencadena si la aplicación detecta una excepción no controlada.
-    ' StartupNextInstance: se desencadena cuando se inicia una aplicación de instancia única y ya hay una activa. 
-    ' NetworkAvailabilityChanged: se desencadena cuando se conecta o desconecta la conexión de red.
     Partial Friend Class MyApplication
+
+        Private Shared _manejadoresGlobalesRegistrados As Boolean = False
+
+        Private Sub MyApplication_Startup(ByVal sender As Object, ByVal e As StartupEventArgs) Handles Me.Startup
+            If Not _manejadoresGlobalesRegistrados Then
+                _manejadoresGlobalesRegistrados = True
+                Try
+                    System.Windows.Forms.Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException)
+                    AddHandler System.Windows.Forms.Application.ThreadException, AddressOf OnUiThreadException
+                    AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf OnDomainUnhandledException
+                Catch
+                End Try
+            End If
+        End Sub
+
+        Private Sub OnUiThreadException(ByVal sender As Object, ByVal e As ThreadExceptionEventArgs)
+            If e IsNot Nothing AndAlso e.Exception IsNot Nothing Then
+                RegistroErrores.MostrarYRegistrar(e.Exception, "Interfaz de Usuario (Hilo UI)")
+            End If
+        End Sub
+
+        Private Sub OnDomainUnhandledException(ByVal sender As Object, ByVal e As System.UnhandledExceptionEventArgs)
+            Dim ex = TryCast(If(e IsNot Nothing, e.ExceptionObject, Nothing), Exception)
+            If ex IsNot Nothing Then
+                RegistroErrores.RegistrarError(ex, "Dominio de Aplicación (No Controlado)")
+            End If
+        End Sub
 
         Private Sub MyApplication_UnhandledException(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs) Handles Me.UnhandledException
             Try
-                Dim msg As String = String.Format("[{0:yyyy-MM-dd HH:mm:ss}] ERROR: {1}{2}{3}{2}{2}",
-                                                  DateTime.Now,
-                                                  If(e.Exception IsNot Nothing, e.Exception.Message, "Desconocido"),
-                                                  Environment.NewLine,
-                                                  If(e.Exception IsNot Nothing, e.Exception.StackTrace, ""))
-                Dim logPath As String = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "error_runtime.log")
-                Try
-                    System.IO.File.AppendAllText(logPath, msg)
-                Catch
-                    Dim appDataDir As String = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SistemaMantencion")
-                    System.IO.Directory.CreateDirectory(appDataDir)
-                    System.IO.File.AppendAllText(System.IO.Path.Combine(appDataDir, "error_runtime.log"), msg)
-                End Try
+                If e IsNot Nothing AndAlso e.Exception IsNot Nothing Then
+                    RegistroErrores.MostrarYRegistrar(e.Exception, "Aplicación General")
+                    e.ExitApplication = False
+                End If
             Catch
             End Try
         End Sub

@@ -110,7 +110,7 @@ Public Class FrmAdminAuditoria
                 MsgBox("No se encontraron registros de auditoría para el rango de fechas seleccionado.", MsgBoxStyle.Information, "Auditoría de Operaciones")
             End If
         Catch ex As Exception
-            MsgBox("Error al consultar auditoría: " & ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Auditoría de Operaciones (Buscar Aud)", True, Me)
         Finally
             Cursor = Cursors.Default
             Utilitarios.OptimizarMemoria()
@@ -631,7 +631,7 @@ Public Class FrmAdminAuditoria
 
             informes.expInfAuditoria(grillaAuditoria, fecha_ini_aud.Value, fecha_fin_aud.Value, filasAExportar, True, dsStats)
         Catch ex As Exception
-            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Auditoría")
+            RegistroErrores.MostrarYRegistrar(ex, "Auditoría de Operaciones (Exportar Excel)", True, Me)
         Finally
             Cursor = Cursors.Default
             Utilitarios.OptimizarMemoria()
@@ -651,7 +651,7 @@ Public Class FrmAdminAuditoria
             Dim totalOps As Integer = If(_dvAuditoria IsNot Nothing, _dvAuditoria.Count, 0)
             informes.expSoloEstadisticasAuditoria(dsStats, fecha_ini_aud.Value, fecha_fin_aud.Value, totalOps)
         Catch ex As Exception
-            MsgBox("Error al exportar estadísticas: " & ex.Message, MsgBoxStyle.Critical, "Estadísticas")
+            RegistroErrores.MostrarYRegistrar(ex, "Auditoría de Operaciones (Exportar Estadísticas)", True, Me)
         Finally
             Cursor = Cursors.Default
             Utilitarios.OptimizarMemoria()

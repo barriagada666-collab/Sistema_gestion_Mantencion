@@ -153,7 +153,7 @@ Public Class NativeReportViewer
                         Utilitarios.AbrirDocumento(sfd.FileName)
                     End If
                 Catch ex As Exception
-                    MessageBox.Show("Error al exportar a PDF: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    RegistroErrores.MostrarYRegistrar(ex, "Vista Previa / PDF Informe OT (Exportar PDF)", True, Me)
                 End Try
             End If
         End Using
@@ -173,7 +173,7 @@ Public Class NativeReportViewer
                 End Using
             End Using
         Catch ex As Exception
-            MessageBox.Show("Error al mostrar la vista previa: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            RegistroErrores.MostrarYRegistrar(ex, "Vista Previa / PDF Informe OT (Vista Previa)", True, Me)
         End Try
     End Sub
 
@@ -191,7 +191,7 @@ Public Class NativeReportViewer
                 End Using
             End Using
         Catch ex As Exception
-            MessageBox.Show("Error al imprimir: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            RegistroErrores.MostrarYRegistrar(ex, "Vista Previa / PDF Informe OT (Imprimir)", True, Me)
         End Try
     End Sub
 

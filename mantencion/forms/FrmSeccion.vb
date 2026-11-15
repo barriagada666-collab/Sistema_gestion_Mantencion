@@ -9,7 +9,7 @@ Public Class FrmSeccion
         If cod_resp = 1 Then
             MsgBox(resp, MsgBoxStyle.Information, "Validación")
             seccion.LimpiarFrmSeccion()
-        Else
+        ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
             MsgBox(resp, MsgBoxStyle.Critical, "Validación")
         End If
     End Sub
@@ -23,7 +23,7 @@ Public Class FrmSeccion
         If cod_resp = 1 Then
             MsgBox(resp, MsgBoxStyle.Information, "Validación")
             seccion.LimpiarFrmSeccion()
-        Else
+        ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
             MsgBox(resp, MsgBoxStyle.Critical, "Validación")
         End If
     End Sub
@@ -38,7 +38,7 @@ Public Class FrmSeccion
         If cod_resp = 1 Then
             MsgBox(resp, MsgBoxStyle.Information, "Validación")
             seccion.LimpiarFrmSeccion()
-        Else
+        ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
             MsgBox(resp, MsgBoxStyle.Critical, "Validación")
         End If
     End Sub

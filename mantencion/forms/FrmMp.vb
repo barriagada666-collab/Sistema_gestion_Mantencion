@@ -56,7 +56,7 @@ Public Class FrmMp
                     grillaInsumosMp.Rows.Add()
             End Select
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Agregar Fila)", True, Me)
         End Try
 
     End Sub
@@ -129,7 +129,7 @@ Public Class FrmMp
                             If cod_resp = 1 Then
                                 MsgBox(resp, MsgBoxStyle.Information, "Validación")
                                 grillaInsumosMp.Rows.Remove(grillaInsumosMp.CurrentRow)
-                            Else
+                            ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                                 MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                             End If
                         End If
@@ -138,7 +138,7 @@ Public Class FrmMp
                     End If
             End Select
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Eliminar Fila)", True, Me)
         End Try
 
     End Sub
@@ -155,7 +155,7 @@ Public Class FrmMp
             btnGuardarComoNuevoCiclo.Enabled = False
             btnGuardarMp.Enabled = False
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Nueva MP)", True, Me)
         End Try
 
     End Sub
@@ -254,7 +254,7 @@ Public Class FrmMp
             If cod_resp = 1 Then
                 MsgBox(resp, MsgBoxStyle.Information, "Validación")
                 mant_prev.LimpiarFrmMp()
-            Else
+            ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                 MsgBox(resp, MsgBoxStyle.Critical, "Validación")
             End If
         Else
@@ -275,7 +275,7 @@ Public Class FrmMp
                 FrmBuscarMp.Show()
             End If
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Buscar MP)", True, Me)
         End Try
 
 
@@ -289,7 +289,7 @@ Public Class FrmMp
                 FrmBuscarCiclo.Show()
             End If
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Buscar Ciclo)", True, Me)
         End Try
 
     End Sub
@@ -354,13 +354,13 @@ Public Class FrmMp
 
                 If cod_resp = 1 Then
                     MsgBox(resp & Chr(13) & resp_2, MsgBoxStyle.Information, "Validación")
-                Else
+                ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                     MsgBox(resp, MsgBoxStyle.Critical, "Error")
                 End If
             End If
 
             mant_prev.LimpiarFrmMp()
-        Else
+        ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
             MsgBox(resp, MsgBoxStyle.Exclamation, "Validación")
         End If
 
@@ -423,7 +423,7 @@ Public Class FrmMp
         Try
             mant_prev.LimpiarFrmMp()
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Limpiar Ciclo)", True, Me)
         End Try
 
     End Sub
@@ -474,7 +474,7 @@ Public Class FrmMp
 
                 If cod_resp = 1 Then
                     MsgBox(resp, MsgBoxStyle.Information, "Validación")
-                Else
+                ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                     MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                 End If
 
@@ -484,7 +484,7 @@ Public Class FrmMp
 
                 mant_prev.LimpiarFrmMp()
             Catch ex As Exception
-                MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+                RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Nuevo Ciclo)", True, Me)
             End Try
         Else
             MsgBox(valida, MsgBoxStyle.Exclamation, "Validación")
@@ -518,7 +518,7 @@ Public Class FrmMp
                 If cod_resp = 1 Then
                     MsgBox(resp, MsgBoxStyle.Information, "Validación")
                     mant_prev.LimpiarFrmMp()
-                Else
+                ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                     MsgBox(resp, MsgBoxStyle.Critical, "Error")
                 End If
             End If
@@ -540,7 +540,7 @@ Public Class FrmMp
                 If cod_resp = 1 Then
                     MsgBox(resp, MsgBoxStyle.Information, "Validación")
                     mant_prev.LimpiarFrmMp()
-                Else
+                ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                     MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                 End If
             End If
@@ -570,7 +570,7 @@ Public Class FrmMp
                 End If
             End With
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Grilla Tareas Ciclo MP)", True, Me)
         End Try
 
     End Sub
@@ -672,7 +672,7 @@ Public Class FrmMp
             End If
 
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Agregar Tareas)", True, Me)
         End Try
 
     End Sub
@@ -813,7 +813,7 @@ Public Class FrmMp
                 If cod_resp = 1 Then
                     MsgBox(resp, MsgBoxStyle.Information, "Validación")
                     mant_prev.LimpiarFrmMp()
-                Else
+                ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                     MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                 End If
             Else

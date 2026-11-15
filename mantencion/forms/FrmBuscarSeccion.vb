@@ -13,7 +13,7 @@ Public Class FrmBuscarSeccion
             Utilitarios.AjustarColumnasGrilla(grilla_buscar_seccion)
             Utilitarios.AplicarTemaModerno(Me)
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Sección", True, Me)
         Finally
             grilla_buscar_seccion.ResumeLayout(False)
             Me.ResumeLayout(True)
@@ -29,7 +29,7 @@ Public Class FrmBuscarSeccion
             End With
             Me.Close()
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Sección", True, Me)
         End Try
     End Sub
 End Class

@@ -25,7 +25,7 @@ Public Class Sintoma
                 combo.SelectedValue = "S000"
             End If
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "")
         Finally
             combo.EndUpdate()
         End Try

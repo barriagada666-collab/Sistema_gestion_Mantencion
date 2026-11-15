@@ -12,7 +12,7 @@ Public Class Insumo
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Insumos MP")
         Finally
             conexion.Desconectar(cnx)
         End Try

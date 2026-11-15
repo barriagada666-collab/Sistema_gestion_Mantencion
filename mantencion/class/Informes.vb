@@ -215,7 +215,7 @@ Public Class Informes
             If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_Gantt_" & item, "INFORME CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) Then
                 Exit Sub
             End If
-            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Gantt")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -320,7 +320,7 @@ Public Class Informes
             If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Grafico_Gantt_" & item, "GRÁFICO CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) Then
                 Exit Sub
             End If
-            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Gráfico Gantt")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -457,7 +457,7 @@ Public Class Informes
             If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_Gantt_Completo_" & item, "INFORME COMPLETO CARTA GANTT", "Ítem / Máquina: " & item) Then
                 Exit Sub
             End If
-            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Gantt Todo")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -562,7 +562,7 @@ Public Class Informes
                Utilitarios.ExportarGrillaAExcelNativo(grilla_ciclos_mp, "Carta_Gantt_" & item_gantt, "CALENDARIO CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem: " & item_gantt & " | Período: " & fecha_desde & " al " & fecha_hasta) Then
                 Exit Sub
             End If
-            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Gráfico Gantt Varias Máquinas")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -695,7 +695,7 @@ Public Class Informes
                     tg.Dispose()
                 Next
             End Try
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Auditoría a Excel")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -758,7 +758,7 @@ Public Class Informes
                     Next
                 End Try
             End If
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar Estadísticas")
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Estadísticas de Auditoría a Excel")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -1159,7 +1159,7 @@ Public Class Informes
                     Exit Sub
                 End If
             End With
-            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Estadística")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -1328,7 +1328,7 @@ Public Class Informes
                Utilitarios.ExportarGrillaAExcelNativo(grilla_datos_tecnicos, "Datos_Tecnicos", "INFORME DE DATOS TÉCNICOS") Then
                 Exit Sub
             End If
-            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Datos Técnicos")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -1387,7 +1387,7 @@ Public Class Informes
                Utilitarios.ExportarGrillaAExcelNativo(grilla_ciclos_mp, "Listado_Ciclos_MP", "LISTADO DE CICLOS MANTENCIÓN PREVENTIVA", "Período: " & fecha_desde.ToString("dd-MM-yyyy") & " al " & fecha_hasta.ToString("dd-MM-yyyy")) Then
                 Exit Sub
             End If
-            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Listado Ciclo")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try

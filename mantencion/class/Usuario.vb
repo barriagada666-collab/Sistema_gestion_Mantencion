@@ -36,7 +36,9 @@ Public Class Usuario
             End Using
 
         Catch ex As Exception
-            MsgBox(ex.Message)
+            cod_resp = -1
+            resp = ex.Message
+            RegistroErrores.MostrarYRegistrar(ex, "Inicio de Sesión", True, Form.ActiveForm, True)
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -74,7 +76,8 @@ Public Class Usuario
             End Using
 
         Catch ex As Exception
-            MsgBox(ex.Message)
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Usuario")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -97,7 +100,7 @@ Public Class Usuario
             End Using
 
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Guardar Permisos de Usuario")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -135,7 +138,8 @@ Public Class Usuario
             End Using
 
         Catch ex As Exception
-            MsgBox(ex.Message)
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar Usuario")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -158,7 +162,7 @@ Public Class Usuario
             End Using
 
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar Permisos de Usuario")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -186,7 +190,8 @@ Public Class Usuario
             End Using
 
         Catch ex As Exception
-            MsgBox(ex.Message)
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Eliminar Usuario")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -205,7 +210,7 @@ Public Class Usuario
                 combo.ValueMember = "idperfil"
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Perfiles de Usuario")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -221,7 +226,7 @@ Public Class Usuario
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Listado de Usuarios")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -264,7 +269,7 @@ Public Class Usuario
             PermisoCambiarTareasMp = ObtenerPermisoSeguro(dtPerm, 19, False)
             PermisoCambiarIdModTareas = ObtenerPermisoSeguro(dtPerm, 20, False)
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Permisos de Sesión")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -284,7 +289,7 @@ Public Class Usuario
             End Using
 
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Permisos de Perfil")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -306,7 +311,7 @@ Public Class Usuario
             End Using
 
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Permisos de Usuario")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -326,7 +331,7 @@ Public Class Usuario
             End Using
 
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Grupo de Permisos")
         Finally
             conexion.Desconectar(cnx)
         End Try

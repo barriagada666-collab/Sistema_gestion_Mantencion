@@ -24,7 +24,7 @@ Public Class ModoFalla
                 combo.ValueMember = "id_tipo_falla"
             End If
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "")
         Finally
             combo.EndUpdate()
         End Try
@@ -55,7 +55,7 @@ Public Class ModoFalla
                 combo.SelectedValue = "Q000"
             End If
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "error")
+            RegistroErrores.MostrarYRegistrar(ex, "")
         Finally
             combo.EndUpdate()
         End Try

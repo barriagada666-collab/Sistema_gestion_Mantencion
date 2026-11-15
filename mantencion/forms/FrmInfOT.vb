@@ -369,7 +369,7 @@ Public Class FrmInfOT
                 '=================================================================================================
             End If
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Órdenes de Trabajo (Buscar OT)", True, Me)
         Finally
             Cursor = Cursors.Default
             Utilitarios.OptimizarMemoria()
@@ -447,7 +447,7 @@ Public Class FrmInfOT
         Try
             OT.exportarInfOtExcel(grillaInfOt, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, planta)
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Órdenes de Trabajo (Exportar Excel)", True, Me)
         End Try
     End Sub
 
@@ -475,7 +475,7 @@ Public Class FrmInfOT
         Try
             OT.exportarInfOtPDF(grillaInfOt, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, planta)
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Órdenes de Trabajo (PDF)", True, Me)
         End Try
     End Sub
 

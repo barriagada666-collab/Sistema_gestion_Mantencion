@@ -25,7 +25,7 @@ Public Class FrmDetalleOtEstado
             Utilitarios.AjustarColumnasGrilla(grillaDetalleOtEstado)
             Label1.Text = "OT " & estado
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Detalle OT por Estado", True, Me)
         Finally
             grillaDetalleOtEstado.ResumeLayout(False)
             Me.Cursor = Cursors.Default

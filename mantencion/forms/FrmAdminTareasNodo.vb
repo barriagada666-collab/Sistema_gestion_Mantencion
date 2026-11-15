@@ -90,7 +90,7 @@ Public Class FrmAdminTareasNodo
                 txtIdModulo.Text = .Rows(e.RowIndex).Cells(1).Value
             End With
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Exclamation, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Tareas de Nodos/Máquinas (Grilla Tareas Nodo)", True, Me)
         End Try
     End Sub
 
@@ -143,7 +143,7 @@ Public Class FrmAdminTareasNodo
             formato_grid.grillasTareasNodo(grillaTareasNodo)
             Utilitarios.AjustarColumnasGrilla(grillaTareasNodo)
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Tareas de Nodos/Máquinas (Buscar Tarea)", True, Me)
         Finally
             Utilitarios.OptimizarMemoria()
         End Try

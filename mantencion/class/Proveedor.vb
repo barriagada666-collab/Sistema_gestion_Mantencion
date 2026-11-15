@@ -13,7 +13,7 @@ Public Class Proveedor
                 combo.ValueMember = "idproveedor"
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Crgprovee")
         Finally
             conexion.Desconectar(cnx)
         End Try

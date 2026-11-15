@@ -120,7 +120,7 @@ Public Class FrmAdminNodos
                     If cod_resp = 1 Then
                         MsgBox(resp, MsgBoxStyle.Information, "Validación")
                         nodo.LimpiarFormNodos()
-                    Else
+                    ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                         MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                     End If
                 End If
@@ -143,7 +143,7 @@ Public Class FrmAdminNodos
                 If cod_resp = 1 Then
                     MsgBox(resp, MsgBoxStyle.Information, "Validación")
                     nodo.LimpiarFormNodos()
-                Else
+                ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                     MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                 End If
             Else
@@ -164,7 +164,7 @@ Public Class FrmAdminNodos
                     If cod_resp = 1 Then
                         MsgBox(resp, MsgBoxStyle.Information, "Validación")
                         nodo.LimpiarFormNodos()
-                    Else
+                    ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                         MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                     End If
                 Else

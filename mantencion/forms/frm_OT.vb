@@ -112,7 +112,7 @@ Public Class frm_OT
                     If cod_resp = 1 Then
                         MsgBox(resp, MsgBoxStyle.Information, "Validación")
                         OT.LimpiarFrmOt()
-                    Else
+                    ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                         MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                     End If
                 Else
@@ -165,11 +165,11 @@ Public Class frm_OT
                     If cod_resp = 1 Then
                         MsgBox(resp, MsgBoxStyle.Information, "Validación")
                         OT.LimpiarFrmOt()
-                    Else
+                    ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                         MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                     End If
                 End If
-            Else
+            ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(respuesta) Then
                 MsgBox(respuesta, MsgBoxStyle.Exclamation, "Validación")
             End If
         Else
@@ -212,7 +212,7 @@ Public Class frm_OT
                     If cod_resp = 1 Then
                         MsgBox(resp, MsgBoxStyle.Information, "Validación")
                         OT.LimpiarFrmOt()
-                    Else
+                    ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                         MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                     End If
                 Else
@@ -249,7 +249,7 @@ Public Class frm_OT
                     If cod_resp = 1 Then
                         MsgBox(resp, MsgBoxStyle.Information, "Validación")
                         OT.LimpiarFrmOt()
-                    Else
+                    ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                         MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                     End If
                 End If
@@ -337,7 +337,7 @@ Public Class frm_OT
                     Try
                         grillaInsumosOt.Rows.Add()
                     Catch ex As Exception
-                        MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+                        RegistroErrores.MostrarYRegistrar(ex, "Órdenes de Trabajo (Agregar Fila OT)", True, Me)
                     End Try
 
                 Case "OT Externas"
@@ -349,12 +349,12 @@ Public Class frm_OT
                             grillaOtExternas.Rows.Add()
                         End If
                     Catch ex As Exception
-                        MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+                        RegistroErrores.MostrarYRegistrar(ex, "Órdenes de Trabajo (Agregar Fila OT)", True, Me)
                     End Try
 
             End Select
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Órdenes de Trabajo (Agregar Fila OT)", True, Me)
         End Try
 
     End Sub
@@ -624,7 +624,7 @@ Public Class frm_OT
                     MsgBox(resp, MsgBoxStyle.Information, "Validación")
                     ot.LimpiarFrmOt()
                     Exit Sub
-                Else
+                ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                     MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                     Exit Sub
                 End If
@@ -661,7 +661,7 @@ Public Class frm_OT
                                     MsgBox(resp, MsgBoxStyle.Information, "Validación")
                                     grillaPersonalOt.Rows.Remove(grillaPersonalOt.CurrentRow)
                                     Exit Sub
-                                Else
+                                ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                                     MsgBox(resp, MsgBoxStyle.Exclamation, "Validación")
                                     Exit Sub
                                 End If
@@ -702,7 +702,7 @@ Public Class frm_OT
                                 If cod_resp = 1 Then
                                     MsgBox(resp, MsgBoxStyle.Information, "Validación")
                                     grillaInsumosOt.Rows.Remove(grillaInsumosOt.CurrentRow)
-                                Else
+                                ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                                     MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                                 End If
                             End If
@@ -727,7 +727,7 @@ Public Class frm_OT
                             If cod_resp = 1 Then
                                 MsgBox(resp, MsgBoxStyle.Information, "Validación")
                                 grillaOtExternas.Rows.Remove(grillaOtExternas.CurrentRow)
-                            Else
+                            ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                                 MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                             End If
                         End If
@@ -746,7 +746,7 @@ Public Class frm_OT
                     End If
             End Select
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Órdenes de Trabajo (Eliminar Fila OT)", True, Me)
         End Try
 
     End Sub

@@ -132,7 +132,7 @@ Public Class Nodo
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cr Tarea MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -234,7 +234,7 @@ Public Class Nodo
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Arbol")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -254,7 +254,7 @@ Public Class Nodo
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cr Tarea Nodo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -277,7 +277,7 @@ Public Class Nodo
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar ID Nodo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -300,7 +300,7 @@ Public Class Nodo
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Nuev I Nodo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -341,7 +341,8 @@ Public Class Nodo
             End Using
             InvalidarCacheNodos()
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Nodo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -390,7 +391,7 @@ Public Class Nodo
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Nodo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -430,7 +431,8 @@ Public Class Nodo
             End Using
             InvalidarCacheNodos()
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar Nodo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -497,7 +499,7 @@ Public Class Nodo
                 End Using
                 _cacheAutocompletado = datos
             Catch ex As Exception
-                MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+                RegistroErrores.MostrarYRegistrar(ex, "Autocompletado Arbol")
                 Exit Sub
             Finally
                 conexion.Desconectar(cnx)
@@ -529,7 +531,7 @@ Public Class Nodo
             End Using
             Return id_tarea
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Nuevo ID Tarea Nodo")
             Return id_tarea
         Finally
             conexion.Desconectar(cnx)
@@ -561,7 +563,8 @@ Public Class Nodo
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Tarea Nodo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -588,7 +591,8 @@ Public Class Nodo
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Eliminar Tarea Nodo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -798,7 +802,7 @@ Public Class Nodo
             End Using
 
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar ID Nodo Like")
         Finally
             conexion.Desconectar(cnx)
         End Try

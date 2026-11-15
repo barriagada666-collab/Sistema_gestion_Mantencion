@@ -98,7 +98,7 @@ Public Class FrmPlanificarCiclos
             MsgBox(resp, MsgBoxStyle.Information, "Validación")
             mant_preventiva.LimpiarFrmMp()
             Me.Close()
-        Else
+        ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
             MsgBox(resp, MsgBoxStyle.Critical, "Error")
             mant_preventiva.LimpiarFrmMp()
             Me.Close()

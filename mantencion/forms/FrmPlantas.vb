@@ -9,7 +9,7 @@ Public Class FrmPlantas
         If cod_resp = 1 Then
             MsgBox(resp, MsgBoxStyle.Information, "Validación")
             planta.LimpiarFrmPlanta()
-        Else
+        ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
             MsgBox(resp, MsgBoxStyle.Critical, "Validación")
             txtCodPlanta.Focus()
         End If
@@ -30,7 +30,7 @@ Public Class FrmPlantas
 
         If cod_resp = 1 Then
             MsgBox(resp, MsgBoxStyle.Information, "Validación")
-        Else
+        ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
             MsgBox(resp, MsgBoxStyle.Critical, "Validación")
         End If
     End Sub
@@ -46,7 +46,7 @@ Public Class FrmPlantas
             If cod_resp = 1 Then
                 MsgBox(resp, MsgBoxStyle.Information, "Validación")
                 planta.LimpiarFrmPlanta()
-            Else
+            ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                 MsgBox(resp, MsgBoxStyle.Critical, "Validación")
             End If
         End If

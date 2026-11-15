@@ -696,7 +696,7 @@ Public Class FrmResumenes
             Utilitarios.AjustarColumnasGrilla(grillaOtPorMes)
 
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Resumen Estadístico OT (Buscar Resumen)", True, Me)
         Finally
             tabResumenes.ResumeLayout(False)
             Cursor = Cursors.Default
@@ -736,7 +736,7 @@ Public Class FrmResumenes
         Try
             informe.expInfEstadistica(fecha_ini_resumen.Value, fecha_fin_resumen.Value)
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Resumen Estadístico OT (Exportar Excel Resumen)", True, Me)
         End Try
     End Sub
 
@@ -790,7 +790,7 @@ Public Class FrmResumenes
             FrmDetalleOtPendientes.nodo_padre = id_nodo_res_select
             FrmDetalleOtPendientes.Show()
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Resumen Estadístico OT (Grilla OT Recibida Por)", True, Me)
         End Try
     End Sub
 
@@ -816,7 +816,7 @@ Public Class FrmResumenes
             FrmDetalleOTPorTecnico.nodo_padre = id_nodo_res_select
             FrmDetalleOTPorTecnico.Show()
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Resumen Estadístico OT (Grilla OT Cerrada Por Técnico)", True, Me)
         End Try
     End Sub
 
@@ -834,7 +834,7 @@ Public Class FrmResumenes
             FrmDetalleOtTipoFalla.nodo_padre = id_nodo_res_select
             FrmDetalleOtTipoFalla.Show()
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Resumen Estadístico OT (Grilla OT Por Tipo Falla)", True, Me)
         End Try
     End Sub
 
@@ -852,7 +852,7 @@ Public Class FrmResumenes
             FrmDetalleOtTurno.nodo_padre = id_nodo_res_select
             FrmDetalleOtTurno.Show()
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Resumen Estadístico OT (Grilla OT Por Turno)", True, Me)
         End Try
     End Sub
 
@@ -870,7 +870,7 @@ Public Class FrmResumenes
             FrmDetalleOTDia.nodo_padre = id_nodo_res_select
             FrmDetalleOTDia.Show()
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Resumen Estadístico OT (Grilla OT Por Día)", True, Me)
         End Try
     End Sub
 
@@ -891,7 +891,7 @@ Public Class FrmResumenes
                 FrmDetalleOtEstado.Show()
             End If
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Resumen Estadístico OT (Grilla Totales Periodo)", True, Me)
         End Try
     End Sub
 End Class

@@ -56,7 +56,8 @@ Public Class Personal
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Personal")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -112,7 +113,8 @@ Public Class Personal
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar Personal")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -148,7 +150,7 @@ Public Class Personal
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Personal")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -197,7 +199,7 @@ Public Class Personal
                 End If
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Personal RUT")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -213,7 +215,7 @@ Public Class Personal
                 .AutoCompleteCustomSource = datos
             End With
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Personal MP")
         End Try
     End Sub
 
@@ -228,7 +230,7 @@ Public Class Personal
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Personal MP 2")
         Finally
             conexion.Desconectar(cnx)
         End Try

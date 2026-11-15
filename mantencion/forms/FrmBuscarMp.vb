@@ -19,7 +19,7 @@ Public Class FrmBuscarMp
                 Me.Close()
             End If
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Mantención Preventiva", True, Me)
         Finally
             Me.ResumeLayout(True)
         End Try
@@ -38,7 +38,7 @@ Public Class FrmBuscarMp
             End With
             Me.Close()
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Mantención Preventiva (Grilla Buscar MP)", True, Me)
         End Try
         
     End Sub

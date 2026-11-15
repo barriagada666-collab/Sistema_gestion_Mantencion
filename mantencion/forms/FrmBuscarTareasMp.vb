@@ -19,7 +19,7 @@ Public Class FrmBuscarTareasMp
             Utilitarios.AjustarColumnasGrilla(grillaTareasNodoMp)
             Utilitarios.AplicarTemaModerno(Me)
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Tareas MP", True, Me)
         Finally
             grillaTareasNodoMp.ResumeLayout(False)
             Me.ResumeLayout(True)
@@ -34,7 +34,7 @@ Public Class FrmBuscarTareasMp
             grillaTareasNodoMp.DataSource = filtro_tareas
             Utilitarios.AjustarColumnasGrilla(grillaTareasNodoMp)
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Tareas MP (Filtro Tarea)", True, Me)
         End Try
     End Sub
 

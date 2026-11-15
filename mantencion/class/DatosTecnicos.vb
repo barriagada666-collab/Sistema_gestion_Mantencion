@@ -22,7 +22,8 @@ Public Class DatosTecnicos
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Dato Técnico")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -44,7 +45,7 @@ Public Class DatosTecnicos
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Nuev I Dat Técnico")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -70,7 +71,7 @@ Public Class DatosTecnicos
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar ID Dato Técnico")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -97,7 +98,7 @@ Public Class DatosTecnicos
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar ID Dato Técnico Nodo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -127,7 +128,8 @@ Public Class DatosTecnicos
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar Dato Técnico")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -143,7 +145,7 @@ Public Class DatosTecnicos
                 DA.Fill(DST_DATOS_TECNICOS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Datos Técnicos")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -164,7 +166,7 @@ Public Class DatosTecnicos
                 DA.Fill(DST_DATOS_TECNICOS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Datos Técnicos Nodo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -183,7 +185,7 @@ Public Class DatosTecnicos
                 combo.ValueMember = "id_dato_tecnico"
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Combo Datos Técnicos")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -211,7 +213,8 @@ Public Class DatosTecnicos
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Dato Técnico Nodo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -240,7 +243,8 @@ Public Class DatosTecnicos
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar Dato Técnico Nodo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -326,7 +330,7 @@ Public Class DatosTecnicos
                     .fila_del_dato_tecnico = 0
                 End If
             Catch ex As Exception
-                MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+                RegistroErrores.MostrarYRegistrar(ex, "Limpiar Formulario Datos Técnicos Nodo")
             End Try
         End With
 
@@ -354,7 +358,8 @@ Public Class DatosTecnicos
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Eliminar Dato Técnico Nodo")
         Finally
             conexion.Desconectar(cnx)
         End Try

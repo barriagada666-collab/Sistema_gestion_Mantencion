@@ -19,9 +19,23 @@ Public Class Conexion
     End Property
 
     ''' <summary>
-    ''' Ruta del archivo local de configuración personalizada persistente.
+    ''' Ruta persistente y siempre escribible del archivo local de configuración personalizada.
     ''' </summary>
     Public Shared Function ObtenerRutaConfigPersonalizada() As String
+        Try
+            Dim appDataDir As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SistemaMantencion")
+            If Not String.IsNullOrWhiteSpace(appDataDir) Then
+                Return Path.Combine(appDataDir, "conexion_servidor.cfg")
+            End If
+        Catch
+        End Try
+        Return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "conexion_servidor.cfg")
+    End Function
+
+    ''' <summary>
+    ''' Ruta heredada en el directorio base del ejecutable (para instalaciones portables).
+    ''' </summary>
+    Public Shared Function ObtenerRutaConfigPortable() As String
         Return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "conexion_servidor.cfg")
     End Function
 
@@ -50,19 +64,23 @@ Public Class Conexion
     ''' </summary>
     Public Shared Function ObtenerConnectionString() As String
         If _connectionStringCache IsNot Nothing Then Return _connectionStringCache
-        
+
         Dim cadena As String = DefaultConnectionString
-        
-        ' 1. Intentar leer desde archivo de anulación local persistente (conexion_servidor.cfg)
+
+        ' 1. Prioridad: archivo de usuario en LocalApplicationData (sobreviene a actualizaciones y no requiere admin)
+        ' 2. Respaldo: archivo portable junto al ejecutable
+        ' 3. Respaldo: ConfigurationManager (.config XML)
         Try
-            Dim rutaLocalCfg As String = ObtenerRutaConfigPersonalizada()
-            If File.Exists(rutaLocalCfg) Then
-                Dim contenido As String = File.ReadAllText(rutaLocalCfg).Trim()
-                If Not String.IsNullOrEmpty(contenido) Then
-                    cadena = contenido
-                End If
+            Dim rutaUsuarioCfg As String = ObtenerRutaConfigPersonalizada()
+            Dim rutaPortableCfg As String = ObtenerRutaConfigPortable()
+
+            If File.Exists(rutaUsuarioCfg) Then
+                Dim contenido As String = File.ReadAllText(rutaUsuarioCfg).Trim()
+                If Not String.IsNullOrEmpty(contenido) Then cadena = contenido
+            ElseIf File.Exists(rutaPortableCfg) Then
+                Dim contenido As String = File.ReadAllText(rutaPortableCfg).Trim()
+                If Not String.IsNullOrEmpty(contenido) Then cadena = contenido
             Else
-                ' 2. Intentar leer desde ConfigurationManager (.config XML)
                 Dim setting = ConfigurationManager.ConnectionStrings("MantencionConnectionString")
                 If setting IsNot Nothing AndAlso Not String.IsNullOrEmpty(setting.ConnectionString) Then
                     cadena = setting.ConnectionString
@@ -77,7 +95,11 @@ Public Class Conexion
             sb.Pooling = True
             If sb.MinPoolSize < 5 Then sb.MinPoolSize = 5
             If sb.MaxPoolSize < 100 Then sb.MaxPoolSize = 100
-            If sb.ConnectTimeout > 15 OrElse sb.ConnectTimeout < 5 Then sb.ConnectTimeout = 10
+            If sb.ConnectTimeout < 5 Then
+                sb.ConnectTimeout = 10
+            ElseIf sb.ConnectTimeout > 120 Then
+                sb.ConnectTimeout = 120
+            End If
             sb.Enlist = False
             sb.PacketSize = 8192
             sb.MultipleActiveResultSets = True
@@ -123,16 +145,24 @@ Public Class Conexion
         End If
     End Sub
 
+    Private Shared _poolPrecalentadoIntentado As Boolean = False
+
     ''' <summary>
     ''' Precalienta el pool de conexiones en segundo plano para eliminar la latencia inicial al abrir formularios.
     ''' </summary>
     Public Shared Sub PrecalentarPool()
         System.Threading.ThreadPool.QueueUserWorkItem(Sub()
                                                          Try
-                                                             Using cnx As New SqlConnection(ObtenerConnectionString())
+                                                             Dim sb As New SqlConnectionStringBuilder(ObtenerConnectionString())
+                                                             If sb.ConnectTimeout > 6 Then sb.ConnectTimeout = 6
+                                                             Using cnx As New SqlConnection(sb.ConnectionString)
                                                                  cnx.Open()
                                                              End Using
-                                                         Catch
+                                                         Catch ex As Exception
+                                                             If Not _poolPrecalentadoIntentado Then
+                                                                 _poolPrecalentadoIntentado = True
+                                                                 RegistroErrores.RegistrarError(ex, "Precalentamiento de Pool SQL (Inicio)", "Fallo en segundo plano al verificar disponibilidad inicial del servidor.")
+                                                             End If
                                                          End Try
                                                      End Sub)
     End Sub
@@ -158,10 +188,12 @@ Public Class Conexion
             sb.ConnectTimeout = 5
             Using testCnx As New SqlConnection(sb.ConnectionString)
                 testCnx.Open()
-                Return (True, "Conexión establecida correctamente con el servidor SQL.")
+                Return (True, "Conexión establecida correctamente con el servidor SQL '" & sb.DataSource & "' (BD '" & sb.InitialCatalog & "').")
             End Using
         Catch ex As Exception
-            Return (False, ex.Message)
+            Dim rutaLog As String = RegistroErrores.RegistrarError(ex, "Prueba de Conexión SQL")
+            Dim diag = RegistroErrores.FormatearMensajeAmigable(ex, "Prueba de Conexión SQL", rutaLog)
+            Return (False, diag.Titulo & " — " & ex.Message & Environment.NewLine & "Verifique red/VPN, host/IP y puerto 1433. (Log guardado)")
         End Try
     End Function
 
@@ -171,30 +203,40 @@ Public Class Conexion
     Public Shared Function GuardarNuevaConexion(ByVal nuevaCadena As String) As (Exito As Boolean, Mensaje As String)
         Try
             Dim timestamp As String = DateTime.Now.ToString("yyyyMMdd_HHmmss")
-            
-            ' 1. Guardar en archivo local conexion_servidor.cfg con respaldo
-            Dim rutaLocalCfg As String = ObtenerRutaConfigPersonalizada()
-            If File.Exists(rutaLocalCfg) Then
-                Dim rutaBakLocal As String = rutaLocalCfg & "." & timestamp & ".bak"
-                File.Copy(rutaLocalCfg, rutaBakLocal, True)
+
+            ' 1. Guardar en LocalApplicationData (siempre escribible en Windows Program Files y macOS)
+            Dim rutaUsuarioCfg As String = ObtenerRutaConfigPersonalizada()
+            Dim dirUsuario As String = Path.GetDirectoryName(rutaUsuarioCfg)
+            If Not String.IsNullOrWhiteSpace(dirUsuario) AndAlso Not Directory.Exists(dirUsuario) Then
+                Directory.CreateDirectory(dirUsuario)
             End If
-            File.WriteAllText(rutaLocalCfg, nuevaCadena)
+            If File.Exists(rutaUsuarioCfg) Then
+                File.Copy(rutaUsuarioCfg, rutaUsuarioCfg & "." & timestamp & ".bak", True)
+            End If
+            File.WriteAllText(rutaUsuarioCfg, nuevaCadena)
 
-            ' 2. Actualizar también en el archivo XML de configuración (.dll.config)
-            Dim rutaXml As String = ObtenerRutaArchivoConfigXml()
-            If File.Exists(rutaXml) Then
-                ' Respaldo inmutable original si aún no existe
-                Dim rutaOriginalBak As String = rutaXml & ".original.bak"
-                If Not File.Exists(rutaOriginalBak) Then
-                    File.Copy(rutaXml, rutaOriginalBak, False)
+            ' 2. Copia best-effort en directorio base (instalaciones portables o desarrollo)
+            Try
+                Dim rutaPortableCfg As String = ObtenerRutaConfigPortable()
+                If Not String.Equals(rutaPortableCfg, rutaUsuarioCfg, StringComparison.OrdinalIgnoreCase) Then
+                    If File.Exists(rutaPortableCfg) Then
+                        File.Copy(rutaPortableCfg, rutaPortableCfg & "." & timestamp & ".bak", True)
+                    End If
+                    File.WriteAllText(rutaPortableCfg, nuevaCadena)
                 End If
-                
-                ' Respaldo con timestamp
-                Dim rutaTimestampBak As String = rutaXml & "." & timestamp & ".bak"
-                File.Copy(rutaXml, rutaTimestampBak, True)
+            Catch
+            End Try
 
-                ' Modificar el nodo de cadena de conexión
-                Try
+            ' 3. Actualizar también en el archivo XML de configuración (.dll.config) si es escribible
+            Try
+                Dim rutaXml As String = ObtenerRutaArchivoConfigXml()
+                If File.Exists(rutaXml) Then
+                    Dim rutaOriginalBak As String = rutaXml & ".original.bak"
+                    If Not File.Exists(rutaOriginalBak) Then
+                        File.Copy(rutaXml, rutaOriginalBak, False)
+                    End If
+                    File.Copy(rutaXml, rutaXml & "." & timestamp & ".bak", True)
+
                     Dim doc As New XmlDocument()
                     doc.Load(rutaXml)
                     Dim node As XmlNode = doc.SelectSingleNode("//connectionStrings/add[@name='MantencionConnectionString']")
@@ -202,11 +244,11 @@ Public Class Conexion
                         node.Attributes("connectionString").Value = nuevaCadena
                         doc.Save(rutaXml)
                     End If
-                Catch
-                End Try
-            End If
+                End If
+            Catch
+            End Try
 
-            ' 3. Actualizar también app.config si existe en la ruta de desarrollo
+            ' 4. Actualizar también app.config si existe en la ruta de desarrollo
             Try
                 Dim rutaAppConfig As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\..\..\app.config")
                 If File.Exists(rutaAppConfig) Then
@@ -225,13 +267,15 @@ Public Class Conexion
             Catch
             End Try
 
-            ' 4. Invalidar el caché en memoria para que tome efecto inmediato en caliente
+            ' 5. Invalidar el caché en memoria para que tome efecto inmediato en caliente
             _connectionStringCache = Nothing
+            _poolPrecalentadoIntentado = False
             InvalidarCacheCatalogos()
             ObtenerConnectionString()
 
             Return (True, "La configuración de conexión fue guardada y respaldada exitosamente.")
         Catch ex As Exception
+            RegistroErrores.RegistrarError(ex, "Guardar Nueva Conexión SQL")
             Return (False, "Error al guardar configuración: " & ex.Message)
         End Try
     End Function

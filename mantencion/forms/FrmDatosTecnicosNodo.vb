@@ -140,7 +140,7 @@ Public Class FrmDatosTecnicosNodo
                     cont_ing = 0
                     cont_upd = 0
                 Catch ex As Exception
-                    MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+                    RegistroErrores.MostrarYRegistrar(ex, "Datos Técnicos por Nodo (Guardar Datos)", True, Me)
                 End Try
 
             Else
@@ -179,7 +179,7 @@ Public Class FrmDatosTecnicosNodo
             lblGrillaDatosTecnicos.Text = "Datos Técnicos Asociados a " & arbol9.SelectedNode.Text
             grpFiltroDatosTecnicos.Enabled = True
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Datos Técnicos por Nodo (Buscar Dato Técnico)", True, Me)
         Finally
             grillaDatosTecnicosNodo.ResumeLayout(False)
         End Try
@@ -222,7 +222,7 @@ Public Class FrmDatosTecnicosNodo
                         .Rows.Remove(.CurrentRow)
                     End If
                 Catch ex As Exception
-                    MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+                    RegistroErrores.MostrarYRegistrar(ex, "Datos Técnicos por Nodo (Eliminar Dato Técnico)", True, Me)
                 End Try
 
             End If
@@ -243,7 +243,7 @@ Public Class FrmDatosTecnicosNodo
             grillaDatosTecnicosNodo.DataSource = filtro_datos_tecnicos
             Utilitarios.AjustarColumnasGrilla(grillaDatosTecnicosNodo)
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Datos Técnicos por Nodo (Filtro Descripción Dato Técnico)", True, Me)
         End Try
     End Sub
 
@@ -253,7 +253,7 @@ Public Class FrmDatosTecnicosNodo
         Try
             informes.expInfDatosTecnicos(grillaDatosTecnicosNodo)
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Datos Técnicos por Nodo (Exportar Excel)", True, Me)
         End Try
     End Sub
 
@@ -270,7 +270,7 @@ Public Class FrmDatosTecnicosNodo
             grillaDatosTecnicosNodo.DataSource = filtro_datos_tecnicos
             Utilitarios.AjustarColumnasGrilla(grillaDatosTecnicosNodo)
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Datos Técnicos por Nodo (Combo Grupo Dato Técnico)", True, Me)
         End Try
     End Sub
 End Class

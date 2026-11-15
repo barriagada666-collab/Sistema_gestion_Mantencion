@@ -25,7 +25,7 @@ Public Class FrmDetalleOtTipoFalla
             Utilitarios.AjustarColumnasGrilla(grillaOtTipoFalla)
             Label1.Text = "OT Recibidas : " & tipo_falla
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Detalle OT por Tipo de Falla", True, Me)
         Finally
             grillaOtTipoFalla.ResumeLayout(False)
             Me.Cursor = Cursors.Default

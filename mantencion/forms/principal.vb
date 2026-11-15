@@ -242,8 +242,16 @@ Public Class principal
     End Sub
 
     Private Sub ConfigurarServidorToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ConfigurarServidorToolStripMenuItem.Click
-        Using frm As New FrmConfiguracionServidor()
-            frm.ShowDialog(Me)
-        End Using
+        Try
+            Using frm As New FrmConfiguracionServidor()
+                frm.ShowDialog(Me)
+            End Using
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Configurar Servidor BD", True, Me, False)
+        End Try
+    End Sub
+
+    Private Sub VerRegistroErroresToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VerRegistroErroresToolStripMenuItem.Click
+        RegistroErrores.AbrirCarpetaLogs()
     End Sub
 End Class

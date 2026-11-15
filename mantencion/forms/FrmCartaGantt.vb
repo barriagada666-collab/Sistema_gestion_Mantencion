@@ -28,7 +28,7 @@ Public Class FrmCartaGantt
             End If
             Utilitarios.AjustarColumnasGrilla(grillaInfoGantt)
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Carta Gantt", True, Me)
         Finally
             grillaGraficoGantt.ResumeLayout(False)
             grillaInfoGantt.ResumeLayout(False)
@@ -62,7 +62,7 @@ Public Class FrmCartaGantt
             Try
                 informes.expInfGraficoGanttVariasMaq(grillaInfoGantt, grillaGraficoGantt, item_gantt, lblDesdeGantt.Text, lblHastaGantt.Text)
             Catch ex As Exception
-                MsgBox(ex.Message, MsgBoxStyle.Critical, "error")
+                RegistroErrores.MostrarYRegistrar(ex, "Carta Gantt (Exportar Excel)", True, Me)
             End Try
         Else
             MsgBox("Debe buscar los ciclos antes de exportar a Excel", MsgBoxStyle.Exclamation, "Validación")

@@ -24,7 +24,7 @@ Public Class Cargo
                 combo.ValueMember = "idcargo"
             End If
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "")
         Finally
             combo.EndUpdate()
         End Try
@@ -54,7 +54,7 @@ Public Class Cargo
                 combo.ValueMember = "idtipo"
             End If
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "")
         Finally
             combo.EndUpdate()
         End Try
@@ -81,7 +81,8 @@ Public Class Cargo
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Eliminar Cargo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -117,7 +118,8 @@ Public Class Cargo
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Cargo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -141,7 +143,8 @@ Public Class Cargo
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            respuesta = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Cargo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -171,7 +174,8 @@ Public Class Cargo
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar Cargo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -187,7 +191,7 @@ Public Class Cargo
                 DA.Fill(DST_CARGOS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Cargos")
         Finally
             conexion.Desconectar(cnx)
         End Try

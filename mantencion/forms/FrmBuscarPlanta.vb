@@ -14,7 +14,7 @@ Public Class FrmBuscarPlanta
             End If
             Utilitarios.AplicarTemaModerno(Me)
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Planta", True, Me)
         Finally
             Me.ResumeLayout(True)
         End Try
@@ -27,7 +27,7 @@ Public Class FrmBuscarPlanta
             FrmPlantas.txtNomPlanta.Text = grillaPlanta.Rows(e.RowIndex).Cells(1).Value.ToString()
             Me.Close()
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Planta (Grilla Planta)", True, Me)
         End Try
         
     End Sub

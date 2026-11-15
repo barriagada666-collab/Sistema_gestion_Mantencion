@@ -82,7 +82,7 @@ Public Class FrmDetalleOt
                 End If
             End If
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Detalle de OT", True, Me)
         Finally
             GrillaOtExternasDetalle.ResumeLayout(False)
             grillaInsumosOt.ResumeLayout(False)

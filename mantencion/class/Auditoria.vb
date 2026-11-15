@@ -14,7 +14,7 @@ Public Class Auditoria
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Informe Auditoría")
         Finally
             conexion.Desconectar(cnx)
         End Try

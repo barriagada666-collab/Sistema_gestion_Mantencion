@@ -45,7 +45,7 @@ Public Class FrmCalendarioTurno
             grpTurnosPersonal.Enabled = True
             grpOperaciones.Enabled = True
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Calendario de Turnos (Crear Fechas)", True, Me)
         Finally
             grillaCalendarioTurno.ResumeLayout(True)
         End Try
@@ -67,7 +67,7 @@ Public Class FrmCalendarioTurno
             fecha_desde.Value = Now
             fecha_hasta.Value = Now
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Calendario de Turnos (Limpiar)", True, Me)
         End Try
 
     End Sub
@@ -79,7 +79,7 @@ Public Class FrmCalendarioTurno
             calendario_personal.agregarPersonalCalendario(txtPersonalTurno.Text, fecha_desde.Value, fecha_hasta.Value, cmbTurno.Text)
             calendario_personal.limpiarProgramacionTurno()
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Calendario de Turnos (Agregar Personal)", True, Me)
         End Try
         
     End Sub

@@ -248,7 +248,7 @@ Public Class Utilitarios
             Try
                 File.Delete(rutaPdf)
             Catch ex As Exception
-                MessageBox.Show("El archivo PDF de destino está abierto en otro programa. Ciérrelo e intente nuevamente." & Environment.NewLine & ex.Message, "Exportar a PDF", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                RegistroErrores.MostrarYRegistrar(ex, "Exportar a PDF")
                 Exit Sub
             End Try
         End If
@@ -391,6 +391,7 @@ Public Class Utilitarios
             End Using
             Return File.Exists(rutaArchivo)
         Catch ex As Exception
+            RegistroErrores.RegistrarError(ex, "Exportar Grilla a PDF Nativo")
             Return False
         End Try
     End Function
@@ -613,7 +614,7 @@ Public Class Utilitarios
                 Return True
             End If
         Catch ex As Exception
-            MessageBox.Show("No se pudo guardar el libro Excel: " & ex.Message, "Exportar a Excel", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Libro Excel Nativo")
         End Try
         Return False
     End Function

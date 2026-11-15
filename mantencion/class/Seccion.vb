@@ -25,7 +25,7 @@ Public Class Seccion
                 combo.ValueMember = "CODIGO"
             End If
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "")
         Finally
             combo.EndUpdate()
         End Try
@@ -62,7 +62,8 @@ Public Class Seccion
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Sección")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -99,7 +100,8 @@ Public Class Seccion
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar Sección")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -132,7 +134,8 @@ Public Class Seccion
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Eliminar Sección")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -154,7 +157,7 @@ Public Class Seccion
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Sección")
         Finally
             conexion.Desconectar(cnx)
         End Try

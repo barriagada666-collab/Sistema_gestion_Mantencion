@@ -40,7 +40,7 @@ Public Class FrmAdminUsuarios
 
             If cod_resp = 1 Then
                 MsgBox(resp, MsgBoxStyle.Information, "Validación")
-            Else
+            ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                 MsgBox(resp, MsgBoxStyle.Critical, "Validación")
             End If
             usuario.LimpiarFrmUsuario()
@@ -189,7 +189,7 @@ Public Class FrmAdminUsuarios
             usuario.CrgPermisosFormUsuario(grillaPerModulos, grillaModOt, grillaPerMp, grillaPerMantenedores)
             ConfigurarEstiloGrillaUsuarios()
             Utilitarios.AjustarColumnasGrilla(grillaUsuarios)
-        Else
+        ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
             MsgBox(resp, MsgBoxStyle.Critical, "Validación")
         End If
     End Sub
@@ -207,7 +207,7 @@ Public Class FrmAdminUsuarios
                 usuario.LimpiarFrmUsuario()
                 ConfigurarEstiloGrillaUsuarios()
                 Utilitarios.AjustarColumnasGrilla(grillaUsuarios)
-            Else
+            ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                 MsgBox(resp, MsgBoxStyle.Critical, "Validación")
             End If
         End If
@@ -274,7 +274,7 @@ Public Class FrmAdminUsuarios
                     asignarPermiso(grillaPerMantenedores, 3, 15)
                 End If
             Catch ex As Exception
-                MsgBox(ex.Message, MsgBoxStyle.Exclamation, "Validación")
+                RegistroErrores.MostrarYRegistrar(ex, "Administración de Usuarios", True, Me)
             End Try
         End With
     End Sub

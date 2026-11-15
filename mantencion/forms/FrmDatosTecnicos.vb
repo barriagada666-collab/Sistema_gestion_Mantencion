@@ -24,7 +24,7 @@ Public Class FrmDatosTecnicos
             txtDescDatoTecnico.ResetText()
             opcDatoActivado.Checked = True
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Datos Técnicos (Limpiar)", True, Me)
         End Try
 
     End Sub

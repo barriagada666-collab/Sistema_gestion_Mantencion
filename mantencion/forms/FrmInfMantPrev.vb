@@ -219,7 +219,7 @@ Public Class FrmInfMantPrev
                 TabDetalleCicloMp.SelectedTab = TabDetalleCicloMp.TabPages(1)
             End If
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Mantención Preventiva (Buscar MP)", True, Me)
         Finally
             grillaTareasPendInfMp.ResumeLayout(False)
             grillaTareasInfMp.ResumeLayout(False)
@@ -245,7 +245,7 @@ Public Class FrmInfMantPrev
             End If
             btnGantt.Enabled = (grillaDetalleCicloMp.RowCount > 0)
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Mantención Preventiva (Grilla Informe Mantención)", True, Me)
         Finally
             grillaDetalleCicloMp.ResumeLayout(False)
         End Try
@@ -296,7 +296,7 @@ Public Class FrmInfMantPrev
             End If
 
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Mantención Preventiva (Grilla Detalle Ciclo MP)", True, Me)
         Finally
             TabDetalleCicloMp.ResumeLayout(False)
             Utilitarios.OptimizarMemoria()

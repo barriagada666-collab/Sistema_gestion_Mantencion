@@ -25,7 +25,7 @@ Public Class Planta
                 combo.ValueMember = "CODIGO"
             End If
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "")
         Finally
             combo.EndUpdate()
         End Try
@@ -62,7 +62,8 @@ Public Class Planta
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Planta")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -88,7 +89,8 @@ Public Class Planta
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar Planta")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -121,7 +123,8 @@ Public Class Planta
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Eliminar Planta")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -144,7 +147,7 @@ Public Class Planta
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Grilla Planta")
         Finally
             conexion.Desconectar(cnx)
         End Try

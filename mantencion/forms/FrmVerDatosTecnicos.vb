@@ -16,7 +16,7 @@ Public Class FrmVerDatosTecnicos
             Utilitarios.AjustarColumnasGrilla(grillaDatosTecnicosAsoc)
             Utilitarios.AplicarTemaModerno(Me)
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Ver Datos Técnicos", True, Me)
         Finally
             grillaDatosTecnicosAsoc.ResumeLayout(False)
             Me.ResumeLayout(True)

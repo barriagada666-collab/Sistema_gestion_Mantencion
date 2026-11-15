@@ -52,6 +52,7 @@ Partial Class principal
         Me.AuditoriaDeOperacionesToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparatorMantenedor = New System.Windows.Forms.ToolStripSeparator
         Me.ConfigurarServidorToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.VerRegistroErroresToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.SalirToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.CerrarSesiónToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.SalirToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem
@@ -381,5 +382,6 @@ Partial Class principal
     Friend WithEvents AsocDatosTécnicosItemsToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparatorMantenedor As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents ConfigurarServidorToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents VerRegistroErroresToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 End Class

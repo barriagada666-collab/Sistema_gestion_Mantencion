@@ -31,7 +31,8 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Mantención Preventiva")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -53,7 +54,7 @@ Public Class MantPreventiva
                 com.ExecuteNonQuery()
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Personal Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -83,7 +84,7 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Tareas Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -118,7 +119,8 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -147,7 +149,7 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Tareas Pendientes Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -176,7 +178,7 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Insumos MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -209,7 +211,8 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar Mantención Preventiva")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -238,7 +241,7 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar Tareas Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -266,7 +269,7 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar Insumos Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -301,7 +304,8 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -327,7 +331,7 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar Personal Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -398,7 +402,7 @@ Public Class MantPreventiva
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar MP Nodo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -416,7 +420,7 @@ Public Class MantPreventiva
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -435,7 +439,7 @@ Public Class MantPreventiva
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Personal Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -455,7 +459,7 @@ Public Class MantPreventiva
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Tareas Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -474,7 +478,7 @@ Public Class MantPreventiva
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Tareas Pendientes Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -496,7 +500,7 @@ Public Class MantPreventiva
                 combo.ValueMember = "idciclo"
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Combo Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -515,7 +519,7 @@ Public Class MantPreventiva
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Insumos Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -532,7 +536,7 @@ Public Class MantPreventiva
                 DA.Fill(DST_TAREAS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Tareas Nodo Todas")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -550,7 +554,7 @@ Public Class MantPreventiva
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Nodos Hijos MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -573,7 +577,7 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Nuevo ID MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -598,7 +602,7 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message)
+            RegistroErrores.MostrarYRegistrar(ex, "Nuevo ID Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -625,7 +629,7 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -653,7 +657,7 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -681,7 +685,7 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Ultimo Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -763,7 +767,8 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Eliminar Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -789,7 +794,8 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Eliminar Mantención Preventiva")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -815,7 +821,8 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Eliminar Insumo Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -841,7 +848,8 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Eliminar Personal Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -867,7 +875,8 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Eliminar Tarea Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -980,7 +989,7 @@ Public Class MantPreventiva
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe MP Todos")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -998,7 +1007,7 @@ Public Class MantPreventiva
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -1018,7 +1027,7 @@ Public Class MantPreventiva
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Tareas Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -1044,7 +1053,7 @@ Public Class MantPreventiva
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe MP Fechas")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -1070,7 +1079,7 @@ Public Class MantPreventiva
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe MP Tipo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -1089,7 +1098,7 @@ Public Class MantPreventiva
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Solo Tareas MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -1108,7 +1117,7 @@ Public Class MantPreventiva
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Personal Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -1127,7 +1136,7 @@ Public Class MantPreventiva
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Insumos Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -1147,7 +1156,7 @@ Public Class MantPreventiva
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Tareas Pendientes Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -1168,7 +1177,7 @@ Public Class MantPreventiva
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Ciclos Maquinas MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -1335,7 +1344,7 @@ Public Class MantPreventiva
             If hojas.Count > 0 AndAlso Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_MP_" & item, "INFORME DE MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) Then
                 Exit Sub
             End If
-            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe MP Excel")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -1399,7 +1408,7 @@ Public Class MantPreventiva
                Utilitarios.ExportarGrillaAExcelNativo(grilla_tareas_realizadas, "Informe_MP_Realizadas_" & item, "MANTENCIÓN PREVENTIVA - TAREAS REALIZADAS", "Ítem / Máquina: " & item) Then
                 Exit Sub
             End If
-            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe MP Excel Solo Realizadas")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -1462,7 +1471,7 @@ Public Class MantPreventiva
                Utilitarios.ExportarGrillaAExcelNativo(grilla_tareas_pend, "Informe_MP_Pendientes_" & item, "MANTENCIÓN PREVENTIVA - TAREAS PENDIENTES", "Ítem / Máquina: " & item) Then
                 Exit Sub
             End If
-            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe MP Excel Solo Pendientes")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -1584,7 +1593,7 @@ Public Class MantPreventiva
         Catch ex As Exception
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
             Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            MsgBox("Error durante la exportación a Excel: " & ex.Message, MsgBoxStyle.Critical, "Exportar Excel")
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Gantt Todo")
         Finally
             Utilitarios.OptimizarMemoria()
         End Try
@@ -1753,7 +1762,7 @@ Public Class MantPreventiva
                 End If
             Catch
             End Try
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar PDF")
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe MP a PDF")
         Finally
             Utilitarios.LiberarExcel(workbook, excelApp)
         End Try
@@ -1829,7 +1838,7 @@ Public Class MantPreventiva
                 End If
             Catch
             End Try
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar PDF")
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Tareas Realizadas MP a PDF")
         Finally
             Utilitarios.LiberarExcel(workbook, excelApp)
         End Try
@@ -1904,7 +1913,7 @@ Public Class MantPreventiva
                 End If
             Catch
             End Try
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Exportar PDF")
+            RegistroErrores.MostrarYRegistrar(ex, "Exportar Tareas Pendientes MP a PDF")
         Finally
             Utilitarios.LiberarExcel(workbook, excelApp)
         End Try
@@ -1981,7 +1990,7 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar ID Nodo Tareas MP")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -2007,7 +2016,7 @@ Public Class MantPreventiva
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Horas Transcurridas Ciclo MP")
         Finally
             conexion.Desconectar(cnx)
         End Try

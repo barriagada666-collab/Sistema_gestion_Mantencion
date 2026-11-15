@@ -25,7 +25,7 @@ Public Class FrmDetalleOTDia
             Utilitarios.AjustarColumnasGrilla(grillaOtDetalleDia)
             Label1.Text = "OT Recibidas En : " & fecha
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Error")
+            RegistroErrores.MostrarYRegistrar(ex, "Detalle OT por Día", True, Me)
         Finally
             grillaOtDetalleDia.ResumeLayout(False)
             Me.Cursor = Cursors.Default

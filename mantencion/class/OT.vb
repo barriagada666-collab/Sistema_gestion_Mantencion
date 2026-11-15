@@ -41,7 +41,8 @@ Public Class OT
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar OT Abierta")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -93,7 +94,8 @@ Public Class OT
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar OT Cerrada")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -122,7 +124,7 @@ Public Class OT
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Personal OT")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -151,7 +153,7 @@ Public Class OT
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar OT Externa")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -178,7 +180,7 @@ Public Class OT
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Ingresar Insumos OT")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -223,7 +225,8 @@ Public Class OT
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar OT Abierta")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -275,7 +278,8 @@ Public Class OT
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar OT Cerrada")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -300,7 +304,7 @@ Public Class OT
                 com.ExecuteNonQuery()
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar Personal OT")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -324,7 +328,7 @@ Public Class OT
                 com.ExecuteNonQuery()
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar Insumos OT")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -349,7 +353,7 @@ Public Class OT
                 com.ExecuteNonQuery()
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Actualizar OT Externa")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -390,7 +394,7 @@ Public Class OT
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Orden Trabajo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -410,7 +414,7 @@ Public Class OT
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Personal OT")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -430,7 +434,7 @@ Public Class OT
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar OT Externa")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -450,7 +454,7 @@ Public Class OT
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Insumos OT")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -558,7 +562,7 @@ Public Class OT
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar N° OT")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -585,7 +589,8 @@ Public Class OT
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Eliminar Orden Trabajo")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -611,7 +616,8 @@ Public Class OT
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Eliminar Personal OT")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -637,7 +643,8 @@ Public Class OT
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Eliminar OT Externa")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -663,7 +670,8 @@ Public Class OT
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Eliminar Insumo OT")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -698,7 +706,7 @@ Public Class OT
             End Using
             _cacheAutocompletarPersonal = coleccion
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Obtener Colección Autocompletar Personal")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -713,7 +721,7 @@ Public Class OT
             textbox.AutoCompleteSource = AutoCompleteSource.CustomSource
             textbox.AutoCompleteCustomSource = coleccion
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Autocompletar Personal")
         End Try
     End Sub
 
@@ -729,7 +737,7 @@ Public Class OT
                 End If
             Next
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Autocompletar Personal")
         End Try
     End Sub
 
@@ -849,7 +857,7 @@ Public Class OT
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe OT")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -881,7 +889,7 @@ Public Class OT
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe OT Historico")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -927,7 +935,7 @@ Public Class OT
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox("Error al consultar OTs por nodo: " & ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe OT Con Nodos")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -949,7 +957,7 @@ Public Class OT
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe OT Resumen Recibida Por")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -971,7 +979,7 @@ Public Class OT
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe OT Resumen Cerrada Por Técnico")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -993,7 +1001,7 @@ Public Class OT
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe OT Resumen Por Día")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -1015,7 +1023,7 @@ Public Class OT
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe OT Resumen Por Mes")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -1037,7 +1045,7 @@ Public Class OT
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe OT Resumen Por Turno")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -1059,7 +1067,7 @@ Public Class OT
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe OT Por Tipo Falla")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -1081,7 +1089,7 @@ Public Class OT
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe OT Por Estado")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -1232,7 +1240,8 @@ Public Class OT
                 End Using
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            cod_resp = -1
+            RegistroErrores.MostrarYRegistrar(ex, "Anular OT")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -1253,7 +1262,7 @@ Public Class OT
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Personal OT")
         Finally
             conexion.Desconectar(cnx)
         End Try
@@ -1393,7 +1402,7 @@ Public Class OT
                     Utilitarios.AbrirDocumento(rutaPdf)
                 End If
             Catch ex2 As Exception
-                MsgBox("Error durante la exportación a PDF: " & ex2.Message, MsgBoxStyle.Critical, "Exportar PDF")
+                RegistroErrores.MostrarYRegistrar(ex2, "Exportar Informe OT PDF")
             End Try
         Finally
             Utilitarios.LiberarExcel(workbook, excelApp)
@@ -1423,7 +1432,7 @@ Public Class OT
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Critical, "Validación")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Detalle Resumen OT")
         Finally
             conexion.Desconectar(cnx)
         End Try
