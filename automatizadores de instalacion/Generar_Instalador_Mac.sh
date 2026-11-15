@@ -173,11 +173,18 @@ WINE_ARM64_DIR="$APP_BUNDLE/Contents/Resources/wine-arm64"
 WINE_ARM64_URL="https://github.com/metalsharp/MetalSharp-Wine/releases/download/v7.0/metalsharp-wine-7.0-arm64.tar.xz"
 TMP_ARM64_DL="/tmp/wine-arm64-dl-$$"
 mkdir -p "$TMP_ARM64_DL"
+WINE_CACHE_DIR="${WINE_CACHE_DIR:-}"
+if [[ -n "$WINE_CACHE_DIR" ]]; then
+    mkdir -p "$WINE_CACHE_DIR"
+    ARM64_TARBALL="$WINE_CACHE_DIR/metalsharp-wine-7.0-arm64.tar.xz"
+else
+    ARM64_TARBALL="$TMP_ARM64_DL/wine-arm64.tar.xz"
+fi
 
-echo "       Descargando motor nativo ARM64 (MetalSharp-Wine v7.0)..."
-if curl -fSL --retry 3 "$WINE_ARM64_URL" -o "$TMP_ARM64_DL/wine-arm64.tar.xz"; then
+echo "       Obteniendo motor nativo ARM64 (MetalSharp-Wine v7.0)..."
+if [[ -s "$ARM64_TARBALL" ]] || curl -fSL --retry 3 "$WINE_ARM64_URL" -o "$ARM64_TARBALL"; then
     mkdir -p "$TMP_ARM64_DL/extracted"
-    tar -xJf "$TMP_ARM64_DL/wine-arm64.tar.xz" \
+    tar -xJf "$ARM64_TARBALL" \
         --exclude="*/include" \
         --exclude="*/lib/gstreamer-1.0" \
         --exclude="*/lib/mullion" \
@@ -278,9 +285,15 @@ WINE_X64_DIR="$APP_BUNDLE/Contents/Resources/wine-x64"
 WINE_X64_URL="https://github.com/Gcenx/macOS_Wine_builds/releases/download/11.21/wine-staging-11.21-osx64.tar.xz"
 TMP_X64_DL="/tmp/wine-x64-dl-$$"
 mkdir -p "$TMP_X64_DL"
+if [[ -n "$WINE_CACHE_DIR" ]]; then
+    X64_TARBALL="$WINE_CACHE_DIR/wine-staging-11.21-osx64.tar.xz"
+else
+    X64_TARBALL="$TMP_X64_DL/wine-x64.tar.xz"
+fi
 
-echo "       Descargando motor Intel x86_64 (Wine Staging 11.21)..."
-if curl -fSL --retry 3 "$WINE_X64_URL" | tar -xJf - \
+echo "       Obteniendo motor Intel x86_64 (Wine Staging 11.21)..."
+if [[ -s "$X64_TARBALL" ]] || curl -fSL --retry 3 "$WINE_X64_URL" -o "$X64_TARBALL"; then
+    tar -xJf "$X64_TARBALL" \
         --exclude="Wine Staging.app/Contents/Resources/wine/include" \
         --exclude="Wine Staging.app/Contents/Resources/wine/share/man" \
         --exclude="Wine Staging.app/Contents/Resources/wine/share/doc" \
@@ -289,7 +302,7 @@ if curl -fSL --retry 3 "$WINE_X64_URL" | tar -xJf - \
         --exclude="Wine Staging.app/Contents/Resources/wine/share/wine/mono" \
         --exclude="Wine Staging.app/Contents/Resources/wine/lib/wine/i386-windows" \
         --exclude="Wine Staging.app/Contents/Resources/wine/lib/wine/x86_64-windows/*.a" \
-        -C "$TMP_X64_DL" 2>/dev/null; then
+        -C "$TMP_X64_DL" 2>/dev/null || true
     if [[ -d "$TMP_X64_DL/Wine Staging.app/Contents/Resources/wine" ]]; then
         mv "$TMP_X64_DL/Wine Staging.app/Contents/Resources/wine" "$WINE_X64_DIR"
         rm -f "$WINE_X64_DIR/lib/wine/x86_64-unix/winegstreamer.so" \
@@ -680,16 +693,24 @@ mkdir -p "$ROOT_DIR/Instalador"
 ZIP_OUTPUT="$ROOT_DIR/Instalador/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip"
 rm -f "$ZIP_OUTPUT"
 
-cd "$DIST_MAC"
-zip -9 -r -y "$ZIP_OUTPUT" "$APP_NAME.app" "Instalar_en_Mac.command" "Iniciar_con_Whisky.command" "LEAME_MAC.html"
+if [[ "${SKIP_ARCHIVE:-0}" == "1" ]]; then
+    echo ""
+    echo "=========================================================="
+    echo "  APP BUNDLE GENERADO (SKIP_ARCHIVE=1 -> se comprimirá tras pruebas)"
+    echo "  Bundle: $APP_BUNDLE"
+    echo "=========================================================="
+else
+    cd "$DIST_MAC"
+    zip -9 -r -y "$ZIP_OUTPUT" "$APP_NAME.app" "Instalar_en_Mac.command" "Iniciar_con_Whisky.command" "LEAME_MAC.html"
 
-ZIP_HASH=$( (command -v sha256sum >/dev/null && sha256sum "$ZIP_OUTPUT" || shasum -a 256 "$ZIP_OUTPUT") | awk '{print $1}' )
-ZIP_SIZE_MB=$(du -m "$ZIP_OUTPUT" | awk '{print $1}')
+    ZIP_HASH=$( (command -v sha256sum >/dev/null && sha256sum "$ZIP_OUTPUT" || shasum -a 256 "$ZIP_OUTPUT") | awk '{print $1}' )
+    ZIP_SIZE_MB=$(du -m "$ZIP_OUTPUT" | awk '{print $1}')
 
-echo ""
-echo "=========================================================="
-echo "  PAQUETE MACOS UNIVERSAL NATIVO GENERADO EXITOSAMENTE"
-echo "  Archivo: $ZIP_OUTPUT"
-echo "  Tamaño : ~$ZIP_SIZE_MB MB"
-echo "  SHA256 : $ZIP_HASH"
-echo "=========================================================="
+    echo ""
+    echo "=========================================================="
+    echo "  PAQUETE MACOS UNIVERSAL NATIVO GENERADO EXITOSAMENTE"
+    echo "  Archivo: $ZIP_OUTPUT"
+    echo "  Tamaño : ~$ZIP_SIZE_MB MB"
+    echo "  SHA256 : $ZIP_HASH"
+    echo "=========================================================="
+fi

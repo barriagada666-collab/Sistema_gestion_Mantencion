@@ -163,35 +163,31 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: 3. Instalar llvm-strip si no está presente (para optimizar binarios PE ARM64)
+      - name: 3. Cachear Motores Wine (MetalSharp ARM64 + Wine Staging x64)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/wine-downloads
+          key: macos-wine-engines-v7.0-11.21
+
+      - name: 4. Instalar llvm-strip si no está presente (para optimizar binarios PE ARM64)
         run: |
           if ! command -v llvm-strip &>/dev/null && [ ! -x /opt/homebrew/opt/llvm/bin/llvm-strip ]; then
             brew install llvm
           fi
 
-      - name: 4. Publicar Aplicación Autocontenida (win-arm64 y win-x64)
+      - name: 5. Publicar Aplicación Autocontenida (win-arm64 y win-x64)
         run: |
           dotnet publish mantencion/mantencion.vbproj -c Release -r win-arm64 --self-contained true -o mantencion/bin/Release/net8-selfcontained-arm64 -p:EnableWindowsTargeting=true --nologo -v m
           dotnet publish mantencion/mantencion.vbproj -c Release -r win-x64 --self-contained true -o mantencion/bin/Release/net8-selfcontained-x64 -p:EnableWindowsTargeting=true --nologo -v m
 
-      - name: 5. Generar macOS App Bundle Universal Nativo y DMG con hdiutil (LZMA compacto)
+      - name: 6. Generar macOS App Bundle Universal Nativo
         run: |
           chmod +x "automatizadores de instalacion/Generar_Instalador_Mac.sh"
-          "./automatizadores de instalacion/Generar_Instalador_Mac.sh"
+          SKIP_ARCHIVE=1 WINE_CACHE_DIR="$HOME/.cache/wine-downloads" "./automatizadores de instalacion/Generar_Instalador_Mac.sh"
 
-          # Generar DMG oficial de macOS con compresión LZMA (ULMO)
-          DMG_NAME="Instalador_Sistema_Mantencion_v2026.1_macOS.dmg"
-          hdiutil create -volname "Sistema Mantencion" -srcfolder "dist-mac" -ov -format ULMO "Instalador/$DMG_NAME"
-
-          # Checksums
-          cd Instalador
-          shasum -a 256 "$DMG_NAME" > checksums_mac_sha256.txt
-          shasum -a 256 "Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip" >> checksums_mac_sha256.txt
-          cat checksums_mac_sha256.txt
-
-      - name: 6. Pruebas Exhaustivas en Apple Silicon (ARM64 sin Rosetta 2)
+      - name: 7. Pruebas Exhaustivas en Apple Silicon (ARM64 sin Rosetta 2)
         run: |
-          APP_BUNDLE="dist-mac/Sistema de Gestion Mantencion.app"
+          APP_BUNDLE="$(pwd)/dist-mac/Sistema de Gestion Mantencion.app"
           echo "=== Arquitectura del Runner: $(uname -m) ==="
 
           # 1. Verificar Mach-O Universal (arm64 + x86_64) en Contents/MacOS/launcher
@@ -243,7 +239,7 @@ jobs:
               sleep 6
               kill "$DIAG_PID" 2>/dev/null || true
               "$WINE_ARM/bin/wineserver" -k 2>/dev/null || true
-              cat /tmp/ci-diag-arm64.log | grep -iE "System\.|coreclr|host|load_dll|failed|err:|Unhandled|FileNotFound|Exception" | head -n 80 || true
+              grep -iE "System\.Runtime|coreclr|hostfxr|hostpolicy|err:|Unhandled|FileNotFound|Exception|load_dll.*Sistema" /tmp/ci-diag-arm64.log | tail -n 80 || true
 
               echo "=== 2) PRUEBA COMPARATIVA: app-x64 bajo wine-arm64 (FEX sin Rosetta) ==="
               mkdir -p "$HOME/.ci-prefix-fex"
@@ -303,7 +299,27 @@ jobs:
             rm -rf "$HOME/Library/Application Support/SistemaMantencion" "$HOME/Library/Logs/SistemaMantencion" /tmp/ci-launcher-stdout.log
           fi
 
-      - name: 7. Publicar Artefacto - Instalador macOS (DMG y ZIP)
+      - name: 8. Comprimir DMG (ULMO LZMA) y ZIP (-9) + Checksums SHA256
+        run: |
+          mkdir -p Instalador
+          DMG_NAME="Instalador_Sistema_Mantencion_v2026.1_macOS.dmg"
+          ZIP_NAME="Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip"
+
+          (
+            cd dist-mac
+            zip -9 -r -y "../Instalador/$ZIP_NAME" "Sistema de Gestion Mantencion.app" "Instalar_en_Mac.command" "Iniciar_con_Whisky.command" "LEAME_MAC.html"
+          )
+
+          hdiutil create -volname "Sistema Mantencion" -srcfolder "dist-mac" -ov -format ULMO "Instalador/$DMG_NAME"
+
+          cd Instalador
+          shasum -a 256 "$DMG_NAME" > checksums_mac_sha256.txt
+          shasum -a 256 "$ZIP_NAME" >> checksums_mac_sha256.txt
+          cat checksums_mac_sha256.txt
+          ls -lh "$DMG_NAME" "$ZIP_NAME"
+
+
+      - name: 9. Publicar Artefacto - Instalador macOS (DMG y ZIP)
         uses: actions/upload-artifact@v4
         with:
           name: Instalador-Sistema-Mantencion-v2026.1-macOS
@@ -314,7 +330,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: 8. Publicar en GitHub Releases (macOS Assets)
+      - name: 10. Publicar en GitHub Releases (macOS Assets)
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
