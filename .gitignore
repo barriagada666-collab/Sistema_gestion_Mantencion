@@ -18,14 +18,9 @@ mantencion/obj/
 *.bak
 Backup/
 
-# Binarios de distribución (publicados en GitHub Releases / Packages)
-Instalador/*.exe
-Instalador/*.zip
-Instalador/*.dmg
+# Carpetas temporales de empaquetado (los releases finales se conservan en Instalador/)
 dist-mac/
 nupkg/
-*.nupkg
-*.snupkg
 
 # Credenciales locales y tokens (no sincronizar con Git)
 .github_token
