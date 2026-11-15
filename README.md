@@ -17,7 +17,7 @@
 
 <p align="center">
   <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe"><img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_WINDOWS-v2026.1_LTS_(55.5_MB)-025E87?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar Windows" /></a>&nbsp;
-  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg"><img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_MAC_(DMG)-v2026.1_Universal_(92_MB)-0e705b?style=for-the-badge&logo=apple&logoColor=white" alt="Descargar Mac DMG" /></a>
+  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg"><img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_MAC_(DMG)-v2026.1_Universal_(437_MB)-0e705b?style=for-the-badge&logo=apple&logoColor=white" alt="Descargar Mac DMG" /></a>
 </p>
 
 </div>
@@ -108,21 +108,21 @@ Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en
 | Plataforma | Formato | Tamaño | Enlace Directo |
 | :--- | :---: | :---: | :--- |
 | 🪟 **Windows 10 / 11** (64-bit) | `.exe` | 55.5 MB | [⬇️ **Descargar Instalador Windows**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) |
-| 🍏 **macOS Universal** (M1–M4 / Intel) | `.dmg` | 192 MB | [⬇️ **Descargar Imagen DMG para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) |
-| 🍏 **macOS Universal** (M1–M4 / Intel) | `.zip` | 169 MB | [⬇️ **Descargar Paquete ZIP para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) |
-| 📦 **GitHub Packages** | `.nupkg` | 2.4 MB | [⬇️ **Descargar Paquete NuGet**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Sistema.Gestion.Mantencion.2026.1.0.nupkg) |
+| 🍏 **macOS Universal Nativo** (M1–M4 sin Rosetta / Intel) | `.dmg` | 437 MB | [⬇️ **Descargar Imagen DMG para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) |
+| 🍏 **macOS Universal Nativo** (M1–M4 sin Rosetta / Intel) | `.zip` | 386 MB | [⬇️ **Descargar Paquete ZIP para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) |
+| 📦 **GitHub Packages** | `.nupkg` | 2.3 MB | [⬇️ **Descargar Paquete NuGet**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Sistema.Gestion.Mantencion.2026.1.0.nupkg) |
 
-> 📁 *Todos los archivos binarios de instalación también se encuentran permanentemente archivados en la carpeta [`/Instalador`](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/tree/main/Instalador) del repositorio.*
+> 📁 *Todos los archivos binarios de instalación también están disponibles en la carpeta [`/Instalador`](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/tree/main/Instalador) del repositorio.*
 
 <details>
 <summary>🔐 <b>Verificación de Integridad (Hashes SHA-256)</b></summary>
 <br>
 
 ```text
-BB8A88FB5FFA051DB6E1294A246EAAAA3377AF8E0E3F91672A81ADB1FAAEB953  Instalador_Sistema_Mantencion_v2026.1.exe
-bb9d9bfa0013d66968aa72330b12ac2205fd8a04c18427fc0c88dcf4a7094ef5  Instalador_Sistema_Mantencion_v2026.1_macOS.dmg
-c7679ad6dcda6c2691ce8ea434b938d01b7b18029091fd51f5878d2eab9d5348  Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip
-b47b134a88f7fc8ea4b26d3b6ab0612f865cd6f9e2d33dfaafb1a328c773ff37  Sistema.Gestion.Mantencion.2026.1.0.nupkg
+143C65172972D0096918DDBAE0EF2252FEA2E61971F8B6F8F08FEC989B7D2C68  Instalador_Sistema_Mantencion_v2026.1.exe
+5db63c20577b81075c8dcb5e3b502d11144071c61c335ed3d53104154cb156b7  Instalador_Sistema_Mantencion_v2026.1_macOS.dmg
+49266e7b190a8f331ce2d9411dc5dbcbaf7171360375890ba7ae4ce17f664d66  Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip
+bfbece97cca7126e39531fa992662eb36bb15839ac6687d1355a8e97e4e81202  Sistema.Gestion.Mantencion.2026.1.0.nupkg
 ```
 
 </details>
