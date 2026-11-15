@@ -9,6 +9,7 @@ on:
     paths-ignore:
       - '**.md'
       - '.gitignore'
+      - 'Instalador/**'
   pull_request:
     branches:
       - main
@@ -196,4 +197,50 @@ jobs:
             Instalador/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip
             Instalador/checksums_mac_sha256.txt
           token: ${{ secrets.GITHUB_TOKEN }}
+
+  sync-installers-to-repo:
+    name: Sincronizar Instaladores Oficiales en Carpeta /Instalador
+    needs: [build-and-package, build-mac-installer]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar Código Fuente (Checkout)
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Descargar Artefactos Windows y NuGet
+        uses: actions/download-artifact@v4
+        with:
+          name: Instalador-Sistema-Mantencion-v2026.1
+          path: temp-win
+
+      - name: Descargar Artefactos macOS
+        uses: actions/download-artifact@v4
+        with:
+          name: Instalador-Sistema-Mantencion-v2026.1-macOS
+          path: temp-mac
+
+      - name: Copiar Archivos a /Instalador
+        run: |
+          mkdir -p Instalador
+          cp -fv temp-win/Instalador/* Instalador/ 2>/dev/null || cp -fv temp-win/* Instalador/ 2>/dev/null || true
+          cp -fv temp-mac/Instalador/* Instalador/ 2>/dev/null || cp -fv temp-mac/* Instalador/ 2>/dev/null || true
+          if [ -d "temp-win/nupkg" ]; then cp -fv temp-win/nupkg/*.nupkg Instalador/ 2>/dev/null || true; fi
+          rm -rf temp-win temp-mac
+          ls -la Instalador/
+
+      - name: Commit y Push a main en el repositorio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Instalador/
+          if git diff --staged --quiet; then
+            echo "No hay cambios pendientes en Instalador/."
+          else
+            git commit -m "chore(release): actualizar instaladores en /Instalador [skip ci]"
+            git push origin main
+          fi
+
 
