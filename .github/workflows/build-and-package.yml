@@ -214,6 +214,7 @@ jobs:
             export WINEARCH=win64
             export WINEDEBUG=-all
             export WINEDLLOVERRIDES="mscoree,mshtml="
+            export DOTNET_SYSTEM_GLOBALIZATION_USENLS=1
             export DYLD_FALLBACK_LIBRARY_PATH="$WINE_ARM/lib"
             export WINEDLLPATH="$WINE_ARM/lib/wine"
             export WINESERVER="$WINE_ARM/bin/wineserver"
@@ -229,13 +230,16 @@ jobs:
             echo "Verificando arranque .NET 8 win-arm64 bajo wine-arm64..."
             "$WINE_ARM/bin/wine-launcher" "$APP_BUNDLE/Contents/Resources/app-arm64/Sistema de Gestion Mantencion.exe" >/tmp/ci-app-arm64.log 2>&1 &
             APP_PID=$!
-            sleep 6
+            sleep 8
             if kill -0 "$APP_PID" 2>/dev/null; then
               echo "✓ Proceso .NET 8 win-arm64 en ejecución nativa estable (PID $APP_PID)."
               kill "$APP_PID" 2>/dev/null || true
             else
               wait "$APP_PID" || APP_EXIT=$?
-              echo "[INFO] Proceso finalizó con código: ${APP_EXIT:-0}"
+              echo "[ERROR] Proceso finalizó prematuramente con código: ${APP_EXIT:-0}"
+              cat /tmp/ci-app-arm64.log || true
+              "$WINE_ARM/bin/wineserver" -k 2>/dev/null || true
+              exit 1
             fi
             cat /tmp/ci-app-arm64.log || true
             "$WINE_ARM/bin/wineserver" -k 2>/dev/null || true

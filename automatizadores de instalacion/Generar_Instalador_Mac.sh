@@ -407,6 +407,8 @@ export WINEFSYNC=1
 export WINEESYNC=1
 # Desactiva diálogos de descarga de Wine Mono y Wine Gecko (.NET 8 ya es autocontenido)
 export WINEDLLOVERRIDES="mscoree,mshtml="
+# Usa tablas NLS nativas de Wine en lugar de icu.dll (evita "Could not load ICU data. UErrorCode: 2")
+export DOTNET_SYSTEM_GLOBALIZATION_USENLS=1
 
 if [[ -d "$WINE_DIR/lib" ]]; then
     export DYLD_FALLBACK_LIBRARY_PATH="$WINE_DIR/lib:${DYLD_FALLBACK_LIBRARY_PATH:-}"
