@@ -351,7 +351,7 @@ jobs:
           rm -rf temp-win temp-mac
           ls -la Instalador/
 
-      - name: Commit y Push a main en el repositorio
+      - name: Commit, Push a main y Actualizar Tag v2026.1 (Source code)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -363,5 +363,7 @@ jobs:
             git commit -m "chore(release): actualizar instaladores en /Instalador [skip ci]"
             git push origin main
           fi
+          git tag -f v2026.1 HEAD
+          git push origin v2026.1 --force
 
 
