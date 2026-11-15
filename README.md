@@ -32,6 +32,34 @@ Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en
 
 ---
 
+## 🖼️ Galería Visual (Carrusel Dinámico de Pantallas)
+
+<p align="center">
+  <img src="docs/screenshots/carrusel_mockups.gif" alt="Carrusel dinámico de pantallas del Sistema de Gestión Mantención v2026.1 LTS" width="920" />
+</p>
+
+<details>
+<summary>📸 <strong>Ver galería completa por pantalla (10 capturas en alta resolución · Windows 11 &amp; macOS Universal)</strong></summary>
+
+<br/>
+
+| # | Módulo / Formulario | Vista Previa |
+| :---: | :--- | :---: |
+| **01** | **Inicio &amp; Login Limpio** (`Inicio`, `Login`)<br/><sub>Arranque corporativo y acceso limpio sin botones de servidor expuestos; ofrece configuración SQL solo si falla la conexión.</sub> | [<img src="docs/screenshots/01_inicio_login.png" width="380" alt="Inicio y Login"/>](docs/screenshots/01_inicio_login.png) |
+| **02** | **Menú Principal MDI** (`principal`)<br/><sub>Barra corporativa `#0F2D44` con control granular de permisos por perfil y accesos rápidos en macOS / Windows.</sub> | [<img src="docs/screenshots/02_menu_principal.png" width="380" alt="Menú Principal MDI"/>](docs/screenshots/02_menu_principal.png) |
+| **03** | **Gestión de Órdenes de Trabajo** (`frm_OT`)<br/><sub>Árbol jerárquico de plantas/equipos, registro de fallas, tiempos de detención, personal, insumos y cierre.</sub> | [<img src="docs/screenshots/03_gestion_ot.png" width="380" alt="Gestión OT"/>](docs/screenshots/03_gestion_ot.png) |
+| **04** | **Mantención Preventiva &amp; Ciclos** (`FrmMp`, `FrmPlanificarCiclos`)<br/><sub>Pautas por frecuencia horaria, planificación masiva de ciclos, checklists mecánicos/eléctricos e insumos.</sub> | [<img src="docs/screenshots/04_mant_preventiva.png" width="380" alt="Mantención Preventiva"/>](docs/screenshots/04_mant_preventiva.png) |
+| **05** | **Carta Gantt Preventiva** (`FrmCartaGantt`, `FrmInfMantPrevCiclosMaq`)<br/><sub>Visualización temporal multi-máquina con rango obligatorio de fechas y exportación directa a Excel y PDF.</sub> | [<img src="docs/screenshots/05_carta_gantt.png" width="380" alt="Carta Gantt"/>](docs/screenshots/05_carta_gantt.png) |
+| **06** | **Estadísticas &amp; KPIs** (`FrmResumenes`, `FrmDetalleOt*`)<br/><sub>6 tarjetas KPI en vivo, rankings por máquina, técnico, tipo de falla y turno con detalle drill-down.</sub> | [<img src="docs/screenshots/06_estadisticas_kpi.png" width="380" alt="Estadísticas y KPIs"/>](docs/screenshots/06_estadisticas_kpi.png) |
+| **07** | **Informes OT &amp; Visor Nativo** (`FrmInfOT`, `FrmInfOtCR`)<br/><sub>Exportación autónoma a Excel (SpreadsheetML) y PDF vectorial (iTextSharp) sin Crystal Reports ni Office.</sub> | [<img src="docs/screenshots/07_informes_visor.png" width="380" alt="Informes OT"/>](docs/screenshots/07_informes_visor.png) |
+| **08** | **Activos, Nodos &amp; Fichas Técnicas** (`FrmAdminNodos`, `FrmDatosTecnicosNodo`)<br/><sub>Árbol Empresa → Planta → Sección → Máquina → Módulo con códigos SAP, RMES y atributos técnicos.</sub> | [<img src="docs/screenshots/08_nodos_tecnicos.png" width="380" alt="Nodos y Datos Técnicos"/>](docs/screenshots/08_nodos_tecnicos.png) |
+| **09** | **Auditoría BD &amp; Seguridad** (`FrmAdminAuditoria`, `FrmAdminUsuarios`)<br/><sub>Trazabilidad completa de operaciones SQL con filtros en vivo, KPIs, perfiles y matriz de permisos.</sub> | [<img src="docs/screenshots/09_auditoria_usuarios.png" width="380" alt="Auditoría y Usuarios"/>](docs/screenshots/09_auditoria_usuarios.png) |
+| **10** | **Configurador SQL &amp; Logs** (`FrmConfiguracionServidor`, `RegistroErrores`)<br/><sub>Asistente bajo demanda con prueba de conexión, respaldo automático de `App.config` y registro de errores.</sub> | [<img src="docs/screenshots/10_configurador_sql.png" width="380" alt="Configurador SQL"/>](docs/screenshots/10_configurador_sql.png) |
+
+</details>
+
+---
+
 ## ⚙️ ¿Qué hace el Sistema? (Módulos Principales)
 
 ### 📋 1. Gestión de Órdenes de Trabajo (OT)

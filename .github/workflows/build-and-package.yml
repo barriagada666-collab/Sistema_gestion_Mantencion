@@ -10,6 +10,7 @@ on:
       - '**.md'
       - '.gitignore'
       - 'Instalador/**'
+      - 'docs/**'
   pull_request:
     branches:
       - main
