@@ -79,8 +79,8 @@ Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en
 ### 🍏 Para Usuarios en macOS:
 * **Sistema Operativo:** macOS 11 Big Sur, Monterey, Ventura, Sonoma o Sequoia.
 * **Hardware:** Compatible con procesadores **Apple Silicon** (M1, M2, M3, M4) y procesadores **Intel**.
-* **Entorno de Ejecución:** [Whisky](https://getwhisky.app/) (recomendado, gratuito y nativo de macOS) o Wine.
-* **Instalación:** Se incluye imagen de disco `.dmg` con instalador automatizado en un clic (`Instalar_en_Mac.command`).
+* **Entorno de Ejecución:** **Autocontenido (Cero Dependencias)**. El paquete incluye motor Wine Staging 11.21 Universal optimizado dentro del bundle. También detecta automáticamente Whisky o Wine externo si ya están presentes en el sistema.
+* **Instalación:** Se incluye paquete ZIP y DMG con instalador automatizado en un clic (`Instalar_en_Mac.command`) y acceso directo en el Escritorio.
 
 ### 🗄️ Para el Servidor de Base de Datos:
 * **Motor:** Microsoft SQL Server 2008, 2012, 2014, 2016, 2019, 2022 o Azure SQL Database.
@@ -109,7 +109,7 @@ Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en
 | :--- | :---: | :---: | :--- |
 | 🪟 **Windows 10 / 11** (64-bit) | `.exe` | 55.5 MB | [⬇️ **Descargar Instalador Windows**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) |
 | 🍏 **macOS Universal** (M1–M4 / Intel) | `.dmg` | 92.0 MB | [⬇️ **Descargar Imagen DMG para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) |
-| 🍏 **macOS Universal** (M1–M4 / Intel) | `.zip` | 77.0 MB | [⬇️ **Descargar Paquete ZIP para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) |
+| 🍏 **macOS Universal** (M1–M4 / Intel) | `.zip` | 205 MB | [⬇️ **Descargar Paquete ZIP para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) |
 | 📦 **GitHub Packages** | `.nupkg` | 2.4 MB | [⬇️ **Descargar Paquete NuGet**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Sistema.Gestion.Mantencion.2026.1.0.nupkg) |
 
 > 📁 *Todos los archivos binarios de instalación también se encuentran permanentemente archivados en la carpeta [`/Instalador`](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/tree/main/Instalador) del repositorio.*
@@ -121,7 +121,7 @@ Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en
 ```text
 9CF7CA268BCD124AAA5AA16E473ED3504D9F0AC4E7AB475C59E1877AA3D0493F  Instalador_Sistema_Mantencion_v2026.1.exe
 f5ec50b1724c1b897abc0673cdd41e214f9d6e90046fbb53ed40566226428c8e  Instalador_Sistema_Mantencion_v2026.1_macOS.dmg
-b0bfd3414a4881f98ec2d902b82fd6ec6554ae780595ededbb3966b6e3209f0d  Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip
+a459b4b0759b3458f1000b0fc6b7fcf4a1983c6f9100974745df14331c58e80e  Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip
 063d902accd59901fc18c3d2fd727681df96e337bd650e4dffe6ab63498f5fdc  Sistema.Gestion.Mantencion.2026.1.0.nupkg
 ```
 
