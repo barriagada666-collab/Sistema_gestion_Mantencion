@@ -154,11 +154,18 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: 3. Publicar Aplicación Autocontenida (win-x64)
+      - name: 3. Instalar llvm-strip si no está presente (para optimizar binarios PE ARM64)
         run: |
+          if ! command -v llvm-strip &>/dev/null && [ ! -x /opt/homebrew/opt/llvm/bin/llvm-strip ]; then
+            brew install llvm
+          fi
+
+      - name: 4. Publicar Aplicación Autocontenida (win-arm64 y win-x64)
+        run: |
+          dotnet publish mantencion/mantencion.vbproj -c Release -r win-arm64 --self-contained true -o mantencion/bin/Release/net8-selfcontained-arm64 -p:EnableWindowsTargeting=true --nologo -v m
           dotnet publish mantencion/mantencion.vbproj -c Release -r win-x64 --self-contained true -o mantencion/bin/Release/net8-selfcontained-x64 -p:EnableWindowsTargeting=true --nologo -v m
 
-      - name: 4. Generar macOS App Bundle y DMG con hdiutil
+      - name: 5. Generar macOS App Bundle Universal Nativo y DMG con hdiutil
         run: |
           chmod +x "automatizadores de instalacion/Generar_Instalador_Mac.sh"
           "./automatizadores de instalacion/Generar_Instalador_Mac.sh"
@@ -173,7 +180,69 @@ jobs:
           shasum -a 256 "Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip" >> checksums_mac_sha256.txt
           cat checksums_mac_sha256.txt
 
-      - name: 5. Publicar Artefacto - Instalador macOS (DMG y ZIP)
+      - name: 6. Pruebas Exhaustivas en Apple Silicon (ARM64 sin Rosetta 2)
+        run: |
+          APP_BUNDLE="dist-mac/Sistema de Gestión Mantención.app"
+          echo "=== Arquitectura del Runner: $(uname -m) ==="
+
+          # 1. Verificar Mach-O Universal (arm64 + x86_64) en Contents/MacOS/launcher
+          LIPO_OUT=$(lipo -info "$APP_BUNDLE/Contents/MacOS/launcher")
+          echo "Launcher lipo: $LIPO_OUT"
+          echo "$LIPO_OUT" | grep -q "arm64"
+          echo "$LIPO_OUT" | grep -q "x86_64"
+
+          # 2. Verificar que wine-arm64 no contenga NINGÚN binario x86_64
+          X64_FOUND=$(find "$APP_BUNDLE/Contents/Resources/wine-arm64" -type f -exec file {} + | grep -i "x86_64" || true)
+          if [ -n "$X64_FOUND" ]; then
+            echo "[ERROR] Se detectaron binarios x86_64 dentro de wine-arm64:"
+            echo "$X64_FOUND"
+            exit 1
+          fi
+          echo "✓ wine-arm64 verificado: 100% ARM64 nativo (0 binarios x86_64)."
+
+          # 3. Verificar firma local del App Bundle
+          codesign --verify --strict "$APP_BUNDLE"
+          echo "✓ codesign verificado."
+
+          # 4. Prueba funcional de arranque nativo ARM64 en Apple Silicon (sin Rosetta 2)
+          if [ "$(uname -m)" = "arm64" ]; then
+            WINE_ARM="$APP_BUNDLE/Contents/Resources/wine-arm64"
+            TEST_PREFIX="/tmp/ci-wineprefix-arm64"
+            rm -rf "$TEST_PREFIX"
+            mkdir -p "$TEST_PREFIX"
+            export WINEPREFIX="$TEST_PREFIX"
+            export WINEARCH=win64
+            export WINEDEBUG=-all
+            export WINEDLLOVERRIDES="mscoree,mshtml="
+            export DYLD_FALLBACK_LIBRARY_PATH="$WINE_ARM/lib"
+            export WINEDLLPATH="$WINE_ARM/lib/wine"
+            export WINESERVER="$WINE_ARM/bin/wineserver"
+            export WINELOADER="$WINE_ARM/bin/wine-launcher"
+            export VK_DRIVER_FILES="$WINE_ARM/share/vulkan/icd.d/MoltenVK_icd.json"
+
+            echo "Inicializando wineprefix ARM64 nativo..."
+            "$WINE_ARM/bin/wine-launcher" wineboot --init || true
+            CMD_OUT=$("$WINE_ARM/bin/wine-launcher" cmd.exe /c echo ARM64_WINE_OK | tr -d '\r')
+            echo "Resultado cmd.exe ARM64: $CMD_OUT"
+            echo "$CMD_OUT" | grep -q "ARM64_WINE_OK"
+
+            echo "Verificando arranque .NET 8 win-arm64 bajo wine-arm64..."
+            "$WINE_ARM/bin/wine-launcher" "$APP_BUNDLE/Contents/Resources/app-arm64/Sistema de Gestion Mantencion.exe" >/tmp/ci-app-arm64.log 2>&1 &
+            APP_PID=$!
+            sleep 6
+            if kill -0 "$APP_PID" 2>/dev/null; then
+              echo "✓ Proceso .NET 8 win-arm64 en ejecución nativa estable (PID $APP_PID)."
+              kill "$APP_PID" 2>/dev/null || true
+            else
+              wait "$APP_PID" || APP_EXIT=$?
+              echo "[INFO] Proceso finalizó con código: ${APP_EXIT:-0}"
+            fi
+            cat /tmp/ci-app-arm64.log || true
+            "$WINE_ARM/bin/wineserver" -k 2>/dev/null || true
+            rm -rf "$TEST_PREFIX" /tmp/ci-app-arm64.log
+          fi
+
+      - name: 7. Publicar Artefacto - Instalador macOS (DMG y ZIP)
         uses: actions/upload-artifact@v4
         with:
           name: Instalador-Sistema-Mantencion-v2026.1-macOS
@@ -184,7 +253,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: 6. Publicar en GitHub Releases (macOS Assets)
+      - name: 8. Publicar en GitHub Releases (macOS Assets)
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:

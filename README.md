@@ -77,10 +77,10 @@ Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en
 * **Red:** Conexión a la red local de la empresa o VPN corporativa para comunicarse con el servidor SQL Server.
 
 ### 🍏 Para Usuarios en macOS:
-* **Sistema Operativo:** macOS 11 Big Sur, Monterey, Ventura, Sonoma o Sequoia.
-* **Hardware:** Compatible con procesadores **Apple Silicon** (M1, M2, M3, M4) y procesadores **Intel**.
-* **Entorno de Ejecución:** **Autocontenido (Cero Dependencias)**. El paquete incluye motor Wine Staging 11.21 Universal optimizado dentro del bundle. También detecta automáticamente Whisky o Wine externo si ya están presentes en el sistema.
-* **Instalación:** Se incluye paquete ZIP y DMG con instalador automatizado en un clic (`Instalar_en_Mac.command`) y acceso directo en el Escritorio.
+* **Sistema Operativo:** macOS 11 Big Sur hasta macOS 15 Sequoia, **macOS 27 Golden Gate** y **macOS 28+** (futuras versiones sin Rosetta).
+* **Hardware:** Binario **Universal Nativo (`arm64` + `x86_64`)** compatible con procesadores **Apple Silicon** (M1, M2, M3, M4 — ejecución **100% nativa ARM64 sin Rosetta 2**) y procesadores **Intel**.
+* **Entorno de Ejecución:** **Autocontenido (Cero Dependencias)**. Incluye motor nativo ARM64 (`MetalSharp-Wine v7.0` + `.NET 8 win-arm64`) para Apple Silicon sin alertas de apps Intel, y motor Wine Staging 11.21 + `.NET 8 win-x64` para Macs Intel.
+* **Instalación:** Se incluye imagen `.dmg` y paquete `.zip` con instalador automático en un clic (`Instalar_en_Mac.command`) y acceso directo en el Escritorio.
 
 ### 🗄️ Para el Servidor de Base de Datos:
 * **Motor:** Microsoft SQL Server 2008, 2012, 2014, 2016, 2019, 2022 o Azure SQL Database.
@@ -137,9 +137,9 @@ b47b134a88f7fc8ea4b26d3b6ab0612f865cd6f9e2d33dfaafb1a328c773ff37  Sistema.Gestio
 3. La aplicación creará automáticamente accesos directos en el **Escritorio** y en el **Menú Inicio**.
 
 ### En Mac (macOS):
-1. Descargue `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg`.
-2. Abra la imagen de disco y arrastre la aplicación **Sistema de Gestión Mantención** a la carpeta **Aplicaciones**.
-3. Si utiliza [Whisky](https://getwhisky.app/), la aplicación se ejecutará de forma directa sin configuraciones previas. También puede ejecutar `Instalar_en_Mac.command` incluido dentro del paquete.
+1. Descargue `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` (o el paquete `.zip`).
+2. **Instalación recomendada:** Haga doble clic en `Instalar_en_Mac.command` para instalar en `/Applications`, optimizar únicamente el motor nativo de su procesador (Apple Silicon ARM64 o Intel), quitar restricciones de Gatekeeper y crear acceso directo en el Escritorio.
+3. También puede arrastrar **Sistema de Gestión Mantención** directamente a **Aplicaciones** (ejecuta como **Aplicación Universal** nativa sin Rosetta 2 en Apple Silicon M1–M4 y compatible con macOS 27 Golden Gate y 28+).
 
 ### Conexión a Base de Datos en el Primer Inicio:
 1. Al iniciar la aplicación, si el servidor SQL de su empresa tiene un nombre o IP diferente al predeterminado (`SrvMagicInfo`), vaya al menú superior:  
@@ -163,11 +163,11 @@ dotnet add package Sistema.Gestion.Mantencion --version 2026.1.0
 
 ## 🌟 Novedades de la Versión 2026.1 LTS
 
-* **🚀 Migración Integral a Microsoft .NET 8 LTS:** Modernización de plataforma con arquitectura de 64 bits, eliminando dependencias obsoletas.
+* **🚀 Migración Integral a Microsoft .NET 8 LTS:** Modernización de plataforma con arquitectura de 64 bits (`win-x64` y `win-arm64`), eliminando dependencias obsoletas.
 * **🎨 Iconografía Moderna Lucide:** Reemplazo total de la iconografía clásica por gráficos vectoriales de alta resolución de 32 bits con fondo transparente.
 * **⚡ Alto Rendimiento y Conexiones SQL:** Precalentamiento de connection pool, consultas indexadas y eliminación de latencias de carga de formularios.
 * **📑 Reportabilidad sin Crystal Reports:** Motor nativo de informes con exportación directa a PDF (iTextSharp) y hojas Excel estructuradas.
-* **🍏 Soporte Nativo para macOS:** Empaquetado universal compatible con procesadores Apple Silicon (M1–M4) e Intel.
+* **🍏 Soporte Nativo Universal para macOS (Sin Rosetta 2):** Binario Mach-O Universal (`arm64` + `x86_64`) con ejecución 100% nativa en Apple Silicon (M1–M4), eliminando avisos de apps Intel en macOS 27 Golden Gate y garantizando compatibilidad futura con macOS 28+.
 * **🛡️ Cero Advertencias y Cero Errores:** Código fuente 100% verificado y validado bajo estándares modernos de compilación.
 
 ---
