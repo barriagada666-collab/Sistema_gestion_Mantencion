@@ -24,11 +24,27 @@
 
 ## 📦 Descargas Oficiales (v2026.1 LTS)
 
-| Plataforma | Formato | Tamaño | Enlace de Descarga | Verificación SHA-256 |
-| :--- | :--- | :--- | :--- | :--- |
-| **Windows 10 / 11** (x64) | Instalador `.exe` | 55.5 MB | [⬇️ Descargar para Windows](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) | `7206C13C5A3083282F37403C0D603AEC7293D7609DBFDBC56EEDD3EFCB653918` |
-| **macOS Universal** (Apple Silicon / Intel) | Imagen de Disco `.dmg` | 92.0 MB | [⬇️ Descargar DMG para Mac](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) | `129637ac3e7d9a7af47848521cb02b652b964e90279ca106b13e191921c8d4bc` |
-| **macOS Universal** (Apple Silicon / Intel) | Paquete Portable `.zip` | 77.0 MB | [⬇️ Descargar ZIP para Mac](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) | `38663b5d5738cf651b994ab41c4e04fcc67f451d1bc1936522bf6b4b9b08cf6e` |
+> **Nota:** Todos los instaladores son **autocontenidos** (.NET 8 LTS integrado) y listos para ejecutar sin configuraciones adicionales.
+
+| Plataforma | Formato | Tamaño | Enlace Directo |
+| :--- | :---: | :---: | :--- |
+| 🪟 **Windows 10 / 11** (64-bit) | `.exe` | 55.5 MB | [⬇️ **Descargar Instalador Windows**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) |
+| 🍏 **macOS Universal** (M1–M4 / Intel) | `.dmg` | 92.0 MB | [⬇️ **Descargar Imagen DMG para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) |
+| 🍏 **macOS Universal** (M1–M4 / Intel) | `.zip` | 77.0 MB | [⬇️ **Descargar Paquete ZIP para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) |
+| 📦 **GitHub Packages** | `.nupkg` | 1.4 MB | [⬇️ **Descargar Paquete NuGet**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Sistema.Gestion.Mantencion.2026.1.0.nupkg) |
+
+<details>
+<summary>🔐 <b>Verificación de Integridad (Hashes SHA-256)</b></summary>
+<br>
+
+```text
+7206C13C5A3083282F37403C0D603AEC7293D7609DBFDBC56EEDD3EFCB653918  Instalador_Sistema_Mantencion_v2026.1.exe
+129637ac3e7d9a7af47848521cb02b652b964e90279ca106b13e191921c8d4bc  Instalador_Sistema_Mantencion_v2026.1_macOS.dmg
+38663b5d5738cf651b994ab41c4e04fcc67f451d1bc1936522bf6b4b9b08cf6e  Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip
+2ad845a5ab856f5f5916decbe88d90c45b6b556d7caf65571602e76254f99791  Sistema.Gestion.Mantencion.2026.1.0.nupkg
+```
+
+</details>
 
 ---
 
