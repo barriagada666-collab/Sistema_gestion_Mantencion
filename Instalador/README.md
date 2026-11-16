@@ -4,10 +4,10 @@ Todos los binarios de distribución en esta carpeta se sincronizan automáticame
 
 | Archivo | Plataforma | Formato | Tamaño | SHA-256 |
 | :--- | :--- | :---: | :---: | :--- |
-| `Instalador_Sistema_Mantencion_v2026.1.exe` | **Windows 10 / 11** (`x64`) | Inno Setup (`LZMA2`) | `41.36 MB` | `23BBDE2A606501DF814F854BAABF60A8E96F9EA3B6FAC82E1A1DB4201DAB2B5C` |
-| `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` | **macOS Universal** (Apple Silicon ARM64 sin Rosetta 2 + Intel) | Imagen DMG (`ULMO`) | `292.92 MB` | `747cf1d62c32286daaff936292e66f7b507e77cbbccffa6c251e1ff9db525da9` |
-| `Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip` | **macOS Universal** (Apple Silicon ARM64 sin Rosetta 2 + Intel) | Archivo ZIP (`-9`) | `364.88 MB` | `e56c054b637b77d657b8d38e1552b524ccbdd7124b44bd36b8a0422b8aa055c5` |
-| `Sistema.Gestion.Mantencion.2026.1.0.nupkg` | **GitHub Packages / NuGet** | Paquete `.nupkg` | `2.09 MB` | `c7c5e7eccea872bc69d380a12ee238c9cc0647b9b36048c376e96f8c2b12a679` |
+| `Instalador_Sistema_Mantencion_v2026.1.exe` | **Windows 10 / 11** (`x64`) | Inno Setup (`LZMA2`) | `41.33 MB` | `CEA22FA82F282B9DD581EF44EF9AB818FC8D8BA2CB059C6A1C3F7FD1CB35A1FE` |
+| `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` | **macOS Universal** (Apple Silicon ARM64 sin Rosetta 2 + Intel) | Imagen DMG (`ULMO`) | `293.72 MB` | `184dbecde1fee1de90378ef1f5d87142b4250fc372b127567fc58d0733b30d8b` |
+| `Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip` | **macOS Universal** (Apple Silicon ARM64 sin Rosetta 2 + Intel) | Archivo ZIP (`-9`) | `364.88 MB` | `bdf3e6de140e9bdf4d491fa3a4406fab2c6b0856460deb2bb51995c3106a4a7c` |
+| `Sistema.Gestion.Mantencion.2026.1.0.nupkg` | **GitHub Packages / NuGet** | Paquete `.nupkg` | `2.09 MB` | `0ecd26c95c0f9b3fb0a6205c3329220a1ee00f9d3c6cd0ea59b8f4d7ac0f2342` |
 
 ## 🚀 Instrucciones Rápidas
 - **Windows:** Ejecute `Instalador_Sistema_Mantencion_v2026.1.exe`. No requiere .NET Desktop Runtime, Crystal Reports ni Microsoft Office previos.
