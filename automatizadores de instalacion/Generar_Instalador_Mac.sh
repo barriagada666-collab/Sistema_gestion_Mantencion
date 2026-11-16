@@ -214,7 +214,7 @@ if [[ -s "$ARM64_TARBALL" ]] || curl -fSL --retry 3 "$WINE_ARM64_URL" -o "$ARM64
         done
 
         # Dylibs requeridas por binarios y módulos aarch64-unix (FreeType, GnuTLS/Nettle/GMP, MoltenVK, Vulkan, SDL2, etc.)
-        # Se copian todas las dylibs del motor excluyendo multimedia/GStreamer para evitar dependencias rotas al actualizar MetalSharp-Wine
+        # Se copian las dylibs del motor excluyendo multimedia/GStreamer y adelgazando universal binaries a arm64 puro
         mkdir -p "$WINE_ARM64_DIR/lib"
         for dylib in "$SRC_ARM64/lib/"*.dylib; do
             [[ -e "$dylib" ]] || continue
@@ -222,7 +222,18 @@ if [[ -s "$ARM64_TARBALL" ]] || curl -fSL --retry 3 "$WINE_ARM64_URL" -o "$ARM64
             case "$bname" in
                 libgst*|libav*|libsw*|libx26*|libvpx*|libaom*|libdav1d*) continue ;;
             esac
-            cp -a "$dylib" "$WINE_ARM64_DIR/lib/"
+            dest="$WINE_ARM64_DIR/lib/$bname"
+            cp -a "$dylib" "$dest"
+            if [[ "$(uname -s)" == "Darwin" ]] && [[ ! -L "$dest" ]]; then
+                arch_info="$(lipo -info "$dest" 2>/dev/null || true)"
+                if echo "$arch_info" | grep -q "x86_64"; then
+                    if echo "$arch_info" | grep -q "arm64"; then
+                        lipo "$dest" -thin arm64 -output "$dest.arm64" && mv "$dest.arm64" "$dest"
+                    else
+                        rm -f "$dest"
+                    fi
+                fi
+            fi
         done
 
         # Módulos UNIX ARM64 (sin GStreamer/Steam/DMO)
