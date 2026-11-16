@@ -218,9 +218,19 @@ jobs:
             echo "Lanzando Contents/MacOS/launcher simulando entorno limpio Finder/launchd..."
             env -i HOME="$HOME" PATH="/usr/bin:/bin:/usr/sbin:/sbin" "$APP_BUNDLE/Contents/MacOS/launcher" >/tmp/ci-launcher-stdout.log 2>&1 &
             APP_PID=$!
-            sleep 12
 
             LOG_FILE="$HOME/Library/Logs/SistemaMantencion/launcher.log"
+            for _ in $(seq 1 25); do
+              if ! kill -0 "$APP_PID" 2>/dev/null; then
+                break
+              fi
+              if grep -q "Lanzando Sistema de Gestion Mantencion.exe" "$LOG_FILE" 2>/dev/null; then
+                sleep 6
+                break
+              fi
+              sleep 1
+            done
+
             echo "=== Contenido de launcher.log ==="
             cat "$LOG_FILE" || true
             cat /tmp/ci-launcher-stdout.log || true
@@ -230,8 +240,8 @@ jobs:
               kill "$APP_PID" 2>/dev/null || true
               "$WINE_ARM/bin/wineserver" -k 2>/dev/null || true
 
-              echo "=== DIAGNÓSTICO DE ERROR (WINEDEBUG=err) ==="
-              WINEDEBUG=err WINEPREFIX="$HOME/Library/Application Support/SistemaMantencion/wineprefix-arm64" \
+              echo "=== DIAGNÓSTICO DE ERROR (WINEDEBUG=+err,+bcrypt) ==="
+              WINEDEBUG=+err,+bcrypt WINEPREFIX="$HOME/Library/Application Support/SistemaMantencion/wineprefix-arm64" \
                 WINEARCH=win64 WINEDLLOVERRIDES="mshtml=;mscoree=b" DOTNET_SYSTEM_GLOBALIZATION_USENLS=1 \
                 DYLD_FALLBACK_LIBRARY_PATH="$WINE_ARM/lib" WINEDLLPATH="$WINE_ARM/lib/wine" \
                 WINESERVER="$WINE_ARM/bin/wineserver" WINELOADER="$WINE_ARM/bin/wine-launcher" \

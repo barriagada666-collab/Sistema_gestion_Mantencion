@@ -213,24 +213,16 @@ if [[ -s "$ARM64_TARBALL" ]] || curl -fSL --retry 3 "$WINE_ARM64_URL" -o "$ARM64
             fi
         done
 
-        # Dylibs mínimas requeridas por aarch64-unix (FreeType, GnuTLS, MoltenVK, Vulkan, SDL2)
-        for libf in \
-            libMoltenVK.dylib \
-            libSDL2-2.0.0.dylib libSDL2-2.0.dylib libSDL2.dylib \
-            libfreetype.6.dylib libfreetype.dylib \
-            libgmp.10.dylib libgmp.dylib \
-            libgnutls.30.dylib libgnutls.dylib \
-            libhogweed.6.11.dylib libhogweed.6.dylib libhogweed.dylib \
-            libidn2.0.dylib libidn2.dylib \
-            libintl.8.dylib libintl.dylib \
-            libnettle.8.11.dylib libnettle.8.dylib libnettle.dylib \
-            libpng16.16.dylib libpng16.dylib libpng.dylib \
-            libtasn1.6.dylib libtasn1.dylib \
-            libunistring.5.dylib libunistring.dylib \
-            libvulkan.1.4.363.dylib libvulkan.1.dylib libvulkan.dylib; do
-            if [[ -e "$SRC_ARM64/lib/$libf" ]]; then
-                cp -a "$SRC_ARM64/lib/$libf" "$WINE_ARM64_DIR/lib/"
-            fi
+        # Dylibs requeridas por binarios y módulos aarch64-unix (FreeType, GnuTLS/Nettle/GMP, MoltenVK, Vulkan, SDL2, etc.)
+        # Se copian todas las dylibs del motor excluyendo multimedia/GStreamer para evitar dependencias rotas al actualizar MetalSharp-Wine
+        mkdir -p "$WINE_ARM64_DIR/lib"
+        for dylib in "$SRC_ARM64/lib/"*.dylib; do
+            [[ -e "$dylib" ]] || continue
+            bname="$(basename "$dylib")"
+            case "$bname" in
+                libgst*|libav*|libsw*|libx26*|libvpx*|libaom*|libdav1d*) continue ;;
+            esac
+            cp -a "$dylib" "$WINE_ARM64_DIR/lib/"
         done
 
         # Módulos UNIX ARM64 (sin GStreamer/Steam/DMO)
