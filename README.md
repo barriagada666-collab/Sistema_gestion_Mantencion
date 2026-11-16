@@ -26,9 +26,9 @@
 
 ## 📌 Descripción del Proyecto
 
-El **Sistema de Gestión Departamento Mantención** es una solución informática de clase industrial (CMMS / ERP de Mantenimiento) diseñada específicamente para la administración, programación, control operativo y análisis estadístico del mantenimiento mecánico y eléctrico en las plantas productivas de **Cambiaso Hnos. S.A.C.**
+El **Sistema de Gestión Departamento Mantención** es una plataforma CMMS / EAM de grado industrial desarrollada sobre **.NET 8 LTS**, diseñada específicamente para la administración, programación cíclica, control operativo, auditoría y análisis estadístico del mantenimiento mecánico y eléctrico en las plantas productivas de **Cambiaso Hnos. S.A.C.**
 
-Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en planta: desde la detección de una falla imprevista o la planificación cíclica de mantenciones preventivas, hasta el registro de repuestos, tiempos de detención, personal técnico asignado y reportabilidad ejecutiva con **filtrado universal por rango de fechas** para la toma de decisiones.
+Digitaliza de extremo a extremo el ciclo de vida de cada intervención técnica a través de **40 formularios unificados** bajo una identidad visual corporativa homogénea (`#025E87`, `#0191B3`, `#66C9D3`, `#0F2D44`, `#DDE7E8`, `#F2F6F6`): desde la detección de fallas imprevistas o la planificación preventiva en Carta Gantt, hasta el control de repuestos, horas de detención, dotación técnica, **filtrado obligatorio por rango de fechas (`Desde` / `Hasta`)** y exportación nativa a Excel (XML SpreadsheetML) y PDF vectorial (`iTextSharp`) sin dependencias de Office ni Crystal Reports en Windows 10/11 y macOS Universal (Apple Silicon ARM64 sin Rosetta 2 + Intel).
 
 ---
 
@@ -46,7 +46,7 @@ Permite digitalizar el ciclo de vida completo de las intervenciones técnicas en
 | Formulario (Impar) | Formulario (Par) |
 | :---: | :---: |
 | **01. `Inicio`** — Splash Corporativo<br/>[<img src="docs/screenshots/01_Inicio.png" width="400" alt="01 Inicio"/>](docs/screenshots/01_Inicio.png) | **02. `Login`** — Inicio de Sesión Limpio<br/>[<img src="docs/screenshots/02_Login.png" width="400" alt="02 Login"/>](docs/screenshots/02_Login.png) |
-| **03. `principal`** — Menú Principal MDI<br/>[<img src="docs/screenshots/03_principal.png" width="400" alt="03 principal"/>](docs/screenshots/03_principal.png) | **04. `FrmConfiguracionServidor`** — Asistente SQL<br/>[<img src="docs/screenshots/04_FrmConfiguracionServidor.png" width="400" alt="04 FrmConfiguracionServidor"/>](docs/screenshots/04_FrmConfiguracionServidor.png) |
+| **03. `principal`** — Escritorio MDI (Logo y Título)<br/>[<img src="docs/screenshots/03_principal.png" width="400" alt="03 principal"/>](docs/screenshots/03_principal.png) | **04. `FrmConfiguracionServidor`** — Asistente SQL<br/>[<img src="docs/screenshots/04_FrmConfiguracionServidor.png" width="400" alt="04 FrmConfiguracionServidor"/>](docs/screenshots/04_FrmConfiguracionServidor.png) |
 | **05. `frm_OT`** — Gestión Órdenes de Trabajo<br/>[<img src="docs/screenshots/05_frm_OT.png" width="400" alt="05 frm_OT"/>](docs/screenshots/05_frm_OT.png) | **06. `FrmDetalleOt`** — Detalle Completo de OT<br/>[<img src="docs/screenshots/06_FrmDetalleOt.png" width="400" alt="06 FrmDetalleOt"/>](docs/screenshots/06_FrmDetalleOt.png) |
 | **07. `FrmMp`** — Gestión Mantención Preventiva<br/>[<img src="docs/screenshots/07_FrmMp.png" width="400" alt="07 FrmMp"/>](docs/screenshots/07_FrmMp.png) | **08. `FrmAdminTareasNodo`** — Tareas por Máquina<br/>[<img src="docs/screenshots/08_FrmAdminTareasNodo.png" width="400" alt="08 FrmAdminTareasNodo"/>](docs/screenshots/08_FrmAdminTareasNodo.png) |
 | **09. `FrmPlanificarCiclos`** — Planificador Masivo<br/>[<img src="docs/screenshots/09_FrmPlanificarCiclos.png" width="400" alt="09 FrmPlanificarCiclos"/>](docs/screenshots/09_FrmPlanificarCiclos.png) | **10. `FrmInfOT`** — Informe Órdenes de Trabajo<br/>[<img src="docs/screenshots/10_FrmInfOT.png" width="400" alt="10 FrmInfOT"/>](docs/screenshots/10_FrmInfOT.png) |
@@ -211,14 +211,14 @@ dotnet add package Sistema.Gestion.Mantencion --version 2026.1.0
 
 ## 🌟 Novedades de la Versión 2026.1 LTS
 
-* **🎨 Identidad Visual Corporativa Unificada (`Segoe UI`):** Paleta corporativa oficial (`#025E87`, `#0191B3`, `#66C9D3`, `#E5EBEB`, `#F2F6F6`, `#0F2D44`), renderizador moderno de menús/barras, ajuste automático a pantalla, selectores de fecha ampliados (`106x23`) y botones corregidos en `Inicio de Sesión`.
-* **🛡️ Captura Global y Diagnóstico Claro de Errores:** Todos los errores de red SQL Server, consultas y UI se traducen a explicaciones claras en español, ofrecen abrir **Configurar Servidor BD** en un clic y se guardan en `%LOCALAPPDATA%\SistemaMantencion\logs\errores_yyyyMMdd.log` para depuración.
+* **🎨 Identidad Visual Corporativa Unificada (`Segoe UI`):** Paleta corporativa oficial (`#025E87`, `#0191B3`, `#66C9D3`, `#0F2D44`, `#DDE7E8`, `#F2F6F6`) aplicada globalmente en los 40 formularios, grillas, menús/barras, botones primarios/secundarios/destructivos y escritorio MDI renovado con logotipo institucional y título centrado.
+* **🧩 Iconografía de Botones Normalizada (`16x16`):** Depuración de fotogramas `.ico` sobredimensionados y ajuste automático por código (`NormalizarIconoBoton`) para evitar recortes o superposiciones de iconos sobre textos en formularios y buscadores.
+* **🛡️ Configuración SQL Bajo Demanda y Diagnóstico Claro de Errores:** Pantalla de **Inicio de Sesión** limpia; ante fallos SQL, de red/VPN o permisos, explica la causa en español, ofrece abrir **Configurar Servidor BD** en un clic (también disponible desde **Mantenedores > Configurar Servidor BD...**) y registra la bitácora en `%LOCALAPPDATA%\SistemaMantencion\logs\errores_yyyyMMdd.log`.
 * **📅 Filtrado Obligatorio por Rango de Fechas en Todos los Informes:** Selección `Desde` / `Hasta` siempre visible, habilitada y validada en OT, Mantención Preventiva, Ciclos por Máquina, Carta Gantt, Resúmenes Estadísticos y Auditoría.
-* **📑 Exportación Excel y PDF Sin Dependencias:** Motor nativo SpreadsheetML (`.xls`) y motor vectorial iTextSharp (`.pdf`) integrados en todos los informes cuando Microsoft Excel no está presente.
+* **📑 Exportación Excel y PDF Sin Dependencias:** Motor nativo SpreadsheetML (`.xls`) y motor vectorial `iTextSharp` (`.pdf`) integrados en todos los informes cuando Microsoft Excel no está presente.
 * **⚡ Transiciones MDI y Consultas Optimizadas:** `DoubleBuffered`, `SuspendLayout`/`ResumeLayout`, caché de catálogos, precalentamiento de pool SQL y búsquedas `O(1)` en generación de Carta Gantt.
-* **📦 Instaladores Ultra-Compactos:** Depuración automática de ensamblados WPF no utilizados, símbolos de depuración, duplicados de plantillas y satélites de idiomas extranjeros; compresión LZMA2 (`Windows`) y ULMO LZMA (`macOS`).
-* **🍏 Soporte Nativo Universal para macOS (Sin Rosetta 2):** Binario Mach-O Universal (`arm64` + `x86_64`) con entorno UTF-8 forzado desde el launcher nativo, ejecución 100% nativa en Apple Silicon (M1–M4), eliminando avisos de apps Intel en macOS 27 Golden Gate y garantizando compatibilidad futura con macOS 28+.
-* **🛡️ Cero Advertencias y Cero Errores:** Código fuente 100% verificado, sin archivos huérfanos y validado bajo estándares modernos de compilación.
+* **📦 Instaladores Ultra-Compactos y Pipeline CI/CD Node 24:** Depuración automática de ensamblados WPF no utilizados, símbolos `.pdb` y satélites de idiomas extranjeros; compresión `LZMA2` (`Windows`) y `ULMO LZMA` (`macOS`), con compilación y empaquetado verificados con `0` advertencias, `0` errores y `0` annotations.
+* **🍏 Soporte Nativo Universal para macOS (Sin Rosetta 2):** Binario Mach-O Universal (`arm64` + `x86_64`) generado en runner `macos-15-intel` con entorno UTF-8 desde el launcher nativo, ejecución 100% nativa ARM64 en Apple Silicon (M1–M4) y motor Intel `x86_64` integrado.
 
 ---
 
