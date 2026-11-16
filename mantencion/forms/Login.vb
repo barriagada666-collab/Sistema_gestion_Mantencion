@@ -57,6 +57,9 @@ Public Class Login
     Private Sub pnlLateral_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles pnlLateral.Paint
         Dim g As Graphics = e.Graphics
         g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias
+        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic
+        g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit
+
         Using br As New System.Drawing.Drawing2D.LinearGradientBrush(
             pnlLateral.ClientRectangle,
             Utilitarios.ColorPrimario,
@@ -65,32 +68,54 @@ Public Class Login
             g.FillRectangle(br, pnlLateral.ClientRectangle)
         End Using
 
-        Dim cx As Integer = pnlLateral.Width \ 2
-        Dim cy As Integer = 74
-        Dim r As Integer = 28
-        Dim rectCirc As New Rectangle(cx - r, cy - r, r * 2, r * 2)
-        Using brBadge As New SolidBrush(Color.FromArgb(34, 255, 255, 255))
-            g.FillEllipse(brBadge, rectCirc)
-        End Using
-        Using pCirc As New Pen(Color.FromArgb(225, 255, 255, 255), 2.0F)
-            g.DrawEllipse(pCirc, rectCirc)
+        ' Tarjeta blanca redondeada con el logotipo institucional de Cambiaso
+        Dim cardW As Integer = Math.Max(80, pnlLateral.Width - 28)
+        Dim cardH As Integer = 64
+        Dim cardX As Integer = (pnlLateral.Width - cardW) \ 2
+        Dim cardY As Integer = 34
+        Dim rad As Integer = 10
+        Dim d As Integer = rad * 2
+
+        Using gpShadow As New System.Drawing.Drawing2D.GraphicsPath()
+            gpShadow.AddArc(cardX + 2, cardY + 3, d, d, 180, 90)
+            gpShadow.AddArc(cardX + 2 + cardW - d, cardY + 3, d, d, 270, 90)
+            gpShadow.AddArc(cardX + 2 + cardW - d, cardY + 3 + cardH - d, d, d, 0, 90)
+            gpShadow.AddArc(cardX + 2, cardY + 3 + cardH - d, d, d, 90, 90)
+            gpShadow.CloseFigure()
+            Using brShadow As New SolidBrush(Color.FromArgb(45, 0, 0, 0))
+                g.FillPath(brShadow, gpShadow)
+            End Using
         End Using
 
-        ' Icono vectorial de usuario corporativo (cabeza + hombros) recortado suavemente dentro del círculo
-        Using gpClip As New System.Drawing.Drawing2D.GraphicsPath()
-            gpClip.AddEllipse(cx - r + 2, cy - r + 2, (r - 2) * 2, (r - 2) * 2)
-            Dim state As System.Drawing.Drawing2D.GraphicsState = g.Save()
-            g.SetClip(gpClip)
-            Using brAvatar As New SolidBrush(Color.White)
-                g.FillEllipse(brAvatar, cx - 8, cy - 16, 16, 16)
-                g.FillEllipse(brAvatar, cx - 18, cy + 4, 36, 30)
+        Using gpCard As New System.Drawing.Drawing2D.GraphicsPath()
+            gpCard.AddArc(cardX, cardY, d, d, 180, 90)
+            gpCard.AddArc(cardX + cardW - d, cardY, d, d, 270, 90)
+            gpCard.AddArc(cardX + cardW - d, cardY + cardH - d, d, d, 0, 90)
+            gpCard.AddArc(cardX, cardY + cardH - d, d, d, 90, 90)
+            gpCard.CloseFigure()
+            Using brCard As New SolidBrush(Color.White)
+                g.FillPath(brCard, gpCard)
             End Using
-            g.Restore(state)
         End Using
+
+        Try
+            Dim logo As Image = My.Resources.Resources.cambiaso_logo_nuevo
+            If logo IsNot Nothing AndAlso logo.Height > 0 Then
+                Dim maxW As Integer = cardW - 18
+                Dim maxH As Integer = cardH - 14
+                Dim ratio As Double = Math.Min(CDbl(maxW) / logo.Width, CDbl(maxH) / logo.Height)
+                Dim drawW As Integer = CInt(Math.Round(logo.Width * ratio))
+                Dim drawH As Integer = CInt(Math.Round(logo.Height * ratio))
+                Dim drawX As Integer = cardX + (cardW - drawW) \ 2
+                Dim drawY As Integer = cardY + (cardH - drawH) \ 2
+                g.DrawImage(logo, New Rectangle(drawX, drawY, drawW, drawH))
+            End If
+        Catch
+        End Try
 
         Using fSub As New Font("Segoe UI", 9.5F, FontStyle.Bold, GraphicsUnit.Point),
               sf As New StringFormat() With {.Alignment = StringAlignment.Center, .LineAlignment = StringAlignment.Near}
-            g.DrawString("Acceso" & Environment.NewLine & "Autorizado", fSub, Brushes.White, New RectangleF(8, cy + r + 12, pnlLateral.Width - 16, 48), sf)
+            g.DrawString("Acceso" & Environment.NewLine & "Autorizado", fSub, Brushes.White, New RectangleF(8, cardY + cardH + 18, pnlLateral.Width - 16, 48), sf)
         End Using
     End Sub
 
