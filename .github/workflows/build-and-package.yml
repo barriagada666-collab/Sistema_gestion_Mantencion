@@ -240,9 +240,10 @@ jobs:
               kill "$APP_PID" 2>/dev/null || true
               "$WINE_ARM/bin/wineserver" -k 2>/dev/null || true
 
-              echo "=== DIAGNÓSTICO DE ERROR (WINEDEBUG=+err,+bcrypt) ==="
-              WINEDEBUG=+err,+bcrypt WINEPREFIX="$HOME/Library/Application Support/SistemaMantencion/wineprefix-arm64" \
+              echo "=== DIAGNÓSTICO DE ERROR (WINEDEBUG=+err,+loaddll,+bcrypt) ==="
+              WINEDEBUG=+err,+loaddll,+bcrypt WINEPREFIX="$HOME/Library/Application Support/SistemaMantencion/wineprefix-arm64" \
                 WINEARCH=win64 WINEDLLOVERRIDES="mshtml=;mscoree=b" DOTNET_SYSTEM_GLOBALIZATION_USENLS=1 \
+                DOTNET_EnableWriteXorExecute=0 COMPlus_EnableWriteXorExecute=0 \
                 DYLD_FALLBACK_LIBRARY_PATH="$WINE_ARM/lib" WINEDLLPATH="$WINE_ARM/lib/wine" \
                 WINESERVER="$WINE_ARM/bin/wineserver" WINELOADER="$WINE_ARM/bin/wine-launcher" \
                 "$WINE_ARM/bin/wine-launcher" "$APP_BUNDLE/Contents/Resources/app-arm64/Sistema de Gestion Mantencion.exe" >/tmp/ci-diag-arm64.log 2>&1 &
@@ -250,7 +251,7 @@ jobs:
               sleep 8
               kill "$DIAG_PID" 2>/dev/null || true
               "$WINE_ARM/bin/wineserver" -k 2>/dev/null || true
-              tail -n 100 /tmp/ci-diag-arm64.log || true
+              grep -iE "bcrypt|crypt|Random|error|err:|fatal|0x80131506|failed|load_dll" /tmp/ci-diag-arm64.log | tail -n 100 || tail -n 100 /tmp/ci-diag-arm64.log || true
               exit 1
             fi
 

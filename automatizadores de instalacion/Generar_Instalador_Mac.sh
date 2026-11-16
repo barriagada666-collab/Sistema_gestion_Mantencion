@@ -259,11 +259,13 @@ if [[ -s "$ARM64_TARBALL" ]] || curl -fSL --retry 3 "$WINE_ARM64_URL" -o "$ARM64
         # Limpiar archivos AppleDouble (._*)
         find "$WINE_ARM64_DIR" -name '._*' -delete 2>/dev/null || true
 
-        # Depurar símbolos DWARF en DLLs Windows ARM64 para reducir ~1 GB
+        # Depurar símbolos DWARF en DLLs Windows ARM64 para reducir ~1 GB (preservando DLLs núcleo del sistema/crypto)
         if [[ -n "$LLVM_STRIP" ]]; then
             echo "       Optimizando binarios PE ARM64 con llvm-strip..."
             find "$WINE_ARM64_DIR/lib/wine/aarch64-windows" -type f \
                 \( -name "*.dll" -o -name "*.exe" -o -name "*.drv" -o -name "*.cpl" -o -name "*.sys" -o -name "*.ocx" \) \
+                ! -name "ntdll.dll" ! -name "kernel32.dll" ! -name "kernelbase.dll" ! -name "advapi32.dll" \
+                ! -name "sechost.dll" ! -name "cryptbase.dll" ! -name "bcrypt*.dll" ! -name "ucrtbase.dll" \
                 -print0 | xargs -0 -P 4 "$LLVM_STRIP" --strip-debug 2>/dev/null || true
         else
             echo "       [AVISO] llvm-strip no encontrado; se conservan DLLs ARM64 sin strip."
@@ -454,6 +456,9 @@ export WINEESYNC=1
 export WINEDLLOVERRIDES="mscoree,mshtml="
 # Usa tablas NLS nativas de Wine en lugar de icu.dll (evita "Could not load ICU data. UErrorCode: 2")
 export DOTNET_SYSTEM_GLOBALIZATION_USENLS=1
+# Evita fallos 0x80131506 de mapeo dual W^X en CoreCLR ARM64 bajo Wine/Apple Silicon (páginas 16K)
+export DOTNET_EnableWriteXorExecute=0
+export COMPlus_EnableWriteXorExecute=0
 
 if [[ -d "$WINE_DIR/lib" ]]; then
     export DYLD_FALLBACK_LIBRARY_PATH="$WINE_DIR/lib:${DYLD_FALLBACK_LIBRARY_PATH:-}"
