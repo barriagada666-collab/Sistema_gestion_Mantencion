@@ -4,52 +4,46 @@ Public NotInheritable Class Inicio
         Me.DoubleBuffered = True
         Conexion.PrecalentarPool()
 
-        lblKicker.Text = "CMMS · CAMBIASO HNOS. S.A.C."
-        lbl1.Text = "Sistema de Gestión" & Environment.NewLine & "Departamento" & Environment.NewLine & "Mantención"
-        Version.Text = "Versión 2026.1 LTS · Placilla, Valparaíso"
+        lbl1.Text = "Sistema de Gestión"
+        lblSubtitulo.Text = "Departamento Mantención"
+        Version.Text = "Versión 2026.1 LTS"
         Copyright.Text = "Copyright © Cambiaso Hnos. S.A.C. 2026"
 
-        AplicarRegionRedondeada(pnlDerecho, 14)
         Utilitarios.HabilitarDobleBuffer(pnlDerecho)
+        Utilitarios.HabilitarDobleBuffer(pnlProgresoFondo)
     End Sub
 
-    Private Shared Function CrearRutaRedondeada(ByVal r As Rectangle, ByVal radio As Integer) As System.Drawing.Drawing2D.GraphicsPath
+    Private Shared Function CrearRutaCapsula(ByVal r As RectangleF) As System.Drawing.Drawing2D.GraphicsPath
         Dim gp As New System.Drawing.Drawing2D.GraphicsPath()
-        Dim d As Integer = radio * 2
-        gp.AddArc(r.X, r.Y, d, d, 180, 90)
-        gp.AddArc(r.Right - d, r.Y, d, d, 270, 90)
-        gp.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90)
-        gp.AddArc(r.X, r.Bottom - d, d, d, 90, 90)
+        Dim d As Single = Math.Max(2.0F, Math.Min(r.Height, r.Width))
+        gp.AddArc(r.X, r.Y, d, d, 90, 180)
+        gp.AddArc(r.Right - d, r.Y, d, d, 270, 180)
         gp.CloseFigure()
         Return gp
     End Function
 
-    Private Shared Sub AplicarRegionRedondeada(ByVal ctrl As Control, ByVal radio As Integer)
-        If ctrl Is Nothing OrElse ctrl.Width <= 0 OrElse ctrl.Height <= 0 Then Exit Sub
-        Using gp As System.Drawing.Drawing2D.GraphicsPath = CrearRutaRedondeada(New Rectangle(0, 0, ctrl.Width, ctrl.Height), radio)
-            ctrl.Region = New Region(gp)
-        End Using
-    End Sub
-
-    Private Sub Inicio_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles Me.Paint
+    Private Sub pnlProgresoFondo_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles pnlProgresoFondo.Paint
         Dim g As Graphics = e.Graphics
         g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias
-        ' Sombra suave bajo la tarjeta flotante pnlDerecho
-        Dim sr As New Rectangle(pnlDerecho.Left + 3, pnlDerecho.Top + 5, pnlDerecho.Width, pnlDerecho.Height)
-        Using gpSombra As System.Drawing.Drawing2D.GraphicsPath = CrearRutaRedondeada(sr, 14),
-              brSombra As New SolidBrush(Color.FromArgb(75, 5, 18, 30))
-            g.FillPath(brSombra, gpSombra)
-        End Using
-    End Sub
+        g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit
 
-    Private Sub pnlProgresoRelleno_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles pnlProgresoRelleno.Paint
-        If pnlProgresoRelleno.Width <= 0 OrElse pnlProgresoRelleno.Height <= 0 Then Exit Sub
-        Using br As New System.Drawing.Drawing2D.LinearGradientBrush(
-            pnlProgresoRelleno.ClientRectangle,
-            System.Drawing.Color.FromArgb(1, 145, 179),
-            System.Drawing.Color.FromArgb(102, 201, 211),
-            System.Drawing.Drawing2D.LinearGradientMode.Horizontal)
-            e.Graphics.FillRectangle(br, pnlProgresoRelleno.ClientRectangle)
+        Dim rOuter As New RectangleF(0.5F, 0.5F, pnlProgresoFondo.Width - 1.5F, pnlProgresoFondo.Height - 1.5F)
+        Using gpOuter As System.Drawing.Drawing2D.GraphicsPath = CrearRutaCapsula(rOuter),
+              brTrack As New SolidBrush(Color.White),
+              pBorder As New Pen(Utilitarios.ColorPrimario, 1.1F)
+            g.FillPath(brTrack, gpOuter)
+            g.DrawPath(pBorder, gpOuter)
+        End Using
+
+        Dim fillW As Single = Math.Max(14.0F, Math.Min(pnlProgresoFondo.Width - 3.0F, pnlProgresoRelleno.Width))
+        Dim rFill As New RectangleF(1.5F, 1.5F, fillW, pnlProgresoFondo.Height - 3.0F)
+        Using gpFill As System.Drawing.Drawing2D.GraphicsPath = CrearRutaCapsula(rFill),
+              brFill As New System.Drawing.Drawing2D.LinearGradientBrush(
+                  New RectangleF(0, 0, Math.Max(20.0F, fillW + 2.0F), pnlProgresoFondo.Height),
+                  Utilitarios.ColorDeepNavy,
+                  Utilitarios.ColorSecundario,
+                  System.Drawing.Drawing2D.LinearGradientMode.Horizontal)
+            g.FillPath(brFill, gpFill)
         End Using
     End Sub
 
