@@ -762,6 +762,7 @@ Public Class Utilitarios
     Private Shared ReadOnly _formulariosConTema As New HashSet(Of Form)()
     Private Shared ReadOnly _menuRenderer As New MenuCorporativoRenderer()
     Private Shared ReadOnly _cacheFuentes As New Dictionary(Of String, Font)(StringComparer.Ordinal)
+    Private Shared ReadOnly _cacheIconos As New Dictionary(Of String, Bitmap)(StringComparer.Ordinal)
     Private Shared _temaGlobalRegistrado As Boolean = False
 
     Public Shared Sub RegistrarTemaGlobal()
@@ -790,6 +791,66 @@ Public Class Utilitarios
         If frm Is Nothing Then Exit Sub
         _formulariosConTema.Remove(frm)
         RemoveHandler frm.FormClosed, AddressOf AlCerrarFormularioTema
+    End Sub
+
+    Private Shared Function EscalarIconoSiExcede(ByVal img As Image, ByVal maxDim As Integer) As Image
+        If img Is Nothing OrElse maxDim <= 0 Then Return img
+        If img.Width <= maxDim AndAlso img.Height <= maxDim Then Return img
+
+        Dim escala As Double = Math.Min(CDbl(maxDim) / img.Width, CDbl(maxDim) / img.Height)
+        Dim targetW As Integer = Math.Max(1, CInt(Math.Round(img.Width * escala)))
+        Dim targetH As Integer = Math.Max(1, CInt(Math.Round(img.Height * escala)))
+        Dim key As String = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(img).ToString() & "|" &
+                            img.Width.ToString() & "x" & img.Height.ToString() & "->" &
+                            targetW.ToString() & "x" & targetH.ToString()
+
+        Dim cached As Bitmap = Nothing
+        If _cacheIconos.TryGetValue(key, cached) Then
+            Return cached
+        End If
+
+        Dim bmp As New Bitmap(targetW, targetH, System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+        Using g As Graphics = Graphics.FromImage(bmp)
+            g.Clear(Color.Transparent)
+            g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+            g.SmoothingMode = Drawing2D.SmoothingMode.HighQuality
+            g.PixelOffsetMode = Drawing2D.PixelOffsetMode.HighQuality
+            g.CompositingQuality = Drawing2D.CompositingQuality.HighQuality
+            g.DrawImage(img, New Rectangle(0, 0, targetW, targetH))
+        End Using
+
+        _cacheIconos(key) = bmp
+        Return bmp
+    End Function
+
+    Private Shared Sub NormalizarIconoBoton(ByVal btn As Button)
+        If btn Is Nothing OrElse btn.IsDisposed Then Exit Sub
+
+        If btn.Image IsNot Nothing Then
+            Dim tieneTexto As Boolean = Not String.IsNullOrWhiteSpace(btn.Text)
+            If tieneTexto Then
+                Dim textoLimpio As String = btn.Text.Trim()
+                If btn.Text <> textoLimpio Then
+                    btn.Text = textoLimpio
+                End If
+                Dim maxIcono As Integer = If(btn.Height >= 30, Math.Min(22, Math.Max(16, btn.Height - 10)), 16)
+                btn.Image = EscalarIconoSiExcede(btn.Image, maxIcono)
+                btn.ImageAlign = ContentAlignment.MiddleLeft
+                btn.TextAlign = ContentAlignment.MiddleCenter
+                btn.TextImageRelation = TextImageRelation.ImageBeforeText
+                btn.Padding = New Padding(3, btn.Padding.Top, 2, btn.Padding.Bottom)
+            Else
+                Dim maxIcono As Integer = Math.Max(12, Math.Min(btn.ClientSize.Width, btn.ClientSize.Height) - 6)
+                btn.Image = EscalarIconoSiExcede(btn.Image, maxIcono)
+                btn.ImageAlign = ContentAlignment.MiddleCenter
+            End If
+        End If
+
+        If btn.BackgroundImage IsNot Nothing Then
+            Dim maxFondo As Integer = Math.Max(12, Math.Min(btn.ClientSize.Width, btn.ClientSize.Height) - 6)
+            btn.BackgroundImage = EscalarIconoSiExcede(btn.BackgroundImage, maxFondo)
+            btn.BackgroundImageLayout = ImageLayout.Center
+        End If
     End Sub
 
     Private Shared Sub UnificarFuenteCorporativa(ByVal ctrl As Control)
@@ -943,6 +1004,7 @@ Public Class Utilitarios
                 btn.BackColor = Color.White
                 btn.ForeColor = ColorPrimario
                 btn.Cursor = Cursors.Hand
+                NormalizarIconoBoton(btn)
 
             ElseIf TypeOf ctrl Is CheckBox Then
                 Dim chk As CheckBox = DirectCast(ctrl, CheckBox)

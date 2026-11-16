@@ -24,10 +24,27 @@ Write-Host "  Cambiaso Hnos. S.A.C." -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host ""
 
-# 1. Compilación y Publicación Autocontenida con .NET 8 SDK
-Write-Host "[1/3] Publicando aplicacion autocontenida (Self-Contained win-x64)..." -ForegroundColor Yellow
+# 1. Compilación Debug/Release y Publicación Autocontenida con .NET 8 SDK
+Write-Host "[1/4] Restaurando y compilando soluciones Debug y Release (.NET 8)..." -ForegroundColor Yellow
+$slnPath = Join-Path $rootDir "mantencion.sln"
 $projectPath = Join-Path $rootDir "mantencion\mantencion.vbproj"
 $publishDir = Join-Path $rootDir "mantencion\bin\Release\net8-selfcontained-x64"
+
+& dotnet restore $slnPath --nologo
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "[ERROR] dotnet restore fallo con codigo $LASTEXITCODE." -ForegroundColor Red
+    exit $LASTEXITCODE
+}
+
+foreach ($cfg in @("Debug", "Release")) {
+    & dotnet build $slnPath -c $cfg --no-restore --nologo -v m
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[ERROR] La compilacion ($cfg) fallo con codigo $LASTEXITCODE." -ForegroundColor Red
+        exit $LASTEXITCODE
+    }
+}
+
+Write-Host "[2/4] Publicando y depurando aplicacion autocontenida (Self-Contained win-x64)..." -ForegroundColor Yellow
 
 # Limpieza previa del directorio de publicación
 if (Test-Path $publishDir) {
@@ -41,12 +58,23 @@ if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
-# Optimización de tamaño: eliminar ensamblados satélites de idiomas no requeridos (manteniendo 'es' para español)
-$foreignLocales = @("cs", "de", "fr", "it", "ja", "ko", "pl", "pt-BR", "ru", "tr", "zh-Hans", "zh-Hant")
-foreach ($locale in $foreignLocales) {
-    $localePath = Join-Path $publishDir $locale
-    if (Test-Path $localePath) {
-        Remove-Item $localePath -Recurse -Force
+# Depurar ensamblados WPF, símbolos de depuración e idiomas extranjeros (conservando 'es') y sincronizar deps.json
+$pruneScript = Join-Path $rootDir "automatizadores de instalacion\depurar_publicacion.py"
+$pythonCmd = Get-Command python -ErrorAction SilentlyContinue
+if (-not $pythonCmd) { $pythonCmd = Get-Command python3 -ErrorAction SilentlyContinue }
+if ($pythonCmd -and (Test-Path $pruneScript)) {
+    & $pythonCmd.Source $pruneScript $publishDir
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[ERROR] depurar_publicacion.py fallo con codigo $LASTEXITCODE." -ForegroundColor Red
+        exit $LASTEXITCODE
+    }
+} else {
+    $foreignLocales = @("cs", "de", "en", "fr", "it", "ja", "ko", "pl", "pt-BR", "ru", "tr", "zh-Hans", "zh-Hant")
+    foreach ($locale in $foreignLocales) {
+        $localePath = Join-Path $publishDir $locale
+        if (Test-Path $localePath) {
+            Remove-Item $localePath -Recurse -Force
+        }
     }
 }
 
@@ -82,8 +110,18 @@ if (-not $iscc) {
     exit 1
 }
 
-# 3. Compilar el Instalador
-Write-Host "[2/3] Generando instalador ejecutable con Inno Setup..." -ForegroundColor Yellow
+# 3. Empaquetar NuGet (.nupkg) y compilar el Instalador
+Write-Host "[3/4] Generando paquete NuGet (.nupkg) e instalador ejecutable con Inno Setup..." -ForegroundColor Yellow
+$installerDir = Join-Path $rootDir "Instalador"
+if (-not (Test-Path $installerDir)) {
+    New-Item -ItemType Directory -Path $installerDir -Force | Out-Null
+}
+& dotnet pack $projectPath -c Release --no-build -o $installerDir --nologo
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "[ERROR] Fallo la generacion del paquete NuGet con codigo $LASTEXITCODE." -ForegroundColor Red
+    exit $LASTEXITCODE
+}
+
 $issScript = Join-Path $rootDir "Setup_Mantencion.iss"
 
 & $iscc $issScript
@@ -92,15 +130,29 @@ if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
-# 4. Verificacion final
+# 4. Verificacion final y checksums SHA-256
 $outputExe = Join-Path $rootDir "Instalador\Instalador_Sistema_Mantencion_v2026.1.exe"
 if (Test-Path $outputExe) {
     $item = Get-Item $outputExe
+    $hash = (Get-FileHash $outputExe -Algorithm SHA256).Hash
     $sizeMb = [Math]::Round($item.Length / 1MB, 2)
+
+    $checksumsPath = Join-Path $rootDir "Instalador\checksums_sha256.txt"
+    $info = @"
+Archivo: $($item.Name)
+Tamaño: $sizeMb MB ($($item.Length) bytes)
+Fecha Generación: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+Plataforma: Microsoft .NET 8 LTS (Windows x64 - Autocontenido)
+Algoritmo: SHA-256
+Hash: $hash
+"@
+    Set-Content -Path $checksumsPath -Value $info -Encoding UTF8
+
     Write-Host ""
-    Write-Host "[3/3] Instalador generado exitosamente!" -ForegroundColor Green
+    Write-Host "[4/4] Instalador y paquete NuGet generados exitosamente!" -ForegroundColor Green
     Write-Host "       Archivo : $($item.FullName)" -ForegroundColor White
     Write-Host "       Tamano  : $sizeMb MB ($($item.Length) bytes)" -ForegroundColor White
+    Write-Host "       SHA256  : $hash" -ForegroundColor Yellow
     Write-Host "       Fecha   : $($item.LastWriteTime)" -ForegroundColor White
     Write-Host "       Plataf. : Microsoft .NET 8 (Windows x64 - Autocontenido / Zero-Dependency)" -ForegroundColor White
 } else {

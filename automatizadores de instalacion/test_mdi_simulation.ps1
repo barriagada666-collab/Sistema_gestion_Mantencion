@@ -1,6 +1,19 @@
-[System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
-$exePath = (Resolve-Path "mantencion\bin\Release\Sistema de Gestion Mantencion.exe").Path
-$asm = [System.Reflection.Assembly]::LoadFrom($exePath)
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    Write-Error "Este script inspecciona ensamblados .NET 8 y debe ejecutarse con PowerShell 7+ (pwsh)."
+    exit 1
+}
+Add-Type -AssemblyName System.Windows.Forms
+$rootDir = if (Test-Path "mantencion\mantencion.vbproj") { (Get-Location).Path } else { Split-Path $PSScriptRoot -Parent }
+$candidates = @(
+    (Join-Path $rootDir "mantencion\bin\Release\net8-selfcontained-x64\Sistema de Gestion Mantencion.dll"),
+    (Join-Path $rootDir "mantencion\bin\Release\net8.0-windows\Sistema de Gestion Mantencion.dll")
+)
+$dllPath = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+if (-not $dllPath) {
+    Write-Error "No se encontro el ensamblado .NET 8 compilado en mantencion\bin\Release\."
+    exit 1
+}
+$asm = [System.Reflection.Assembly]::LoadFrom($dllPath)
 
 $principalType = $asm.GetType("mantencion.principal")
 $principal = [Activator]::CreateInstance($principalType)

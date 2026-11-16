@@ -1002,11 +1002,12 @@ Partial Class frm_OT
         Me.btn_salir.Cursor = System.Windows.Forms.Cursors.Hand
         Me.btn_salir.Image = Global.mantencion.My.Resources.Resources._16__Exit_
         Me.btn_salir.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btn_salir.Location = New System.Drawing.Point(310, 16)
+        Me.btn_salir.Location = New System.Drawing.Point(304, 16)
         Me.btn_salir.Name = "btn_salir"
-        Me.btn_salir.Size = New System.Drawing.Size(75, 24)
+        Me.btn_salir.Size = New System.Drawing.Size(88, 26)
         Me.btn_salir.TabIndex = 3
         Me.btn_salir.Text = "Salir"
+        Me.btn_salir.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.btn_salir.UseVisualStyleBackColor = True
         '
         'btn_limpiar
@@ -1014,11 +1015,12 @@ Partial Class frm_OT
         Me.btn_limpiar.Cursor = System.Windows.Forms.Cursors.Hand
         Me.btn_limpiar.Image = Global.mantencion.My.Resources.Resources._16__Clear_
         Me.btn_limpiar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btn_limpiar.Location = New System.Drawing.Point(210, 16)
+        Me.btn_limpiar.Location = New System.Drawing.Point(208, 16)
         Me.btn_limpiar.Name = "btn_limpiar"
-        Me.btn_limpiar.Size = New System.Drawing.Size(75, 24)
+        Me.btn_limpiar.Size = New System.Drawing.Size(88, 26)
         Me.btn_limpiar.TabIndex = 2
-        Me.btn_limpiar.Text = " Limpiar"
+        Me.btn_limpiar.Text = "Limpiar"
+        Me.btn_limpiar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.btn_limpiar.UseVisualStyleBackColor = True
         '
         'btn_eliminar
@@ -1028,21 +1030,23 @@ Partial Class frm_OT
         Me.btn_eliminar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.btn_eliminar.Location = New System.Drawing.Point(112, 16)
         Me.btn_eliminar.Name = "btn_eliminar"
-        Me.btn_eliminar.Size = New System.Drawing.Size(75, 24)
+        Me.btn_eliminar.Size = New System.Drawing.Size(88, 26)
         Me.btn_eliminar.TabIndex = 1
-        Me.btn_eliminar.Text = "   Eliminar"
+        Me.btn_eliminar.Text = "Eliminar"
+        Me.btn_eliminar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.btn_eliminar.UseVisualStyleBackColor = True
         '
         'btn_guardar
         '
         Me.btn_guardar.Cursor = System.Windows.Forms.Cursors.Hand
-        Me.btn_guardar.Image = Global.mantencion.My.Resources.Resources.guardar
+        Me.btn_guardar.Image = Global.mantencion.My.Resources.Resources.guardar_16x16
         Me.btn_guardar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.btn_guardar.Location = New System.Drawing.Point(16, 16)
         Me.btn_guardar.Name = "btn_guardar"
-        Me.btn_guardar.Size = New System.Drawing.Size(75, 24)
+        Me.btn_guardar.Size = New System.Drawing.Size(88, 26)
         Me.btn_guardar.TabIndex = 0
-        Me.btn_guardar.Text = "     Guardar"
+        Me.btn_guardar.Text = "Guardar"
+        Me.btn_guardar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.btn_guardar.UseVisualStyleBackColor = True
         '
         'txtBuscarNodo
