@@ -8,6 +8,7 @@
 #define MyAppShortName "Sistema de Mantención"
 #define MyAppVersion "2026.1"
 #define MyAppPublisher "Cambiaso Hnos. S.A.C. — División de Mantención Industrial"
+#define MyAppURL "https://github.com/barriagada666-collab/Sistema_gestion_Mantencion"
 #define MyAppExeName "Sistema de Gestion Mantencion.exe"
 #define MyAppIcon "mantencion\icons\app_icon.ico"
 
@@ -16,13 +17,17 @@
 AppId={{81543D95-46BE-4730-8A08-A163B21205D7}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-AppVerName={#MyAppName} v{#MyAppVersion} (.NET 8 Autocontenido)
+AppVerName={#MyAppName} v{#MyAppVersion} LTS (.NET 8 Autocontenido)
 AppPublisher={#MyAppPublisher}
-AppComments=Sistema de Gestión Departamento Mantención v2026.1 LTS (.NET 8 Autocontenido, Zero-Dependency) - Cambiaso Hnos. S.A.C. (Placilla de Peñuelas, Valparaíso) - Creado por Boris Arriagada
-VersionInfoDescription=Instalador Autocontenido Sistema de Gestión Departamento Mantención v2026.1 LTS (.NET 8 x64)
+AppPublisherURL={#MyAppURL}
+AppSupportURL={#MyAppURL}/releases
+AppUpdatesURL={#MyAppURL}/releases
+AppComments=Plataforma CMMS / EAM de Mantención Industrial con 40 formularios integrados, filtrado por rango de fechas, exportación XML/PDF cero dependencias y diagnóstico SQL inteligente — Cambiaso Hnos. S.A.C. (Placilla de Peñuelas, Valparaíso) — Desarrollado por Boris Arriagada
+VersionInfoDescription=Instalador Autocontenido Sistema de Gestión Departamento Mantención v2026.1 LTS (.NET 8 x64 Zero-Dependency)
 VersionInfoProductName=Sistema de Gestión Departamento Mantención
+VersionInfoProductVersion=2026.1.0.0
 VersionInfoCompany=Cambiaso Hnos. S.A.C. — División de Mantención Industrial
-VersionInfoCopyright=Copyright (C) 2026 Cambiaso Hnos. S.A.C. — Creado por Boris Arriagada
+VersionInfoCopyright=Copyright (C) 2026 Cambiaso Hnos. S.A.C. — Desarrollado por Boris Arriagada
 VersionInfoVersion=2026.1.0.0
 
 ; Arquitectura de 64 bits (x64 nativo / ARM64 compatible)
@@ -43,9 +48,11 @@ SetupIconFile={#MyAppIcon}
 UninstallDisplayIcon={app}\{#MyAppExeName}
 UninstallDisplayName={#MyAppName}
 
-; Imágenes y Logotipos Institucionales del Asistente
+; Imágenes y Logotipos Institucionales del Asistente (Paleta Corporativa #025E87 / #0191B3 / #0F2D44)
 WizardImageFile=mantencion\installer_art\wizard_banner.bmp,mantencion\installer_art\wizard_banner_2x.bmp
 WizardSmallImageFile=mantencion\installer_art\wizard_small.bmp,mantencion\installer_art\wizard_small_2x.bmp
+WizardImageBackColor=$875E02
+WizardSmallImageBackColor=$FFFFFF
 
 ; Explicación e información del software durante la instalación
 InfoBeforeFile=InfoSoftware.rtf
@@ -74,6 +81,13 @@ CloseApplications=yes
 
 [Languages]
 Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
+
+[Messages]
+spanish.BeveledLabel=Cambiaso Hnos. S.A.C. — División Mantención Industrial · v2026.1 LTS
+spanish.WelcomeLabel1=Bienvenido al Asistente de Instalación de {#MyAppName}
+spanish.WelcomeLabel2=Este asistente instalará {#MyAppName} v{#MyAppVersion} LTS (.NET 8 x64 Autocontenido, Cero Dependencias) en su equipo.%n%nIncluye 40 formularios integrados para Órdenes de Trabajo, Mantención Preventiva, Carta Gantt, KPIs, Auditoría y exportación nativa a Excel/PDF sin requerir Office ni Crystal Reports.%n%nHaga clic en Siguiente para continuar o en Cancelar para salir.
+spanish.FinishedHeadingLabel=Instalación Completada — {#MyAppName}
+spanish.FinishedLabel=La instalación de {#MyAppName} v{#MyAppVersion} LTS ha finalizado correctamente.%n%nSi usa otro servidor SQL o VPN distinta a SrvMagicInfo, puede configurarlo en un clic al iniciar sesión o desde Mantenedores > Configurar Servidor BD.
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
