@@ -139,10 +139,19 @@ Public Class MenuCorporativoRenderer
     End Sub
 
     Protected Overrides Sub OnRenderItemText(ByVal e As ToolStripItemTextRenderEventArgs)
-        ' En la barra superior del MenuStrip, el texto siempre es blanco de alto contraste (o atenuado si está deshabilitado)
+        ' En la barra superior del MenuStrip y en StatusStrip, el texto siempre es blanco de alto contraste
         If TypeOf e.ToolStrip Is MenuStrip AndAlso Not e.Item.IsOnDropDown Then
-            e.TextColor = If(e.Item.Enabled, Color.White, _colorTextoDeshabilitadoTop)
+            If Not e.Item.Enabled Then
+                e.TextColor = _colorTextoDeshabilitadoTop
+            ElseIf e.Item.Name = "ConfigurarServidorToolStripMenuItem" AndAlso Not e.Item.Selected AndAlso Not e.Item.Pressed Then
+                e.TextColor = Utilitarios.ColorAcento
+            Else
+                e.TextColor = Color.White
+            End If
             e.TextFont = _fontMenuTop
+        ElseIf TypeOf e.ToolStrip Is StatusStrip Then
+            e.TextColor = Color.White
+            e.TextFont = _fontMenuItem
         Else
             e.TextColor = If(e.Item.Enabled, Utilitarios.ColorTextoPrincipal, Utilitarios.ColorTextoAtenuado)
             e.TextFont = _fontMenuItem

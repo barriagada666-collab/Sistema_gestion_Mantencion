@@ -49,6 +49,37 @@ Public Class Login
         Conexion.PrecalentarPool()
         Utilitarios.RegistrarTemaGlobal()
         Utilitarios.AplicarTemaModerno(Me)
+        Me.BackColor = Utilitarios.ColorFondoPanel
+        UsernameLabel.BackColor = Utilitarios.ColorFondoPanel
+        PasswordLabel.BackColor = Utilitarios.ColorFondoPanel
+    End Sub
+
+    Private Sub pnlLateral_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles pnlLateral.Paint
+        Dim g As Graphics = e.Graphics
+        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias
+        Using br As New System.Drawing.Drawing2D.LinearGradientBrush(
+            pnlLateral.ClientRectangle,
+            Utilitarios.ColorPrimario,
+            Utilitarios.ColorSecundario,
+            System.Drawing.Drawing2D.LinearGradientMode.Vertical)
+            g.FillRectangle(br, pnlLateral.ClientRectangle)
+        End Using
+
+        Dim cx As Integer = pnlLateral.Width \ 2
+        Dim cy As Integer = 74
+        Dim r As Integer = 28
+        Dim rectCirc As New Rectangle(cx - r, cy - r, r * 2, r * 2)
+        Using pCirc As New Pen(Color.FromArgb(220, 255, 255, 255), 2.0F)
+            g.DrawEllipse(pCirc, rectCirc)
+        End Using
+        Using fBadge As New Font("Segoe UI", 12.0F, FontStyle.Bold, GraphicsUnit.Point),
+              sf As New StringFormat() With {.Alignment = StringAlignment.Center, .LineAlignment = StringAlignment.Center}
+            g.DrawString("USR", fBadge, Brushes.White, rectCirc, sf)
+        End Using
+        Using fSub As New Font("Segoe UI", 9.5F, FontStyle.Bold, GraphicsUnit.Point),
+              sf As New StringFormat() With {.Alignment = StringAlignment.Center, .LineAlignment = StringAlignment.Near}
+            g.DrawString("Acceso" & Environment.NewLine & "Autorizado", fSub, Brushes.White, New RectangleF(8, cy + r + 12, pnlLateral.Width - 16, 48), sf)
+        End Using
     End Sub
 
     Private Sub Cancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Cancel.Click

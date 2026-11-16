@@ -29,23 +29,32 @@ Partial Class Login
     'No lo modifique con el editor de código.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Login))
         Me.UsernameLabel = New System.Windows.Forms.Label
         Me.PasswordLabel = New System.Windows.Forms.Label
         Me.User = New System.Windows.Forms.TextBox
         Me.Password = New System.Windows.Forms.TextBox
         Me.OK = New System.Windows.Forms.Button
         Me.Cancel = New System.Windows.Forms.Button
+        Me.pnlLateral = New System.Windows.Forms.Panel
         Me.SuspendLayout()
+        '
+        'pnlLateral
+        '
+        Me.pnlLateral.BackColor = System.Drawing.Color.FromArgb(2, 94, 135)
+        Me.pnlLateral.Dock = System.Windows.Forms.DockStyle.Left
+        Me.pnlLateral.Location = New System.Drawing.Point(0, 0)
+        Me.pnlLateral.Name = "pnlLateral"
+        Me.pnlLateral.Size = New System.Drawing.Size(148, 196)
+        Me.pnlLateral.TabIndex = 6
         '
         'UsernameLabel
         '
         Me.UsernameLabel.BackColor = System.Drawing.Color.Transparent
-        Me.UsernameLabel.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.UsernameLabel.ForeColor = System.Drawing.Color.FromArgb(30, 41, 59)
-        Me.UsernameLabel.Location = New System.Drawing.Point(172, 22)
+        Me.UsernameLabel.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.UsernameLabel.ForeColor = System.Drawing.Color.FromArgb(15, 45, 68)
+        Me.UsernameLabel.Location = New System.Drawing.Point(168, 22)
         Me.UsernameLabel.Name = "UsernameLabel"
-        Me.UsernameLabel.Size = New System.Drawing.Size(210, 20)
+        Me.UsernameLabel.Size = New System.Drawing.Size(214, 20)
         Me.UsernameLabel.TabIndex = 0
         Me.UsernameLabel.Text = "&Usuario"
         Me.UsernameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -53,28 +62,28 @@ Partial Class Login
         'PasswordLabel
         '
         Me.PasswordLabel.BackColor = System.Drawing.Color.Transparent
-        Me.PasswordLabel.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.PasswordLabel.ForeColor = System.Drawing.Color.FromArgb(30, 41, 59)
-        Me.PasswordLabel.Location = New System.Drawing.Point(172, 78)
+        Me.PasswordLabel.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.PasswordLabel.ForeColor = System.Drawing.Color.FromArgb(15, 45, 68)
+        Me.PasswordLabel.Location = New System.Drawing.Point(168, 78)
         Me.PasswordLabel.Name = "PasswordLabel"
-        Me.PasswordLabel.Size = New System.Drawing.Size(210, 20)
+        Me.PasswordLabel.Size = New System.Drawing.Size(214, 20)
         Me.PasswordLabel.TabIndex = 2
         Me.PasswordLabel.Text = "&Contraseña"
         Me.PasswordLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'User
         '
-        Me.User.Location = New System.Drawing.Point(174, 44)
+        Me.User.Location = New System.Drawing.Point(170, 44)
         Me.User.Name = "User"
-        Me.User.Size = New System.Drawing.Size(208, 24)
+        Me.User.Size = New System.Drawing.Size(212, 24)
         Me.User.TabIndex = 1
         '
         'Password
         '
-        Me.Password.Location = New System.Drawing.Point(174, 100)
+        Me.Password.Location = New System.Drawing.Point(170, 100)
         Me.Password.Name = "Password"
         Me.Password.PasswordChar = Global.Microsoft.VisualBasic.ChrW(42)
-        Me.Password.Size = New System.Drawing.Size(208, 24)
+        Me.Password.Size = New System.Drawing.Size(212, 24)
         Me.Password.TabIndex = 3
         '
         'OK
@@ -99,8 +108,7 @@ Partial Class Login
         Me.AcceptButton = Me.OK
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
-        Me.BackgroundImage = CType(resources.GetObject("$this.BackgroundImage"), System.Drawing.Image)
-        Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
+        Me.BackColor = System.Drawing.Color.FromArgb(242, 246, 246)
         Me.CancelButton = Me.Cancel
         Me.ClientSize = New System.Drawing.Size(404, 196)
         Me.Controls.Add(Me.Cancel)
@@ -109,6 +117,7 @@ Partial Class Login
         Me.Controls.Add(Me.User)
         Me.Controls.Add(Me.PasswordLabel)
         Me.Controls.Add(Me.UsernameLabel)
+        Me.Controls.Add(Me.pnlLateral)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.MaximizeBox = False
         Me.MinimizeBox = False
@@ -120,5 +129,6 @@ Partial Class Login
         Me.PerformLayout()
 
     End Sub
+    Friend WithEvents pnlLateral As System.Windows.Forms.Panel
 
 End Class

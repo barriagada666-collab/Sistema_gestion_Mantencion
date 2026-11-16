@@ -11,23 +11,30 @@ Imports Excel = Microsoft.Office.Interop.Excel
 
 Public Class Utilitarios
 
-    ' Paleta corporativa: #025E87 · #0191B3 · #A0C5CF · #E5EBEB · #66C9D3 (con tintes derivados para contraste)
-    Public Shared ReadOnly ColorPrimario As Color = Color.FromArgb(2, 94, 135)            ' Azul petróleo (#025E87) - encabezados, barra de estado
-    Public Shared ReadOnly ColorSecundario As Color = Color.FromArgb(1, 145, 179)         ' Azul cian (#0191B3) - acentos y bordes
-    Public Shared ReadOnly ColorAcento As Color = Color.FromArgb(102, 201, 211)           ' Turquesa (#66C9D3)
-    Public Shared ReadOnly ColorGrisAzulado As Color = Color.FromArgb(160, 197, 207)      ' Gris azulado (#A0C5CF) - menú
-    Public Shared ReadOnly ColorFondoForm As Color = Color.FromArgb(229, 235, 235)        ' Gris niebla (#E5EBEB) - fondo formularios
-    Public Shared ReadOnly ColorFondoPanel As Color = Color.FromArgb(242, 246, 246)       ' Superficie clara para pestañas (#F2F6F6)
+    ' Paleta corporativa unificada con los mockups oficiales:
+    ' #0F2D44 · #025E87 · #0191B3 · #66C9D3 · #A0C5CF · #DDE7E8 · #E5EBEB · #F2F6F6
+    Public Shared ReadOnly ColorDeepNavy As Color = Color.FromArgb(15, 45, 68)             ' Azul marino profundo (#0F2D44) - barra superior y títulos
+    Public Shared ReadOnly ColorPrimario As Color = Color.FromArgb(2, 94, 135)            ' Azul petróleo (#025E87) - botones primarios, encabezados, estado
+    Public Shared ReadOnly ColorSecundario As Color = Color.FromArgb(1, 145, 179)         ' Azul cian (#0191B3) - acentos, bordes y hover primario
+    Public Shared ReadOnly ColorAcento As Color = Color.FromArgb(102, 201, 211)           ' Turquesa (#66C9D3) - destacados en barra oscura
+    Public Shared ReadOnly ColorGrisAzulado As Color = Color.FromArgb(160, 197, 207)      ' Gris azulado (#A0C5CF)
+    Public Shared ReadOnly ColorMdiFondo As Color = Color.FromArgb(221, 231, 232)         ' Fondo limpio del escritorio MDI (#DDE7E8)
+    Public Shared ReadOnly ColorFondoForm As Color = Color.FromArgb(229, 235, 235)        ' Gris niebla (#E5EBEB) - fondo formularios y GroupBox
+    Public Shared ReadOnly ColorFondoPanel As Color = Color.FromArgb(242, 246, 246)       ' Superficie clara para pestañas y tarjetas (#F2F6F6)
     Public Shared ReadOnly ColorFondoInput As Color = Color.White                         ' Campos editables (#FFFFFF)
     Public Shared ReadOnly ColorFondoFoco As Color = Color.FromArgb(224, 244, 246)        ' Tinte turquesa al enfocar (#E0F4F6)
     Public Shared ReadOnly ColorFondoSoloLectura As Color = Color.FromArgb(215, 230, 234) ' Tinte gris azulado solo lectura (#D7E6EA)
     Public Shared ReadOnly ColorTextoPrincipal As Color = Color.FromArgb(15, 23, 42)      ' Texto principal alto contraste (#0F172A)
-    Public Shared ReadOnly ColorTextoDestacado As Color = Color.FromArgb(185, 28, 28)     ' Rojo legible para alertas (#B91C1C)
+    Public Shared ReadOnly ColorTextoDestacado As Color = Color.FromArgb(185, 28, 28)     ' Rojo legible para alertas y eliminar (#B91C1C)
     Public Shared ReadOnly ColorFilaAlterna As Color = Color.FromArgb(234, 243, 245)      ' Zebra suave (#EAF3F5)
     Public Shared ReadOnly ColorSeleccion As Color = Color.FromArgb(160, 197, 207)        ' Selección (#A0C5CF)
     Public Shared ReadOnly ColorTextoSeleccion As Color = Color.FromArgb(15, 23, 42)      ' Texto sobre selección (#0F172A)
     Public Shared ReadOnly ColorNodoActivo As Color = Color.FromArgb(179, 228, 233)       ' Tinte turquesa para nodo activo (#B3E4E9)
-    Public Shared ReadOnly ColorBotonHover As Color = Color.FromArgb(217, 241, 244)       ' Hover de botones (#D9F1F4)
+    Public Shared ReadOnly ColorBotonHover As Color = Color.FromArgb(217, 241, 244)       ' Hover de botones secundarios (#D9F1F4)
+    Public Shared ReadOnly ColorBotonSecundarioBorde As Color = Color.FromArgb(148, 184, 196) ' Borde sutil secundario (#94B8C4)
+    Public Shared ReadOnly ColorBotonEliminarFondo As Color = Color.FromArgb(255, 241, 242)   ' Fondo suave destructivo (#FFF1F2)
+    Public Shared ReadOnly ColorBotonEliminarBorde As Color = Color.FromArgb(244, 63, 94)    ' Borde destructivo (#F43F5E)
+    Public Shared ReadOnly ColorBotonEliminarHover As Color = Color.FromArgb(255, 228, 230)   ' Hover destructivo (#FFE4E6)
 
     ' Colores semánticos centralizados (eliminación de valores hardcodeados en todo el proyecto)
     Public Shared ReadOnly ColorBordeGrilla As Color = Color.FromArgb(200, 218, 223)      ' Bordes de celdas en DataGridView (#C8DEDF)
@@ -763,6 +770,7 @@ Public Class Utilitarios
     Private Shared ReadOnly _menuRenderer As New MenuCorporativoRenderer()
     Private Shared ReadOnly _cacheFuentes As New Dictionary(Of String, Font)(StringComparer.Ordinal)
     Private Shared ReadOnly _cacheIconos As New Dictionary(Of String, Bitmap)(StringComparer.Ordinal)
+    Private Shared ReadOnly _imagenesOriginales As New Dictionary(Of Button, Image)()
     Private Shared _temaGlobalRegistrado As Boolean = False
 
     Public Shared Sub RegistrarTemaGlobal()
@@ -822,6 +830,130 @@ Public Class Utilitarios
         _cacheIconos(key) = bmp
         Return bmp
     End Function
+
+    Private Shared Function TintarIconoBlanco(ByVal img As Image) As Image
+        If img Is Nothing Then Return Nothing
+        Dim key As String = "white|" & System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(img).ToString() & "|" & img.Width.ToString() & "x" & img.Height.ToString()
+        Dim cached As Bitmap = Nothing
+        If _cacheIconos.TryGetValue(key, cached) Then
+            Return cached
+        End If
+
+        Dim bmp As New Bitmap(img.Width, img.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+        Using src As New Bitmap(img)
+            For y As Integer = 0 To src.Height - 1
+                For x As Integer = 0 To src.Width - 1
+                    Dim px As Color = src.GetPixel(x, y)
+                    If px.A > 10 Then
+                        bmp.SetPixel(x, y, Color.FromArgb(px.A, 255, 255, 255))
+                    Else
+                        bmp.SetPixel(x, y, Color.Transparent)
+                    End If
+                Next
+            Next
+        End Using
+
+        _cacheIconos(key) = bmp
+        Return bmp
+    End Function
+
+    Private Shared Function EsBotonPrimario(ByVal btn As Button) As Boolean
+        Dim txt As String = If(btn.Text, "").Replace("&", "").Trim()
+        If String.IsNullOrEmpty(txt) Then Return False
+        Dim n As String = If(btn.Name, "")
+        Return txt.Equals("Guardar", StringComparison.OrdinalIgnoreCase) OrElse
+               txt.Equals("Ingresar", StringComparison.OrdinalIgnoreCase) OrElse
+               txt.Equals("Ingresar MP", StringComparison.OrdinalIgnoreCase) OrElse
+               txt.Equals("Aceptar", StringComparison.OrdinalIgnoreCase) OrElse
+               txt.Equals("Planificar Ciclos", StringComparison.OrdinalIgnoreCase) OrElse
+               txt.Equals("Crear Ciclos", StringComparison.OrdinalIgnoreCase) OrElse
+               txt.Equals("Consultar BD", StringComparison.OrdinalIgnoreCase) OrElse
+               txt.Equals("Generar", StringComparison.OrdinalIgnoreCase) OrElse
+               txt.Equals("Actualizar Gantt", StringComparison.OrdinalIgnoreCase) OrElse
+               txt.Equals("Guardar y Aplicar", StringComparison.OrdinalIgnoreCase) OrElse
+               n.Equals("OK", StringComparison.OrdinalIgnoreCase)
+    End Function
+
+    Private Shared Function EsBotonDestructivo(ByVal btn As Button) As Boolean
+        Dim txt As String = If(btn.Text, "").Replace("&", "").Trim()
+        If String.IsNullOrEmpty(txt) Then Return False
+        Return txt.IndexOf("Eliminar", StringComparison.OrdinalIgnoreCase) >= 0
+    End Function
+
+    Private Shared Sub AplicarColoresEstadoBotonPrimario(ByVal btn As Button)
+        If btn Is Nothing OrElse btn.IsDisposed Then Exit Sub
+        Dim imgOriginal As Image = Nothing
+        _imagenesOriginales.TryGetValue(btn, imgOriginal)
+        If btn.Enabled Then
+            btn.BackColor = ColorPrimario
+            btn.ForeColor = Color.White
+            btn.FlatAppearance.BorderColor = ColorPrimario
+            btn.FlatAppearance.MouseOverBackColor = ColorSecundario
+            btn.FlatAppearance.MouseDownBackColor = ColorDeepNavy
+            If imgOriginal IsNot Nothing Then
+                btn.Image = TintarIconoBlanco(imgOriginal)
+            End If
+        Else
+            btn.BackColor = ColorFondoSoloLectura
+            btn.ForeColor = ColorTextoAtenuado
+            btn.FlatAppearance.BorderColor = ColorBotonSecundarioBorde
+            If imgOriginal IsNot Nothing Then
+                btn.Image = imgOriginal
+            End If
+        End If
+    End Sub
+
+    Private Shared Sub AlDisponerBotonPrimario(ByVal sender As Object, ByVal e As EventArgs)
+        Dim btn As Button = TryCast(sender, Button)
+        If btn IsNot Nothing Then _imagenesOriginales.Remove(btn)
+    End Sub
+
+    Private Shared Sub AlCambiarHabilitacionBotonPrimario(ByVal sender As Object, ByVal e As EventArgs)
+        AplicarColoresEstadoBotonPrimario(TryCast(sender, Button))
+    End Sub
+
+    Private Shared Sub AplicarEstiloBotonCorporativo(ByVal btn As Button)
+        If btn Is Nothing OrElse btn.IsDisposed Then Exit Sub
+        btn.UseVisualStyleBackColor = False
+        btn.FlatStyle = FlatStyle.Flat
+        btn.FlatAppearance.BorderSize = 1
+        btn.Cursor = Cursors.Hand
+
+        If EsBotonPrimario(btn) Then
+            If btn.Image IsNot Nothing AndAlso Not _imagenesOriginales.ContainsKey(btn) Then
+                _imagenesOriginales(btn) = btn.Image
+                AddHandler btn.Disposed, AddressOf AlDisponerBotonPrimario
+            End If
+            RemoveHandler btn.EnabledChanged, AddressOf AlCambiarHabilitacionBotonPrimario
+            AddHandler btn.EnabledChanged, AddressOf AlCambiarHabilitacionBotonPrimario
+            AplicarColoresEstadoBotonPrimario(btn)
+            If btn.Font IsNot Nothing AndAlso Not btn.Font.Bold Then
+                Dim key As String = btn.Font.SizeInPoints.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) & "|" & CInt(btn.Font.Style Or FontStyle.Bold).ToString()
+                Dim fBold As Font = Nothing
+                If Not _cacheFuentes.TryGetValue(key, fBold) Then
+                    fBold = New Font(btn.Font.FontFamily, btn.Font.SizeInPoints, btn.Font.Style Or FontStyle.Bold, GraphicsUnit.Point)
+                    _cacheFuentes(key) = fBold
+                End If
+                Dim prevFont As Font = btn.Font
+                btn.Font = fBold
+                If btn.PreferredSize.Width > btn.Width Then
+                    btn.Font = prevFont
+                End If
+            End If
+        ElseIf EsBotonDestructivo(btn) Then
+            btn.BackColor = ColorBotonEliminarFondo
+            btn.ForeColor = ColorTextoDestacado
+            btn.FlatAppearance.BorderColor = ColorBotonEliminarBorde
+            btn.FlatAppearance.MouseOverBackColor = ColorBotonEliminarHover
+            btn.FlatAppearance.MouseDownBackColor = Color.FromArgb(254, 205, 211)
+        Else
+            btn.BackColor = Color.White
+            btn.ForeColor = ColorDeepNavy
+            btn.FlatAppearance.BorderColor = ColorSecundario
+            btn.FlatAppearance.MouseOverBackColor = ColorBotonHover
+            btn.FlatAppearance.MouseDownBackColor = ColorGrisAzulado
+        End If
+    End Sub
 
     Private Shared Sub NormalizarIconoBoton(ByVal btn As Button)
         If btn Is Nothing OrElse btn.IsDisposed Then Exit Sub
@@ -985,7 +1117,11 @@ Public Class Utilitarios
             ElseIf TypeOf ctrl Is Panel Then
                 UnificarFuenteCorporativa(ctrl)
                 ctrl.ForeColor = ColorTextoPrincipal
-                If TypeOf ctrl.Parent Is TabPage Then
+                Dim nomPanel As String = If(ctrl.Name, "")
+                If nomPanel.StartsWith("pnlCard", StringComparison.OrdinalIgnoreCase) OrElse
+                   nomPanel.StartsWith("pnlKpi", StringComparison.OrdinalIgnoreCase) Then
+                    ctrl.BackColor = Color.White
+                ElseIf TypeOf ctrl.Parent Is TabPage Then
                     ctrl.BackColor = ColorFondoPanel
                 Else
                     ctrl.BackColor = ColorFondoForm
@@ -995,16 +1131,8 @@ Public Class Utilitarios
             ElseIf TypeOf ctrl Is Button Then
                 Dim btn As Button = DirectCast(ctrl, Button)
                 UnificarFuenteCorporativa(btn)
-                btn.UseVisualStyleBackColor = False
-                btn.FlatStyle = FlatStyle.Flat
-                btn.FlatAppearance.BorderColor = ColorSecundario
-                btn.FlatAppearance.BorderSize = 1
-                btn.FlatAppearance.MouseOverBackColor = ColorBotonHover
-                btn.FlatAppearance.MouseDownBackColor = ColorGrisAzulado
-                btn.BackColor = Color.White
-                btn.ForeColor = ColorPrimario
-                btn.Cursor = Cursors.Hand
                 NormalizarIconoBoton(btn)
+                AplicarEstiloBotonCorporativo(btn)
 
             ElseIf TypeOf ctrl Is CheckBox Then
                 Dim chk As CheckBox = DirectCast(ctrl, CheckBox)
@@ -1052,8 +1180,12 @@ Public Class Utilitarios
 
             ElseIf TypeOf ctrl Is Label Then
                 UnificarFuenteCorporativa(ctrl)
+                Dim nomLbl As String = If(ctrl.Name, "")
                 If EsColorRojo(ctrl.ForeColor) Then
                     ctrl.ForeColor = ColorTextoDestacado
+                ElseIf nomLbl.StartsWith("lblTitKpi", StringComparison.OrdinalIgnoreCase) OrElse
+                       nomLbl.StartsWith("lblKpi", StringComparison.OrdinalIgnoreCase) Then
+                    ' Preserva los colores semánticos de tarjetas KPI (azul/verde/rojo)
                 Else
                     ctrl.ForeColor = ColorTextoPrincipal
                 End If

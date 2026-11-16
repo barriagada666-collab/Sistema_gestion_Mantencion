@@ -409,5 +409,15 @@ Namespace My.Resources
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property
+
+        '''<summary>
+        '''  Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property cambiaso_logo_nuevo() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("cambiaso_logo_nuevo", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
     End Module
 End Namespace

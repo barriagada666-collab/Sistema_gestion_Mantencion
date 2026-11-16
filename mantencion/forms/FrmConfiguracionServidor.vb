@@ -226,14 +226,32 @@ Public Class FrmConfiguracionServidor
         btnGuardar.Location = New Point(358, 14)
         btnGuardar.Size = New Size(148, 36)
         btnGuardar.Font = New Font("Segoe UI", 8.75F, FontStyle.Bold)
-        btnGuardar.BackColor = Utilitarios.ColorPrimario
-        btnGuardar.ForeColor = Color.White
 
         btnCancelar = New Button()
         btnCancelar.Text = "Cancelar"
         btnCancelar.Location = New Point(512, 14)
         btnCancelar.Size = New Size(96, 36)
         btnCancelar.Font = New Font("Segoe UI", 8.75F)
+
+        For Each bSec As Button In New Button() {btnProbar, btnRestaurar, btnVerLogs, btnCancelar}
+            bSec.UseVisualStyleBackColor = False
+            bSec.FlatStyle = FlatStyle.Flat
+            bSec.FlatAppearance.BorderSize = 1
+            bSec.FlatAppearance.BorderColor = Utilitarios.ColorSecundario
+            bSec.FlatAppearance.MouseOverBackColor = Utilitarios.ColorBotonHover
+            bSec.BackColor = Color.White
+            bSec.ForeColor = Utilitarios.ColorDeepNavy
+            bSec.Cursor = Cursors.Hand
+        Next
+
+        btnGuardar.UseVisualStyleBackColor = False
+        btnGuardar.FlatStyle = FlatStyle.Flat
+        btnGuardar.FlatAppearance.BorderSize = 1
+        btnGuardar.FlatAppearance.BorderColor = Utilitarios.ColorPrimario
+        btnGuardar.FlatAppearance.MouseOverBackColor = Utilitarios.ColorSecundario
+        btnGuardar.BackColor = Utilitarios.ColorPrimario
+        btnGuardar.ForeColor = Color.White
+        btnGuardar.Cursor = Cursors.Hand
 
         panBotones.Controls.AddRange(New Control() {btnProbar, btnRestaurar, btnVerLogs, btnGuardar, btnCancelar})
 

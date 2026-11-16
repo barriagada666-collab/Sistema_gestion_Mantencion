@@ -117,27 +117,116 @@ Public Class principal
             Me.Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath)
         Catch
         End Try
+        ConfigurarServidorToolStripMenuItem.ForeColor = Utilitarios.ColorAcento
+        Dim clientCtrl As MdiClient = ObtenerMdiClient()
+        If clientCtrl IsNot Nothing Then
+            clientCtrl.BackColor = Utilitarios.ColorMdiFondo
+            Utilitarios.HabilitarDobleBuffer(clientCtrl)
+            RemoveHandler clientCtrl.Paint, AddressOf DibujarBienvenidaMdi
+            RemoveHandler clientCtrl.Resize, AddressOf AlRedimensionarMdiClient
+            AddHandler clientCtrl.Paint, AddressOf DibujarBienvenidaMdi
+            AddHandler clientCtrl.Resize, AddressOf AlRedimensionarMdiClient
+        End If
+        Utilitarios.RegistrarTemaGlobal()
+        Utilitarios.AplicarTemaModerno(Me)
+    End Sub
+
+    Private Sub AlRedimensionarMdiClient(ByVal sender As Object, ByVal e As EventArgs)
+        Dim clientCtrl As MdiClient = TryCast(sender, MdiClient)
+        If clientCtrl IsNot Nothing Then clientCtrl.Invalidate()
+    End Sub
+
+    Private Sub DibujarBienvenidaMdi(ByVal sender As Object, ByVal e As PaintEventArgs)
+        For Each child As Form In Me.MdiChildren
+            If child IsNot Nothing AndAlso Not child.IsDisposed AndAlso child.Visible Then Exit Sub
+        Next
+
+        Dim clientCtrl As MdiClient = TryCast(sender, MdiClient)
+        If clientCtrl Is Nothing OrElse clientCtrl.ClientSize.Width < 520 OrElse clientCtrl.ClientSize.Height < 340 Then Exit Sub
+
+        Dim g As Graphics = e.Graphics
+        g.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
+        g.TextRenderingHint = Drawing.Text.TextRenderingHint.ClearTypeGridFit
+
+        Dim cardW As Integer = Math.Min(780, clientCtrl.ClientSize.Width - 64)
+        Dim cardH As Integer = Math.Min(330, clientCtrl.ClientSize.Height - 48)
+        Dim cardX As Integer = (clientCtrl.ClientSize.Width - cardW) \ 2
+        Dim cardY As Integer = (clientCtrl.ClientSize.Height - cardH) \ 2
+        Dim cardRect As New Rectangle(cardX, cardY, cardW, cardH)
+
+        Using brSombra As New SolidBrush(Color.FromArgb(18, 15, 45, 68))
+            g.FillRectangle(brSombra, cardX + 3, cardY + 4, cardW, cardH)
+        End Using
+        Using brCard As New SolidBrush(Color.White)
+            g.FillRectangle(brCard, cardRect)
+        End Using
+        Using pBorde As New Pen(Color.FromArgb(203, 213, 225), 1)
+            g.DrawRectangle(pBorde, cardRect)
+        End Using
+
+        Dim padX As Integer = cardX + 28
+        Dim curY As Integer = cardY + 22
+        Using fKicker As New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point),
+              brKicker As New SolidBrush(Utilitarios.ColorSecundario)
+            g.DrawString("ESCRITORIO MDI · 40 FORMULARIOS INTEGRADOS", fKicker, brKicker, padX, curY)
+        End Using
+        Using fTitulo As New Font("Segoe UI", 14.5F, FontStyle.Bold, GraphicsUnit.Point),
+              brTitulo As New SolidBrush(Utilitarios.ColorDeepNavy)
+            g.DrawString("Sistema de Gestión Departamento Mantención", fTitulo, brTitulo, padX, curY + 18)
+        End Using
+
         Try
-            If Me.BackgroundImage IsNot Nothing Then
-                Dim screenBounds As Rectangle = Screen.PrimaryScreen.Bounds
-                Dim bmpOpt As New Bitmap(screenBounds.Width, screenBounds.Height, Imaging.PixelFormat.Format32bppPArgb)
-                Using g As Graphics = Graphics.FromImage(bmpOpt)
-                    g.InterpolationMode = Drawing2D.InterpolationMode.Bilinear
-                    g.DrawImage(Me.BackgroundImage, 0, 0, screenBounds.Width, screenBounds.Height)
-                End Using
-                Me.BackgroundImageLayout = ImageLayout.None
-                Me.BackgroundImage = bmpOpt
+            Dim logo As Image = My.Resources.Resources.cambiaso_logo_nuevo
+            If logo IsNot Nothing Then
+                Dim logoH As Integer = 36
+                Dim logoW As Integer = CInt(logo.Width * (CDbl(logoH) / logo.Height))
+                g.DrawImage(logo, New Rectangle(cardX + cardW - 28 - logoW, curY + 4, logoW, logoH))
             End If
         Catch
         End Try
-        For Each ctrl As Control In Me.Controls
-            If TypeOf ctrl Is MdiClient Then
-                ctrl.BackColor = Utilitarios.ColorFondoForm
-                Utilitarios.HabilitarDobleBuffer(ctrl)
-            End If
-        Next
-        Utilitarios.RegistrarTemaGlobal()
-        Utilitarios.AplicarTemaModerno(Me)
+
+        Dim lineY As Integer = curY + 54
+        Using pLinea As New Pen(Utilitarios.ColorPrimario, 2)
+            g.DrawLine(pLinea, padX, lineY, cardX + cardW - 28, lineY)
+        End Using
+
+        Dim modulos As String(,) = {
+            {"Órdenes de Trabajo", "Ingreso, fallas, tiempos, repuestos y cierre (frm_OT)."},
+            {"Mant. Preventiva", "Pautas MP, tareas nodo y planificador de ciclos."},
+            {"Informes & Gantt", "Rango de fechas obligatorio, PDF vectorial y Excel nativo."},
+            {"Estadísticas KPIs", "Rankings por máquina, técnico, falla, turno y drill-down."},
+            {"Mantenedores", "Nodos, datos técnicos, personal, turnos, plantas y cargos."},
+            {"Seguridad & Auditoría", "Permisos de usuario, auditoría BD y asistente SQL."}
+        }
+
+        Dim cols As Integer = 3
+        Dim gapX As Integer = 14
+        Dim gapY As Integer = 12
+        Dim areaW As Integer = cardW - 56
+        Dim boxW As Integer = (areaW - (gapX * (cols - 1))) \ cols
+        Dim boxH As Integer = Math.Max(68, (cardY + cardH - lineY - 36 - gapY) \ 2)
+        Dim startY As Integer = lineY + 16
+
+        Using brBox As New SolidBrush(Color.FromArgb(239, 243, 244)),
+              pBox As New Pen(Color.FromArgb(215, 230, 234), 1),
+              brStripe As New SolidBrush(Utilitarios.ColorSecundario),
+              fModTit As New Font("Segoe UI", 9.5F, FontStyle.Bold, GraphicsUnit.Point),
+              fModDesc As New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point),
+              brModTit As New SolidBrush(Utilitarios.ColorPrimario),
+              brModDesc As New SolidBrush(Color.FromArgb(71, 85, 105))
+            For i As Integer = 0 To 5
+                Dim c As Integer = i Mod cols
+                Dim r As Integer = i \ cols
+                Dim bx As Integer = padX + c * (boxW + gapX)
+                Dim by As Integer = startY + r * (boxH + gapY)
+                Dim boxRect As New Rectangle(bx, by, boxW, boxH)
+                g.FillRectangle(brBox, boxRect)
+                g.DrawRectangle(pBox, boxRect)
+                g.FillRectangle(brStripe, bx, by, 4, boxH)
+                g.DrawString(modulos(i, 0), fModTit, brModTit, New RectangleF(bx + 12, by + 10, boxW - 18, 20))
+                g.DrawString(modulos(i, 1), fModDesc, brModDesc, New RectangleF(bx + 12, by + 32, boxW - 18, boxH - 38))
+            Next
+        End Using
     End Sub
 
     Private Sub principal_MdiChildActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.MdiChildActivate

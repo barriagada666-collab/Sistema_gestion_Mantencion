@@ -4,10 +4,10 @@ Todos los binarios de distribución en esta carpeta se sincronizan automáticame
 
 | Archivo | Plataforma | Formato | Tamaño | SHA-256 |
 | :--- | :--- | :---: | :---: | :--- |
-| `Instalador_Sistema_Mantencion_v2026.1.exe` | **Windows 10 / 11** (`x64`) | Inno Setup (`LZMA2`) | `41.37 MB` | `16F6A502E97DA48A7D4063E8C5CA36038BACA43ADF23E18134D9D7ED5BD698CC` |
+| `Instalador_Sistema_Mantencion_v2026.1.exe` | **Windows 10 / 11** (`x64`) | Inno Setup (`LZMA2`) | `41.37 MB` | `D6EC253C7DB76E3329903283D53C1AB8A1ACD1CC72899F6EE618BAA73F7A6C11` |
 | `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` | **macOS Universal** (Apple Silicon ARM64 sin Rosetta 2 + Intel) | Imagen DMG (`ULMO`) | `271.98 MB` | `cf445e611083eb9058d57971d07e87dff9cb8767278cf1548d88e8d4d0c059c6` |
 | `Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip` | **macOS Universal** (Apple Silicon ARM64 sin Rosetta 2 + Intel) | Archivo ZIP (`-9`) | `344.73 MB` | `554a0165972d7ed0ffc80baa31900c32fdefcc0350ed0755b6c12ffa889f0361` |
-| `Sistema.Gestion.Mantencion.2026.1.0.nupkg` | **GitHub Packages / NuGet** | Paquete `.nupkg` | `2.00 MB` | `20ee6fd1c35e37859d94b492b663c78e0c2846c674249f1b2276a851b6d30a06` |
+| `Sistema.Gestion.Mantencion.2026.1.0.nupkg` | **GitHub Packages / NuGet** | Paquete `.nupkg` | `2.09 MB` | `283429c8e2e76662369912ed9e800f159750de0092880483d1c45b51d85ec10d` |
 
 ## 🚀 Instrucciones Rápidas
 - **Windows:** Ejecute `Instalador_Sistema_Mantencion_v2026.1.exe`. No requiere .NET Desktop Runtime, Crystal Reports ni Microsoft Office previos.

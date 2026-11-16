@@ -327,8 +327,7 @@ Partial Class principal
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
-        Me.BackgroundImage = Global.mantencion.My.Resources.Resources.fondo_sistema_3
-        Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
+        Me.BackColor = System.Drawing.Color.FromArgb(221, 231, 232)
         Me.ClientSize = New System.Drawing.Size(1027, 486)
         Me.Controls.Add(Me.MenuStrip)
         Me.Controls.Add(Me.StatusStrip)

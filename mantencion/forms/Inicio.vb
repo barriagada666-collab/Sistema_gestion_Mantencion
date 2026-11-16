@@ -4,14 +4,19 @@ Public NotInheritable Class Inicio
         Me.DoubleBuffered = True
         Conexion.PrecalentarPool()
 
-        If My.Application.Info.Title <> "" Then
-            lbl1.Text = My.Application.Info.Title
-        Else
-            lbl1.Text = System.IO.Path.GetFileNameWithoutExtension(My.Application.Info.AssemblyName)
-        End If
-
+        lbl1.Text = "Sistema de Gestión" & Environment.NewLine & "Departamento" & Environment.NewLine & "Mantención"
         Version.Text = "Versión 2026.1"
-        Copyright.Text = My.Application.Info.Copyright
+        Copyright.Text = "Copyright © Cambiaso Hnos. S.A.C. 2026"
+    End Sub
+
+    Private Sub pnlIzquierdo_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles pnlIzquierdo.Paint
+        Using br As New System.Drawing.Drawing2D.LinearGradientBrush(
+            pnlIzquierdo.ClientRectangle,
+            System.Drawing.Color.FromArgb(2, 94, 135),
+            System.Drawing.Color.FromArgb(1, 68, 102),
+            System.Drawing.Drawing2D.LinearGradientMode.Vertical)
+            e.Graphics.FillRectangle(br, pnlIzquierdo.ClientRectangle)
+        End Using
     End Sub
 
 End Class
