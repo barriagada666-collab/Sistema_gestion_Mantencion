@@ -142,90 +142,42 @@ Public Class principal
         Next
 
         Dim clientCtrl As MdiClient = TryCast(sender, MdiClient)
-        If clientCtrl Is Nothing OrElse clientCtrl.ClientSize.Width < 520 OrElse clientCtrl.ClientSize.Height < 340 Then Exit Sub
+        If clientCtrl Is Nothing OrElse clientCtrl.ClientSize.Width < 360 OrElse clientCtrl.ClientSize.Height < 220 Then Exit Sub
 
         Dim g As Graphics = e.Graphics
         g.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
+        g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
         g.TextRenderingHint = Drawing.Text.TextRenderingHint.ClearTypeGridFit
 
-        Dim cardW As Integer = Math.Min(780, clientCtrl.ClientSize.Width - 64)
-        Dim cardH As Integer = Math.Min(330, clientCtrl.ClientSize.Height - 48)
-        Dim cardX As Integer = (clientCtrl.ClientSize.Width - cardW) \ 2
-        Dim cardY As Integer = (clientCtrl.ClientSize.Height - cardH) \ 2
-        Dim cardRect As New Rectangle(cardX, cardY, cardW, cardH)
-
-        Using brSombra As New SolidBrush(Color.FromArgb(18, 15, 45, 68))
-            g.FillRectangle(brSombra, cardX + 3, cardY + 4, cardW, cardH)
-        End Using
-        Using brCard As New SolidBrush(Color.White)
-            g.FillRectangle(brCard, cardRect)
-        End Using
-        Using pBorde As New Pen(Color.FromArgb(203, 213, 225), 1)
-            g.DrawRectangle(pBorde, cardRect)
-        End Using
-
-        Dim padX As Integer = cardX + 28
-        Dim curY As Integer = cardY + 22
-        Using fKicker As New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point),
-              brKicker As New SolidBrush(Utilitarios.ColorSecundario)
-            g.DrawString("ESCRITORIO MDI · 40 FORMULARIOS INTEGRADOS", fKicker, brKicker, padX, curY)
-        End Using
-        Using fTitulo As New Font("Segoe UI", 14.5F, FontStyle.Bold, GraphicsUnit.Point),
-              brTitulo As New SolidBrush(Utilitarios.ColorDeepNavy)
-            g.DrawString("Sistema de Gestión Departamento Mantención", fTitulo, brTitulo, padX, curY + 18)
-        End Using
-
+        Dim logo As Image = Nothing
         Try
-            Dim logo As Image = My.Resources.Resources.cambiaso_logo_nuevo
-            If logo IsNot Nothing Then
-                Dim logoH As Integer = 36
-                Dim logoW As Integer = CInt(logo.Width * (CDbl(logoH) / logo.Height))
-                g.DrawImage(logo, New Rectangle(cardX + cardW - 28 - logoW, curY + 4, logoW, logoH))
-            End If
+            logo = My.Resources.Resources.cambiaso_logo_nuevo
         Catch
         End Try
 
-        Dim lineY As Integer = curY + 54
-        Using pLinea As New Pen(Utilitarios.ColorPrimario, 2)
-            g.DrawLine(pLinea, padX, lineY, cardX + cardW - 28, lineY)
-        End Using
+        Dim titulo As String = "Sistema de Gestión Departamento Mantención"
+        Dim anchoMax As Integer = Math.Max(300, clientCtrl.ClientSize.Width - 64)
 
-        Dim modulos As String(,) = {
-            {"Órdenes de Trabajo", "Ingreso, fallas, tiempos, repuestos y cierre (frm_OT)."},
-            {"Mant. Preventiva", "Pautas MP, tareas nodo y planificador de ciclos."},
-            {"Informes & Gantt", "Rango de fechas obligatorio, PDF vectorial y Excel nativo."},
-            {"Estadísticas KPIs", "Rankings por máquina, técnico, falla, turno y drill-down."},
-            {"Mantenedores", "Nodos, datos técnicos, personal, turnos, plantas y cargos."},
-            {"Seguridad & Auditoría", "Permisos de usuario, auditoría BD y asistente SQL."}
-        }
+        Using fTitulo As New Font("Segoe UI", 18.0F, FontStyle.Bold, GraphicsUnit.Point),
+              sf As New StringFormat() With {.Alignment = StringAlignment.Center, .LineAlignment = StringAlignment.Near},
+              brTitulo As New SolidBrush(Utilitarios.ColorDeepNavy)
 
-        Dim cols As Integer = 3
-        Dim gapX As Integer = 14
-        Dim gapY As Integer = 12
-        Dim areaW As Integer = cardW - 56
-        Dim boxW As Integer = (areaW - (gapX * (cols - 1))) \ cols
-        Dim boxH As Integer = Math.Max(68, (cardY + cardH - lineY - 36 - gapY) \ 2)
-        Dim startY As Integer = lineY + 16
+            Dim logoH As Integer = 96
+            Dim logoW As Integer = If(logo IsNot Nothing AndAlso logo.Height > 0, CInt(logo.Width * (CDbl(logoH) / logo.Height)), 0)
+            Dim gapLogoTitulo As Integer = 18
+            Dim tamTitulo As SizeF = g.MeasureString(titulo, fTitulo, anchoMax, sf)
 
-        Using brBox As New SolidBrush(Color.FromArgb(239, 243, 244)),
-              pBox As New Pen(Color.FromArgb(215, 230, 234), 1),
-              brStripe As New SolidBrush(Utilitarios.ColorSecundario),
-              fModTit As New Font("Segoe UI", 9.5F, FontStyle.Bold, GraphicsUnit.Point),
-              fModDesc As New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point),
-              brModTit As New SolidBrush(Utilitarios.ColorPrimario),
-              brModDesc As New SolidBrush(Color.FromArgb(71, 85, 105))
-            For i As Integer = 0 To 5
-                Dim c As Integer = i Mod cols
-                Dim r As Integer = i \ cols
-                Dim bx As Integer = padX + c * (boxW + gapX)
-                Dim by As Integer = startY + r * (boxH + gapY)
-                Dim boxRect As New Rectangle(bx, by, boxW, boxH)
-                g.FillRectangle(brBox, boxRect)
-                g.DrawRectangle(pBox, boxRect)
-                g.FillRectangle(brStripe, bx, by, 4, boxH)
-                g.DrawString(modulos(i, 0), fModTit, brModTit, New RectangleF(bx + 12, by + 10, boxW - 18, 20))
-                g.DrawString(modulos(i, 1), fModDesc, brModDesc, New RectangleF(bx + 12, by + 32, boxW - 18, boxH - 38))
-            Next
+            Dim totalH As Integer = If(logoW > 0, logoH + gapLogoTitulo, 0) + CInt(Math.Ceiling(tamTitulo.Height))
+            Dim startY As Integer = Math.Max(24, (clientCtrl.ClientSize.Height - totalH) \ 2)
+
+            If logo IsNot Nothing AndAlso logoW > 0 Then
+                Dim logoX As Integer = (clientCtrl.ClientSize.Width - logoW) \ 2
+                g.DrawImage(logo, New Rectangle(logoX, startY, logoW, logoH))
+                startY += logoH + gapLogoTitulo
+            End If
+
+            Dim rectTitulo As New RectangleF(32, startY, anchoMax, tamTitulo.Height + 6)
+            g.DrawString(titulo, fTitulo, brTitulo, rectTitulo, sf)
         End Using
     End Sub
 
