@@ -130,6 +130,18 @@ Public Class principal
         Utilitarios.RegistrarTemaGlobal()
         Utilitarios.AplicarTemaModerno(Me)
         ActualizarIndicadorServidor()
+        ActualizarPermisosMenuAdministrador()
+    End Sub
+
+    Public Sub ActualizarPermisosMenuAdministrador()
+        Dim esAdmin As Boolean = Usuario.EsAdministrador
+        If ConfigurarServidorToolStripMenuItem IsNot Nothing Then
+            ConfigurarServidorToolStripMenuItem.Visible = esAdmin
+            ConfigurarServidorToolStripMenuItem.Enabled = esAdmin
+        End If
+        If ToolStripSeparatorMantenedor IsNot Nothing Then
+            ToolStripSeparatorMantenedor.Visible = esAdmin
+        End If
     End Sub
 
     Public Sub ActualizarIndicadorServidor()
@@ -282,6 +294,7 @@ Public Class principal
             Catch
             End Try
         Next
+        Usuario.LimpiarSesion()
         Login.Show()
         Me.Close()
     End Sub
@@ -307,6 +320,11 @@ Public Class principal
     End Sub
 
     Private Sub ConfigurarServidorToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ConfigurarServidorToolStripMenuItem.Click
+        If Not Usuario.EsAdministrador Then
+            MessageBox.Show("Solo los usuarios con perfil Administrador pueden configurar el servidor de base de datos.", "Acceso restringido", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            ActualizarPermisosMenuAdministrador()
+            Return
+        End If
         Try
             Using frm As New FrmConfiguracionServidor()
                 frm.ShowDialog(Me)

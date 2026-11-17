@@ -297,7 +297,8 @@ Public NotInheritable Class RegistroErrores
         Catch
         End Try
 
-        If diag.EsErrorRedSql AndAlso permitirAbrirConfigSql AndAlso Not yaEnConfig Then
+        Dim puedeAbrirConfigSql As Boolean = (Not Usuario.UsuarioAutenticado) OrElse Usuario.EsAdministrador
+        If diag.EsErrorRedSql AndAlso permitirAbrirConfigSql AndAlso puedeAbrirConfigSql AndAlso Not yaEnConfig Then
             Dim textoPregunta As String = diag.Mensaje & Environment.NewLine & Environment.NewLine &
                                           "¿Desea abrir ahora la ventana 'Configurar Servidor SQL' para revisar o cambiar el host/IP?"
             Dim resp As DialogResult

@@ -8,6 +8,20 @@ Public Class Usuario
     Public Shared PermisoEliminarMp As Boolean = True
     Public Shared PermisoCambiarTareasMp As Boolean = False
     Public Shared PermisoCambiarIdModTareas As Boolean = False
+    Public Shared Property UsuarioAutenticado As Boolean = False
+    Public Shared Property PerfilActual As String = String.Empty
+    Public Shared Property EsAdministrador As Boolean = False
+
+    Public Shared Sub LimpiarSesion()
+        UsuarioAutenticado = False
+        PerfilActual = String.Empty
+        EsAdministrador = False
+    End Sub
+
+    Public Shared Function EsPerfilAdministrador(ByVal perfil As String) As Boolean
+        If String.IsNullOrWhiteSpace(perfil) Then Return False
+        Return String.Equals(perfil.Trim(), "Administrador", StringComparison.OrdinalIgnoreCase)
+    End Function
 
     Public Sub buscarUsuario(ByVal usuario As String, ByVal pass As String, ByRef cod_resp As Integer, ByRef resp As String)
         Dim conexion As New Conexion
@@ -238,6 +252,7 @@ Public Class Usuario
         Dim conexion As New Conexion
         Dim cnx As New SqlConnection
         Dim DS As New DataSet
+        LimpiarSesion()
         Try
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("CRG_PERMISOS_USUARIO", cnx)
@@ -248,6 +263,11 @@ Public Class Usuario
 
                 DA.Fill(DS)
             End Using
+
+            Dim perfilObtenido As String = ObtenerPerfilUsuario(cnx, usuario, clave, rut)
+            UsuarioAutenticado = True
+            PerfilActual = perfilObtenido
+            EsAdministrador = EsPerfilAdministrador(perfilObtenido)
 
             '------- Carga los permisos de usuario de forma segura (sin instanciar formularios hijos en el login) ---------------------------------
             Dim dtPerm As DataTable = If(DS.Tables.Count > 0, DS.Tables(0), Nothing)
@@ -270,12 +290,37 @@ Public Class Usuario
             principal.AuditoriaToolStripMenuItem.Enabled = ObtenerPermisoSeguro(dtPerm, 18, True)
             PermisoCambiarTareasMp = ObtenerPermisoSeguro(dtPerm, 19, False)
             PermisoCambiarIdModTareas = ObtenerPermisoSeguro(dtPerm, 20, False)
+            principal.ActualizarPermisosMenuAdministrador()
         Catch ex As Exception
+            principal.ActualizarPermisosMenuAdministrador()
             RegistroErrores.MostrarYRegistrar(ex, "Cargar Permisos de Sesión")
         Finally
             conexion.Desconectar(cnx)
         End Try
     End Sub
+
+    Private Shared Function ObtenerPerfilUsuario(ByVal cnx As SqlConnection, ByVal usuario As String, ByVal clave As String, ByVal rut As String) As String
+        If cnx Is Nothing OrElse cnx.State <> ConnectionState.Open Then Return String.Empty
+        Try
+            Using cmd As New SqlCommand()
+                cmd.Connection = cnx
+                If String.Equals(usuario, "0", StringComparison.Ordinal) Then
+                    cmd.CommandText = "SELECT TOP 1 p.desc_perfil FROM usuario u INNER JOIN perfiles_usuario p ON u.idperfil = p.idperfil WHERE u.rut = @rut"
+                    cmd.Parameters.AddWithValue("@rut", rut)
+                Else
+                    cmd.CommandText = "SELECT TOP 1 p.desc_perfil FROM usuario u INNER JOIN perfiles_usuario p ON u.idperfil = p.idperfil WHERE u.usuario = @usuario AND u.clave = @clave"
+                    cmd.Parameters.AddWithValue("@usuario", usuario)
+                    cmd.Parameters.AddWithValue("@clave", clave)
+                End If
+                Dim res As Object = cmd.ExecuteScalar()
+                If res IsNot Nothing AndAlso Not IsDBNull(res) Then
+                    Return res.ToString().Trim()
+                End If
+            End Using
+        Catch
+        End Try
+        Return String.Empty
+    End Function
 
     Public Sub CrgPermisosPerfil(ByVal DST_PER As DataSet, ByVal id_perfil As String)
         Dim conexion As New Conexion
