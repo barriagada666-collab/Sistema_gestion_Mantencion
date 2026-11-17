@@ -801,6 +801,77 @@ Public Class Utilitarios
         RemoveHandler frm.FormClosed, AddressOf AlCerrarFormularioTema
     End Sub
 
+    ''' <summary>
+    ''' Genera un icono circular nítido de estado (farol verde si está conectado, rojo si no hay conexión).
+    ''' </summary>
+    Public Shared Function ObtenerIconoFarolEstado(ByVal conectado As Boolean, Optional ByVal tam As Integer = 14) As Bitmap
+        Dim sizePx As Integer = Math.Max(10, Math.Min(32, tam))
+        Dim key As String = "farol|" & If(conectado, "1", "0") & "|" & sizePx.ToString()
+        Dim cached As Bitmap = Nothing
+        If _cacheIconos.TryGetValue(key, cached) AndAlso cached IsNot Nothing Then
+            Return cached
+        End If
+
+        Dim bmp As New Bitmap(sizePx, sizePx, System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+        Using g As Graphics = Graphics.FromImage(bmp)
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias
+            g.Clear(Color.Transparent)
+
+            Dim haloColor As Color = If(conectado, Color.FromArgb(95, 34, 197, 94), Color.FromArgb(90, 239, 68, 68))
+            Using brHalo As New SolidBrush(haloColor)
+                g.FillEllipse(brHalo, 0.5F, 0.5F, sizePx - 1.0F, sizePx - 1.0F)
+            End Using
+
+            Dim pad As Single = Math.Max(2.0F, sizePx * 0.16F)
+            Dim rectDot As New RectangleF(pad, pad, sizePx - pad * 2.0F, sizePx - pad * 2.0F)
+            Dim cTop As Color = If(conectado, Color.FromArgb(74, 222, 128), Color.FromArgb(248, 113, 113))
+            Dim cBot As Color = If(conectado, Color.FromArgb(22, 163, 74), Color.FromArgb(185, 28, 28))
+            Dim cRim As Color = If(conectado, Color.FromArgb(20, 83, 45), Color.FromArgb(127, 29, 29))
+
+            Using brDot As New System.Drawing.Drawing2D.LinearGradientBrush(rectDot, cTop, cBot, System.Drawing.Drawing2D.LinearGradientMode.Vertical),
+                  pRim As New Pen(cRim, 1.0F)
+                g.FillEllipse(brDot, rectDot)
+                g.DrawEllipse(pRim, rectDot)
+            End Using
+
+            Dim rShine As New RectangleF(rectDot.X + rectDot.Width * 0.22F, rectDot.Y + rectDot.Height * 0.16F,
+                                         Math.Max(2.0F, rectDot.Width * 0.34F), Math.Max(2.0F, rectDot.Height * 0.28F))
+            Using brShine As New SolidBrush(Color.FromArgb(190, 255, 255, 255))
+                g.FillEllipse(brShine, rShine)
+            End Using
+        End Using
+
+        _cacheIconos(key) = bmp
+        Return bmp
+    End Function
+
+    ''' <summary>
+    ''' Reinicia completamente la aplicación para que recargue la configuración y datos de conexión desde cero.
+    ''' </summary>
+    Public Shared Sub ReiniciarAplicacion()
+        Try
+            SqlConnection.ClearAllPools()
+        Catch
+        End Try
+        Try
+            Application.Restart()
+            Environment.Exit(0)
+        Catch
+            Try
+                Dim exePath As String = Application.ExecutablePath
+                If Not String.IsNullOrWhiteSpace(exePath) AndAlso File.Exists(exePath) Then
+                    Process.Start(New ProcessStartInfo() With {
+                        .FileName = exePath,
+                        .WorkingDirectory = Path.GetDirectoryName(exePath),
+                        .UseShellExecute = True
+                    })
+                End If
+            Catch
+            End Try
+            Environment.Exit(0)
+        End Try
+    End Sub
+
     Private Shared Function EscalarIconoSiExcede(ByVal img As Image, ByVal maxDim As Integer) As Image
         If img Is Nothing OrElse maxDim <= 0 Then Return img
         If img.Width <= maxDim AndAlso img.Height <= maxDim Then Return img

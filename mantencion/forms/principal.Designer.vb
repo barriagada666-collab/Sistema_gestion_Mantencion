@@ -60,6 +60,8 @@ Partial Class principal
         Me.lblStatusStrip = New System.Windows.Forms.ToolStripStatusLabel
         Me.StatusLabel2 = New System.Windows.Forms.ToolStripStatusLabel
         Me.lblUsuario = New System.Windows.Forms.ToolStripStatusLabel
+        Me.sepEstadoServidor = New System.Windows.Forms.ToolStripSeparator
+        Me.lblServidorEstado = New System.Windows.Forms.ToolStripStatusLabel
         Me.MenuStrip.SuspendLayout()
         Me.StatusStrip.SuspendLayout()
         Me.SuspendLayout()
@@ -292,7 +294,7 @@ Partial Class principal
         'StatusStrip
         '
         Me.StatusStrip.BackColor = System.Drawing.Color.FromArgb(2, 94, 135)
-        Me.StatusStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.lblStatusStrip, Me.StatusLabel2, Me.lblUsuario})
+        Me.StatusStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.lblStatusStrip, Me.StatusLabel2, Me.lblUsuario, Me.sepEstadoServidor, Me.lblServidorEstado})
         Me.StatusStrip.Location = New System.Drawing.Point(0, 463)
         Me.StatusStrip.Name = "StatusStrip"
         Me.StatusStrip.Size = New System.Drawing.Size(1027, 23)
@@ -320,8 +322,26 @@ Partial Class principal
         Me.lblUsuario.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblUsuario.ForeColor = System.Drawing.Color.White
         Me.lblUsuario.Name = "lblUsuario"
-        Me.lblUsuario.Size = New System.Drawing.Size(55, 18)
+        Me.lblUsuario.Padding = New System.Windows.Forms.Padding(2, 0, 10, 0)
+        Me.lblUsuario.Size = New System.Drawing.Size(65, 18)
         Me.lblUsuario.Text = "Usuario"
+        '
+        'sepEstadoServidor
+        '
+        Me.sepEstadoServidor.Name = "sepEstadoServidor"
+        Me.sepEstadoServidor.Size = New System.Drawing.Size(6, 23)
+        '
+        'lblServidorEstado
+        '
+        Me.lblServidorEstado.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblServidorEstado.ForeColor = System.Drawing.Color.White
+        Me.lblServidorEstado.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.lblServidorEstado.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
+        Me.lblServidorEstado.Name = "lblServidorEstado"
+        Me.lblServidorEstado.Padding = New System.Windows.Forms.Padding(6, 0, 8, 0)
+        Me.lblServidorEstado.Size = New System.Drawing.Size(280, 18)
+        Me.lblServidorEstado.Text = "Conectado a Servidor: SrvMagicInfo - BD: mantencion"
+        Me.lblServidorEstado.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         '
         'principal
         '
@@ -382,5 +402,7 @@ Partial Class principal
     Friend WithEvents ToolStripSeparatorMantenedor As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents ConfigurarServidorToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents VerRegistroErroresToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents sepEstadoServidor As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents lblServidorEstado As System.Windows.Forms.ToolStripStatusLabel
 
 End Class

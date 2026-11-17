@@ -146,19 +146,32 @@ Public Class Conexion
     End Sub
 
     Private Shared _poolPrecalentadoIntentado As Boolean = False
+    Private Shared _ultimoEstadoConectado As Boolean? = Nothing
+    Private Shared _ultimoServidorConectado As String = Nothing
+    Private Shared _ultimaBaseDatosConectada As String = Nothing
 
     ''' <summary>
     ''' Precalienta el pool de conexiones en segundo plano para eliminar la latencia inicial al abrir formularios.
     ''' </summary>
     Public Shared Sub PrecalentarPool()
         System.Threading.ThreadPool.QueueUserWorkItem(Sub()
+                                                         Dim srv As String = String.Empty
+                                                         Dim bd As String = String.Empty
                                                          Try
                                                              Dim sb As New SqlConnectionStringBuilder(ObtenerConnectionString())
+                                                             srv = sb.DataSource
+                                                             bd = sb.InitialCatalog
                                                              If sb.ConnectTimeout > 6 Then sb.ConnectTimeout = 6
                                                              Using cnx As New SqlConnection(sb.ConnectionString)
                                                                  cnx.Open()
                                                              End Using
+                                                             _ultimoEstadoConectado = True
+                                                             _ultimoServidorConectado = srv
+                                                             _ultimaBaseDatosConectada = bd
                                                          Catch ex As Exception
+                                                             _ultimoEstadoConectado = False
+                                                             _ultimoServidorConectado = srv
+                                                             _ultimaBaseDatosConectada = bd
                                                              If Not _poolPrecalentadoIntentado Then
                                                                  _poolPrecalentadoIntentado = True
                                                                  RegistroErrores.RegistrarError(ex, "Precalentamiento de Pool SQL (Inicio)", "Fallo en segundo plano al verificar disponibilidad inicial del servidor.")
@@ -177,6 +190,51 @@ Public Class Conexion
         Catch
             Return New SqlConnectionStringBuilder(DefaultConnectionString)
         End Try
+    End Function
+
+    ''' <summary>
+    ''' Obtiene el servidor, base de datos y estado de conexión actual (opcionalmente ejecutando una verificación en vivo).
+    ''' </summary>
+    Public Shared Function ObtenerEstadoConexionActual(Optional ByVal forzarPrueba As Boolean = False) As (Conectado As Boolean, Servidor As String, BaseDatos As String)
+        Dim sb As SqlConnectionStringBuilder = ObtenerParametrosActuales()
+        Dim srv As String = If(sb.DataSource, String.Empty).Trim()
+        Dim bd As String = If(sb.InitialCatalog, String.Empty).Trim()
+
+        If Not forzarPrueba AndAlso _ultimoEstadoConectado.HasValue AndAlso
+           String.Equals(_ultimoServidorConectado, srv, StringComparison.OrdinalIgnoreCase) AndAlso
+           String.Equals(_ultimaBaseDatosConectada, bd, StringComparison.OrdinalIgnoreCase) Then
+            Return (_ultimoEstadoConectado.Value, srv, bd)
+        End If
+
+        Try
+            Dim sbTest As New SqlConnectionStringBuilder(sb.ConnectionString)
+            sbTest.ConnectTimeout = 4
+            Using testCnx As New SqlConnection(sbTest.ConnectionString)
+                testCnx.Open()
+            End Using
+            _ultimoEstadoConectado = True
+            _ultimoServidorConectado = srv
+            _ultimaBaseDatosConectada = bd
+            Return (True, srv, bd)
+        Catch
+            _ultimoEstadoConectado = False
+            _ultimoServidorConectado = srv
+            _ultimaBaseDatosConectada = bd
+            Return (False, srv, bd)
+        End Try
+    End Function
+
+    ''' <summary>
+    ''' Devuelve el texto estándar para mostrar el servidor y base de datos activos en barras e indicadores.
+    ''' </summary>
+    Public Shared Function FormatearEstadoConexion(ByVal servidor As String, ByVal baseDatos As String, ByVal conectado As Boolean) As String
+        Dim srvTxt As String = If(String.IsNullOrWhiteSpace(servidor), "(No definido)", servidor.Trim())
+        Dim bdTxt As String = If(String.IsNullOrWhiteSpace(baseDatos), "(No definida)", baseDatos.Trim())
+        If conectado Then
+            Return "Conectado a Servidor: " & srvTxt & " - BD: " & bdTxt
+        Else
+            Return "Sin conexión a Servidor: " & srvTxt & " - BD: " & bdTxt
+        End If
     End Function
 
     ''' <summary>
@@ -270,6 +328,9 @@ Public Class Conexion
             ' 5. Invalidar el caché en memoria para que tome efecto inmediato en caliente
             _connectionStringCache = Nothing
             _poolPrecalentadoIntentado = False
+            _ultimoEstadoConectado = Nothing
+            _ultimoServidorConectado = Nothing
+            _ultimaBaseDatosConectada = Nothing
             InvalidarCacheCatalogos()
             ObtenerConnectionString()
 
@@ -296,6 +357,9 @@ Public Class Conexion
                 cnx.ConnectionString = ObtenerConnectionString()
             End If
             cnx.Open()
+            _ultimoEstadoConectado = True
+            _ultimoServidorConectado = cnx.DataSource
+            _ultimaBaseDatosConectada = cnx.Database
         Catch ex As Exception
             Throw
         End Try

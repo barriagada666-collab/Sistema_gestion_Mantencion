@@ -129,6 +129,30 @@ Public Class principal
         End If
         Utilitarios.RegistrarTemaGlobal()
         Utilitarios.AplicarTemaModerno(Me)
+        ActualizarIndicadorServidor()
+    End Sub
+
+    Public Sub ActualizarIndicadorServidor()
+        If lblServidorEstado Is Nothing Then Exit Sub
+        Try
+            Dim sb = Conexion.ObtenerParametrosActuales()
+            lblServidorEstado.Image = Utilitarios.ObtenerIconoFarolEstado(True, 14)
+            lblServidorEstado.Text = Conexion.FormatearEstadoConexion(sb.DataSource, sb.InitialCatalog, True)
+        Catch
+        End Try
+
+        System.Threading.ThreadPool.QueueUserWorkItem(Sub()
+                                                         Try
+                                                             Dim est = Conexion.ObtenerEstadoConexionActual(True)
+                                                             If Me.IsDisposed OrElse Not Me.IsHandleCreated Then Exit Sub
+                                                             Me.BeginInvoke(New Action(Sub()
+                                                                                           If Me.IsDisposed OrElse lblServidorEstado Is Nothing Then Exit Sub
+                                                                                           lblServidorEstado.Image = Utilitarios.ObtenerIconoFarolEstado(est.Conectado, 14)
+                                                                                           lblServidorEstado.Text = Conexion.FormatearEstadoConexion(est.Servidor, est.BaseDatos, est.Conectado)
+                                                                                       End Sub))
+                                                         Catch
+                                                         End Try
+                                                     End Sub)
     End Sub
 
     Private Sub AlRedimensionarMdiClient(ByVal sender As Object, ByVal e As EventArgs)
@@ -287,6 +311,7 @@ Public Class principal
             Using frm As New FrmConfiguracionServidor()
                 frm.ShowDialog(Me)
             End Using
+            ActualizarIndicadorServidor()
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Configurar Servidor BD", True, Me, False)
         End Try

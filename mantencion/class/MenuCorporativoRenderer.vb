@@ -192,7 +192,12 @@ Public Class MenuCorporativoRenderer
     End Sub
 
     Protected Overrides Sub OnRenderSeparator(ByVal e As ToolStripSeparatorRenderEventArgs)
-        If e.Item.IsOnDropDown Then
+        If TypeOf e.ToolStrip Is StatusStrip Then
+            Dim x As Integer = e.Item.Width \ 2
+            Using p As New Pen(Color.FromArgb(120, 102, 201, 211), 1)
+                e.Graphics.DrawLine(p, x, 4, x, e.Item.Height - 5)
+            End Using
+        ElseIf e.Item.IsOnDropDown Then
             Dim y As Integer = e.Item.Height \ 2
             Using p As New Pen(Color.FromArgb(226, 232, 240), 1)
                 e.Graphics.DrawLine(p, 32, y, e.Item.Width - 8, y)

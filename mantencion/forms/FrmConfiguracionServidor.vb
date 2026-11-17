@@ -10,6 +10,16 @@ Public Class FrmConfiguracionServidor
     Private lblTituloHeader As Label
     Private lblSubtituloHeader As Label
 
+    Private pnlEstadoConexionActual As Panel
+    Private picFarolConexion As PictureBox
+    Private lblConexionActual As Label
+
+    Private _srvInicial As String = String.Empty
+    Private _bdInicial As String = String.Empty
+    Private _usrInicial As String = String.Empty
+    Private _pwdInicial As String = String.Empty
+    Private _timeoutInicial As Integer = 15
+
     Private grpParametros As GroupBox
     Private lblServidor As Label
     Private txtServidor As TextBox
@@ -40,8 +50,8 @@ Public Class FrmConfiguracionServidor
 
     Private Sub InitializeComponent()
         Me.Text = "Configuración de Servidor de Base de Datos"
-        Me.Size = New Size(640, 575)
-        Me.MinimumSize = New Size(640, 575)
+        Me.Size = New Size(640, 565)
+        Me.MinimumSize = New Size(640, 565)
         Me.FormBorderStyle = FormBorderStyle.FixedDialog
         Me.MaximizeBox = False
         Me.MinimizeBox = False
@@ -73,12 +83,38 @@ Public Class FrmConfiguracionServidor
         panHeader.Controls.Add(lblTituloHeader)
         panHeader.Controls.Add(lblSubtituloHeader)
 
+        ' 1b. Banda de estado actual con farol verde/rojo
+        pnlEstadoConexionActual = New Panel()
+        pnlEstadoConexionActual.Location = New Point(16, 74)
+        pnlEstadoConexionActual.Size = New Size(592, 34)
+        pnlEstadoConexionActual.BackColor = Color.White
+        pnlEstadoConexionActual.BorderStyle = BorderStyle.FixedSingle
+
+        picFarolConexion = New PictureBox()
+        picFarolConexion.Location = New Point(12, 8)
+        picFarolConexion.Size = New Size(16, 16)
+        picFarolConexion.SizeMode = PictureBoxSizeMode.CenterImage
+        picFarolConexion.BackColor = Color.Transparent
+        picFarolConexion.Image = Utilitarios.ObtenerIconoFarolEstado(True, 14)
+
+        lblConexionActual = New Label()
+        lblConexionActual.Location = New Point(34, 6)
+        lblConexionActual.Size = New Size(546, 20)
+        lblConexionActual.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point)
+        lblConexionActual.ForeColor = Utilitarios.ColorDeepNavy
+        lblConexionActual.TextAlign = ContentAlignment.MiddleLeft
+        lblConexionActual.AutoEllipsis = True
+        lblConexionActual.Text = "Conectado a Servidor: SrvMagicInfo - BD: mantencion"
+
+        pnlEstadoConexionActual.Controls.Add(picFarolConexion)
+        pnlEstadoConexionActual.Controls.Add(lblConexionActual)
+
         ' 2. GroupBox Parámetros
         grpParametros = New GroupBox()
         grpParametros.Text = " Parámetros de Conexión SQL Server "
         grpParametros.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold, GraphicsUnit.Point)
         grpParametros.ForeColor = Utilitarios.ColorPrimario
-        grpParametros.Location = New Point(16, 75)
+        grpParametros.Location = New Point(16, 114)
         grpParametros.Size = New Size(592, 280)
         grpParametros.BackColor = Color.White
 
@@ -186,8 +222,8 @@ Public Class FrmConfiguracionServidor
 
         ' 3. Estado de conexión
         lblEstado = New Label()
-        lblEstado.Location = New Point(16, 362)
-        lblEstado.Size = New Size(592, 52)
+        lblEstado.Location = New Point(16, 402)
+        lblEstado.Size = New Size(592, 48)
         lblEstado.Padding = New Padding(6, 4, 6, 4)
         lblEstado.Font = New Font("Segoe UI", 8.75F, FontStyle.Bold)
         lblEstado.TextAlign = ContentAlignment.MiddleLeft
@@ -255,7 +291,7 @@ Public Class FrmConfiguracionServidor
 
         panBotones.Controls.AddRange(New Control() {btnProbar, btnRestaurar, btnVerLogs, btnGuardar, btnCancelar})
 
-        Me.Controls.AddRange(New Control() {panHeader, grpParametros, lblEstado, panBotones})
+        Me.Controls.AddRange(New Control() {panHeader, pnlEstadoConexionActual, grpParametros, lblEstado, panBotones})
 
         ' Eventos de actualización en tiempo real
         AddHandler txtServidor.TextChanged, AddressOf ActualizarPreview
@@ -286,7 +322,34 @@ Public Class FrmConfiguracionServidor
             txtPassword.Text = "cambiaso"
             numTimeout.Value = 15
         End Try
+
+        _srvInicial = txtServidor.Text.Trim()
+        _bdInicial = txtCatalogo.Text.Trim()
+        _usrInicial = txtUsuario.Text.Trim()
+        _pwdInicial = txtPassword.Text
+        _timeoutInicial = CInt(numTimeout.Value)
+
         ActualizarPreview(Nothing, EventArgs.Empty)
+        ActualizarBandaEstadoConexion(_srvInicial, _bdInicial, True)
+
+        System.Threading.ThreadPool.QueueUserWorkItem(Sub()
+                                                         Try
+                                                             Dim est = Conexion.ObtenerEstadoConexionActual(True)
+                                                             If Me.IsDisposed OrElse Not Me.IsHandleCreated Then Exit Sub
+                                                             Me.BeginInvoke(New Action(Sub()
+                                                                                           If Me.IsDisposed Then Exit Sub
+                                                                                           ActualizarBandaEstadoConexion(est.Servidor, est.BaseDatos, est.Conectado)
+                                                                                       End Sub))
+                                                         Catch
+                                                         End Try
+                                                     End Sub)
+    End Sub
+
+    Private Sub ActualizarBandaEstadoConexion(ByVal servidor As String, ByVal baseDatos As String, ByVal conectado As Boolean)
+        If picFarolConexion Is Nothing OrElse lblConexionActual Is Nothing Then Exit Sub
+        picFarolConexion.Image = Utilitarios.ObtenerIconoFarolEstado(conectado, 14)
+        lblConexionActual.Text = Conexion.FormatearEstadoConexion(servidor, baseDatos, conectado)
+        lblConexionActual.ForeColor = If(conectado, Utilitarios.ColorDeepNavy, Utilitarios.ColorTextoDestacado)
     End Sub
 
     Private Function ConstruirCadena() As String
@@ -324,10 +387,12 @@ Public Class FrmConfiguracionServidor
             lblEstado.Text = " [OK] " & resultado.Mensaje
             lblEstado.BackColor = Color.FromArgb(220, 252, 231)
             lblEstado.ForeColor = Color.FromArgb(22, 101, 52)
+            ActualizarBandaEstadoConexion(txtServidor.Text.Trim(), txtCatalogo.Text.Trim(), True)
         Else
             lblEstado.Text = " [ERROR] " & resultado.Mensaje
             lblEstado.BackColor = Color.FromArgb(254, 226, 226)
             lblEstado.ForeColor = Color.FromArgb(153, 27, 27)
+            ActualizarBandaEstadoConexion(txtServidor.Text.Trim(), txtCatalogo.Text.Trim(), False)
         End If
     End Sub
 
@@ -360,24 +425,50 @@ Public Class FrmConfiguracionServidor
             Exit Sub
         End If
 
-        Dim confirm = MessageBox.Show("Se actualizará la configuración de conexión del sistema." & vbCrLf & vbCrLf &
-                                      "Se creará una copia de seguridad automática de la configuración original." & vbCrLf & vbCrLf &
-                                      "¿Desea guardar y aplicar los cambios ahora?",
-                                      "Confirmar Guardado", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+        Dim srvNuevo As String = txtServidor.Text.Trim()
+        Dim bdNuevo As String = txtCatalogo.Text.Trim()
+        Dim usrNuevo As String = txtUsuario.Text.Trim()
+        Dim pwdNuevo As String = txtPassword.Text
+        Dim timeoutNuevo As Integer = CInt(numTimeout.Value)
+
+        Dim huboCambios As Boolean =
+            Not String.Equals(_srvInicial, srvNuevo, StringComparison.OrdinalIgnoreCase) OrElse
+            Not String.Equals(_bdInicial, bdNuevo, StringComparison.OrdinalIgnoreCase) OrElse
+            Not String.Equals(_usrInicial, usrNuevo, StringComparison.OrdinalIgnoreCase) OrElse
+            Not String.Equals(_pwdInicial, pwdNuevo, StringComparison.Ordinal) OrElse
+            (_timeoutInicial <> timeoutNuevo)
+
+        Dim mensajeConfirm As String
+        If huboCambios Then
+            mensajeConfirm = "Se actualizará la configuración de conexión del sistema." & vbCrLf & vbCrLf &
+                             "Se creará una copia de seguridad automática de la configuración original y la aplicación se reiniciará para iniciar con los nuevos datos de conexión." & vbCrLf & vbCrLf &
+                             "¿Desea guardar, aplicar y reiniciar ahora?"
+        Else
+            mensajeConfirm = "No se detectaron cambios en los parámetros actuales." & vbCrLf & vbCrLf &
+                             "¿Desea confirmar y cerrar esta ventana?"
+        End If
+
+        Dim confirm = MessageBox.Show(mensajeConfirm, "Confirmar Guardado", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
         If confirm <> DialogResult.Yes Then Exit Sub
 
         Dim nuevaCadena As String = ConstruirCadena()
         Dim resultado = Conexion.GuardarNuevaConexion(nuevaCadena)
 
         If resultado.Exito Then
-            MessageBox.Show("La configuración de conexión ha sido actualizada exitosamente." & vbCrLf & vbCrLf &
-                            "Servidor: " & txtServidor.Text.Trim() & vbCrLf &
-                            "Base de Datos: " & txtCatalogo.Text.Trim() & vbCrLf &
-                            "Usuario: " & txtUsuario.Text.Trim() & vbCrLf & vbCrLf &
-                            "Los respaldos se almacenaron en la carpeta de la aplicación.",
-                            "Configuración Guardada", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            Me.DialogResult = DialogResult.OK
-            Me.Close()
+            If huboCambios Then
+                MessageBox.Show("La configuración de conexión ha sido actualizada exitosamente." & vbCrLf & vbCrLf &
+                                "Servidor: " & srvNuevo & vbCrLf &
+                                "Base de Datos: " & bdNuevo & vbCrLf &
+                                "Usuario: " & usrNuevo & vbCrLf & vbCrLf &
+                                "La aplicación se reiniciará ahora para aplicar los nuevos cambios.",
+                                "Configuración Guardada — Reiniciando", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Me.DialogResult = DialogResult.OK
+                Me.Close()
+                Utilitarios.ReiniciarAplicacion()
+            Else
+                Me.DialogResult = DialogResult.OK
+                Me.Close()
+            End If
         Else
             MessageBox.Show(resultado.Mensaje, "Error al Guardar", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End If
