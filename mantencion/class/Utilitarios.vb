@@ -281,6 +281,7 @@ Public Class Utilitarios
                 End If
             Catch ex As Exception
                 exportadoOk = False
+                RegistroErrores.RegistrarError(ex, "Imprimir Libro a PDF Windows")
             End Try
         End If
 
@@ -337,10 +338,10 @@ Public Class Utilitarios
 
             Dim doc As New iTextSharp.text.Document(iTextSharp.text.PageSize.LETTER.Rotate(), 20.0F, 20.0F, 25.0F, 25.0F)
             Using fs As New FileStream(rutaArchivo, FileMode.Create, FileAccess.Write, FileShare.None)
-                Dim writer As iTextSharp.text.pdf.PdfWriter = iTextSharp.text.pdf.PdfWriter.GetInstance(doc, fs)
+                iTextSharp.text.pdf.PdfWriter.GetInstance(doc, fs)
                 doc.Open()
-
-                Dim fontTitulo As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, 13.0F, iTextSharp.text.BaseColor.DarkGray)
+                Try
+                    Dim fontTitulo As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, 13.0F, iTextSharp.text.BaseColor.DarkGray)
                 Dim fontSub As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, 8.5F, iTextSharp.text.BaseColor.Gray)
                 Dim fontHeader As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, 7.2F, iTextSharp.text.BaseColor.White)
                 Dim fontCell As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, 6.8F, iTextSharp.text.BaseColor.Black)
@@ -389,12 +390,13 @@ Public Class Utilitarios
 
                 doc.Add(tabla)
 
-                Dim pTotal As New iTextSharp.text.Paragraph("Total de registros: " & rowIndex.ToString(), fontSub)
-                pTotal.Alignment = iTextSharp.text.Element.ALIGN_RIGHT
-                pTotal.SpacingBefore = 8.0F
-                doc.Add(pTotal)
-
-                doc.Close()
+                    Dim pTotal As New iTextSharp.text.Paragraph("Total de registros: " & rowIndex.ToString(), fontSub)
+                    pTotal.Alignment = iTextSharp.text.Element.ALIGN_RIGHT
+                    pTotal.SpacingBefore = 8.0F
+                    doc.Add(pTotal)
+                Finally
+                    If doc.IsOpen() Then doc.Close()
+                End Try
             End Using
             Return File.Exists(rutaArchivo)
         Catch ex As Exception
@@ -423,6 +425,7 @@ Public Class Utilitarios
             Using fs As New FileStream(rutaArchivo, FileMode.Create, FileAccess.Write, FileShare.None)
                 iTextSharp.text.pdf.PdfWriter.GetInstance(doc, fs)
                 doc.Open()
+                Try
 
                 Dim fontTitulo As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, 13.0F, iTextSharp.text.BaseColor.DarkGray)
                 Dim fontSub As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, 8.5F, iTextSharp.text.BaseColor.Gray)
@@ -493,8 +496,9 @@ Public Class Utilitarios
                     doc.Add(tabla)
                     tablasAgregadas += 1
                 Next
-
-                doc.Close()
+                Finally
+                    If doc.IsOpen() Then doc.Close()
+                End Try
             End Using
 
             Return tablasAgregadas > 0 AndAlso File.Exists(rutaArchivo)
@@ -618,6 +622,10 @@ Public Class Utilitarios
                 idxHoja += 1
             Next
 
+            If idxHoja = 1 Then
+                Return False
+            End If
+
             sb.AppendLine("</Workbook>")
             File.WriteAllText(ruta, sb.ToString(), System.Text.Encoding.UTF8)
 
@@ -715,11 +723,7 @@ Public Class Utilitarios
     End Sub
 
     Public Sub solonumeros(ByVal e As System.Windows.Forms.KeyPressEventArgs)
-        If Char.IsDigit(e.KeyChar) Then
-            e.Handled = False
-        ElseIf Char.IsControl(e.KeyChar) Then
-            e.Handled = False
-        ElseIf Char.IsSeparator(e.KeyChar) Then
+        If Char.IsDigit(e.KeyChar) OrElse Char.IsControl(e.KeyChar) Then
             e.Handled = False
         Else
             e.Handled = True
@@ -746,10 +750,11 @@ Public Class Utilitarios
 
     Public Sub crgComboTurnos(ByRef cmb As ComboBox)
         If cmb Is Nothing Then Exit Sub
+        cmb.Items.Clear()
         cmb.Items.Add("Noche")
         cmb.Items.Add("Mañana")
         cmb.Items.Add("Tarde")
-        If cmb.Items.Count > 0 Then cmb.Text = cmb.Items(0).ToString()
+        If cmb.Items.Count > 0 Then cmb.SelectedIndex = 0
     End Sub
 
     Public Sub ValidarPersonalOT(ByVal e As System.Windows.Forms.KeyPressEventArgs)
@@ -904,28 +909,32 @@ Public Class Utilitarios
 
     Private Shared Function TintarIconoBlanco(ByVal img As Image) As Image
         If img Is Nothing Then Return Nothing
-        Dim key As String = "white|" & System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(img).ToString() & "|" & img.Width.ToString() & "x" & img.Height.ToString()
-        Dim cached As Bitmap = Nothing
-        If _cacheIconos.TryGetValue(key, cached) Then
-            Return cached
-        End If
+        Try
+            Dim key As String = "white|" & System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(img).ToString() & "|" & img.Width.ToString() & "x" & img.Height.ToString()
+            Dim cached As Bitmap = Nothing
+            If _cacheIconos.TryGetValue(key, cached) Then
+                Return cached
+            End If
 
-        Dim bmp As New Bitmap(img.Width, img.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb)
-        Using src As New Bitmap(img)
-            For y As Integer = 0 To src.Height - 1
-                For x As Integer = 0 To src.Width - 1
-                    Dim px As Color = src.GetPixel(x, y)
-                    If px.A > 10 Then
-                        bmp.SetPixel(x, y, Color.FromArgb(px.A, 255, 255, 255))
-                    Else
-                        bmp.SetPixel(x, y, Color.Transparent)
-                    End If
+            Dim bmp As New Bitmap(img.Width, img.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+            Using src As New Bitmap(img)
+                For y As Integer = 0 To src.Height - 1
+                    For x As Integer = 0 To src.Width - 1
+                        Dim px As Color = src.GetPixel(x, y)
+                        If px.A > 10 Then
+                            bmp.SetPixel(x, y, Color.FromArgb(px.A, 255, 255, 255))
+                        Else
+                            bmp.SetPixel(x, y, Color.Transparent)
+                        End If
+                    Next
                 Next
-            Next
-        End Using
+            End Using
 
-        _cacheIconos(key) = bmp
-        Return bmp
+            _cacheIconos(key) = bmp
+            Return bmp
+        Catch
+            Return img
+        End Try
     End Function
 
     Private Shared Function EsBotonPrimario(ByVal btn As Button) As Boolean
@@ -1427,7 +1436,7 @@ Public Class Utilitarios
     End Sub
 
     <DllImport("kernel32.dll", EntryPoint:="SetProcessWorkingSetSize", ExactSpelling:=True, CharSet:=CharSet.Ansi, SetLastError:=True)>
-    Private Shared Function SetProcessWorkingSetSize(ByVal hProcess As IntPtr, ByVal dwMinimumWorkingSetSize As Integer, ByVal dwMaximumWorkingSetSize As Integer) As Integer
+    Private Shared Function SetProcessWorkingSetSize(ByVal hProcess As IntPtr, ByVal dwMinimumWorkingSetSize As IntPtr, ByVal dwMaximumWorkingSetSize As IntPtr) As Boolean
     End Function
 
     ''' <summary>
@@ -1471,7 +1480,7 @@ Public Class Utilitarios
             GC.WaitForPendingFinalizers()
             GC.Collect()
             If Environment.OSVersion.Platform = PlatformID.Win32NT Then
-                SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle, -1, -1)
+                SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle, New IntPtr(-1), New IntPtr(-1))
             End If
         Catch
         End Try

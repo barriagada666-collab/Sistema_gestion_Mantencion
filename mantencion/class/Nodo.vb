@@ -29,34 +29,38 @@ Public Class Nodo
 
     Public Function CRG_NODO(ByVal id_nodo As Integer) As DataSet
         Dim ds_result As New DataSet
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
 
         Try
-            conexion.Conectar(cnx)
-            Using da As New SqlDataAdapter("CRG_NODOS_ACTIVOS " & id_nodo, cnx)
-                da.Fill(ds_result, "nodo")
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Using da As New SqlDataAdapter("CRG_NODOS_ACTIVOS", cnx)
+                    da.SelectCommand.CommandType = CommandType.StoredProcedure
+                    da.SelectCommand.Parameters.AddWithValue("@nodo_padre", id_nodo)
+                    da.Fill(ds_result, "nodo")
+                End Using
             End Using
-        Finally
-            conexion.Desconectar(cnx)
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Nodo")
         End Try
         Return ds_result
     End Function
 
     Public Function CRG_NODO_2(ByVal id_nodo As Integer) As DataSet
         Dim ds_result As New DataSet
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
 
         Try
-            conexion.Conectar(cnx)
-            Using da As New SqlDataAdapter("CRG_NODOS_MANT_SI", cnx)
-                da.SelectCommand.CommandType = CommandType.StoredProcedure
-                da.SelectCommand.Parameters.AddWithValue("@nodo_padre", id_nodo)
-                da.Fill(ds_result, "nodo")
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Using da As New SqlDataAdapter("CRG_NODOS_MANT_SI", cnx)
+                    da.SelectCommand.CommandType = CommandType.StoredProcedure
+                    da.SelectCommand.Parameters.AddWithValue("@nodo_padre", id_nodo)
+                    da.Fill(ds_result, "nodo")
+                End Using
             End Using
-        Finally
-            conexion.Desconectar(cnx)
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Nodos con Mantención")
         End Try
         Return ds_result
     End Function
@@ -69,20 +73,27 @@ Public Class Nodo
             Exit Sub
         End If
 
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
         Try
-            conexion.Conectar(cnx)
-            CargarHijosConConexion(nodo, cnx, 1)
-            If nodo.Name = "1" Then
-                _cacheRaizActivos = DirectCast(nodo.Clone(), TreeNode)
-            End If
-        Finally
-            conexion.Desconectar(cnx)
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Dim visitados As New HashSet(Of Integer)()
+                CargarHijosConConexion(nodo, cnx, 1, visitados)
+                If nodo.Name = "1" Then
+                    _cacheRaizActivos = DirectCast(nodo.Clone(), TreeNode)
+                End If
+            End Using
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Hijos de Nodo")
         End Try
     End Sub
 
-    Private Sub CargarHijosConConexion(ByVal nodoPadre As TreeNode, ByVal cnx As SqlConnection, ByVal modo As Integer)
+    Private Sub CargarHijosConConexion(ByVal nodoPadre As TreeNode, ByVal cnx As SqlConnection, ByVal modo As Integer, ByVal visitados As HashSet(Of Integer))
+        If nodoPadre Is Nothing Then Exit Sub
+        Dim idPadre As Integer = 0
+        If Not Integer.TryParse(If(nodoPadre.Name, String.Empty).Trim(), idPadre) Then Exit Sub
+        If visitados IsNot Nothing AndAlso Not visitados.Add(idPadre) Then Exit Sub
+
         Dim spName As String = "CRG_NODOS_ACTIVOS"
         If modo = 2 Then
             spName = "CRG_NODOS_TODOS"
@@ -91,18 +102,12 @@ Public Class Nodo
         End If
 
         Dim hijos As New List(Of (Id As String, Desc As String))()
-        Using cmd As New SqlCommand()
-            cmd.Connection = cnx
-            If modo = 3 Then
-                cmd.CommandText = spName
-                cmd.CommandType = CommandType.StoredProcedure
-                cmd.Parameters.AddWithValue("@nodo_padre", CInt(nodoPadre.Name))
-            Else
-                cmd.CommandText = spName & " " & CInt(nodoPadre.Name).ToString()
-            End If
+        Using cmd As New SqlCommand(spName, cnx)
+            cmd.CommandType = CommandType.StoredProcedure
+            cmd.Parameters.AddWithValue("@nodo_padre", idPadre)
             Using dr As SqlDataReader = cmd.ExecuteReader()
                 While dr.Read()
-                    hijos.Add((dr("idnodo").ToString(), dr("desc_nodo").ToString()))
+                    hijos.Add((dr("idnodo").ToString().Trim(), dr("desc_nodo").ToString()))
                 End While
             End Using
         End Using
@@ -113,53 +118,60 @@ Public Class Nodo
             nodoHijo.Text = h.Desc
             nodoHijo.Name = h.Id
             listaNodosHijos.Add(nodoHijo)
-            CargarHijosConConexion(nodoHijo, cnx, modo)
+            CargarHijosConConexion(nodoHijo, cnx, modo, visitados)
         Next
         nodoPadre.Nodes.AddRange(listaNodosHijos.ToArray())
     End Sub
 
     Public Sub CRG_TAREAS_MP(ByVal nodo_padre As String, ByVal tipo_mp As String, ByRef DS As DataSet)
-        Dim cnx As New SqlConnection
+        If DS Is Nothing Then DS = New DataSet()
+        Dim idNodoPadre As Integer = 0
+        If Not Integer.TryParse(If(nodo_padre, String.Empty).Trim(), idNodoPadre) Then Exit Sub
         Dim conexion As New Conexion
 
         Try
-            conexion.Conectar(cnx)
-            Using DA As New SqlDataAdapter("CRG_TAREAS_NODO_MP", cnx)
-                DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(nodo_padre))
-                DA.SelectCommand.Parameters.AddWithValue("@tipo_mp", tipo_mp)
-
-                DA.Fill(DS)
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Using DA As New SqlDataAdapter("CRG_TAREAS_NODO_MP", cnx)
+                    DA.SelectCommand.CommandType = CommandType.StoredProcedure
+                    DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", idNodoPadre)
+                    DA.SelectCommand.Parameters.AddWithValue("@tipo_mp", If(tipo_mp, String.Empty))
+                    DA.Fill(DS)
+                End Using
             End Using
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Cr Tarea MP")
-        Finally
-            conexion.Desconectar(cnx)
         End Try
     End Sub
 
     Public Sub CRG_NODO_HIJO_2(ByRef nodo As TreeNode)
-        Dim dst As DataSet = CRG_NODO(CInt(nodo.Name))
-        For i As Integer = 1 To dst.Tables("nodo").Rows.Count
+        If nodo Is Nothing Then Exit Sub
+        Dim idNodo As Integer = 0
+        If Not Integer.TryParse(If(nodo.Name, String.Empty).Trim(), idNodo) Then Exit Sub
+        Dim dst As DataSet = CRG_NODO(idNodo)
+        If dst Is Nothing OrElse Not dst.Tables.Contains("nodo") Then Exit Sub
+        For i As Integer = 0 To dst.Tables("nodo").Rows.Count - 1
             Dim nodo1 As New TreeNode()
-            nodo1.Text = dst.Tables("nodo").Rows(i - 1)("desc_nodo").ToString()
-            nodo1.Name = dst.Tables("nodo").Rows(i - 1)("idnodo").ToString()
+            nodo1.Text = dst.Tables("nodo").Rows(i)("desc_nodo").ToString()
+            nodo1.Name = dst.Tables("nodo").Rows(i)("idnodo").ToString()
             nodo.Nodes.Add(nodo1)
         Next
     End Sub
 
     Public Function CRG_NODOS_DST() As DataSet
         Dim ds_result As New DataSet
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
 
         Try
-            conexion.Conectar(cnx)
-            Using da As New SqlDataAdapter("CRG_NODOS_DST", cnx)
-                da.Fill(ds_result)
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Using da As New SqlDataAdapter("CRG_NODOS_DST", cnx)
+                    da.SelectCommand.CommandType = CommandType.StoredProcedure
+                    da.Fill(ds_result)
+                End Using
             End Using
-        Finally
-            conexion.Desconectar(cnx)
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Dataset de Nodos")
         End Try
 
         Return ds_result
@@ -167,16 +179,19 @@ Public Class Nodo
 
     Public Function CRG_NODOS_TODOS(ByVal id_nodo As Integer) As DataSet
         Dim ds_result As New DataSet
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
 
         Try
-            conexion.Conectar(cnx)
-            Using da As New SqlDataAdapter("CRG_NODOS_TODOS " & id_nodo, cnx)
-                da.Fill(ds_result, "nodo")
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Using da As New SqlDataAdapter("CRG_NODOS_TODOS", cnx)
+                    da.SelectCommand.CommandType = CommandType.StoredProcedure
+                    da.SelectCommand.Parameters.AddWithValue("@nodo_padre", id_nodo)
+                    da.Fill(ds_result, "nodo")
+                End Using
             End Using
-        Finally
-            conexion.Desconectar(cnx)
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Todos los Nodos")
         End Try
         Return ds_result
     End Function
@@ -189,16 +204,18 @@ Public Class Nodo
             Exit Sub
         End If
 
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
         Try
-            conexion.Conectar(cnx)
-            CargarHijosConConexion(nodo, cnx, 2)
-            If nodo.Name = "1" Then
-                _cacheRaizTodos = DirectCast(nodo.Clone(), TreeNode)
-            End If
-        Finally
-            conexion.Desconectar(cnx)
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Dim visitados As New HashSet(Of Integer)()
+                CargarHijosConConexion(nodo, cnx, 2, visitados)
+                If nodo.Name = "1" Then
+                    _cacheRaizTodos = DirectCast(nodo.Clone(), TreeNode)
+                End If
+            End Using
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Hijos Todos los Nodos")
         End Try
     End Sub
 
@@ -210,16 +227,18 @@ Public Class Nodo
             Exit Sub
         End If
 
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
         Try
-            conexion.Conectar(cnx)
-            CargarHijosConConexion(nodo, cnx, 3)
-            If nodo.Name = "1" Then
-                _cacheRaizMantSi = DirectCast(nodo.Clone(), TreeNode)
-            End If
-        Finally
-            conexion.Desconectar(cnx)
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Dim visitados As New HashSet(Of Integer)()
+                CargarHijosConConexion(nodo, cnx, 3, visitados)
+                If nodo.Name = "1" Then
+                    _cacheRaizMantSi = DirectCast(nodo.Clone(), TreeNode)
+                End If
+            End Using
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Hijos con Mantención")
         End Try
     End Sub
 
@@ -241,110 +260,122 @@ Public Class Nodo
     End Sub
 
     Public Sub CRG_TAREAS_NODO(ByVal id_nodo_padre As String, ByVal tipo_mp As String, ByRef DS As DataSet)
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
+        Dim idPadreInt As Integer = 0
+        If Not Integer.TryParse(If(id_nodo_padre, String.Empty).Trim(), idPadreInt) Then Return
 
         Try
-            conexion.Conectar(cnx)
-            Using DA As New SqlDataAdapter("CRG_TAREAS_NODO", cnx)
-                DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(id_nodo_padre))
-                DA.SelectCommand.Parameters.AddWithValue("@tipo_mp", tipo_mp)
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Using DA As New SqlDataAdapter("CRG_TAREAS_NODO", cnx)
+                    DA.SelectCommand.CommandType = CommandType.StoredProcedure
+                    DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", idPadreInt)
+                    DA.SelectCommand.Parameters.AddWithValue("@tipo_mp", If(tipo_mp, String.Empty))
 
-                DA.Fill(DS)
+                    DA.Fill(DS)
+                End Using
             End Using
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Cr Tarea Nodo")
-        Finally
-            conexion.Desconectar(cnx)
         End Try
     End Sub
 
     Public Function BuscarIdNodo(ByVal desc_nodo As String) As String
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
         Dim id_nodo As String = ""
         Try
-            conexion.Conectar(cnx)
-            Using com As New SqlCommand("BUSCAR_NODO_X_NOMBRE", cnx)
-                com.CommandType = CommandType.StoredProcedure
-                com.Parameters.AddWithValue("@nombre_nodo", desc_nodo)
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Using com As New SqlCommand("BUSCAR_NODO_X_NOMBRE", cnx)
+                    com.CommandType = CommandType.StoredProcedure
+                    com.Parameters.AddWithValue("@nombre_nodo", If(desc_nodo, String.Empty))
 
-                Using DR As SqlDataReader = com.ExecuteReader
-                    If DR.Read() Then
-                        id_nodo = DR(0).ToString()
-                    End If
+                    Using DR As SqlDataReader = com.ExecuteReader
+                        If DR.Read() AndAlso Not IsDBNull(DR(0)) Then
+                            id_nodo = DR(0).ToString()
+                        End If
+                    End Using
                 End Using
             End Using
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Buscar ID Nodo")
-        Finally
-            conexion.Desconectar(cnx)
         End Try
 
         Return id_nodo
     End Function
 
     Public Function NUEVO_ID_NODO() As String
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
         Dim id_nodo As String = ""
         Try
-            conexion.Conectar(cnx)
-            Using com As New SqlCommand("NUEVO_ID_NODO", cnx)
-                com.CommandType = CommandType.StoredProcedure
-                Using DR As SqlDataReader = com.ExecuteReader
-                    If DR.Read() Then
-                        id_nodo = DR(0).ToString()
-                    End If
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Using com As New SqlCommand("NUEVO_ID_NODO", cnx)
+                    com.CommandType = CommandType.StoredProcedure
+                    Using DR As SqlDataReader = com.ExecuteReader
+                        If DR.Read() AndAlso Not IsDBNull(DR(0)) Then
+                            id_nodo = DR(0).ToString()
+                        End If
+                    End Using
                 End Using
             End Using
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Nuev I Nodo")
-        Finally
-            conexion.Desconectar(cnx)
         End Try
 
         Return id_nodo
     End Function
 
     Public Sub IngNodo(ByVal id_nodo As String, ByVal nodo_padre As String, ByVal desc_nodo As String, ByVal nivel As String, ByVal estado_nodo As Boolean, ByVal cod_rmes As String, ByVal sesion As String, ByVal fecha_instalacion As DateTime, ByVal prioridad As String, ByVal cod_sap As String, ByVal aplica_mant As Boolean, ByVal grupo As String, ByRef cod_resp As Integer, ByRef resp As String)
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
+        cod_resp = 0
+        resp = String.Empty
+        Dim idNodoInt, nodoPadreInt, nivelInt, prioInt As Integer
+        If Not Integer.TryParse(If(id_nodo, String.Empty).Trim(), idNodoInt) OrElse
+           Not Integer.TryParse(If(nodo_padre, String.Empty).Trim(), nodoPadreInt) OrElse
+           Not Integer.TryParse(If(nivel, String.Empty).Trim(), nivelInt) Then
+            cod_resp = -1
+            resp = "Identificadores de nodo o nivel no válidos."
+            Return
+        End If
+        If Not Integer.TryParse(If(prioridad, String.Empty).Trim(), prioInt) Then
+            prioInt = 0
+        End If
 
         Try
-            conexion.Conectar(cnx)
-            Using com As New SqlCommand("ING_NODO", cnx)
-                com.CommandType = CommandType.StoredProcedure
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Using com As New SqlCommand("ING_NODO", cnx)
+                    com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_nodo", CInt(id_nodo))
-                com.Parameters.AddWithValue("@nodo_padre", CInt(nodo_padre))
-                com.Parameters.AddWithValue("@desc_nodo", desc_nodo)
-                com.Parameters.AddWithValue("@nivel", CInt(nivel))
-                com.Parameters.AddWithValue("@estado_nodo", estado_nodo)
-                com.Parameters.AddWithValue("@cod_rmes", cod_rmes)
-                com.Parameters.AddWithValue("@sesion", sesion)
-                com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
-                com.Parameters.AddWithValue("@fecha_instalacion", fecha_instalacion)
-                com.Parameters.AddWithValue("@fecha_creacion", Now.ToString("yyyyMMdd"))
-                com.Parameters.AddWithValue("@prioridad", CInt(prioridad))
-                com.Parameters.AddWithValue("@codigo_sap", cod_sap)
-                com.Parameters.AddWithValue("@aplica_mantencion", aplica_mant)
-                com.Parameters.AddWithValue("@grupo", grupo)
+                    com.Parameters.AddWithValue("@id_nodo", idNodoInt)
+                    com.Parameters.AddWithValue("@nodo_padre", nodoPadreInt)
+                    com.Parameters.AddWithValue("@desc_nodo", If(desc_nodo, String.Empty))
+                    com.Parameters.AddWithValue("@nivel", nivelInt)
+                    com.Parameters.AddWithValue("@estado_nodo", estado_nodo)
+                    com.Parameters.AddWithValue("@cod_rmes", If(cod_rmes, String.Empty))
+                    com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty))
+                    com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
+                    com.Parameters.AddWithValue("@fecha_instalacion", fecha_instalacion)
+                    com.Parameters.AddWithValue("@fecha_creacion", Now.ToString("yyyyMMdd"))
+                    com.Parameters.AddWithValue("@prioridad", prioInt)
+                    com.Parameters.AddWithValue("@codigo_sap", If(cod_sap, String.Empty))
+                    com.Parameters.AddWithValue("@aplica_mantencion", aplica_mant)
+                    com.Parameters.AddWithValue("@grupo", If(grupo, String.Empty))
 
-                Using DR As SqlDataReader = com.ExecuteReader
-                    If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
-                    End If
+                    Using DR As SqlDataReader = com.ExecuteReader
+                        If DR.Read() Then
+                            cod_resp = If(IsDBNull(DR(0)), 0, Convert.ToInt32(DR(0)))
+                            resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
+                        End If
+                    End Using
                 End Using
             End Using
             InvalidarCacheNodos()
         Catch ex As Exception
             cod_resp = -1
+            resp = ex.Message
             RegistroErrores.MostrarYRegistrar(ex, "Ingresar Nodo")
-        Finally
-            conexion.Desconectar(cnx)
         End Try
     End Sub
 
@@ -357,8 +388,8 @@ Public Class Nodo
             .nivel_nodo_padre = 0
             .txtCodRmes.ResetText()
             .txtCodRmesNodoNuevo.ResetText()
-            .txtPrioridad.Text = 0
-            .txtPrioridad2.Text = 0
+            .txtPrioridad.Text = "0"
+            .txtPrioridad2.Text = "0"
             .txtCodSap.ResetText()
             .txtCodSap2.ResetText()
             .fecha_instalacion.Value = Now
@@ -373,68 +404,78 @@ Public Class Nodo
     End Sub
 
     Public Function BuscarNodo(ByVal id_nodo As String) As String
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
         Dim resp As String = ""
+        Dim idNodoInt As Integer = 0
+        If Not Integer.TryParse(If(id_nodo, String.Empty).Trim(), idNodoInt) Then Return String.Empty
         Try
-            conexion.Conectar(cnx)
-            Using com As New SqlCommand("BUSCAR_NODO", cnx)
-                com.CommandType = CommandType.StoredProcedure
-                com.Parameters.AddWithValue("@id_nodo", id_nodo)
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Using com As New SqlCommand("BUSCAR_NODO", cnx)
+                    com.CommandType = CommandType.StoredProcedure
+                    com.Parameters.AddWithValue("@id_nodo", idNodoInt)
 
-                Using DR As SqlDataReader = com.ExecuteReader
-                    If DR.Read() Then
-                        If DR(0) = 1 Then
-                            resp = DR(1).ToString()
+                    Using DR As SqlDataReader = com.ExecuteReader
+                        If DR.Read() AndAlso Not IsDBNull(DR(0)) Then
+                            If Convert.ToInt32(DR(0)) = 1 AndAlso Not IsDBNull(DR(1)) Then
+                                resp = DR(1).ToString()
+                            End If
                         End If
-                    End If
+                    End Using
                 End Using
             End Using
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Buscar Nodo")
-        Finally
-            conexion.Desconectar(cnx)
         End Try
 
         Return resp
     End Function
 
     Public Sub UpdNodo(ByVal id_nodo As String, ByVal nodo_padre As String, ByVal desc_nodo As String, ByVal nivel As String, ByVal estado_nodo As Boolean, ByVal cod_rmes As String, ByVal sesion As String, ByVal fecha_instalacion As DateTime, ByVal prioridad As String, ByVal cod_sap As String, ByVal aplica_mant As Boolean, ByVal grupo As String, ByRef cod_resp As Integer, ByRef resp As String)
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
+        cod_resp = 0
+        resp = String.Empty
+        Dim idNodoInt, nodoPadreInt, nivelInt, prioInt As Integer
+        If Not Integer.TryParse(If(id_nodo, String.Empty).Trim(), idNodoInt) OrElse
+           Not Integer.TryParse(If(nodo_padre, String.Empty).Trim(), nodoPadreInt) OrElse
+           Not Integer.TryParse(If(nivel, String.Empty).Trim(), nivelInt) Then
+            resp = "Datos numéricos del nodo o nodo padre inválidos."
+            Exit Sub
+        End If
+        Integer.TryParse(If(prioridad, String.Empty).Trim(), prioInt)
 
         Try
-            conexion.Conectar(cnx)
-            Using com As New SqlCommand("UPD_NODO", cnx)
-                com.CommandType = CommandType.StoredProcedure
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Using com As New SqlCommand("UPD_NODO", cnx)
+                    com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_nodo", CInt(id_nodo))
-                com.Parameters.AddWithValue("@nodo_padre", CInt(nodo_padre))
-                com.Parameters.AddWithValue("@desc_nodo", desc_nodo)
-                com.Parameters.AddWithValue("@nivel", CInt(nivel))
-                com.Parameters.AddWithValue("@estado_nodo", estado_nodo)
-                com.Parameters.AddWithValue("@cod_rmes", cod_rmes)
-                com.Parameters.AddWithValue("@sesion", sesion)
-                com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
-                com.Parameters.AddWithValue("@fecha_instalacion", fecha_instalacion)
-                com.Parameters.AddWithValue("@prioridad", CInt(prioridad))
-                com.Parameters.AddWithValue("@codigo_sap", cod_sap)
-                com.Parameters.AddWithValue("@aplica_mantencion", aplica_mant)
-                com.Parameters.AddWithValue("@grupo", grupo)
+                    com.Parameters.AddWithValue("@id_nodo", idNodoInt)
+                    com.Parameters.AddWithValue("@nodo_padre", nodoPadreInt)
+                    com.Parameters.AddWithValue("@desc_nodo", If(desc_nodo, String.Empty).Trim())
+                    com.Parameters.AddWithValue("@nivel", nivelInt)
+                    com.Parameters.AddWithValue("@estado_nodo", estado_nodo)
+                    com.Parameters.AddWithValue("@cod_rmes", If(cod_rmes, String.Empty).Trim())
+                    com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty).Trim())
+                    com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
+                    com.Parameters.AddWithValue("@fecha_instalacion", fecha_instalacion)
+                    com.Parameters.AddWithValue("@prioridad", prioInt)
+                    com.Parameters.AddWithValue("@codigo_sap", If(cod_sap, String.Empty).Trim())
+                    com.Parameters.AddWithValue("@aplica_mantencion", aplica_mant)
+                    com.Parameters.AddWithValue("@grupo", If(grupo, String.Empty).Trim())
 
-                Using DR As SqlDataReader = com.ExecuteReader
-                    If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
-                    End If
+                    Using DR As SqlDataReader = com.ExecuteReader
+                        If DR.Read() Then
+                            cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                            resp = If(IsDBNull(DR(1)), String.Empty, DR(1).ToString())
+                        End If
+                    End Using
                 End Using
             End Using
             InvalidarCacheNodos()
         Catch ex As Exception
             cod_resp = -1
             RegistroErrores.MostrarYRegistrar(ex, "Actualizar Nodo")
-        Finally
-            conexion.Desconectar(cnx)
         End Try
     End Sub
 
@@ -442,16 +483,16 @@ Public Class Nodo
         Dim respuesta As String = ""
 
         With FrmAdminNodos
-            If .txtIDNodoSel.Text = "" Then
-                respuesta = "Debe Seleccionar un nodo Padre" & Chr(13)
+            If String.IsNullOrWhiteSpace(.txtIDNodoSel.Text) Then
+                respuesta = "Debe seleccionar un nodo padre." & Environment.NewLine
             End If
 
-            If .txtIDNuevoNodo.Text = "" Then
-                respuesta = respuesta & "Debe crear un ID para el nuevo nodo" & Chr(13)
+            If String.IsNullOrWhiteSpace(.txtIDNuevoNodo.Text) Then
+                respuesta &= "Debe crear un ID para el nuevo nodo." & Environment.NewLine
             End If
 
-            If .txtDescNuevoNodo.Text = "" Then
-                respuesta = respuesta & "Debe ingresar una descripción para el nuevo nodo" & Chr(13)
+            If String.IsNullOrWhiteSpace(.txtDescNuevoNodo.Text) Then
+                respuesta &= "Debe ingresar una descripción para el nuevo nodo." & Environment.NewLine
             End If
         End With
 
@@ -462,16 +503,16 @@ Public Class Nodo
         Dim respuesta As String = ""
 
         With FrmAdminNodos
-            If .txtIDNodoSel.Text = "" Then
-                respuesta = "Debe Seleccionar un nodo en el arbol" & Chr(13)
+            If String.IsNullOrWhiteSpace(.txtIDNodoSel.Text) Then
+                respuesta = "Debe seleccionar un nodo en el árbol." & Environment.NewLine
             End If
 
-            If .txtDescNodoSel.Text = "" Then
-                respuesta = "Debe agregar una descripción del nodo" & Chr(13)
+            If String.IsNullOrWhiteSpace(.txtDescNodoSel.Text) Then
+                respuesta &= "Debe agregar una descripción del nodo." & Environment.NewLine
             End If
 
-            If .id_nodo_padre = "" Then
-                respuesta = respuesta & "Debe seleccionar el nodo a modificar en el arbol para obtener el ID del Padre" & Chr(13)
+            If String.IsNullOrWhiteSpace(.id_nodo_padre) Then
+                respuesta &= "Debe seleccionar el nodo a modificar en el árbol para obtener el ID del Padre." & Environment.NewLine
             End If
         End With
 
@@ -539,62 +580,79 @@ Public Class Nodo
     End Function
 
     Public Sub IngTareaNodo(ByVal id_tarea As String, ByVal id_nodo As String, ByVal desc_tarea As String, ByVal tipo_mantencion As String, ByVal orden_despliegue As Integer, ByVal sesion As String, ByRef cod_resp As Integer, ByRef resp As String)
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
+        cod_resp = 0
+        resp = String.Empty
+        Dim idTareaInt, idNodoInt As Integer
+        If Not Integer.TryParse(If(id_tarea, String.Empty).Trim(), idTareaInt) OrElse
+           Not Integer.TryParse(If(id_nodo, String.Empty).Trim(), idNodoInt) Then
+            cod_resp = -1
+            resp = "Identificadores de tarea o nodo no válidos."
+            Return
+        End If
 
         Try
-            conexion.Conectar(cnx)
-            Using com As New SqlCommand("ING_TAREA_NODO", cnx)
-                com.CommandType = CommandType.StoredProcedure
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Using com As New SqlCommand("ING_TAREA_NODO", cnx)
+                    com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_tarea", CInt(id_tarea))
-                com.Parameters.AddWithValue("@id_nodo", CInt(id_nodo))
-                com.Parameters.AddWithValue("@desc_tarea", desc_tarea)
-                com.Parameters.AddWithValue("@tipo_mantencion", tipo_mantencion)
-                com.Parameters.AddWithValue("@orden_despliegue", orden_despliegue)
-                com.Parameters.AddWithValue("@sesion", sesion)
-                com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
+                    com.Parameters.AddWithValue("@id_tarea", idTareaInt)
+                    com.Parameters.AddWithValue("@id_nodo", idNodoInt)
+                    com.Parameters.AddWithValue("@desc_tarea", If(desc_tarea, String.Empty))
+                    com.Parameters.AddWithValue("@tipo_mantencion", If(tipo_mantencion, String.Empty))
+                    com.Parameters.AddWithValue("@orden_despliegue", orden_despliegue)
+                    com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty))
+                    com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
 
-                Using DR As SqlDataReader = com.ExecuteReader
-                    If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
-                    End If
+                    Using DR As SqlDataReader = com.ExecuteReader
+                        If DR.Read() Then
+                            cod_resp = If(IsDBNull(DR(0)), 0, Convert.ToInt32(DR(0)))
+                            resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
+                        End If
+                    End Using
                 End Using
             End Using
         Catch ex As Exception
             cod_resp = -1
+            resp = ex.Message
             RegistroErrores.MostrarYRegistrar(ex, "Ingresar Tarea Nodo")
-        Finally
-            conexion.Desconectar(cnx)
         End Try
     End Sub
 
     Public Sub DelTareaNodo(ByVal id_tarea As String, ByVal sesion As String, ByRef cod_resp As Integer, ByRef resp As String)
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
+        cod_resp = 0
+        resp = String.Empty
+        Dim idTareaInt As Integer
+        If Not Integer.TryParse(If(id_tarea, String.Empty).Trim(), idTareaInt) Then
+            cod_resp = -1
+            resp = "Identificador de tarea no válido."
+            Return
+        End If
 
         Try
-            conexion.Conectar(cnx)
-            Using com As New SqlCommand("DEL_TAREA_NODO", cnx)
-                com.CommandType = CommandType.StoredProcedure
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Using com As New SqlCommand("DEL_TAREA_NODO", cnx)
+                    com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_tarea", CInt(id_tarea))
-                com.Parameters.AddWithValue("@sesion", sesion)
-                com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
+                    com.Parameters.AddWithValue("@id_tarea", idTareaInt)
+                    com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty))
+                    com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
 
-                Using DR As SqlDataReader = com.ExecuteReader
-                    If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
-                    End If
+                    Using DR As SqlDataReader = com.ExecuteReader
+                        If DR.Read() Then
+                            cod_resp = If(IsDBNull(DR(0)), 0, Convert.ToInt32(DR(0)))
+                            resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
+                        End If
+                    End Using
                 End Using
             End Using
         Catch ex As Exception
             cod_resp = -1
+            resp = ex.Message
             RegistroErrores.MostrarYRegistrar(ex, "Eliminar Tarea Nodo")
-        Finally
-            conexion.Desconectar(cnx)
         End Try
     End Sub
 
@@ -639,7 +697,7 @@ Public Class Nodo
 
             If arbol.IsHandleCreated Then
                 Dim aplicar As MethodInvoker = Sub()
-                                                   If Not arbol.IsDisposed Then
+                                                   If Not arbol.IsDisposed AndAlso objetivo.TreeView Is arbol Then
                                                        LimpiarResaltadoNodos(arbol.Nodes)
                                                        objetivo.EnsureVisible()
                                                        arbol.SelectedNode = objetivo
@@ -650,8 +708,6 @@ Public Class Nodo
                                                End Sub
                 arbol.BeginInvoke(aplicar)
             End If
-        Else
-            idNodoSelect = idNodo
         End If
     End Sub
 
@@ -757,11 +813,13 @@ Public Class Nodo
                 Dim targetNode As TreeNode = elegido
                 Dim todasCoincidencias As New List(Of TreeNode)(coincidencias)
                 Dim aplicar As MethodInvoker = Sub()
-                                                   If Not arbol.IsDisposed AndAlso targetNode IsNot Nothing Then
+                                                   If Not arbol.IsDisposed AndAlso targetNode IsNot Nothing AndAlso targetNode.TreeView Is arbol Then
                                                        LimpiarResaltadoNodos(arbol.Nodes)
                                                        For Each cNode As TreeNode In todasCoincidencias
-                                                           cNode.BackColor = Color.FromArgb(217, 241, 244)
-                                                           cNode.ForeColor = Color.FromArgb(2, 94, 135)
+                                                           If cNode.TreeView Is arbol Then
+                                                               cNode.BackColor = Color.FromArgb(217, 241, 244)
+                                                               cNode.ForeColor = Color.FromArgb(2, 94, 135)
+                                                           End If
                                                        Next
                                                        targetNode.EnsureVisible()
                                                        arbol.SelectedNode = targetNode

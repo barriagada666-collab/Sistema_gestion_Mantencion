@@ -45,6 +45,8 @@ Public Class FrmAdminAuditoria
             Utilitarios.InicializarRangoMesActual(fecha_ini_aud, fecha_fin_aud)
             Utilitarios.AplicarTemaModerno(Me)
             ActualizarBarraEstado(0, 0, 0)
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Auditoría de Operaciones (Carga)", True, Me)
         Finally
             Me.ResumeLayout(True)
         End Try
@@ -112,6 +114,7 @@ Public Class FrmAdminAuditoria
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Auditoría de Operaciones (Buscar Aud)", True, Me)
         Finally
+            DST_AUD.Dispose()
             Cursor = Cursors.Default
             Utilitarios.OptimizarMemoria()
         End Try
@@ -290,7 +293,7 @@ Public Class FrmAdminAuditoria
         End If
 
         ' Búsqueda Rápida de Texto
-        Dim busqueda As String = txtBusquedaRapida.Text.Trim().Replace("'", "''")
+        Dim busqueda As String = Utilitarios.EscaparLike(txtBusquedaRapida.Text.Trim())
         If Not String.IsNullOrEmpty(busqueda) Then
             Dim orConds As New List(Of String)
             If Not String.IsNullOrEmpty(_colClave) Then orConds.Add(String.Format("CONVERT([{0}], 'System.String') LIKE '%{1}%'", _colClave, busqueda))
@@ -624,15 +627,17 @@ Public Class FrmAdminAuditoria
         End If
 
         Cursor = Cursors.WaitCursor
+        Dim dsStats As DataSet = Nothing
         Try
             Dim informes As New Informes
             Dim filasAExportar As IList(Of DataGridViewRow) = If(exportarSoloSeleccion, filasSeleccionadas, Nothing)
-            Dim dsStats As DataSet = ObtenerDataSetEstadisticas()
+            dsStats = ObtenerDataSetEstadisticas()
 
             informes.expInfAuditoria(grillaAuditoria, fecha_ini_aud.Value, fecha_fin_aud.Value, filasAExportar, True, dsStats)
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Auditoría de Operaciones (Exportar Excel)", True, Me)
         Finally
+            If dsStats IsNot Nothing Then dsStats.Dispose()
             Cursor = Cursors.Default
             Utilitarios.OptimizarMemoria()
         End Try
@@ -641,6 +646,7 @@ Public Class FrmAdminAuditoria
     Private Sub btnExpEstadisticas_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnExpEstadisticas.Click
         Dim dsStats As DataSet = ObtenerDataSetEstadisticas()
         If dsStats Is Nothing OrElse dsStats.Tables.Count = 0 Then
+            If dsStats IsNot Nothing Then dsStats.Dispose()
             MsgBox("No hay datos estadísticos para exportar. Por favor realice una consulta primero.", MsgBoxStyle.Information, "Estadísticas")
             Exit Sub
         End If
@@ -653,6 +659,7 @@ Public Class FrmAdminAuditoria
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Auditoría de Operaciones (Exportar Estadísticas)", True, Me)
         Finally
+            dsStats.Dispose()
             Cursor = Cursors.Default
             Utilitarios.OptimizarMemoria()
         End Try

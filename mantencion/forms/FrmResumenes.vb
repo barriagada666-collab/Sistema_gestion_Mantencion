@@ -29,6 +29,10 @@ Public Class FrmResumenes
 
     Private Shared _dicJerarquiaNodosCache As Dictionary(Of Integer, InfoNodoJerarquia) = Nothing
 
+    Public Shared Sub InvalidarCacheJerarquia()
+        _dicJerarquiaNodosCache = Nothing
+    End Sub
+
     ''' <summary>
     ''' Carga y cachea la jerarquía completa de nodos desde la base de datos para una resolución ultra-rápida.
     ''' </summary>
@@ -275,6 +279,8 @@ Public Class FrmResumenes
             formato.grillasOT(grillaOtPorMes)
             Utilitarios.InicializarRangoMesActual(fecha_ini_resumen, fecha_fin_resumen)
             Utilitarios.AplicarTemaModerno(Me)
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Resumen Estadístico OT (Carga Inicial)", True, Me)
         Finally
             Me.ResumeLayout(True)
         End Try
@@ -341,10 +347,13 @@ Public Class FrmResumenes
                 OT.infOtConNodos(nd.Name, fecha_ini_resumen.Value, fecha_fin_resumen.Value, dtNodosOT)
 
                 For Each r As DataRow In dtNodosOT.Rows
-                    Dim numOt As String = r("num_ot").ToString().Trim()
-                    If otsExistentes.Add(numOt) Then
+                    Dim numOt As String = If(IsDBNull(r("num_ot")), String.Empty, r("num_ot").ToString().Trim())
+                    If Not String.IsNullOrEmpty(numOt) AndAlso otsExistentes.Add(numOt) Then
                         totalOtDetalle += 1
-                        Dim otIdNodo As Integer = Convert.ToInt32(r("idnodo"))
+                        Dim otIdNodo As Integer = 0
+                        If Not IsDBNull(r("idnodo")) Then
+                            Integer.TryParse(r("idnodo").ToString(), otIdNodo)
+                        End If
                         Dim descNodoOT As String = If(IsDBNull(r("desc_nodo")), "", r("desc_nodo").ToString().Trim())
                         Dim estado As String = If(IsDBNull(r("estado")), "", r("estado").ToString().Trim().ToLower())
                         Dim isCerrada As Boolean = (estado = "cerrada")
@@ -776,14 +785,16 @@ Public Class FrmResumenes
         End If
     End Sub
 
-    Private Sub grillaOtRecibidaPor_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtRecibidaPor.CellContentDoubleClick
-        If e.RowIndex < 0 OrElse grillaOtRecibidaPor.CurrentRow Is Nothing OrElse grillaOtRecibidaPor.RowCount = 0 Then
-            Exit Sub
-        End If
+    Private Sub grillaOtRecibidaPor_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtRecibidaPor.CellContentDoubleClick, grillaOtRecibidaPor.CellDoubleClick
+        If e.RowIndex < 0 OrElse e.RowIndex >= grillaOtRecibidaPor.RowCount Then Exit Sub
+        Dim row = grillaOtRecibidaPor.Rows(e.RowIndex)
+        If row Is Nothing OrElse row.IsNewRow Then Exit Sub
 
         Try
             Dim colNom As Integer = If(grillaOtRecibidaPor.Columns.Contains("Recibido Por"), grillaOtRecibidaPor.Columns("Recibido Por").Index, 0)
-            FrmDetalleOtPendientes.personal = grillaOtRecibidaPor.Rows(grillaOtRecibidaPor.CurrentRow.Index).Cells(colNom).Value
+            Dim val = row.Cells(colNom).Value
+            If val Is Nothing OrElse IsDBNull(val) Then Exit Sub
+            FrmDetalleOtPendientes.personal = val.ToString().Trim()
             FrmDetalleOtPendientes.fecha_inicio = fecha_ini_resumen.Value
             FrmDetalleOtPendientes.fecha_termino = fecha_fin_resumen.Value
             FrmDetalleOtPendientes.opcion = 1
@@ -802,14 +813,16 @@ Public Class FrmResumenes
         End If
     End Sub
 
-    Private Sub grillaOtCerradaPorTec_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtCerradaPorTec.CellContentDoubleClick
-        If e.RowIndex < 0 OrElse grillaOtCerradaPorTec.CurrentRow Is Nothing OrElse grillaOtCerradaPorTec.RowCount = 0 Then
-            Exit Sub
-        End If
+    Private Sub grillaOtCerradaPorTec_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtCerradaPorTec.CellContentDoubleClick, grillaOtCerradaPorTec.CellDoubleClick
+        If e.RowIndex < 0 OrElse e.RowIndex >= grillaOtCerradaPorTec.RowCount Then Exit Sub
+        Dim row = grillaOtCerradaPorTec.Rows(e.RowIndex)
+        If row Is Nothing OrElse row.IsNewRow Then Exit Sub
 
         Try
             Dim colNom As Integer = If(grillaOtCerradaPorTec.Columns.Contains("Técnico / Personal"), grillaOtCerradaPorTec.Columns("Técnico / Personal").Index, 0)
-            FrmDetalleOTPorTecnico.personal = grillaOtCerradaPorTec.Rows(grillaOtCerradaPorTec.CurrentRow.Index).Cells(colNom).Value
+            Dim val = row.Cells(colNom).Value
+            If val Is Nothing OrElse IsDBNull(val) Then Exit Sub
+            FrmDetalleOTPorTecnico.personal = val.ToString().Trim()
             FrmDetalleOTPorTecnico.fecha_inicio = fecha_ini_resumen.Value
             FrmDetalleOTPorTecnico.fecha_termino = fecha_fin_resumen.Value
             FrmDetalleOTPorTecnico.opcion = 2
@@ -820,14 +833,16 @@ Public Class FrmResumenes
         End Try
     End Sub
 
-    Private Sub grillaOtPorTipoFalla_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtPorTipoFalla.CellContentDoubleClick
-        If e.RowIndex < 0 OrElse grillaOtPorTipoFalla.CurrentRow Is Nothing OrElse grillaOtPorTipoFalla.RowCount = 0 Then
-            Exit Sub
-        End If
+    Private Sub grillaOtPorTipoFalla_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtPorTipoFalla.CellContentDoubleClick, grillaOtPorTipoFalla.CellDoubleClick
+        If e.RowIndex < 0 OrElse e.RowIndex >= grillaOtPorTipoFalla.RowCount Then Exit Sub
+        Dim row = grillaOtPorTipoFalla.Rows(e.RowIndex)
+        If row Is Nothing OrElse row.IsNewRow Then Exit Sub
 
         Try
             Dim colNom As Integer = If(grillaOtPorTipoFalla.Columns.Contains("Tipo de Trabajo / Falla"), grillaOtPorTipoFalla.Columns("Tipo de Trabajo / Falla").Index, 0)
-            FrmDetalleOtTipoFalla.tipo_falla = grillaOtPorTipoFalla.Rows(grillaOtPorTipoFalla.CurrentRow.Index).Cells(colNom).Value
+            Dim val = row.Cells(colNom).Value
+            If val Is Nothing OrElse IsDBNull(val) Then Exit Sub
+            FrmDetalleOtTipoFalla.tipo_falla = val.ToString().Trim()
             FrmDetalleOtTipoFalla.fecha_inicio = fecha_ini_resumen.Value
             FrmDetalleOtTipoFalla.fecha_termino = fecha_fin_resumen.Value
             FrmDetalleOtTipoFalla.opcion = 3
@@ -838,14 +853,16 @@ Public Class FrmResumenes
         End Try
     End Sub
 
-    Private Sub grillaOtPorTurno_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtPorTurno.CellContentDoubleClick
-        If e.RowIndex < 0 OrElse grillaOtPorTurno.CurrentRow Is Nothing OrElse grillaOtPorTurno.RowCount = 0 Then
-            Exit Sub
-        End If
+    Private Sub grillaOtPorTurno_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtPorTurno.CellContentDoubleClick, grillaOtPorTurno.CellDoubleClick
+        If e.RowIndex < 0 OrElse e.RowIndex >= grillaOtPorTurno.RowCount Then Exit Sub
+        Dim row = grillaOtPorTurno.Rows(e.RowIndex)
+        If row Is Nothing OrElse row.IsNewRow Then Exit Sub
 
         Try
             Dim colNom As Integer = If(grillaOtPorTurno.Columns.Contains("Turno"), grillaOtPorTurno.Columns("Turno").Index, 0)
-            FrmDetalleOtTurno.turno = grillaOtPorTurno.Rows(grillaOtPorTurno.CurrentRow.Index).Cells(colNom).Value
+            Dim val = row.Cells(colNom).Value
+            If val Is Nothing OrElse IsDBNull(val) Then Exit Sub
+            FrmDetalleOtTurno.turno = val.ToString().Trim()
             FrmDetalleOtTurno.fecha_inicio = fecha_ini_resumen.Value
             FrmDetalleOtTurno.fecha_termino = fecha_fin_resumen.Value
             FrmDetalleOtTurno.opcion = 4
@@ -856,16 +873,19 @@ Public Class FrmResumenes
         End Try
     End Sub
 
-    Private Sub grillaOtPorDia_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtPorDia.CellContentDoubleClick
-        If e.RowIndex < 0 OrElse grillaOtPorDia.CurrentRow Is Nothing OrElse grillaOtPorDia.RowCount = 0 Then
-            Exit Sub
-        End If
+    Private Sub grillaOtPorDia_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtPorDia.CellContentDoubleClick, grillaOtPorDia.CellDoubleClick
+        If e.RowIndex < 0 OrElse e.RowIndex >= grillaOtPorDia.RowCount Then Exit Sub
+        Dim row = grillaOtPorDia.Rows(e.RowIndex)
+        If row Is Nothing OrElse row.IsNewRow Then Exit Sub
 
         Try
             Dim colNom As Integer = If(grillaOtPorDia.Columns.Contains("Fecha"), grillaOtPorDia.Columns("Fecha").Index, 0)
+            Dim val = row.Cells(colNom).Value
+            Dim dtParsed As DateTime
+            If val Is Nothing OrElse IsDBNull(val) OrElse Not DateTime.TryParse(val.ToString(), dtParsed) Then Exit Sub
             FrmDetalleOTDia.fecha_inicio = fecha_ini_resumen.Value
             FrmDetalleOTDia.fecha_termino = fecha_fin_resumen.Value
-            FrmDetalleOTDia.fecha = grillaOtPorDia.Rows(grillaOtPorDia.CurrentRow.Index).Cells(colNom).Value
+            FrmDetalleOTDia.fecha = dtParsed
             FrmDetalleOTDia.opcion = 5
             FrmDetalleOTDia.nodo_padre = id_nodo_res_select
             FrmDetalleOTDia.Show()
@@ -874,14 +894,16 @@ Public Class FrmResumenes
         End Try
     End Sub
 
-    Private Sub grillaTotalesPeriodo_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaTotalesPeriodo.CellContentDoubleClick
-        If e.RowIndex < 0 OrElse grillaTotalesPeriodo.CurrentRow Is Nothing OrElse grillaTotalesPeriodo.RowCount = 0 Then
-            Exit Sub
-        End If
+    Private Sub grillaTotalesPeriodo_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaTotalesPeriodo.CellContentDoubleClick, grillaTotalesPeriodo.CellDoubleClick
+        If e.RowIndex < 0 OrElse e.RowIndex >= grillaTotalesPeriodo.RowCount Then Exit Sub
+        Dim row = grillaTotalesPeriodo.Rows(e.RowIndex)
+        If row Is Nothing OrElse row.IsNewRow Then Exit Sub
 
         Try
             Dim colNom As Integer = If(grillaTotalesPeriodo.Columns.Contains("Estado"), grillaTotalesPeriodo.Columns("Estado").Index, 0)
-            Dim estadoVal As String = grillaTotalesPeriodo.Rows(grillaTotalesPeriodo.CurrentRow.Index).Cells(colNom).Value.ToString()
+            Dim val = row.Cells(colNom).Value
+            If val Is Nothing OrElse IsDBNull(val) Then Exit Sub
+            Dim estadoVal As String = val.ToString().Trim()
             If Not estadoVal.StartsWith("Total", StringComparison.OrdinalIgnoreCase) Then
                 FrmDetalleOtEstado.fecha_inicio = fecha_ini_resumen.Value
                 FrmDetalleOtEstado.fecha_termino = fecha_fin_resumen.Value

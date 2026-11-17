@@ -1,4 +1,5 @@
 Imports System.Data.SqlClient
+
 Public Class Sintoma
     Public Sub crgCmbSintoma(ByRef combo As ComboBox)
         If combo Is Nothing Then Exit Sub
@@ -6,26 +7,27 @@ Public Class Sintoma
             combo.BeginUpdate()
             Dim dt As DataTable = Conexion.ObtenerCatalogoEnCache("CRG_CMB_SINTOMA", Function()
                 Dim conexion As New Conexion
-                Dim cnx As New SqlConnection
-                Try
+                Using cnx As New SqlConnection
                     conexion.Conectar(cnx)
                     Using DA As New SqlDataAdapter("CRG_CMB_SINTOMA", cnx)
+                        DA.SelectCommand.CommandType = CommandType.StoredProcedure
                         Dim t As New DataTable()
                         DA.Fill(t)
                         Return t
                     End Using
-                Finally
-                    conexion.Desconectar(cnx)
-                End Try
+                End Using
             End Function)
-            If dt IsNot Nothing Then
-                combo.DataSource = dt
+            If dt IsNot Nothing AndAlso dt.Rows.Count > 0 Then
                 combo.DisplayMember = "desc_sintoma"
                 combo.ValueMember = "idsintoma"
-                combo.SelectedValue = "S000"
+                combo.DataSource = dt
+                Try
+                    combo.SelectedValue = "S000"
+                Catch
+                End Try
             End If
         Catch ex As Exception
-            RegistroErrores.MostrarYRegistrar(ex, "")
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Síntomas")
         Finally
             combo.EndUpdate()
         End Try

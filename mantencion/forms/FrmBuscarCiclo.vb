@@ -23,29 +23,40 @@ Public Class FrmBuscarCiclo
     End Sub
 
     Private Sub grillaBuscarCiclo_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaBuscarCiclo.CellContentDoubleClick
-        If e.RowIndex < 0 Then Exit Sub
-        Dim nodo As New Nodo
-        Dim DS As New DataSet
-        Dim DST As New DataSet
-        Dim DST2 As New DataSet
+        If e.RowIndex < 0 OrElse grillaBuscarCiclo.Rows(e.RowIndex).IsNewRow Then Exit Sub
+        Dim rowSel As DataGridViewRow = grillaBuscarCiclo.Rows(e.RowIndex)
         Dim DST3 As New DataSet
-        Dim j As Integer
         Dim mant_prev As New MantPreventiva
-        Dim grillas As New FormatoGrillas
         Dim formato_grid As New FormatoGrillas
         Dim hrs_transcurridas As Double = 0
 
         Try
+            Dim valCell = Function(idx As Integer) As String
+                              If idx < 0 OrElse idx >= rowSel.Cells.Count OrElse rowSel.Cells(idx).Value Is Nothing OrElse IsDBNull(rowSel.Cells(idx).Value) Then
+                                  Return String.Empty
+                              End If
+                              Return rowSel.Cells(idx).Value.ToString()
+                          End Function
+
             With FrmMp
-                .txtIdCiclo.Text = grillaBuscarCiclo.Rows(e.RowIndex).Cells(0).Value
-                .FechaIniCiclo.Value = grillaBuscarCiclo.Rows(e.RowIndex).Cells(1).Value
-                .HrInicioCiclo.Text = grillaBuscarCiclo.Rows(e.RowIndex).Cells(2).Value
-                .fechaFinCicloMp.Value = grillaBuscarCiclo.Rows(e.RowIndex).Cells(3).Value
-                .HrFinCiclo.Text = grillaBuscarCiclo.Rows(e.RowIndex).Cells(4).Value
-                .txtDuracionCiclo.Text = grillaBuscarCiclo.Rows(e.RowIndex).Cells(5).Value
-                .txtObsCiclo.Text = grillaBuscarCiclo.Rows(e.RowIndex).Cells(6).Value
-                .cmbEstadoCiclo.Text = grillaBuscarCiclo.Rows(e.RowIndex).Cells(7).Value
+                .del_index_tareas.Clear()
+                .del_index_personal.Clear()
+                .grillaInsumosMp.Rows.Clear()
+
+                .txtIdCiclo.Text = valCell(0)
+                Dim fIni As DateTime
+                If DateTime.TryParse(valCell(1), fIni) Then .FechaIniCiclo.Value = fIni
+                Dim hIni As String = valCell(2)
+                If Not String.IsNullOrWhiteSpace(hIni) Then .HrInicioCiclo.Text = hIni
+                Dim fFin As DateTime
+                If DateTime.TryParse(valCell(3), fFin) Then .fechaFinCicloMp.Value = fFin
+                Dim hFin As String = valCell(4)
+                If Not String.IsNullOrWhiteSpace(hFin) Then .HrFinCiclo.Text = hFin
+                .txtDuracionCiclo.Text = valCell(5)
+                .txtObsCiclo.Text = valCell(6)
+                .cmbEstadoCiclo.Text = valCell(7)
             End With
+
             '################################# CARGA DE TAREAS CICLO ######################################################
             FrmMp.DST_TAREAS.Tables.Clear()
             mant_prev.CrgTareasCicloMp(FrmMp.txtIdMant.Text, FrmMp.txtIdCiclo.Text, FrmMp.id_nodo_select, FrmMp.DST_TAREAS)
@@ -55,31 +66,30 @@ Public Class FrmBuscarCiclo
 
                 With FrmMp.grillaTareasCicloMp
                     For i = 0 To .Rows.Count - 1
-                        If IsNumeric(.Rows(i).Cells(5).Value) AndAlso Convert.ToDouble(.Rows(i).Cells(5).Value) > 0 Then
+                        If .Rows(i).IsNewRow Then Continue For
+                        Dim valT As Object = .Rows(i).Cells(5).Value
+                        If valT IsNot Nothing AndAlso Not IsDBNull(valT) AndAlso IsNumeric(valT) AndAlso Convert.ToDouble(valT) > 0 Then
                             .Rows(i).Cells(0).Value = True
                         End If
                     Next
                 End With
+            Else
+                FrmMp.grillaTareasCicloMp.DataSource = Nothing
             End If
             '###############################################################################################################
 
             '################################## CARGA DE PERSONAL MP #######################################################
             If FrmMp.DS2.Tables.Count > 0 Then
-                FrmMp.DS2.Clear()
+                FrmMp.DS2.Tables.Clear()
             End If
 
             mant_prev.CrgPersonalCicloMp(FrmMp.txtIdMant.Text, FrmMp.txtIdCiclo.Text, FrmMp.DS2)
 
             If FrmMp.DS2.Tables.Count > 0 Then
-                If FrmMp.grillaPersonalMp.DataSource IsNot Nothing Then
-                    FrmMp.grillaPersonalMp.DataSource = FrmMp.DS2.Tables(0)
-                    grillas.grillasMp(FrmMp.grillaPersonalMp)
-                Else
-                    If FrmMp.grillaPersonalMp.Columns.Contains("rut_personal") Then FrmMp.grillaPersonalMp.Columns.Remove("rut_personal")
-                    If FrmMp.grillaPersonalMp.Columns.Contains("nombre_personal") Then FrmMp.grillaPersonalMp.Columns.Remove("nombre_personal")
-                    FrmMp.grillaPersonalMp.DataSource = FrmMp.DS2.Tables(0)
-                    grillas.grillasMp(FrmMp.grillaPersonalMp)
-                End If
+                If FrmMp.grillaPersonalMp.Columns.Contains("rut_personal") Then FrmMp.grillaPersonalMp.Columns.Remove("rut_personal")
+                If FrmMp.grillaPersonalMp.Columns.Contains("nombre_personal") Then FrmMp.grillaPersonalMp.Columns.Remove("nombre_personal")
+                FrmMp.grillaPersonalMp.DataSource = FrmMp.DS2.Tables(0)
+                formato_grid.grillasMp(FrmMp.grillaPersonalMp)
             End If
             FrmMp.btnIngMp.Enabled = False
             '###############################################################################################################
@@ -87,16 +97,14 @@ Public Class FrmBuscarCiclo
             '################################## CARGA DE INSUMOS MP ########################################################
             mant_prev.CrgInsumosCicloMp(FrmMp.txtIdMant.Text, FrmMp.txtIdCiclo.Text, DST3)
             If DST3.Tables.Count > 0 AndAlso DST3.Tables(0).Rows.Count > 0 Then
-                j = 0
+                Dim j As Integer = 0
                 For i = 0 To DST3.Tables(0).Rows.Count - 1
                     FrmMp.grillaInsumosMp.Rows.Add()
-                    FrmMp.grillaInsumosMp.Rows(j).Cells(0).Value = DST3.Tables(0).Rows(i).Item(0).ToString
-                    FrmMp.grillaInsumosMp.Rows(j).Cells(1).Value = DST3.Tables(0).Rows(i).Item(1).ToString
-                    FrmMp.grillaInsumosMp.Rows(j).Cells(2).Value = DST3.Tables(0).Rows(i).Item(2).ToString
-                    FrmMp.grillaInsumosMp.Rows(j).Cells(3).Value = DST3.Tables(0).Rows(i).Item(3).ToString
-                    FrmMp.grillaInsumosMp.Rows(j).Cells(4).Value = DST3.Tables(0).Rows(i).Item(4).ToString
-                    FrmMp.grillaInsumosMp.Rows(j).Cells(5).Value = DST3.Tables(0).Rows(i).Item(5).ToString
-                    j = j + 1
+                    For c As Integer = 0 To Math.Min(5, DST3.Tables(0).Columns.Count - 1)
+                        Dim vObj As Object = DST3.Tables(0).Rows(i).Item(c)
+                        FrmMp.grillaInsumosMp.Rows(j).Cells(c).Value = If(IsDBNull(vObj), String.Empty, vObj.ToString())
+                    Next
+                    j += 1
                 Next
             End If
             '###############################################################################################################
@@ -106,24 +114,22 @@ Public Class FrmBuscarCiclo
 
             If hrs_transcurridas <> 0 Then
                 With FrmMp
-                    .hrsCiclo.Text = hrs_transcurridas
+                    .hrsCiclo.Text = hrs_transcurridas.ToString()
                     .lblHrsCiclo.Visible = True
                     .hrsCiclo.Visible = True
                 End With
             Else
                 With FrmMp
                     .lblHrsCiclo.Visible = False
-                    .hrsCiclo.Text = 0
+                    .hrsCiclo.Text = "0"
                     .hrsCiclo.Visible = False
                 End With
             End If
-            With FrmMp
-                .btnGuardarMp.Text = "    Actualizar"
-            End With
+            FrmMp.btnGuardarMp.Text = "    Actualizar"
+            FrmMp.btnGuardarMp.Enabled = Usuario.PermisoGuardarMp
             Me.Close()
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Buscar Ciclo MP (Grilla Buscar Ciclo)", True, Me)
         End Try
-        
     End Sub
 End Class

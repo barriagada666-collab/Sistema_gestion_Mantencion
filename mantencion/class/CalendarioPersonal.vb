@@ -1,46 +1,45 @@
-Imports System.Data.SqlClient
 Public Class CalendarioPersonal
     Public Sub agregarPersonalCalendario(ByVal personal As String, ByVal fecha_desde_turno As DateTime, ByVal fecha_hasta_turno As DateTime, ByVal turno As String)
+        If fecha_desde_turno.Date > fecha_hasta_turno.Date Then Exit Sub
         Dim fecha As DateTime = fecha_desde_turno.Date
-        Dim dias As Integer = 0
-        Dim cont_celda As Integer = 0
+        Dim dias As Integer = CInt(DateDiff(DateInterval.Day, fecha_desde_turno.Date, fecha_hasta_turno.Date)) + 1
+        If dias <= 0 Then Exit Sub
 
         With FrmCalendarioTurno
-            .grillaPersonalTurno.Rows.Add()
+            If .grillaPersonalTurno.Columns.Count < 4 OrElse .grillaCalendarioTurno.ColumnCount = 0 Then Exit Sub
 
-            .grillaPersonalTurno.Rows(.grillaPersonalTurno.RowCount - 1).Cells(0).Value = personal
-            .grillaPersonalTurno.Rows(.grillaPersonalTurno.RowCount - 1).Cells(1).Value = fecha_desde_turno.ToString("dd-MM-yyyy")
-            .grillaPersonalTurno.Rows(.grillaPersonalTurno.RowCount - 1).Cells(2).Value = fecha_hasta_turno.ToString("dd-MM-yyyy")
-            .grillaPersonalTurno.Rows(.grillaPersonalTurno.RowCount - 1).Cells(3).Value = turno
+            Dim idxPers As Integer = .grillaPersonalTurno.Rows.Add()
+            .grillaPersonalTurno.Rows(idxPers).Cells(0).Value = personal
+            .grillaPersonalTurno.Rows(idxPers).Cells(1).Value = fecha_desde_turno.ToString("dd-MM-yyyy")
+            .grillaPersonalTurno.Rows(idxPers).Cells(2).Value = fecha_hasta_turno.ToString("dd-MM-yyyy")
+            .grillaPersonalTurno.Rows(idxPers).Cells(3).Value = turno
 
-            dias = DateDiff(DateInterval.Day, fecha_desde_turno.Date, fecha_hasta_turno.Date) + 1
-            .grillaCalendarioTurno.Rows.Add()
+            Dim idxCal As Integer = .grillaCalendarioTurno.Rows.Add()
+            Dim cont_celda As Integer = 0
 
-            With FrmCalendarioTurno.grillaCalendarioTurno
-                For i = 0 To .ColumnCount - 1
+            With .grillaCalendarioTurno
+                For i As Integer = 0 To .ColumnCount - 1
                     If fecha.ToString("yyyyMMdd") = .Columns(i).Name Then
                         If turno = "Noche" Then
-                            .Rows(.RowCount - 1).Cells(i).Style.BackColor = Utilitarios.ColorTurnoNocheFondo
-                            .Rows(.RowCount - 1).Cells(i).Style.ForeColor = Utilitarios.ColorTurnoNocheTexto
-                            .Rows(.RowCount - 1).Cells(i).Value = "N"
+                            .Rows(idxCal).Cells(i).Style.BackColor = Utilitarios.ColorTurnoNocheFondo
+                            .Rows(idxCal).Cells(i).Style.ForeColor = Utilitarios.ColorTurnoNocheTexto
+                            .Rows(idxCal).Cells(i).Value = "N"
                         ElseIf turno = "Mañana" Then
-                            .Rows(.RowCount - 1).Cells(i).Style.BackColor = Utilitarios.ColorTurnoMananaFondo
-                            .Rows(.RowCount - 1).Cells(i).Style.ForeColor = Utilitarios.ColorTurnoMananaTexto
-                            .Rows(.RowCount - 1).Cells(i).Value = "M"
+                            .Rows(idxCal).Cells(i).Style.BackColor = Utilitarios.ColorTurnoMananaFondo
+                            .Rows(idxCal).Cells(i).Style.ForeColor = Utilitarios.ColorTurnoMananaTexto
+                            .Rows(idxCal).Cells(i).Value = "M"
                         ElseIf turno = "Tarde" Then
-                            .Rows(.RowCount - 1).Cells(i).Style.BackColor = Utilitarios.ColorTurnoTardeFondo
-                            .Rows(.RowCount - 1).Cells(i).Style.ForeColor = Utilitarios.ColorTurnoTardeTexto
-                            .Rows(.RowCount - 1).Cells(i).Value = "T"
+                            .Rows(idxCal).Cells(i).Style.BackColor = Utilitarios.ColorTurnoTardeFondo
+                            .Rows(idxCal).Cells(i).Style.ForeColor = Utilitarios.ColorTurnoTardeTexto
+                            .Rows(idxCal).Cells(i).Value = "T"
                         End If
 
-                        cont_celda = cont_celda + 1
-                        If cont_celda < dias Then
-                            fecha = DateAdd(DateInterval.Day, 1, fecha)
-                        End If
+                        cont_celda += 1
+                        If cont_celda >= dias Then Exit For
+                        fecha = fecha.AddDays(1)
                     End If
                 Next
             End With
-
         End With
     End Sub
 

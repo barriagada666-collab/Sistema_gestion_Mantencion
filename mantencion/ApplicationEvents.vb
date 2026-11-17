@@ -25,9 +25,13 @@ Namespace My
         End Sub
 
         Private Sub OnUiThreadException(ByVal sender As Object, ByVal e As ThreadExceptionEventArgs)
-            If e IsNot Nothing AndAlso e.Exception IsNot Nothing Then
-                RegistroErrores.MostrarYRegistrar(e.Exception, "Interfaz de Usuario (Hilo UI)")
-            End If
+            Try
+                If e IsNot Nothing AndAlso e.Exception IsNot Nothing Then
+                    RegistroErrores.MostrarYRegistrar(e.Exception, "Interfaz de Usuario (Hilo UI)")
+                End If
+            Catch exLog As Exception
+                RegistroErrores.RegistrarError(exLog, "Error al reportar excepción de Hilo UI")
+            End Try
         End Sub
 
         Private Sub OnDomainUnhandledException(ByVal sender As Object, ByVal e As System.UnhandledExceptionEventArgs)
@@ -41,9 +45,12 @@ Namespace My
             Try
                 If e IsNot Nothing AndAlso e.Exception IsNot Nothing Then
                     RegistroErrores.MostrarYRegistrar(e.Exception, "Aplicación General")
-                    e.ExitApplication = False
+                    Dim ex As Exception = e.Exception
+                    Dim esFatal As Boolean = TypeOf ex Is OutOfMemoryException OrElse TypeOf ex Is StackOverflowException
+                    e.ExitApplication = esFatal
                 End If
-            Catch
+            Catch exLog As Exception
+                RegistroErrores.RegistrarError(exLog, "Error en manejador global de excepciones")
             End Try
         End Sub
 

@@ -14,6 +14,7 @@ Public NotInheritable Class RegistroErrores
     Private Shared ReadOnly SyncLockObj As New Object()
     Private Shared _ultimoHashError As String = String.Empty
     Private Shared _ultimaFechaDialogo As DateTime = DateTime.MinValue
+    Private Shared _ultimaDepuracionLogs As DateTime = DateTime.MinValue
 
     Private Sub New()
     End Sub
@@ -124,7 +125,10 @@ Public NotInheritable Class RegistroErrores
             Dim textoLog As String = sb.ToString()
             SyncLock SyncLockObj
                 File.AppendAllText(rutaLog, textoLog, Encoding.UTF8)
-                DepurarLogsAntiguos(ObtenerCarpetaLogs())
+                If (DateTime.UtcNow - _ultimaDepuracionLogs).TotalHours >= 6.0R Then
+                    _ultimaDepuracionLogs = DateTime.UtcNow
+                    DepurarLogsAntiguos(ObtenerCarpetaLogs())
+                End If
 
                 ' Copia best-effort en la carpeta de la aplicación si tiene permisos de escritura
                 Try
@@ -269,13 +273,41 @@ Public NotInheritable Class RegistroErrores
 
         ' Evitar ráfagas idénticas en menos de 1.5 segundos
         Dim firma As String = contexto & "|" & If(ex IsNot Nothing, ex.Message, "")
-        If String.Equals(firma, _ultimoHashError, StringComparison.Ordinal) AndAlso
-           (DateTime.UtcNow - _ultimaFechaDialogo).TotalSeconds < 1.5R Then
-            Return diag.EsErrorRedSql
-        End If
-        _ultimoHashError = firma
-        _ultimaFechaDialogo = DateTime.UtcNow
+        SyncLock SyncLockObj
+            If String.Equals(firma, _ultimoHashError, StringComparison.Ordinal) AndAlso
+               (DateTime.UtcNow - _ultimaFechaDialogo).TotalSeconds < 1.5R Then
+                Return diag.EsErrorRedSql
+            End If
+            _ultimoHashError = firma
+            _ultimaFechaDialogo = DateTime.UtcNow
+        End SyncLock
 
+        Dim invokerCtrl As Control = TryCast(owner, Control)
+        If invokerCtrl Is Nothing Then
+            Try
+                For Each openFrm As Form In Application.OpenForms
+                    If openFrm IsNot Nothing AndAlso Not openFrm.IsDisposed AndAlso openFrm.IsHandleCreated Then
+                        invokerCtrl = openFrm
+                        Exit For
+                    End If
+                Next
+            Catch
+            End Try
+        End If
+        If invokerCtrl IsNot Nothing AndAlso invokerCtrl.InvokeRequired Then
+            Try
+                Return CBool(invokerCtrl.Invoke(New Func(Of Boolean)(Function() MostrarDialogoEnUi(diag, owner, permitirAbrirConfigSql))))
+            Catch
+                Return diag.EsErrorRedSql
+            End Try
+        End If
+
+        Return MostrarDialogoEnUi(diag, owner, permitirAbrirConfigSql)
+    End Function
+
+    Private Shared Function MostrarDialogoEnUi(ByVal diag As (Titulo As String, Mensaje As String, EsErrorRedSql As Boolean, Icono As MessageBoxIcon),
+                                               ByVal owner As IWin32Window,
+                                               ByVal permitirAbrirConfigSql As Boolean) As Boolean
         If owner Is Nothing Then
             Try
                 Dim activeFrm As Form = Form.ActiveForm

@@ -30,8 +30,13 @@ Public Class Login
 
         If cod_resp = 1 Then
             usuario.CrgPermisosUsuarioLogin(nombreUsuario, clave, 0)
-            principal.Show()
+            If Not Usuario.UsuarioAutenticado Then
+                MessageBox.Show(Me, "No fue posible cargar los permisos del usuario. Revise la conexión SQL.", "Inicio de Sesión", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Password.Focus()
+                Exit Sub
+            End If
             principal.lblUsuario.Text = UCase(nombreUsuario)
+            principal.Show()
             Me.Close()
         ElseIf cod_resp = -1 Then
             ' El error técnico/red ya fue capturado, guardado en disco y explicado al usuario por RegistroErrores.

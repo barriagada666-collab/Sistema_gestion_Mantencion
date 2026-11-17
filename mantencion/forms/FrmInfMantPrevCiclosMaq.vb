@@ -17,6 +17,8 @@ Public Class FrmInfMantPrevCiclosMaq
             mant_preventiva.CrgCmbTipoMpGantt(cmbTipoMpGantt)
             Utilitarios.InicializarRangoMesActual(fecha_ini_inf_mp, fecha_fin_inf_mp)
             Utilitarios.AplicarTemaModerno(Me)
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Ciclos MP Varias Máquinas (Carga)", True, Me)
         Finally
             Arbol7.EndUpdate()
             Me.ResumeLayout(True)
@@ -48,10 +50,13 @@ Public Class FrmInfMantPrevCiclosMaq
             grillaCiclosMaquinas.SuspendLayout()
             Try
                 mant_prev.InfCiclosMaquinasMp(id_nodo_mp_select, fecha_ini_inf_mp.Value, fecha_fin_inf_mp.Value, cmbTipoMpGantt.Text, DS_CICLOS)
-                If DS_CICLOS.Tables.Count > 0 Then
+                If DS_CICLOS.Tables.Count > 0 AndAlso DS_CICLOS.Tables(0).Rows.Count > 0 Then
                     grillaCiclosMaquinas.DataSource = DS_CICLOS.Tables(0)
                     formato_grid.grillasMp(grillaCiclosMaquinas)
                     Utilitarios.AjustarColumnasGrilla(grillaCiclosMaquinas)
+                Else
+                    grillaCiclosMaquinas.DataSource = Nothing
+                    MsgBox("No se encontraron ciclos para el período seleccionado.", MsgBoxStyle.Information, "Validación")
                 End If
             Catch ex As Exception
                 RegistroErrores.MostrarYRegistrar(ex, "Informe Ciclos MP Varias Máquinas (Buscar Ciclos)", True, Me)

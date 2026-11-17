@@ -316,11 +316,20 @@ Public Class FrmConfiguracionServidor
                 numTimeout.Value = 15
             End If
         Catch
-            txtServidor.Text = "SrvMagicInfo"
-            txtCatalogo.Text = "mantencion"
-            txtUsuario.Text = "mantencion"
-            txtPassword.Text = "cambiaso"
-            numTimeout.Value = 15
+            Try
+                Dim defBuilder As New SqlConnectionStringBuilder(Conexion.CadenaPredeterminadaOriginal)
+                txtServidor.Text = defBuilder.DataSource
+                txtCatalogo.Text = defBuilder.InitialCatalog
+                txtUsuario.Text = defBuilder.UserID
+                txtPassword.Text = defBuilder.Password
+                numTimeout.Value = If(defBuilder.ConnectTimeout >= numTimeout.Minimum AndAlso defBuilder.ConnectTimeout <= numTimeout.Maximum, defBuilder.ConnectTimeout, 15)
+            Catch
+                txtServidor.Text = String.Empty
+                txtCatalogo.Text = String.Empty
+                txtUsuario.Text = String.Empty
+                txtPassword.Text = String.Empty
+                numTimeout.Value = 15
+            End Try
         End Try
 
         _srvInicial = txtServidor.Text.Trim()
@@ -330,12 +339,12 @@ Public Class FrmConfiguracionServidor
         _timeoutInicial = CInt(numTimeout.Value)
 
         ActualizarPreview(Nothing, EventArgs.Empty)
-        ActualizarBandaEstadoConexion(_srvInicial, _bdInicial, True)
+        Dim estCache = Conexion.ObtenerEstadoConexionActual(False)
+        ActualizarBandaEstadoConexion(estCache.Servidor, estCache.BaseDatos, estCache.Conectado)
 
         System.Threading.ThreadPool.QueueUserWorkItem(Sub()
                                                          Try
                                                              Dim est = Conexion.ObtenerEstadoConexionActual(True)
-                                                             If Me.IsDisposed OrElse Not Me.IsHandleCreated Then Exit Sub
                                                              Me.BeginInvoke(New Action(Sub()
                                                                                            If Me.IsDisposed Then Exit Sub
                                                                                            ActualizarBandaEstadoConexion(est.Servidor, est.BaseDatos, est.Conectado)
@@ -376,35 +385,44 @@ Public Class FrmConfiguracionServidor
         lblEstado.Text = " Probando conexión con el servidor SQL..."
         lblEstado.BackColor = Color.FromArgb(254, 243, 199)
         lblEstado.ForeColor = Color.FromArgb(146, 64, 14)
+        btnProbar.Enabled = False
         Me.Cursor = Cursors.WaitCursor
-        Application.DoEvents()
+        Try
+            Dim cadena As String = ConstruirCadena()
+            Dim resultado = Conexion.ProbarConexion(cadena)
 
-        Dim cadena As String = ConstruirCadena()
-        Dim resultado = Conexion.ProbarConexion(cadena)
-
-        Me.Cursor = Cursors.Default
-        If resultado.Exito Then
-            lblEstado.Text = " [OK] " & resultado.Mensaje
-            lblEstado.BackColor = Color.FromArgb(220, 252, 231)
-            lblEstado.ForeColor = Color.FromArgb(22, 101, 52)
-            ActualizarBandaEstadoConexion(txtServidor.Text.Trim(), txtCatalogo.Text.Trim(), True)
-        Else
-            lblEstado.Text = " [ERROR] " & resultado.Mensaje
+            If resultado.Exito Then
+                lblEstado.Text = " [OK] " & resultado.Mensaje
+                lblEstado.BackColor = Color.FromArgb(220, 252, 231)
+                lblEstado.ForeColor = Color.FromArgb(22, 101, 52)
+                ActualizarBandaEstadoConexion(txtServidor.Text.Trim(), txtCatalogo.Text.Trim(), True)
+            Else
+                lblEstado.Text = " [ERROR] " & resultado.Mensaje
+                lblEstado.BackColor = Color.FromArgb(254, 226, 226)
+                lblEstado.ForeColor = Color.FromArgb(153, 27, 27)
+                ActualizarBandaEstadoConexion(txtServidor.Text.Trim(), txtCatalogo.Text.Trim(), False)
+            End If
+        Catch ex As Exception
+            lblEstado.Text = " [ERROR] Parámetros de conexión inválidos: " & ex.Message
             lblEstado.BackColor = Color.FromArgb(254, 226, 226)
             lblEstado.ForeColor = Color.FromArgb(153, 27, 27)
             ActualizarBandaEstadoConexion(txtServidor.Text.Trim(), txtCatalogo.Text.Trim(), False)
-        End If
+        Finally
+            btnProbar.Enabled = True
+            Me.Cursor = Cursors.Default
+        End Try
     End Sub
 
     Private Sub btnRestaurar_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnRestaurar.Click
         Dim resp = MessageBox.Show("¿Desea restablecer los valores de conexión originales de fábrica (SrvMagicInfo)?",
                                    "Restaurar Conexión Original", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
         If resp = DialogResult.Yes Then
-            txtServidor.Text = "SrvMagicInfo"
-            txtCatalogo.Text = "mantencion"
-            txtUsuario.Text = "mantencion"
-            txtPassword.Text = "cambiaso"
-            numTimeout.Value = 15
+            Dim defBuilder As New SqlConnectionStringBuilder(Conexion.CadenaPredeterminadaOriginal)
+            txtServidor.Text = defBuilder.DataSource
+            txtCatalogo.Text = defBuilder.InitialCatalog
+            txtUsuario.Text = defBuilder.UserID
+            txtPassword.Text = defBuilder.Password
+            numTimeout.Value = If(defBuilder.ConnectTimeout >= numTimeout.Minimum AndAlso defBuilder.ConnectTimeout <= numTimeout.Maximum, defBuilder.ConnectTimeout, 15)
             ActualizarPreview(Nothing, EventArgs.Empty)
             lblEstado.Text = " Se cargaron los valores de fábrica. Presione 'Guardar y Aplicar' para confirmar."
             lblEstado.BackColor = Color.FromArgb(224, 244, 246)

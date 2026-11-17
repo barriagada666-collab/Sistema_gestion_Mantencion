@@ -339,9 +339,15 @@ Public Class MantPreventiva
 
     Public Sub CrgCmbEstadoCiclo(ByRef combo As ComboBox)
         If combo Is Nothing Then Exit Sub
-        combo.Items.Add("Terminado")
-        combo.Items.Add("Pendiente")
-        If combo.Items.Count > 0 Then combo.Text = combo.Items(0).ToString()
+        combo.BeginUpdate()
+        Try
+            combo.Items.Clear()
+            combo.Items.Add("Terminado")
+            combo.Items.Add("Pendiente")
+            If combo.Items.Count > 0 Then combo.Text = combo.Items(0).ToString()
+        Finally
+            combo.EndUpdate()
+        End Try
     End Sub
 
     Public Sub CrgCmbEstadoMp(ByRef combo As ComboBox)
@@ -723,25 +729,16 @@ Public Class MantPreventiva
 
             .grillaInsumosMp.Rows.Clear()
 
-            If .btnGuardarMp.Enabled = False Then
-                .btnGuardarMp.Enabled = True
-            End If
-
-            If .btnGuardarComoNuevoCiclo.Enabled = False Then
-                .btnGuardarComoNuevoCiclo.Enabled = True
-            End If
-
-            If .btnNuevoCiclo.Enabled = False Then
-                .btnNuevoCiclo.Enabled = True
-            End If
-
-            If .btnIngMp.Enabled = False Then
-                .btnIngMp.Enabled = True
-            End If
+            .btnGuardarMp.Enabled = Usuario.PermisoGuardarMp
+            .btnGuardarComoNuevoCiclo.Enabled = Usuario.PermisoIngMp OrElse Usuario.PermisoGuardarMp
+            .btnNuevoCiclo.Enabled = Usuario.PermisoIngMp OrElse Usuario.PermisoGuardarMp
+            .btnIngMp.Enabled = Usuario.PermisoIngMp
+            .btnEliminarCiclo.Enabled = Usuario.PermisoEliminarCicloMp
+            .btnEliminarMp.Enabled = Usuario.PermisoEliminarMp
             .form_limpio = True
             .lblHrsCiclo.Visible = False
             .hrsCiclo.Visible = False
-            .hrsCiclo.Text = 0
+            .hrsCiclo.Text = "0"
             .btnGuardarMp.Text = "   Guardar"
             .btn_plan_ciclos.Enabled = False
             .del_index_personal.Clear()
@@ -889,82 +886,98 @@ Public Class MantPreventiva
         Dim valida As Boolean = True
         Dim fecha_hr_ini As DateTime
         Dim fecha_hr_fin As DateTime
+        resp = String.Empty
 
         fecha_hr_ini = Form.FechaIniCiclo.Value.Date.Add(New TimeSpan(Form.HrInicioCiclo.Value.Hour, Form.HrInicioCiclo.Value.Minute, 0))
         fecha_hr_fin = Form.fechaFinCicloMp.Value.Date.Add(New TimeSpan(Form.HrFinCiclo.Value.Hour, Form.HrFinCiclo.Value.Minute, 0))
 
         With Form
-            If .txtIdMant.Text = "" Then
+            If String.IsNullOrWhiteSpace(.id_nodo_select) Then
                 valida = False
-                resp = "El campo N°Mant. no puede estar vacío" & Chr(13)
+                resp &= "Debe seleccionar una máquina o nodo en el árbol." & Chr(13)
             End If
-            If .txtFrecuenciaMp.Text = "" Then
+            If String.IsNullOrWhiteSpace(.txtIdMant.Text) Then
                 valida = False
-                resp = resp & "Ingrese la Frecuencia en horas" & Chr(13)
+                resp &= "El campo N°Mant. no puede estar vacío" & Chr(13)
             End If
-
-            If .txtTiempoAviso.Text = "" Then
+            If String.IsNullOrWhiteSpace(.txtFrecuenciaMp.Text) Then
                 valida = False
-                resp = resp & "Ingrese el tiempo de aviso en horas" & Chr(13)
-            End If
-
-            If .cmbEstadoMp.Text = "" Then
-                valida = False
-                resp = resp & "Ingrese el estado de la mantención" & Chr(13)
+                resp &= "Ingrese la Frecuencia en horas" & Chr(13)
             End If
 
-            If .cmbTipoMp.Text = "" Then
+            If String.IsNullOrWhiteSpace(.txtTiempoAviso.Text) Then
                 valida = False
-                resp = resp & "Ingrese el tipo de mantención" & Chr(13)
+                resp &= "Ingrese el tiempo de aviso en horas" & Chr(13)
             End If
 
-            If .txtIdCiclo.Text = "" Then
+            If String.IsNullOrWhiteSpace(.cmbEstadoMp.Text) Then
                 valida = False
-                resp = resp & "Debe crear un ciclo antes de ingresar la mantencion" & Chr(13)
+                resp &= "Ingrese el estado de la mantención" & Chr(13)
+            End If
+
+            If String.IsNullOrWhiteSpace(.cmbTipoMp.Text) Then
+                valida = False
+                resp &= "Ingrese el tipo de mantención" & Chr(13)
+            End If
+
+            If String.IsNullOrWhiteSpace(.txtIdCiclo.Text) Then
+                valida = False
+                resp &= "Debe crear un ciclo antes de ingresar la mantención" & Chr(13)
             End If
 
             If fecha_hr_ini > fecha_hr_fin Then
                 valida = False
-                resp = resp & "La Fecha y hora de inicio no puede ser mayor a Fecha y hora de fin de ciclo" & Chr(13)
+                resp &= "La Fecha y hora de inicio no puede ser mayor a Fecha y hora de fin de ciclo" & Chr(13)
             End If
 
-            If .txtDuracionCiclo.Text = "" Then
+            If String.IsNullOrWhiteSpace(.txtDuracionCiclo.Text) Then
                 valida = False
-                resp = resp & "debe calcular la duracion del ciclo" & Chr(13)
+                resp &= "Debe calcular la duración del ciclo" & Chr(13)
             End If
 
-            If FrmMp.grillaTareasCicloMp.Rows.Count > 0 Then
-                For i = 0 To FrmMp.grillaTareasCicloMp.RowCount - 1
-                    Dim tVal As String = If(FrmMp.grillaTareasCicloMp.Rows(i).Cells(3).Value Is Nothing, "", FrmMp.grillaTareasCicloMp.Rows(i).Cells(3).Value.ToString())
-                    Dim obsVal As String = If(FrmMp.grillaTareasCicloMp.Rows(i).Cells(4).Value Is Nothing, "", FrmMp.grillaTareasCicloMp.Rows(i).Cells(4).Value.ToString())
-                    Dim chkVal As Boolean = CBool(FrmMp.grillaTareasCicloMp.Rows(i).Cells(0).Value)
-                    If tVal = "" AndAlso chkVal = True Then
+            If .grillaTareasCicloMp.Rows.Count > 0 Then
+                For i = 0 To .grillaTareasCicloMp.RowCount - 1
+                    Dim row As DataGridViewRow = .grillaTareasCicloMp.Rows(i)
+                    If row.IsNewRow Then Continue For
+                    Dim chkVal As Boolean = False
+                    Dim rawChk As Object = row.Cells(0).Value
+                    If rawChk IsNot Nothing AndAlso Not IsDBNull(rawChk) Then
+                        chkVal = True.Equals(rawChk) OrElse String.Equals(rawChk.ToString(), "True", StringComparison.OrdinalIgnoreCase)
+                    End If
+                    Dim tVal As String = If(row.Cells.Count > 5 AndAlso row.Cells(5).Value IsNot Nothing AndAlso Not IsDBNull(row.Cells(5).Value), row.Cells(5).Value.ToString().Trim(), String.Empty)
+                    Dim obsVal As String = If(row.Cells.Count > 6 AndAlso row.Cells(6).Value IsNot Nothing AndAlso Not IsDBNull(row.Cells(6).Value), row.Cells(6).Value.ToString().Trim(), String.Empty)
+                    Dim tiempoNum As Double = 0
+                    If chkVal AndAlso (String.IsNullOrEmpty(tVal) OrElse Not Double.TryParse(tVal, tiempoNum) OrElse tiempoNum < 0) Then
                         valida = False
-                        resp = resp & "Debe ingresar el tiempo de la tarea realizada: Fila N°" & i + 1 & Chr(13)
-                    ElseIf chkVal = False AndAlso obsVal = "" Then
+                        resp &= "Debe ingresar un tiempo válido para la tarea realizada: Fila N°" & (i + 1) & Chr(13)
+                    ElseIf Not chkVal AndAlso String.IsNullOrEmpty(obsVal) Then
                         valida = False
-                        resp = resp & "Para las tareas pendientes debe ingresar una observacion" & Chr(13)
+                        resp &= "Para las tareas pendientes debe ingresar una observación (Fila N°" & (i + 1) & ")" & Chr(13)
                     End If
                 Next
-            ElseIf FrmMp.grillaTareasCicloMp.RowCount = 0 Then
+            Else
                 valida = False
-                resp = resp & "Debe ingresar al menos una tarea para el ciclo"
+                resp &= "Debe ingresar al menos una tarea para el ciclo"
             End If
 
-            If FrmMp.grillaPersonalMp.Rows.Count > 0 Then
-                For i = 0 To FrmMp.grillaPersonalMp.RowCount - 1
-                    If FrmMp.grillaPersonalMp.Rows(i).Cells(0).Value Is Nothing OrElse FrmMp.grillaPersonalMp.Rows(i).Cells(0).Value.ToString = "" Then
+            If .grillaPersonalMp.Rows.Count > 0 Then
+                For i = 0 To .grillaPersonalMp.RowCount - 1
+                    Dim row As DataGridViewRow = .grillaPersonalMp.Rows(i)
+                    If row.IsNewRow Then Continue For
+                    If row.Cells(0).Value Is Nothing OrElse IsDBNull(row.Cells(0).Value) OrElse String.IsNullOrWhiteSpace(row.Cells(0).Value.ToString()) Then
                         valida = False
-                        resp = resp & "Debe ingresar agregar una persona: Fila N°" & i + 1 & Chr(13)
+                        resp &= "Debe ingresar agregar una persona: Fila N°" & (i + 1) & Chr(13)
                     End If
                 Next
             End If
 
-            If FrmMp.grillaInsumosMp.Rows.Count > 0 Then
-                For i = 0 To FrmMp.grillaInsumosMp.RowCount - 1
-                    If FrmMp.grillaInsumosMp.Rows(i).Cells(3).Value Is Nothing OrElse FrmMp.grillaInsumosMp.Rows(i).Cells(3).Value.ToString = "" Then
+            If .grillaInsumosMp.Rows.Count > 0 Then
+                For i = 0 To .grillaInsumosMp.RowCount - 1
+                    Dim row As DataGridViewRow = .grillaInsumosMp.Rows(i)
+                    If row.IsNewRow Then Continue For
+                    If row.Cells(3).Value Is Nothing OrElse IsDBNull(row.Cells(3).Value) OrElse String.IsNullOrWhiteSpace(row.Cells(3).Value.ToString()) Then
                         valida = False
-                        resp = resp & "Debe ingresar la cantidad de insumos: Fila N°" & i + 1 & Chr(13)
+                        resp &= "Debe ingresar la cantidad de insumos: Fila N°" & (i + 1) & Chr(13)
                     End If
                 Next
             End If
@@ -1187,6 +1200,10 @@ Public Class MantPreventiva
     End Sub
 
     Public Sub exportarInfMpExcel(ByRef grilla_mp As DataGridView, ByRef grilla_ciclo As DataGridView, ByRef grilla_tareas_r As DataGridView, ByVal grilla_personal As DataGridView, ByVal grilla_tareas_pend As DataGridView, ByVal grilla_insumos As DataGridView, ByVal item As String)
+        If grilla_mp Is Nothing OrElse grilla_mp.CurrentRow Is Nothing OrElse grilla_ciclo Is Nothing OrElse grilla_ciclo.CurrentRow Is Nothing Then
+            MsgBox("Debe seleccionar una mantención preventiva y un ciclo antes de exportar.", MsgBoxStyle.Exclamation, "Validación")
+            Return
+        End If
         Dim excelApp As Excel.Application = Nothing
         Dim workbook As Excel.Workbook = Nothing
         Dim worksheet As Excel.Worksheet
@@ -1494,7 +1511,7 @@ Public Class MantPreventiva
         Dim cont_fila As Integer = 0
         Dim cont_col As Integer = 0
 
-        If grilla_ciclos_mp.RowCount = 0 Then Return
+        If grilla_info_mp Is Nothing OrElse grilla_info_mp.CurrentRow Is Nothing OrElse grilla_ciclos_mp Is Nothing OrElse grilla_ciclos_mp.RowCount = 0 OrElse grilla_grafico Is Nothing Then Return
 
         Try
             excelApp = New Excel.Application
@@ -1556,7 +1573,17 @@ Public Class MantPreventiva
             '---------------------------------------------------------------------------------------
 
             fecha_inicio = CDate(grilla_ciclos_mp.Rows(0).Cells(colIniIdx).Value).Date
-            fecha_fin = CDate(grilla_ciclos_mp.Rows(grilla_ciclos_mp.RowCount - 1).Cells(colFinIdx).Value).Date
+            fecha_fin = CDate(grilla_ciclos_mp.Rows(0).Cells(colFinIdx).Value).Date
+            For i = 1 To grilla_ciclos_mp.RowCount - 1
+                If IsDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value) Then
+                    Dim fI As DateTime = CDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
+                    If fI < fecha_inicio Then fecha_inicio = fI
+                End If
+                If IsDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value) Then
+                    Dim fF As DateTime = CDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date
+                    If fF > fecha_fin Then fecha_fin = fF
+                End If
+            Next
             fecha = fecha_inicio
 
             Dim col_excel As Integer = 5
@@ -1571,8 +1598,12 @@ Public Class MantPreventiva
             cont_fila = 11
 
             For i = 0 To grilla_ciclos_mp.RowCount - 1
+                If Not IsDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value) OrElse Not IsDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value) Then
+                    cont_fila = cont_fila + 1
+                    Continue For
+                End If
                 fecha_ini = CDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
-                num_mant = DateDiff(DateInterval.Day, fecha_ini, CDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date) + 1
+                num_mant = Math.Max(1, CInt(DateDiff(DateInterval.Day, fecha_ini, CDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date) + 1))
 
                 For j = 0 To grilla_grafico.Columns.Count - 1
                     If fecha_ini.ToString("yyyyMMdd") = grilla_grafico.Columns(j).Name OrElse fecha_ini.ToString("dd-MM-yy") = grilla_grafico.Columns(j).Name Then
@@ -1603,6 +1634,10 @@ Public Class MantPreventiva
     End Sub
 
     Public Sub exportarInfMpPDF(ByRef grilla_mp As DataGridView, ByRef grilla_ciclo As DataGridView, ByRef grilla_tareas_r As DataGridView, ByVal grilla_personal As DataGridView, ByVal grilla_tareas_pend As DataGridView, ByVal grilla_insumos As DataGridView, ByVal item As String)
+        If grilla_mp Is Nothing OrElse grilla_mp.CurrentRow Is Nothing OrElse grilla_ciclo Is Nothing OrElse grilla_ciclo.CurrentRow Is Nothing Then
+            MsgBox("Debe seleccionar una mantención preventiva y un ciclo antes de exportar a PDF.", MsgBoxStyle.Exclamation, "Validación")
+            Exit Sub
+        End If
         Dim rutaPdf As String = Utilitarios.SolicitarRutaGuardadoPdf("Informe_MP_" & item)
         If String.IsNullOrEmpty(rutaPdf) Then Exit Sub
 
@@ -1931,97 +1966,111 @@ Public Class MantPreventiva
             fecha_hora_inicio = .FechaIniCiclo.Value.Date.Add(New TimeSpan(.HrInicioCiclo.Value.Hour, .HrInicioCiclo.Value.Minute, 0))
             fecha_hora_fin = .fechaFinCicloMp.Value.Date.Add(New TimeSpan(.HrFinCiclo.Value.Hour, .HrFinCiclo.Value.Minute, 0))
 
-            If .txtIdMant.Text = "" Then
-                msje_error = "Debe buscar una mantencion" & Chr(13)
+            If String.IsNullOrWhiteSpace(.txtIdMant.Text) Then
+                msje_error = "Debe buscar una mantención" & Chr(13)
             End If
 
-            If .txtIdCiclo.Text = "" Then
-                msje_error = msje_error & "Debe buscar un ciclo" & Chr(13)
+            If String.IsNullOrWhiteSpace(.txtIdCiclo.Text) Then
+                msje_error &= "Debe buscar un ciclo" & Chr(13)
             End If
 
-            If .txtFrecuenciaMp.Text = "" Then
-                msje_error = msje_error & "La frecuencia de la MP es incorrecta" & Chr(13)
+            If String.IsNullOrWhiteSpace(.txtFrecuenciaMp.Text) Then
+                msje_error &= "La frecuencia de la MP es incorrecta" & Chr(13)
             End If
 
-            If .txtTiempoAviso.Text = "" Then
-                msje_error = msje_error & "El tiempo de aviso es incorrecto" & Chr(13)
+            If String.IsNullOrWhiteSpace(.txtTiempoAviso.Text) Then
+                msje_error &= "El tiempo de aviso es incorrecto" & Chr(13)
             End If
 
             If fecha_hora_inicio > fecha_hora_fin Then
-                msje_error = msje_error & "La fecha y hora de ciclo es incorrecta" & Chr(13)
+                msje_error &= "La fecha y hora de ciclo es incorrecta" & Chr(13)
             End If
 
             If .grillaTareasCicloMp.RowCount = 0 Then
-                msje_error = msje_error & "Debe agregar al menos una tarea para el ciclo" & Chr(13)
-            End If
-
-            If .grillaTareasCicloMp.RowCount > 0 Then
-                Dim tiempo_tarea As String
-
+                msje_error &= "Debe agregar al menos una tarea para el ciclo" & Chr(13)
+            Else
                 For i = 0 To .grillaTareasCicloMp.RowCount - 1
-                    tiempo_tarea = If(.grillaTareasCicloMp.Rows(i).Cells(3).Value Is Nothing, "", .grillaTareasCicloMp.Rows(i).Cells(3).Value.ToString())
-                    If tiempo_tarea = "" Then
-                        msje_error = msje_error & "el tiempo de la tarea :" & .grillaTareasCicloMp.Rows(i).Cells(1).Value & " es incorrecto" & Chr(13)
+                    Dim row As DataGridViewRow = .grillaTareasCicloMp.Rows(i)
+                    If row.IsNewRow Then Continue For
+                    Dim descTarea As String = If(row.Cells.Count > 4 AndAlso row.Cells(4).Value IsNot Nothing AndAlso Not IsDBNull(row.Cells(4).Value), row.Cells(4).Value.ToString(), "Fila " & (i + 1))
+                    Dim tiempo_tarea As String = If(row.Cells.Count > 5 AndAlso row.Cells(5).Value IsNot Nothing AndAlso Not IsDBNull(row.Cells(5).Value), row.Cells(5).Value.ToString().Trim(), String.Empty)
+                    Dim tiempoNum As Double = 0
+                    If String.IsNullOrEmpty(tiempo_tarea) OrElse Not Double.TryParse(tiempo_tarea, tiempoNum) OrElse tiempoNum < 0 Then
+                        msje_error &= "El tiempo de la tarea: " & descTarea & " es incorrecto" & Chr(13)
                     End If
                 Next
-
             End If
         End With
 
         Return msje_error
     End Function
 
-    Public Sub UpdIdNodoTareasMp(ByVal id_mp As String, ByVal id_ciclo As String, ByVal id_tarea As String, ByVal id_nodo As String, ByVal cod_resp As Integer, ByRef resp As String)
-        Dim cnx As New SqlConnection
+    Public Sub UpdIdNodoTareasMp(ByVal id_mp As String, ByVal id_ciclo As String, ByVal id_tarea As String, ByVal id_nodo As String, ByRef cod_resp As Integer, ByRef resp As String)
         Dim conexion As New Conexion
+        cod_resp = -1
+        resp = String.Empty
+        Dim idMpInt, idCicloInt, idTareaInt, idNodoInt As Integer
+        If Not Integer.TryParse(If(id_mp, String.Empty).Trim(), idMpInt) OrElse
+           Not Integer.TryParse(If(id_ciclo, String.Empty).Trim(), idCicloInt) OrElse
+           Not Integer.TryParse(If(id_tarea, String.Empty).Trim(), idTareaInt) OrElse
+           Not Integer.TryParse(If(id_nodo, String.Empty).Trim(), idNodoInt) Then
+            resp = "Identificadores inválidos para actualizar tareas de MP."
+            Return
+        End If
 
         Try
-            conexion.Conectar(cnx)
-            Using com As New SqlCommand("UPD_ID_NODO_TAREAS_CICLO_MP", cnx)
-                com.CommandType = CommandType.StoredProcedure
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Using com As New SqlCommand("UPD_ID_NODO_TAREAS_CICLO_MP", cnx)
+                    com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
-                com.Parameters.AddWithValue("@id_tarea", CInt(id_tarea))
-                com.Parameters.AddWithValue("@id_nodo", CInt(id_nodo))
+                    com.Parameters.AddWithValue("@id_mp", idMpInt)
+                    com.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                    com.Parameters.AddWithValue("@id_tarea", idTareaInt)
+                    com.Parameters.AddWithValue("@id_nodo", idNodoInt)
 
-                Using DR As SqlDataReader = com.ExecuteReader()
-                    If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
-                    End If
+                    Using DR As SqlDataReader = com.ExecuteReader()
+                        If DR.Read() Then
+                            cod_resp = If(IsDBNull(DR(0)), 0, Convert.ToInt32(DR(0)))
+                            resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
+                        End If
+                    End Using
                 End Using
             End Using
         Catch ex As Exception
+            cod_resp = -1
+            resp = ex.Message
             RegistroErrores.MostrarYRegistrar(ex, "Actualizar ID Nodo Tareas MP")
-        Finally
-            conexion.Desconectar(cnx)
         End Try
     End Sub
 
     Public Function hrsTranscurridasCicloMp(ByVal id_mp As String, ByVal id_ciclo As String) As Double
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
         Dim hrs_trans As Double = 0
+        Dim idMpInt, idCicloInt As Integer
+        If Not Integer.TryParse(If(id_mp, String.Empty).Trim(), idMpInt) OrElse
+           Not Integer.TryParse(If(id_ciclo, String.Empty).Trim(), idCicloInt) Then
+            Return 0
+        End If
 
         Try
-            conexion.Conectar(cnx)
-            Using com As New SqlCommand("CRG_HRS_TRANS_CICLO_MP", cnx)
-                com.CommandType = CommandType.StoredProcedure
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Using com As New SqlCommand("CRG_HRS_TRANS_CICLO_MP", cnx)
+                    com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
+                    com.Parameters.AddWithValue("@id_mp", idMpInt)
+                    com.Parameters.AddWithValue("@id_ciclo", idCicloInt)
 
-                Using DR As SqlDataReader = com.ExecuteReader()
-                    If DR.Read() Then
-                        hrs_trans = CDbl(DR(0).ToString)
-                    End If
+                    Using DR As SqlDataReader = com.ExecuteReader()
+                        If DR.Read() AndAlso Not IsDBNull(DR(0)) Then
+                            Double.TryParse(DR(0).ToString(), hrs_trans)
+                        End If
+                    End Using
                 End Using
             End Using
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Horas Transcurridas Ciclo MP")
-        Finally
-            conexion.Desconectar(cnx)
         End Try
         Return hrs_trans
     End Function

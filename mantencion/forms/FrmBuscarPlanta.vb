@@ -21,14 +21,13 @@ Public Class FrmBuscarPlanta
     End Sub
 
     Private Sub grillaPlanta_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaPlanta.CellContentDoubleClick
-        If e.RowIndex < 0 Then Exit Sub
+        If e.RowIndex < 0 OrElse grillaPlanta.Rows(e.RowIndex).IsNewRow OrElse grillaPlanta.ColumnCount < 2 Then Exit Sub
         Try
-            FrmPlantas.txtCodPlanta.Text = grillaPlanta.Rows(e.RowIndex).Cells(0).Value.ToString()
-            FrmPlantas.txtNomPlanta.Text = grillaPlanta.Rows(e.RowIndex).Cells(1).Value.ToString()
+            FrmPlantas.txtCodPlanta.Text = Convert.ToString(grillaPlanta.Rows(e.RowIndex).Cells(0).Value)
+            FrmPlantas.txtNomPlanta.Text = Convert.ToString(grillaPlanta.Rows(e.RowIndex).Cells(1).Value)
             Me.Close()
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Buscar Planta (Grilla Planta)", True, Me)
         End Try
-        
     End Sub
 End Class

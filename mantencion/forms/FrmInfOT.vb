@@ -70,12 +70,14 @@ Public Class FrmInfOT
     End Sub
 
     Private Sub AsignarPersonalGrilla(ByVal DST_PER As DataSet)
-        If DST_PER Is Nothing OrElse DST_PER.Tables.Count = 0 OrElse DST_PER.Tables(0).Rows.Count = 0 Then Return
+        If DST_PER Is Nothing OrElse DST_PER.Tables.Count = 0 OrElse DST_PER.Tables(0).Rows.Count = 0 OrElse DST_PER.Tables(0).Columns.Count < 3 Then Return
+        If grillaInfOt.Columns.Count < 15 Then Return
 
         Dim personalPorOt As New Dictionary(Of String, List(Of String))(StringComparer.OrdinalIgnoreCase)
         For Each row As DataRow In DST_PER.Tables(0).Rows
-            Dim numOt As String = row.Item(0).ToString().Trim()
-            Dim nomPer As String = row.Item(2).ToString()
+            Dim numOt As String = If(IsDBNull(row.Item(0)), "", row.Item(0).ToString().Trim())
+            Dim nomPer As String = If(IsDBNull(row.Item(2)), "", row.Item(2).ToString())
+            If String.IsNullOrEmpty(numOt) OrElse String.IsNullOrEmpty(nomPer) Then Continue For
             Dim lista As List(Of String) = Nothing
             If Not personalPorOt.TryGetValue(numOt, lista) Then
                 lista = New List(Of String)(3)
@@ -87,13 +89,16 @@ Public Class FrmInfOT
         Next
 
         For i As Integer = 0 To grillaInfOt.RowCount - 1
+            If grillaInfOt.Rows(i).IsNewRow Then Continue For
             Dim valOt As Object = grillaInfOt.Rows(i).Cells(0).Value
-            If valOt IsNot Nothing Then
+            If valOt IsNot Nothing AndAlso Not IsDBNull(valOt) Then
                 Dim keyOt As String = valOt.ToString().Trim()
                 Dim lista As List(Of String) = Nothing
                 If personalPorOt.TryGetValue(keyOt, lista) Then
                     For col As Integer = 0 To lista.Count - 1
-                        grillaInfOt.Rows(i).Cells(col + 12).Value = lista(col)
+                        If col + 12 < grillaInfOt.Columns.Count Then
+                            grillaInfOt.Rows(i).Cells(col + 12).Value = lista(col)
+                        End If
                     Next
                 End If
             End If
@@ -255,14 +260,16 @@ Public Class FrmInfOT
         detencion = ""
         grillaInfOt.Columns.Clear()
 
-        If chkPendientes.Checked Then
-            estado_ot = "abierta"
-        ElseIf chkNulas.Checked Then
-            estado_ot = "nula"
-        End If
+        If opcFechasOt.Checked Then
+            If chkPendientes.Checked Then
+                estado_ot = "abierta"
+            ElseIf chkNulas.Checked Then
+                estado_ot = "nula"
+            End If
 
-        If chkConDetencion.Checked Then
-            detencion = "SI"
+            If chkConDetencion.Checked Then
+                detencion = "SI"
+            End If
         End If
 
         opcion = OT.opcion_inf_ot
@@ -423,9 +430,14 @@ Public Class FrmInfOT
         Me.Close()
     End Sub
 
-    Private Sub btnExcExcel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnExcExcel.Click
-        Dim OT As New OT
-        Dim planta As String = ""
+    Private Function ResolverNombrePlantasExportacion() As String
+        Dim plantasMarcadas As New List(Of String)()
+        If pl_2.Checked Then plantasMarcadas.Add(pl_2.Text)
+        If pl_3.Checked Then plantasMarcadas.Add(pl_3.Text)
+        If pl_4.Checked Then plantasMarcadas.Add(pl_4.Text)
+        If plantasMarcadas.Count > 0 Then
+            Return String.Join(" - ", plantasMarcadas.ToArray())
+        End If
 
         Dim nodos As List(Of TreeNode) = ObtenerNodosObjetivo()
         If nodos.Count > 0 Then
@@ -433,16 +445,14 @@ Public Class FrmInfOT
             For Each nd As TreeNode In nodos
                 nombres.Add(nd.Text.Trim())
             Next
-            planta = String.Join(" - ", nombres.ToArray())
+            Return String.Join(" - ", nombres.ToArray())
         End If
+        Return String.Empty
+    End Function
 
-        If pl_2.Checked Then
-            planta = pl_2.Text
-        ElseIf pl_3.Checked Then
-            planta = pl_3.Text
-        ElseIf pl_4.Checked Then
-            planta = pl_4.Text
-        End If
+    Private Sub btnExcExcel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnExcExcel.Click
+        Dim OT As New OT
+        Dim planta As String = ResolverNombrePlantasExportacion()
 
         Try
             OT.exportarInfOtExcel(grillaInfOt, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, planta)
@@ -453,24 +463,7 @@ Public Class FrmInfOT
 
     Private Sub btnPdf_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnPdf.Click
         Dim OT As New OT
-        Dim planta As String = ""
-
-        Dim nodos As List(Of TreeNode) = ObtenerNodosObjetivo()
-        If nodos.Count > 0 Then
-            Dim nombres As New List(Of String)()
-            For Each nd As TreeNode In nodos
-                nombres.Add(nd.Text.Trim())
-            Next
-            planta = String.Join(" - ", nombres.ToArray())
-        End If
-
-        If pl_2.Checked Then
-            planta = pl_2.Text
-        ElseIf pl_3.Checked Then
-            planta = pl_3.Text
-        ElseIf pl_4.Checked Then
-            planta = pl_4.Text
-        End If
+        Dim planta As String = ResolverNombrePlantasExportacion()
 
         Try
             OT.exportarInfOtPDF(grillaInfOt, fecha_ini_inf_ot.Value, fecha_fin_inf_ot.Value, planta)
@@ -481,7 +474,6 @@ Public Class FrmInfOT
 
     Private Sub txtNumOtInfOt_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles txtNumOtInfOt.KeyPress
         Dim utilitarios As New Utilitarios
-
         utilitarios.solonumeros(e)
     End Sub
 
@@ -489,19 +481,18 @@ Public Class FrmInfOT
         Nodo.LimpiarResaltadoNodos(arbol5.Nodes)
     End Sub
 
-    Private Sub grillaInfOt_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaInfOt.CellContentDoubleClick
-        If e.RowIndex < 0 OrElse grillaInfOt.CurrentRow Is Nothing Then Exit Sub
-        If grillaInfOt.RowCount > 0 Then
-            FrmDetalleOt.num_ot = grillaInfOt.Rows(grillaInfOt.CurrentRow.Index).Cells(0).Value
-            FrmDetalleOt.Show()
-        End If
-
+    Private Sub grillaInfOt_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaInfOt.CellContentDoubleClick, grillaInfOt.CellDoubleClick
+        If e.RowIndex < 0 OrElse e.RowIndex >= grillaInfOt.RowCount Then Exit Sub
+        Dim valOt = grillaInfOt.Rows(e.RowIndex).Cells(0).Value
+        If valOt Is Nothing OrElse IsDBNull(valOt) OrElse String.IsNullOrWhiteSpace(valOt.ToString()) Then Exit Sub
+        FrmDetalleOt.num_ot = valOt.ToString().Trim()
+        FrmDetalleOt.Show()
     End Sub
 
     Private Sub chkFiltroPlanta_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkFiltroPlanta.CheckedChanged
         If chkFiltroPlanta.Checked Then
             PanPlantas.Visible = True
-            chkPendientes.Enabled = True
+            chkPendientes.Enabled = Not chkTodasFechas.Checked
             arbol5.Enabled = False
             txtBuscarNodo5.Enabled = False
         Else

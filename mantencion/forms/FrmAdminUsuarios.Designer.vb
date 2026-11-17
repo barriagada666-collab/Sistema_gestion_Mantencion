@@ -45,8 +45,12 @@ Partial Class FrmAdminUsuarios
         Me.grpActivo = New System.Windows.Forms.GroupBox
         Me.opcActivoNo = New System.Windows.Forms.RadioButton
         Me.opcActivoSi = New System.Windows.Forms.RadioButton
+        Me.lblBuscarUsuario = New System.Windows.Forms.Label
+        Me.txtBuscarUsuario = New System.Windows.Forms.TextBox
+        Me.btnGestionPerfiles = New System.Windows.Forms.Button
         Me.lblPerfil = New System.Windows.Forms.Label
         Me.cmbPerfil1 = New System.Windows.Forms.ComboBox
+        Me.chkVerClave = New System.Windows.Forms.CheckBox
         Me.lblPass = New System.Windows.Forms.Label
         Me.txtClave = New System.Windows.Forms.TextBox
         Me.lblNomUsuario = New System.Windows.Forms.Label
@@ -54,6 +58,12 @@ Partial Class FrmAdminUsuarios
         Me.lblUsuario = New System.Windows.Forms.Label
         Me.txtRutUsuario = New System.Windows.Forms.TextBox
         Me.grpPermisos = New System.Windows.Forms.GroupBox
+        Me.tblContenedorPermisos = New System.Windows.Forms.TableLayoutPanel
+        Me.pnlAccionesPermisos = New System.Windows.Forms.Panel
+        Me.lblModoUsuario = New System.Windows.Forms.Label
+        Me.btnAplicarPlantilla = New System.Windows.Forms.Button
+        Me.btnMarcarTodosPerm = New System.Windows.Forms.Button
+        Me.btnDesmarcarTodosPerm = New System.Windows.Forms.Button
         Me.tblPermisos = New System.Windows.Forms.TableLayoutPanel
         Me.grpModulos = New System.Windows.Forms.GroupBox
         Me.grillaPerModulos = New System.Windows.Forms.DataGridView
@@ -74,6 +84,8 @@ Partial Class FrmAdminUsuarios
         CType(Me.grillaUsuarios, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.grpActivo.SuspendLayout()
         Me.grpPermisos.SuspendLayout()
+        Me.tblContenedorPermisos.SuspendLayout()
+        Me.pnlAccionesPermisos.SuspendLayout()
         Me.tblPermisos.SuspendLayout()
         Me.grpModulos.SuspendLayout()
         CType(Me.grillaPerModulos, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -106,9 +118,13 @@ Partial Class FrmAdminUsuarios
         Me.GrpUsuarios.BackColor = System.Drawing.Color.FromArgb(229, 235, 235)
         Me.GrpUsuarios.Controls.Add(Me.grpOperUsuario)
         Me.GrpUsuarios.Controls.Add(Me.grillaUsuarios)
+        Me.GrpUsuarios.Controls.Add(Me.lblBuscarUsuario)
+        Me.GrpUsuarios.Controls.Add(Me.txtBuscarUsuario)
         Me.GrpUsuarios.Controls.Add(Me.grpActivo)
+        Me.GrpUsuarios.Controls.Add(Me.btnGestionPerfiles)
         Me.GrpUsuarios.Controls.Add(Me.lblPerfil)
         Me.GrpUsuarios.Controls.Add(Me.cmbPerfil1)
+        Me.GrpUsuarios.Controls.Add(Me.chkVerClave)
         Me.GrpUsuarios.Controls.Add(Me.lblPass)
         Me.GrpUsuarios.Controls.Add(Me.txtClave)
         Me.GrpUsuarios.Controls.Add(Me.lblNomUsuario)
@@ -240,12 +256,33 @@ Partial Class FrmAdminUsuarios
         Me.grpActivo.Controls.Add(Me.opcActivoSi)
         Me.grpActivo.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.grpActivo.ForeColor = System.Drawing.Color.FromArgb(2, 94, 135)
-        Me.grpActivo.Location = New System.Drawing.Point(535, 17)
+        Me.grpActivo.Location = New System.Drawing.Point(514, 17)
         Me.grpActivo.Name = "grpActivo"
-        Me.grpActivo.Size = New System.Drawing.Size(115, 48)
+        Me.grpActivo.Size = New System.Drawing.Size(112, 48)
         Me.grpActivo.TabIndex = 4
         Me.grpActivo.TabStop = False
         Me.grpActivo.Text = "Activo SI / NO"
+        '
+        'lblBuscarUsuario
+        '
+        Me.lblBuscarUsuario.AutoSize = True
+        Me.lblBuscarUsuario.Font = New System.Drawing.Font("Calibri", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblBuscarUsuario.ForeColor = System.Drawing.Color.FromArgb(2, 94, 135)
+        Me.lblBuscarUsuario.Location = New System.Drawing.Point(634, 19)
+        Me.lblBuscarUsuario.Name = "lblBuscarUsuario"
+        Me.lblBuscarUsuario.Size = New System.Drawing.Size(145, 14)
+        Me.lblBuscarUsuario.TabIndex = 5
+        Me.lblBuscarUsuario.Text = "Buscar (RUT / Usuario / Perfil)"
+        '
+        'txtBuscarUsuario
+        '
+        Me.txtBuscarUsuario.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.txtBuscarUsuario.Font = New System.Drawing.Font("Calibri", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.txtBuscarUsuario.Location = New System.Drawing.Point(634, 37)
+        Me.txtBuscarUsuario.MaxLength = 40
+        Me.txtBuscarUsuario.Name = "txtBuscarUsuario"
+        Me.txtBuscarUsuario.Size = New System.Drawing.Size(180, 22)
+        Me.txtBuscarUsuario.TabIndex = 5
         '
         'opcActivoNo
         '
@@ -278,7 +315,7 @@ Partial Class FrmAdminUsuarios
         Me.lblPerfil.AutoSize = True
         Me.lblPerfil.Font = New System.Drawing.Font("Calibri", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblPerfil.ForeColor = System.Drawing.Color.FromArgb(2, 94, 135)
-        Me.lblPerfil.Location = New System.Drawing.Point(372, 19)
+        Me.lblPerfil.Location = New System.Drawing.Point(344, 19)
         Me.lblPerfil.Name = "lblPerfil"
         Me.lblPerfil.Size = New System.Drawing.Size(32, 14)
         Me.lblPerfil.TabIndex = 3
@@ -289,37 +326,63 @@ Partial Class FrmAdminUsuarios
         Me.cmbPerfil1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmbPerfil1.Font = New System.Drawing.Font("Calibri", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmbPerfil1.FormattingEnabled = True
-        Me.cmbPerfil1.Location = New System.Drawing.Point(372, 37)
+        Me.cmbPerfil1.Location = New System.Drawing.Point(344, 37)
         Me.cmbPerfil1.Name = "cmbPerfil1"
-        Me.cmbPerfil1.Size = New System.Drawing.Size(152, 22)
+        Me.cmbPerfil1.Size = New System.Drawing.Size(132, 22)
         Me.cmbPerfil1.TabIndex = 3
+        '
+        'btnGestionPerfiles
+        '
+        Me.btnGestionPerfiles.BackColor = System.Drawing.Color.White
+        Me.btnGestionPerfiles.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnGestionPerfiles.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnGestionPerfiles.Location = New System.Drawing.Point(478, 36)
+        Me.btnGestionPerfiles.Name = "btnGestionPerfiles"
+        Me.btnGestionPerfiles.Size = New System.Drawing.Size(28, 24)
+        Me.btnGestionPerfiles.TabIndex = 3
+        Me.btnGestionPerfiles.Text = "..."
+        Me.ToolTipLimpiar.SetToolTip(Me.btnGestionPerfiles, "Gestionar Perfiles (Crear / Renombrar / Eliminar)")
+        Me.btnGestionPerfiles.UseVisualStyleBackColor = True
         '
         'lblPass
         '
         Me.lblPass.AutoSize = True
         Me.lblPass.Font = New System.Drawing.Font("Calibri", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblPass.ForeColor = System.Drawing.Color.FromArgb(2, 94, 135)
-        Me.lblPass.Location = New System.Drawing.Point(257, 19)
+        Me.lblPass.Location = New System.Drawing.Point(242, 19)
         Me.lblPass.Name = "lblPass"
         Me.lblPass.Size = New System.Drawing.Size(63, 14)
         Me.lblPass.TabIndex = 2
         Me.lblPass.Text = "Contraseña"
         '
+        'chkVerClave
+        '
+        Me.chkVerClave.AutoSize = True
+        Me.chkVerClave.Font = New System.Drawing.Font("Calibri", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkVerClave.ForeColor = System.Drawing.Color.FromArgb(15, 23, 42)
+        Me.chkVerClave.Location = New System.Drawing.Point(306, 18)
+        Me.chkVerClave.Name = "chkVerClave"
+        Me.chkVerClave.Size = New System.Drawing.Size(37, 17)
+        Me.chkVerClave.TabIndex = 2
+        Me.chkVerClave.Text = "Ver"
+        Me.chkVerClave.UseVisualStyleBackColor = True
+        '
         'txtClave
         '
         Me.txtClave.Font = New System.Drawing.Font("Calibri", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtClave.Location = New System.Drawing.Point(257, 37)
+        Me.txtClave.Location = New System.Drawing.Point(242, 37)
         Me.txtClave.MaxLength = 10
         Me.txtClave.Name = "txtClave"
-        Me.txtClave.Size = New System.Drawing.Size(105, 22)
+        Me.txtClave.Size = New System.Drawing.Size(94, 22)
         Me.txtClave.TabIndex = 2
+        Me.txtClave.UseSystemPasswordChar = True
         '
         'lblNomUsuario
         '
         Me.lblNomUsuario.AutoSize = True
         Me.lblNomUsuario.Font = New System.Drawing.Font("Calibri", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblNomUsuario.ForeColor = System.Drawing.Color.FromArgb(2, 94, 135)
-        Me.lblNomUsuario.Location = New System.Drawing.Point(117, 19)
+        Me.lblNomUsuario.Location = New System.Drawing.Point(108, 19)
         Me.lblNomUsuario.Name = "lblNomUsuario"
         Me.lblNomUsuario.Size = New System.Drawing.Size(103, 14)
         Me.lblNomUsuario.TabIndex = 1
@@ -328,10 +391,10 @@ Partial Class FrmAdminUsuarios
         'txtNomUsuario
         '
         Me.txtNomUsuario.Font = New System.Drawing.Font("Calibri", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtNomUsuario.Location = New System.Drawing.Point(117, 37)
+        Me.txtNomUsuario.Location = New System.Drawing.Point(108, 37)
         Me.txtNomUsuario.MaxLength = 15
         Me.txtNomUsuario.Name = "txtNomUsuario"
-        Me.txtNomUsuario.Size = New System.Drawing.Size(130, 22)
+        Me.txtNomUsuario.Size = New System.Drawing.Size(126, 22)
         Me.txtNomUsuario.TabIndex = 1
         '
         'lblUsuario
@@ -351,13 +414,13 @@ Partial Class FrmAdminUsuarios
         Me.txtRutUsuario.Location = New System.Drawing.Point(12, 37)
         Me.txtRutUsuario.MaxLength = 8
         Me.txtRutUsuario.Name = "txtRutUsuario"
-        Me.txtRutUsuario.Size = New System.Drawing.Size(95, 22)
+        Me.txtRutUsuario.Size = New System.Drawing.Size(88, 22)
         Me.txtRutUsuario.TabIndex = 0
         '
         'grpPermisos
         '
         Me.grpPermisos.BackColor = System.Drawing.Color.FromArgb(229, 235, 235)
-        Me.grpPermisos.Controls.Add(Me.tblPermisos)
+        Me.grpPermisos.Controls.Add(Me.tblContenedorPermisos)
         Me.grpPermisos.Dock = System.Windows.Forms.DockStyle.Fill
         Me.grpPermisos.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.grpPermisos.ForeColor = System.Drawing.Color.FromArgb(2, 94, 135)
@@ -368,6 +431,78 @@ Partial Class FrmAdminUsuarios
         Me.grpPermisos.TabIndex = 1
         Me.grpPermisos.TabStop = False
         Me.grpPermisos.Text = "Permisos de Usuario"
+        '
+        'tblContenedorPermisos
+        '
+        Me.tblContenedorPermisos.ColumnCount = 1
+        Me.tblContenedorPermisos.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.tblContenedorPermisos.Controls.Add(Me.pnlAccionesPermisos, 0, 0)
+        Me.tblContenedorPermisos.Controls.Add(Me.tblPermisos, 0, 1)
+        Me.tblContenedorPermisos.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.tblContenedorPermisos.Location = New System.Drawing.Point(6, 20)
+        Me.tblContenedorPermisos.Name = "tblContenedorPermisos"
+        Me.tblContenedorPermisos.RowCount = 2
+        Me.tblContenedorPermisos.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32.0!))
+        Me.tblContenedorPermisos.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.tblContenedorPermisos.Size = New System.Drawing.Size(1006, 319)
+        Me.tblContenedorPermisos.TabIndex = 0
+        '
+        'pnlAccionesPermisos
+        '
+        Me.pnlAccionesPermisos.Controls.Add(Me.lblModoUsuario)
+        Me.pnlAccionesPermisos.Controls.Add(Me.btnAplicarPlantilla)
+        Me.pnlAccionesPermisos.Controls.Add(Me.btnMarcarTodosPerm)
+        Me.pnlAccionesPermisos.Controls.Add(Me.btnDesmarcarTodosPerm)
+        Me.pnlAccionesPermisos.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.pnlAccionesPermisos.Location = New System.Drawing.Point(0, 0)
+        Me.pnlAccionesPermisos.Margin = New System.Windows.Forms.Padding(0)
+        Me.pnlAccionesPermisos.Name = "pnlAccionesPermisos"
+        Me.pnlAccionesPermisos.Size = New System.Drawing.Size(1006, 32)
+        Me.pnlAccionesPermisos.TabIndex = 0
+        '
+        'lblModoUsuario
+        '
+        Me.lblModoUsuario.AutoSize = True
+        Me.lblModoUsuario.Font = New System.Drawing.Font("Calibri", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblModoUsuario.ForeColor = System.Drawing.Color.FromArgb(15, 45, 68)
+        Me.lblModoUsuario.Location = New System.Drawing.Point(6, 8)
+        Me.lblModoUsuario.Name = "lblModoUsuario"
+        Me.lblModoUsuario.Size = New System.Drawing.Size(198, 14)
+        Me.lblModoUsuario.TabIndex = 0
+        Me.lblModoUsuario.Text = "Modo: Nuevo usuario (ingrese datos)"
+        '
+        'btnAplicarPlantilla
+        '
+        Me.btnAplicarPlantilla.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnAplicarPlantilla.Font = New System.Drawing.Font("Calibri", 8.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnAplicarPlantilla.Location = New System.Drawing.Point(568, 3)
+        Me.btnAplicarPlantilla.Name = "btnAplicarPlantilla"
+        Me.btnAplicarPlantilla.Size = New System.Drawing.Size(176, 25)
+        Me.btnAplicarPlantilla.TabIndex = 1
+        Me.btnAplicarPlantilla.Text = "Aplicar Plantilla de Perfil"
+        Me.btnAplicarPlantilla.UseVisualStyleBackColor = True
+        '
+        'btnMarcarTodosPerm
+        '
+        Me.btnMarcarTodosPerm.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnMarcarTodosPerm.Font = New System.Drawing.Font("Calibri", 8.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnMarcarTodosPerm.Location = New System.Drawing.Point(750, 3)
+        Me.btnMarcarTodosPerm.Name = "btnMarcarTodosPerm"
+        Me.btnMarcarTodosPerm.Size = New System.Drawing.Size(116, 25)
+        Me.btnMarcarTodosPerm.TabIndex = 2
+        Me.btnMarcarTodosPerm.Text = "Marcar Todos"
+        Me.btnMarcarTodosPerm.UseVisualStyleBackColor = True
+        '
+        'btnDesmarcarTodosPerm
+        '
+        Me.btnDesmarcarTodosPerm.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnDesmarcarTodosPerm.Font = New System.Drawing.Font("Calibri", 8.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnDesmarcarTodosPerm.Location = New System.Drawing.Point(872, 3)
+        Me.btnDesmarcarTodosPerm.Name = "btnDesmarcarTodosPerm"
+        Me.btnDesmarcarTodosPerm.Size = New System.Drawing.Size(128, 25)
+        Me.btnDesmarcarTodosPerm.TabIndex = 3
+        Me.btnDesmarcarTodosPerm.Text = "Desmarcar Todos"
+        Me.btnDesmarcarTodosPerm.UseVisualStyleBackColor = True
         '
         'tblPermisos
         '
@@ -381,12 +516,13 @@ Partial Class FrmAdminUsuarios
         Me.tblPermisos.Controls.Add(Me.grpModMp, 2, 0)
         Me.tblPermisos.Controls.Add(Me.grpMantenedores, 3, 0)
         Me.tblPermisos.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.tblPermisos.Location = New System.Drawing.Point(6, 20)
+        Me.tblPermisos.Location = New System.Drawing.Point(0, 32)
+        Me.tblPermisos.Margin = New System.Windows.Forms.Padding(0)
         Me.tblPermisos.Name = "tblPermisos"
         Me.tblPermisos.RowCount = 1
         Me.tblPermisos.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.tblPermisos.Size = New System.Drawing.Size(1006, 319)
-        Me.tblPermisos.TabIndex = 0
+        Me.tblPermisos.Size = New System.Drawing.Size(1006, 287)
+        Me.tblPermisos.TabIndex = 1
         '
         'grpModulos
         '
@@ -588,6 +724,9 @@ Partial Class FrmAdminUsuarios
         Me.grpActivo.ResumeLayout(False)
         Me.grpActivo.PerformLayout()
         Me.grpPermisos.ResumeLayout(False)
+        Me.tblContenedorPermisos.ResumeLayout(False)
+        Me.pnlAccionesPermisos.ResumeLayout(False)
+        Me.pnlAccionesPermisos.PerformLayout()
         Me.tblPermisos.ResumeLayout(False)
         Me.grpModulos.ResumeLayout(False)
         CType(Me.grillaPerModulos, System.ComponentModel.ISupportInitialize).EndInit()
@@ -613,8 +752,12 @@ Partial Class FrmAdminUsuarios
     Friend WithEvents grpActivo As System.Windows.Forms.GroupBox
     Friend WithEvents opcActivoNo As System.Windows.Forms.RadioButton
     Friend WithEvents opcActivoSi As System.Windows.Forms.RadioButton
+    Friend WithEvents lblBuscarUsuario As System.Windows.Forms.Label
+    Friend WithEvents txtBuscarUsuario As System.Windows.Forms.TextBox
+    Friend WithEvents btnGestionPerfiles As System.Windows.Forms.Button
     Friend WithEvents lblPerfil As System.Windows.Forms.Label
     Friend WithEvents cmbPerfil1 As System.Windows.Forms.ComboBox
+    Friend WithEvents chkVerClave As System.Windows.Forms.CheckBox
     Friend WithEvents lblPass As System.Windows.Forms.Label
     Friend WithEvents txtClave As System.Windows.Forms.TextBox
     Friend WithEvents lblNomUsuario As System.Windows.Forms.Label
@@ -622,6 +765,12 @@ Partial Class FrmAdminUsuarios
     Friend WithEvents lblUsuario As System.Windows.Forms.Label
     Friend WithEvents txtRutUsuario As System.Windows.Forms.TextBox
     Friend WithEvents grpPermisos As System.Windows.Forms.GroupBox
+    Friend WithEvents tblContenedorPermisos As System.Windows.Forms.TableLayoutPanel
+    Friend WithEvents pnlAccionesPermisos As System.Windows.Forms.Panel
+    Friend WithEvents lblModoUsuario As System.Windows.Forms.Label
+    Friend WithEvents btnAplicarPlantilla As System.Windows.Forms.Button
+    Friend WithEvents btnMarcarTodosPerm As System.Windows.Forms.Button
+    Friend WithEvents btnDesmarcarTodosPerm As System.Windows.Forms.Button
     Friend WithEvents tblPermisos As System.Windows.Forms.TableLayoutPanel
     Friend WithEvents grpModulos As System.Windows.Forms.GroupBox
     Friend WithEvents grillaPerModulos As System.Windows.Forms.DataGridView

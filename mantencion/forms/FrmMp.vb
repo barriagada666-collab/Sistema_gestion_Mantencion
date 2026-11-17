@@ -69,13 +69,17 @@ Public Class FrmMp
                 Case "Tareas"
                     With grillaTareasCicloMp
                         If .RowCount > 0 AndAlso .CurrentRow IsNot Nothing Then
-                            If MsgBox("¿ Esta seguro de eliminar la tarea :" & .Rows(.CurrentRow.Index).Cells(4).Value & " ?", MsgBoxStyle.YesNo, "Confirmación") = MsgBoxResult.Yes Then
-                                del_index_tareas.Add(.Rows(.CurrentRow.Index).Cells(1).Value)
+                            Dim descTarea As String = If(.CurrentRow.Cells(4).Value Is Nothing OrElse IsDBNull(.CurrentRow.Cells(4).Value), String.Empty, .CurrentRow.Cells(4).Value.ToString())
+                            If MsgBox("¿Está seguro de eliminar la tarea: " & descTarea & "?", MsgBoxStyle.YesNo, "Confirmación") = MsgBoxResult.Yes Then
+                                Dim idTareaVal As Object = .CurrentRow.Cells(1).Value
+                                If idTareaVal IsNot Nothing AndAlso Not IsDBNull(idTareaVal) Then
+                                    del_index_tareas.Add(idTareaVal.ToString())
+                                End If
                                 .Rows.Remove(.CurrentRow)
                                 Exit Sub
                             End If
                         ElseIf .RowCount = 0 Then
-                            MsgBox("No se pueden eliminar mas filas !!!", MsgBoxStyle.Exclamation, "Validación")
+                            MsgBox("No se pueden eliminar más filas !!!", MsgBoxStyle.Exclamation, "Validación")
                             Exit Sub
                         End If
                     End With
@@ -83,28 +87,25 @@ Public Class FrmMp
                 Case "Personal"
                     With grillaPersonalMp
                         If .RowCount = 0 OrElse .CurrentRow Is Nothing Then
-                            MsgBox("No se pueden eliminar mas filas !!!", MsgBoxStyle.Exclamation, "Validación")
+                            MsgBox("No se pueden eliminar más filas !!!", MsgBoxStyle.Exclamation, "Validación")
                             Exit Sub
                         End If
-                        If .CurrentRow.Cells(0).Value Is Nothing OrElse .CurrentRow.Cells(0).Value.ToString = "" Then
-                            .Rows.Remove(grillaPersonalMp.CurrentRow)
+                        If .CurrentRow.Cells(0).Value Is Nothing OrElse IsDBNull(.CurrentRow.Cells(0).Value) OrElse String.IsNullOrWhiteSpace(.CurrentRow.Cells(0).Value.ToString()) Then
+                            .Rows.Remove(.CurrentRow)
                             Exit Sub
                         End If
                     End With
 
-                    If MsgBox("¿Está seguro que desea eliminar el personal " & grillaPersonalMp.CurrentRow.Cells(1).Value & "?", MsgBoxStyle.YesNo, "Validación") = MsgBoxResult.Yes Then
+                    Dim nomPer As String = If(grillaPersonalMp.CurrentRow.Cells(1).Value Is Nothing OrElse IsDBNull(grillaPersonalMp.CurrentRow.Cells(1).Value), String.Empty, grillaPersonalMp.CurrentRow.Cells(1).Value.ToString())
+                    If MsgBox("¿Está seguro que desea eliminar al personal " & nomPer & "?", MsgBoxStyle.YesNo, "Validación") = MsgBoxResult.Yes Then
                         If DS2.Tables.Count > 0 Then
-                            If grillaPersonalMp.CurrentRow.Cells(0).Value.ToString <> "" Then
-                                Dim mant_prev As New MantPreventiva
-                                Dim cod_resp As Integer = 0
-                                Dim resp As String = ""
-
-                                del_index_personal.Add(grillaPersonalMp.Rows(grillaPersonalMp.CurrentRow.Index).Cells(0).Value)
+                            Dim rutStr As String = If(grillaPersonalMp.CurrentRow.Cells(0).Value Is Nothing, String.Empty, grillaPersonalMp.CurrentRow.Cells(0).Value.ToString())
+                            If rutStr <> "" Then
+                                del_index_personal.Add(rutStr)
                                 grillaPersonalMp.Rows.Remove(grillaPersonalMp.CurrentRow)
-
                             End If
                         Else
-                            If grillaPersonalMp.RowCount > 0 Then
+                            If grillaPersonalMp.RowCount > 0 AndAlso grillaPersonalMp.CurrentRow IsNot Nothing Then
                                 grillaPersonalMp.Rows.Remove(grillaPersonalMp.CurrentRow)
                             End If
                         End If
@@ -113,18 +114,20 @@ Public Class FrmMp
                 Case "Insumos Utilizados"
                     If grillaInsumosMp.RowCount > 0 AndAlso grillaInsumosMp.CurrentRow IsNot Nothing Then
                         With grillaInsumosMp
-                            If .Rows(.CurrentRow.Index).Cells(3).Value Is Nothing OrElse .Rows(.CurrentRow.Index).Cells(3).Value.ToString = "" OrElse .Rows(.CurrentRow.Index).Cells(4).Value Is Nothing OrElse .Rows(.CurrentRow.Index).Cells(4).Value.ToString = "" Then
+                            If .CurrentRow.Cells(3).Value Is Nothing OrElse IsDBNull(.CurrentRow.Cells(3).Value) OrElse String.IsNullOrWhiteSpace(.CurrentRow.Cells(3).Value.ToString()) OrElse
+                               .CurrentRow.Cells(4).Value Is Nothing OrElse IsDBNull(.CurrentRow.Cells(4).Value) OrElse String.IsNullOrWhiteSpace(.CurrentRow.Cells(4).Value.ToString()) Then
                                 .Rows.Remove(.CurrentRow)
                                 Exit Sub
                             End If
                         End With
-                        If MsgBox("¿Esta seguro de eliminar el insumo " & grillaInsumosMp.Rows(grillaInsumosMp.CurrentRow.Index).Cells(1).Value & " ?", MsgBoxStyle.YesNo, "Validación") = MsgBoxResult.Yes Then
+                        Dim nomIns As String = If(grillaInsumosMp.CurrentRow.Cells(1).Value Is Nothing OrElse IsDBNull(grillaInsumosMp.CurrentRow.Cells(1).Value), String.Empty, grillaInsumosMp.CurrentRow.Cells(1).Value.ToString())
+                        If MsgBox("¿Está seguro de eliminar el insumo " & nomIns & "?", MsgBoxStyle.YesNo, "Validación") = MsgBoxResult.Yes Then
                             Dim mant_prev As New MantPreventiva
                             Dim cod_resp As Integer = 0
                             Dim resp As String = ""
 
-                            ind = grillaInsumosMp.CurrentRow.Index
-                            mant_prev.DelInsumoCicloMp(txtIdMant.Text, txtIdCiclo.Text, grillaInsumosMp.Rows(grillaInsumosMp.CurrentRow.Index).Cells(0).Value, cod_resp, resp)
+                            Dim idInsumo As String = If(grillaInsumosMp.CurrentRow.Cells(0).Value Is Nothing, String.Empty, grillaInsumosMp.CurrentRow.Cells(0).Value.ToString())
+                            mant_prev.DelInsumoCicloMp(txtIdMant.Text, txtIdCiclo.Text, idInsumo, cod_resp, resp)
 
                             If cod_resp = 1 Then
                                 MsgBox(resp, MsgBoxStyle.Information, "Validación")
@@ -134,7 +137,7 @@ Public Class FrmMp
                             End If
                         End If
                     Else
-                        MsgBox("No se pueden eliminar mas filas !!!", MsgBoxStyle.Exclamation, "Validación")
+                        MsgBox("No se pueden eliminar más filas !!!", MsgBoxStyle.Exclamation, "Validación")
                     End If
             End Select
         Catch ex As Exception
@@ -172,95 +175,117 @@ Public Class FrmMp
     End Sub
 
     Private Sub btnNuevoCiclo_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnNuevoCiclo.Click
-        Dim mant_prev As New MantPreventiva
-        Dim nodo As New Nodo
-        Dim id_ciclo As Integer = 0
-        Dim DS As New DataSet
-
-        If txtIdMant.Text = "" Then
-            MsgBox("Debe Buscar una mantencion preventiva antes de crear un nuevo ciclo", MsgBoxStyle.Critical, "Validación")
-        Else
-            id_ciclo = mant_prev.NuevoIdCicloMp(txtIdMant.Text)
-            txtIdCiclo.Text = id_ciclo
-            btnIngMp.Enabled = False
-            btnGuardarComoNuevoCiclo.Enabled = False
-            txtDuracionCiclo.Text = 0
+        If Not Usuario.PermisoIngMp AndAlso Not Usuario.PermisoGuardarMp Then
+            MsgBox("No tiene permisos para crear ciclos.", MsgBoxStyle.Exclamation, "Seguridad")
+            Exit Sub
         End If
+        Try
+            Dim mant_prev As New MantPreventiva
+            Dim id_ciclo As Integer = 0
 
+            If String.IsNullOrWhiteSpace(txtIdMant.Text) Then
+                MsgBox("Debe buscar una mantención preventiva antes de crear un nuevo ciclo", MsgBoxStyle.Critical, "Validación")
+            Else
+                id_ciclo = mant_prev.NuevoIdCicloMp(txtIdMant.Text)
+                txtIdCiclo.Text = id_ciclo.ToString()
+                btnIngMp.Enabled = False
+                btnGuardarComoNuevoCiclo.Enabled = False
+                txtDuracionCiclo.Text = "0"
+            End If
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Nuevo Ciclo)", True, Me)
+        End Try
     End Sub
 
     Private Sub btnGuardarMp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnGuardarMp.Click
+        If Not Usuario.PermisoGuardarMp Then
+            MsgBox("No tiene permisos para modificar mantenciones preventivas.", MsgBoxStyle.Exclamation, "Seguridad")
+            Exit Sub
+        End If
+
+        grillaTareasCicloMp.EndEdit()
+        grillaPersonalMp.EndEdit()
+        grillaInsumosMp.EndEdit()
+
         Dim mant_prev As New MantPreventiva
         Dim cod_resp As Integer = 0
         Dim resp As String = ""
-
         Dim existe_ciclo_mp As Boolean = False
         Dim resp2 As String = ""
         Dim valida As String = ""
 
-        valida = mant_prev.ValidarMP
+        Try
+            valida = mant_prev.ValidarMP()
 
-        If valida = "" Then
-            existe_ciclo_mp = mant_prev.BuscarCicloMp(txtIdMant.Text, txtIdCiclo.Text)
-            If existe_ciclo_mp Then
-                mant_prev.UpdCicloMp(txtIdMant.Text, txtIdCiclo.Text, FechaIniCiclo.Value, HrInicioCiclo.Value, fechaFinCicloMp.Value, HrFinCiclo.Value, txtDuracionCiclo.Text, txtObsCiclo.Text, cmbEstadoCiclo.Text, principal.lblUsuario.Text, cod_resp, resp)
+            If valida = "" Then
+                existe_ciclo_mp = mant_prev.BuscarCicloMp(txtIdMant.Text, txtIdCiclo.Text)
+                If existe_ciclo_mp Then
+                    mant_prev.UpdCicloMp(txtIdMant.Text, txtIdCiclo.Text, FechaIniCiclo.Value, HrInicioCiclo.Value, fechaFinCicloMp.Value, HrFinCiclo.Value, txtDuracionCiclo.Text, txtObsCiclo.Text, cmbEstadoCiclo.Text, principal.lblUsuario.Text, cod_resp, resp)
+                Else
+                    mant_prev.IngCicloMp(txtIdMant.Text, txtIdCiclo.Text, FechaIniCiclo.Value, HrInicioCiclo.Value, fechaFinCicloMp.Value, HrFinCiclo.Value, txtDuracionCiclo.Text, txtObsCiclo.Text, cmbEstadoCiclo.Text, principal.lblUsuario.Text, cod_resp, resp)
+                End If
+
+                If del_index_tareas.Count > 0 Then
+                    For i = 1 To del_index_tareas.Count
+                        mant_prev.DelTareaCicloMp(txtIdMant.Text, txtIdCiclo.Text, del_index_tareas.Item(i).ToString, cod_resp, resp2)
+                    Next
+                End If
+
+                With grillaTareasCicloMp
+                    If .RowCount > 0 Then
+                        For i = 0 To .Rows.Count - 1
+                            If .Rows(i).IsNewRow Then Continue For
+                            Dim obs_tarea As String = If(.Rows(i).Cells(6).Value Is Nothing OrElse IsDBNull(.Rows(i).Cells(6).Value), "", .Rows(i).Cells(6).Value.ToString())
+                            Dim tiempo_tarea As String = If(.Rows(i).Cells(5).Value Is Nothing OrElse IsDBNull(.Rows(i).Cells(5).Value), "0", .Rows(i).Cells(5).Value.ToString())
+                            mant_prev.UpdTareasCicloMp(txtIdMant.Text, txtIdCiclo.Text, Convert.ToString(.Rows(i).Cells(1).Value), Convert.ToString(.Rows(i).Cells(2).Value), tiempo_tarea, obs_tarea)
+                        Next
+                    End If
+                End With
+
+                With grillaPersonalMp
+                    If .RowCount > 0 Then
+                        For i = 0 To .Rows.Count - 1
+                            If .Rows(i).IsNewRow Then Continue For
+                            Dim rutPer As String = Convert.ToString(.Rows(i).Cells(0).Value)
+                            If Not String.IsNullOrWhiteSpace(rutPer) Then
+                                mant_prev.UpdPersonalCicloMp(txtIdMant.Text, txtIdCiclo.Text, rutPer)
+                            End If
+                        Next
+                    End If
+
+                    Dim resp3 As String = ""
+                    Dim codresp3 As Integer = 0
+                    If del_index_personal.Count > 0 Then
+                        For i = 1 To del_index_personal.Count
+                            mant_prev.DelPersonalCicloMp(txtIdMant.Text, txtIdCiclo.Text, del_index_personal.Item(i).ToString, codresp3, resp3)
+                        Next
+                    End If
+                End With
+
+                With grillaInsumosMp
+                    If .RowCount > 0 Then
+                        For i = 0 To .RowCount - 1
+                            If .Rows(i).IsNewRow Then Continue For
+                            Dim idIns As String = Convert.ToString(.Rows(i).Cells(0).Value)
+                            If Not String.IsNullOrWhiteSpace(idIns) Then
+                                mant_prev.UpdInsumosCicloMp(txtIdMant.Text, txtIdCiclo.Text, idIns, Convert.ToString(.Rows(i).Cells(3).Value), Convert.ToString(.Rows(i).Cells(4).Value))
+                            End If
+                        Next
+                    End If
+                End With
+
+                If cod_resp = 1 Then
+                    MsgBox(resp, MsgBoxStyle.Information, "Validación")
+                    mant_prev.LimpiarFrmMp()
+                ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
+                    MsgBox(resp, MsgBoxStyle.Critical, "Validación")
+                End If
             Else
-                mant_prev.IngCicloMp(txtIdMant.Text, txtIdCiclo.Text, FechaIniCiclo.Value, HrInicioCiclo.Value, fechaFinCicloMp.Value, HrFinCiclo.Value, txtDuracionCiclo.Text, txtObsCiclo.Text, cmbEstadoCiclo.Text, principal.lblUsuario.Text, cod_resp, resp)
+                MsgBox(valida, MsgBoxStyle.Exclamation, "Validación")
             End If
-
-            If del_index_tareas.Count > 0 Then
-                For i = 1 To del_index_tareas.Count
-                    mant_prev.DelTareaCicloMp(txtIdMant.Text, txtIdCiclo.Text, del_index_tareas.Item(i).ToString, cod_resp, resp2)
-                Next
-            End If
-
-            With grillaTareasCicloMp
-                If .RowCount > 0 Then
-                    Dim obs_tarea As String
-
-                    For i = 0 To .Rows.Count - 1
-                        obs_tarea = If(.Rows(i).Cells(6).Value Is Nothing, "", .Rows(i).Cells(6).Value.ToString())
-                        mant_prev.UpdTareasCicloMp(txtIdMant.Text, txtIdCiclo.Text, .Rows(i).Cells(1).Value, .Rows(i).Cells(2).Value, .Rows(i).Cells(5).Value, obs_tarea)
-                    Next
-                End If
-
-            End With
-
-            With grillaPersonalMp
-                If .RowCount > 0 Then
-                    For i = 0 To .Rows.Count - 1
-                        mant_prev.UpdPersonalCicloMp(txtIdMant.Text, txtIdCiclo.Text, .Rows(i).Cells(0).Value)
-                    Next
-                End If
-
-                Dim resp3 As String = ""
-                Dim codresp3 As Integer = 0
-                If del_index_personal.Count > 0 Then
-                    For i = 1 To del_index_personal.Count
-                        mant_prev.DelPersonalCicloMp(txtIdMant.Text, txtIdCiclo.Text, del_index_personal.Item(i).ToString, codresp3, resp3)
-                    Next
-
-                End If
-            End With
-
-            With grillaInsumosMp
-                If .RowCount > 0 Then
-                    For i = 0 To .RowCount - 1
-                        mant_prev.UpdInsumosCicloMp(txtIdMant.Text, txtIdCiclo.Text, .Rows(i).Cells(0).Value, .Rows(i).Cells(3).Value, .Rows(i).Cells(4).Value)
-                    Next
-                End If
-            End With
-
-            If cod_resp = 1 Then
-                MsgBox(resp, MsgBoxStyle.Information, "Validación")
-                mant_prev.LimpiarFrmMp()
-            ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
-                MsgBox(resp, MsgBoxStyle.Critical, "Validación")
-            End If
-        Else
-            MsgBox(valida, MsgBoxStyle.Exclamation, "Validación")
-        End If
-
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Guardar)", True, Me)
+        End Try
     End Sub
 
     Private Sub btnBuscarMp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnBuscarMp.Click
@@ -304,66 +329,96 @@ Public Class FrmMp
     End Sub
 
     Private Sub btnIngCicloMp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnIngMp.Click
+        If Not Usuario.PermisoIngMp Then
+            MsgBox("No tiene permisos para ingresar mantenciones preventivas.", MsgBoxStyle.Exclamation, "Seguridad")
+            Exit Sub
+        End If
+
+        grillaTareasCicloMp.EndEdit()
+        grillaPersonalMp.EndEdit()
+        grillaInsumosMp.EndEdit()
+
         Dim mant_prev As New MantPreventiva
         Dim cod_resp As Integer = 0
         Dim resp As String = ""
         Dim resp_2 As String = ""
         Dim existe_mp As Boolean = False
-        Dim existe_ciclo_mp As Boolean = False
         Dim validarForm As Boolean = False
 
-        validarForm = mant_prev.ValidarIngresoMp(Me, resp)
+        Try
+            validarForm = mant_prev.ValidarIngresoMp(Me, resp)
 
-        If validarForm Then
-            existe_mp = mant_prev.BuscarMp(txtIdMant.Text)
-            If existe_mp Then
-                MsgBox("La mantención ya existe,para guardar presione Actualizar")
-                Exit Sub
-            Else
-                mant_prev.IngMantPreventiva(txtIdMant.Text, id_nodo_select, txtFrecuenciaMp.Text, txtTiempoAviso.Text, cmbEstadoMp.Text, cmbTipoMp.Text, principal.lblUsuario.Text, txtObsMant.Text, cod_resp, resp)
+            If validarForm Then
+                existe_mp = mant_prev.BuscarMp(txtIdMant.Text)
+                If existe_mp Then
+                    MsgBox("La mantención ya existe; para guardar cambios presione Guardar.", MsgBoxStyle.Information, "Validación")
+                    Exit Sub
+                Else
+                    mant_prev.IngMantPreventiva(txtIdMant.Text, id_nodo_select, txtFrecuenciaMp.Text, txtTiempoAviso.Text, cmbEstadoMp.Text, cmbTipoMp.Text, principal.lblUsuario.Text, txtObsMant.Text, cod_resp, resp)
+                    If cod_resp <> 1 Then
+                        If cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
+                            MsgBox(resp, MsgBoxStyle.Critical, "Error")
+                        End If
+                        Exit Sub
+                    End If
 
-                mant_prev.IngCicloMp(txtIdMant.Text, txtIdCiclo.Text, FechaIniCiclo.Value, HrInicioCiclo.Value, fechaFinCicloMp.Value, HrFinCiclo.Value, txtDuracionCiclo.Text, txtObsCiclo.Text, cmbEstadoCiclo.Text, principal.lblUsuario.Text, cod_resp, resp_2)
+                    Dim codRespCiclo As Integer = 0
+                    mant_prev.IngCicloMp(txtIdMant.Text, txtIdCiclo.Text, FechaIniCiclo.Value, HrInicioCiclo.Value, fechaFinCicloMp.Value, HrFinCiclo.Value, txtDuracionCiclo.Text, txtObsCiclo.Text, cmbEstadoCiclo.Text, principal.lblUsuario.Text, codRespCiclo, resp_2)
 
-                If grillaPersonalMp.Rows.Count > 0 Then
-                    With grillaPersonalMp
-                        For i = 0 To .Rows.Count - 1
-                            mant_prev.IngPersonalCicloMp(.Rows(i).Cells(0).Value, txtIdMant.Text, txtIdCiclo.Text)
-                        Next
-                    End With
-                End If
+                    If grillaPersonalMp.Rows.Count > 0 Then
+                        With grillaPersonalMp
+                            For i = 0 To .Rows.Count - 1
+                                If .Rows(i).IsNewRow Then Continue For
+                                Dim rutPer As String = Convert.ToString(.Rows(i).Cells(0).Value)
+                                If Not String.IsNullOrWhiteSpace(rutPer) Then
+                                    mant_prev.IngPersonalCicloMp(rutPer, txtIdMant.Text, txtIdCiclo.Text)
+                                End If
+                            Next
+                        End With
+                    End If
 
-                If grillaTareasCicloMp.Rows.Count > 0 Then
-                    With grillaTareasCicloMp
-                        For i = 0 To .Rows.Count - 1
-                            Dim obs_tarea As String = If(.Rows(i).Cells(6).Value Is Nothing, "", .Rows(i).Cells(6).Value.ToString())
+                    If grillaTareasCicloMp.Rows.Count > 0 Then
+                        With grillaTareasCicloMp
+                            For i = 0 To .Rows.Count - 1
+                                If .Rows(i).IsNewRow Then Continue For
+                                Dim obs_tarea As String = If(.Rows(i).Cells(6).Value Is Nothing OrElse IsDBNull(.Rows(i).Cells(6).Value), "", .Rows(i).Cells(6).Value.ToString())
+                                Dim tiempo_tarea As String = If(.Rows(i).Cells(5).Value Is Nothing OrElse IsDBNull(.Rows(i).Cells(5).Value), "0", .Rows(i).Cells(5).Value.ToString())
 
-                            If True.Equals(.Rows(i).Cells(0).Value) Then
-                                mant_prev.IngTareasCicloMp(txtIdMant.Text, txtIdCiclo.Text, .Rows(i).Cells(1).Value, .Rows(i).Cells(2).Value, .Rows(i).Cells(5).Value, obs_tarea)
-                            Else
-                                mant_prev.IngTareasPendCicloMp(txtIdMant.Text, txtIdCiclo.Text, .Rows(i).Cells(1).Value, .Rows(i).Cells(2).Value, obs_tarea)
+                                If True.Equals(.Rows(i).Cells(0).Value) Then
+                                    mant_prev.IngTareasCicloMp(txtIdMant.Text, txtIdCiclo.Text, Convert.ToString(.Rows(i).Cells(1).Value), Convert.ToString(.Rows(i).Cells(2).Value), tiempo_tarea, obs_tarea)
+                                Else
+                                    mant_prev.IngTareasPendCicloMp(txtIdMant.Text, txtIdCiclo.Text, Convert.ToString(.Rows(i).Cells(1).Value), Convert.ToString(.Rows(i).Cells(2).Value), obs_tarea)
+                                End If
+                            Next
+                        End With
+                    End If
+
+                    If grillaInsumosMp.RowCount > 0 Then
+                        For i = 0 To grillaInsumosMp.RowCount - 1
+                            If grillaInsumosMp.Rows(i).IsNewRow Then Continue For
+                            Dim idIns As String = Convert.ToString(grillaInsumosMp.Rows(i).Cells(0).Value)
+                            If Not String.IsNullOrWhiteSpace(idIns) Then
+                                mant_prev.IngInsumosMp(txtIdMant.Text, txtIdCiclo.Text, idIns, Convert.ToString(grillaInsumosMp.Rows(i).Cells(3).Value), Convert.ToString(grillaInsumosMp.Rows(i).Cells(4).Value))
                             End If
                         Next
-                    End With
-                End If
+                    End If
 
-                If grillaInsumosMp.RowCount > 0 Then
-                    For i = 0 To grillaInsumosMp.RowCount - 1
-                        mant_prev.IngInsumosMp(txtIdMant.Text, txtIdCiclo.Text, grillaInsumosMp.Rows(i).Cells(0).Value, grillaInsumosMp.Rows(i).Cells(3).Value, grillaInsumosMp.Rows(i).Cells(4).Value)
-                    Next
+                    If codRespCiclo = 1 Then
+                        MsgBox(resp & Chr(13) & resp_2, MsgBoxStyle.Information, "Validación")
+                        mant_prev.LimpiarFrmMp()
+                    ElseIf codRespCiclo <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp_2) Then
+                        MsgBox(resp_2, MsgBoxStyle.Critical, "Error")
+                    Else
+                        MsgBox(resp, MsgBoxStyle.Information, "Validación")
+                        mant_prev.LimpiarFrmMp()
+                    End If
                 End If
-
-                If cod_resp = 1 Then
-                    MsgBox(resp & Chr(13) & resp_2, MsgBoxStyle.Information, "Validación")
-                ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
-                    MsgBox(resp, MsgBoxStyle.Critical, "Error")
-                End If
+            ElseIf Not String.IsNullOrWhiteSpace(resp) Then
+                MsgBox(resp, MsgBoxStyle.Exclamation, "Validación")
             End If
-
-            mant_prev.LimpiarFrmMp()
-        ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
-            MsgBox(resp, MsgBoxStyle.Exclamation, "Validación")
-        End If
-
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Ingresar MP)", True, Me)
+        End Try
     End Sub
 
     Private Sub txtFrecuenciaMp_GotFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtFrecuenciaMp.GotFocus
@@ -429,6 +484,15 @@ Public Class FrmMp
     End Sub
 
     Private Sub btnNewCiclo_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnGuardarComoNuevoCiclo.Click
+        If Not Usuario.PermisoIngMp AndAlso Not Usuario.PermisoGuardarMp Then
+            MsgBox("No tiene permisos para guardar nuevos ciclos.", MsgBoxStyle.Exclamation, "Seguridad")
+            Exit Sub
+        End If
+
+        grillaTareasCicloMp.EndEdit()
+        grillaPersonalMp.EndEdit()
+        grillaInsumosMp.EndEdit()
+
         Dim mant_prev As New MantPreventiva
         Dim cod_resp As Integer = 0
         Dim resp As String = ""
@@ -438,29 +502,37 @@ Public Class FrmMp
         valida = mant_prev.ValidarMP
 
         If valida = "" Then
-            id_nuevo_ciclo = mant_prev.NuevoIdCicloMp(txtIdMant.Text)
-
-            mant_prev.IngCicloMp(txtIdMant.Text, CStr(id_nuevo_ciclo), FechaIniCiclo.Value, HrInicioCiclo.Value, fechaFinCicloMp.Value, HrFinCiclo.Value, txtDuracionCiclo.Text, txtObsCiclo.Text, cmbEstadoCiclo.Text, principal.lblUsuario.Text, cod_resp, resp)
-
             Try
+                id_nuevo_ciclo = mant_prev.NuevoIdCicloMp(txtIdMant.Text)
+                If id_nuevo_ciclo <= 0 Then
+                    MsgBox("No fue posible obtener un identificador para el nuevo ciclo.", MsgBoxStyle.Critical, "Error")
+                    Exit Sub
+                End If
+
+                mant_prev.IngCicloMp(txtIdMant.Text, CStr(id_nuevo_ciclo), FechaIniCiclo.Value, HrInicioCiclo.Value, fechaFinCicloMp.Value, HrFinCiclo.Value, txtDuracionCiclo.Text, txtObsCiclo.Text, cmbEstadoCiclo.Text, principal.lblUsuario.Text, cod_resp, resp)
+
                 If grillaPersonalMp.Rows.Count > 0 Then
                     With grillaPersonalMp
                         For i = 0 To .Rows.Count - 1
-                            mant_prev.IngPersonalCicloMp(.Rows(i).Cells(0).Value, txtIdMant.Text, CStr(id_nuevo_ciclo))
+                            If .Rows(i).IsNewRow Then Continue For
+                            Dim rutPer As String = Convert.ToString(.Rows(i).Cells(0).Value)
+                            If Not String.IsNullOrWhiteSpace(rutPer) Then
+                                mant_prev.IngPersonalCicloMp(rutPer, txtIdMant.Text, CStr(id_nuevo_ciclo))
+                            End If
                         Next
                     End With
                 End If
 
                 If grillaTareasCicloMp.Rows.Count > 0 Then
                     With grillaTareasCicloMp
-                        Dim obs_tarea As String
-
                         For i = 0 To .Rows.Count - 1
-                            obs_tarea = If(.Rows(i).Cells(6).Value Is Nothing, "", .Rows(i).Cells(6).Value.ToString())
+                            If .Rows(i).IsNewRow Then Continue For
+                            Dim obs_tarea As String = If(.Rows(i).Cells(6).Value Is Nothing OrElse IsDBNull(.Rows(i).Cells(6).Value), "", .Rows(i).Cells(6).Value.ToString())
+                            Dim tiempo_tarea As String = If(.Rows(i).Cells(5).Value Is Nothing OrElse IsDBNull(.Rows(i).Cells(5).Value), "0", .Rows(i).Cells(5).Value.ToString())
                             If True.Equals(.Rows(i).Cells(0).Value) Then
-                                mant_prev.IngTareasCicloMp(txtIdMant.Text, CStr(id_nuevo_ciclo), .Rows(i).Cells(1).Value, .Rows(i).Cells(2).Value, .Rows(i).Cells(5).Value, obs_tarea)
+                                mant_prev.IngTareasCicloMp(txtIdMant.Text, CStr(id_nuevo_ciclo), Convert.ToString(.Rows(i).Cells(1).Value), Convert.ToString(.Rows(i).Cells(2).Value), tiempo_tarea, obs_tarea)
                             Else
-                                mant_prev.IngTareasPendCicloMp(txtIdMant.Text, CStr(id_nuevo_ciclo), .Rows(i).Cells(1).Value, .Rows(i).Cells(2).Value, obs_tarea)
+                                mant_prev.IngTareasPendCicloMp(txtIdMant.Text, CStr(id_nuevo_ciclo), Convert.ToString(.Rows(i).Cells(1).Value), Convert.ToString(.Rows(i).Cells(2).Value), obs_tarea)
                             End If
                         Next
                     End With
@@ -468,28 +540,26 @@ Public Class FrmMp
 
                 If grillaInsumosMp.RowCount > 0 Then
                     For i = 0 To grillaInsumosMp.RowCount - 1
-                        mant_prev.IngInsumosMp(txtIdMant.Text, CStr(id_nuevo_ciclo), grillaInsumosMp.Rows(i).Cells(0).Value, grillaInsumosMp.Rows(i).Cells(3).Value, grillaInsumosMp.Rows(i).Cells(4).Value)
+                        If grillaInsumosMp.Rows(i).IsNewRow Then Continue For
+                        Dim idIns As String = Convert.ToString(grillaInsumosMp.Rows(i).Cells(0).Value)
+                        If Not String.IsNullOrWhiteSpace(idIns) Then
+                            mant_prev.IngInsumosMp(txtIdMant.Text, CStr(id_nuevo_ciclo), idIns, Convert.ToString(grillaInsumosMp.Rows(i).Cells(3).Value), Convert.ToString(grillaInsumosMp.Rows(i).Cells(4).Value))
+                        End If
                     Next
                 End If
 
                 If cod_resp = 1 Then
                     MsgBox(resp, MsgBoxStyle.Information, "Validación")
+                    mant_prev.LimpiarFrmMp()
                 ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                     MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                 End If
-
-                If btnNuevoCiclo.Enabled = False Then
-                    btnNuevoCiclo.Enabled = True
-                End If
-
-                mant_prev.LimpiarFrmMp()
             Catch ex As Exception
                 RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Nuevo Ciclo)", True, Me)
             End Try
         Else
             MsgBox(valida, MsgBoxStyle.Exclamation, "Validación")
         End If
-
     End Sub
 
     Private Sub txtBuscarNodo1_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtBuscarNodo1.KeyUp
@@ -504,11 +574,16 @@ Public Class FrmMp
     End Sub
 
     Private Sub btnEliminarCiclo_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnEliminarCiclo.Click
-        If txtIdMant.Text = "" Or txtIdCiclo.Text = "" Then
-            MsgBox("Debe desplegar una mantención y un ciclo para eliminar", MsgBoxStyle.Exclamation, "Validación")
+        If Not Usuario.PermisoEliminarCicloMp Then
+            MsgBox("No tiene permisos para eliminar ciclos.", MsgBoxStyle.Exclamation, "Seguridad")
             Exit Sub
-        Else
-            If MsgBox("¿ Esta Seguro que desea eliminar el ciclo N°" & txtIdCiclo.Text & " ?", MsgBoxStyle.YesNo, "Validación") = MsgBoxResult.Yes Then
+        End If
+        Try
+            If String.IsNullOrWhiteSpace(txtIdMant.Text) OrElse String.IsNullOrWhiteSpace(txtIdCiclo.Text) Then
+                MsgBox("Debe desplegar una mantención y un ciclo para eliminar", MsgBoxStyle.Exclamation, "Validación")
+                Exit Sub
+            End If
+            If MsgBox("¿Está seguro que desea eliminar el ciclo N°" & txtIdCiclo.Text & "?", MsgBoxStyle.YesNo, "Validación") = MsgBoxResult.Yes Then
                 Dim mant_prev As New MantPreventiva
                 Dim cod_resp As Integer = 0
                 Dim resp As String = ""
@@ -522,15 +597,22 @@ Public Class FrmMp
                     MsgBox(resp, MsgBoxStyle.Critical, "Error")
                 End If
             End If
-        End If
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Eliminar Ciclo)", True, Me)
+        End Try
     End Sub
 
     Private Sub btnEliminarMp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnEliminarMp.Click
-        If txtIdMant.Text = "" Then
-            MsgBox("Debe desplegar una mantencion preventiva antes de eliminar", MsgBoxStyle.Exclamation, "Validación")
+        If Not Usuario.PermisoEliminarMp Then
+            MsgBox("No tiene permisos para eliminar mantenciones preventivas.", MsgBoxStyle.Exclamation, "Seguridad")
             Exit Sub
-        Else
-            If MsgBox("¿ Esta Seguro de Eliminar la Mantencion Preventiva ?" & Chr(13) & "Nota : Se eliminará toda la información relacionada con esta mantención" & Chr(13) & "¿ Desea Continuar ?", MsgBoxStyle.YesNo, "Validación") = MsgBoxResult.Yes Then
+        End If
+        Try
+            If String.IsNullOrWhiteSpace(txtIdMant.Text) Then
+                MsgBox("Debe desplegar una mantención preventiva antes de eliminar", MsgBoxStyle.Exclamation, "Validación")
+                Exit Sub
+            End If
+            If MsgBox("¿Está seguro de eliminar la Mantención Preventiva?" & Chr(13) & "Nota: Se eliminará toda la información relacionada con esta mantención." & Chr(13) & "¿Desea continuar?", MsgBoxStyle.YesNo, "Validación") = MsgBoxResult.Yes Then
                 Dim mant_prev As New MantPreventiva
                 Dim cod_resp As Integer = 0
                 Dim resp As String = ""
@@ -544,7 +626,9 @@ Public Class FrmMp
                     MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                 End If
             End If
-        End If
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Eliminar MP)", True, Me)
+        End Try
     End Sub
 
     Private Sub btnSalir_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSalir.Click
@@ -575,77 +659,89 @@ Public Class FrmMp
 
     End Sub
 
-    Private Sub TareasAdMp_Enter(ByVal sender As Object, ByVal e As System.EventArgs) Handles TareasAdMp.Enter
-        If grillaTareasAdMp.DataSource Is Nothing Or grillaTareasAdMp.RowCount = 0 Then
-            Dim MP As New MantPreventiva
-            Dim formato_grid As New FormatoGrillas
-            Dim DST_TAREAS As New DataSet
-
-            MP.CrgTareasNodoTodas(DST_TAREAS)
-            If DST_TAREAS.Tables.Count > 0 Then
-                grillaTareasAdMp.DataSource = DST_TAREAS.Tables(0)
-                formato_grid.grillasMp(grillaTareasAdMp)
-                filtro_tareas.Table = DST_TAREAS.Tables(0)
-            End If
+    Private Sub GrillasCheck_CurrentCellDirtyStateChanged(ByVal sender As Object, ByVal e As EventArgs) Handles grillaTareasCicloMp.CurrentCellDirtyStateChanged, grillaTareasAdMp.CurrentCellDirtyStateChanged
+        Dim grilla As DataGridView = TryCast(sender, DataGridView)
+        If grilla IsNot Nothing AndAlso grilla.IsCurrentCellDirty Then
+            grilla.CommitEdit(DataGridViewDataErrorContexts.Commit)
         End If
+    End Sub
+
+    Private Sub TareasAdMp_Enter(ByVal sender As Object, ByVal e As System.EventArgs) Handles TareasAdMp.Enter
+        Try
+            If grillaTareasAdMp.DataSource Is Nothing OrElse grillaTareasAdMp.RowCount = 0 Then
+                Dim MP As New MantPreventiva
+                Dim formato_grid As New FormatoGrillas
+                Dim dsTodas As New DataSet
+
+                MP.CrgTareasNodoTodas(dsTodas)
+                If dsTodas.Tables.Count > 0 Then
+                    grillaTareasAdMp.DataSource = dsTodas.Tables(0)
+                    formato_grid.grillasMp(grillaTareasAdMp)
+                    filtro_tareas.Table = dsTodas.Tables(0)
+                    filtro_tareas.RowFilter = String.Empty
+                End If
+            End If
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Cargar Tareas Adicionales)", True, Me)
+        End Try
     End Sub
 
     Private Sub txtBuscarTarea_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtBuscarTarea.TextChanged
-        If filtro_tareas.Table Is Nothing OrElse grillaTareasAdMp.ColumnCount < 5 Then Exit Sub
-        Dim tipo_tarea As String = ""
-        Dim textoFiltro As String = Utilitarios.EscaparLike(txtBuscarTarea.Text)
+        Try
+            If filtro_tareas.Table Is Nothing OrElse grillaTareasAdMp.ColumnCount < 5 Then Exit Sub
+            Dim tipo_tarea As String = ""
+            Dim textoFiltro As String = Utilitarios.EscaparLike(txtBuscarTarea.Text)
 
-        If Opc_tareas_ele.Checked And opc_seccion.Checked Then
-            tipo_tarea = "Electrica"
-            filtro_tareas.RowFilter = "[" & grillaTareasAdMp.Columns(3).Name & "] like '%" & textoFiltro & "%' and Tipo_Mantención = '" & tipo_tarea & "' "
-            grillaTareasAdMp.DataSource = filtro_tareas
-            grillaTareasAdMp.Update()
+            If Opc_tareas_ele.Checked And opc_seccion.Checked Then
+                tipo_tarea = "Electrica"
+                filtro_tareas.RowFilter = "[" & grillaTareasAdMp.Columns(3).Name & "] like '%" & textoFiltro & "%' and Tipo_Mantención = '" & tipo_tarea & "' "
+                grillaTareasAdMp.DataSource = filtro_tareas
+                grillaTareasAdMp.Update()
 
-        ElseIf Opc_tareas_ele.Checked And opc_mod_maq.Checked Then
-            tipo_tarea = "Electrica"
-            filtro_tareas.RowFilter = "[" & grillaTareasAdMp.Columns(4).Name & "] like '%" & textoFiltro & "%' and Tipo_Mantención = '" & tipo_tarea & "' "
-            grillaTareasAdMp.DataSource = filtro_tareas
-            grillaTareasAdMp.Update()
+            ElseIf Opc_tareas_ele.Checked And opc_mod_maq.Checked Then
+                tipo_tarea = "Electrica"
+                filtro_tareas.RowFilter = "[" & grillaTareasAdMp.Columns(4).Name & "] like '%" & textoFiltro & "%' and Tipo_Mantención = '" & tipo_tarea & "' "
+                grillaTareasAdMp.DataSource = filtro_tareas
+                grillaTareasAdMp.Update()
 
-        ElseIf opc_tareas_mec.Checked And opc_seccion.Checked Then
-            tipo_tarea = "Mecanica"
-            filtro_tareas.RowFilter = "[" & grillaTareasAdMp.Columns(3).Name & "] like '%" & textoFiltro & "%' and Tipo_Mantención = '" & tipo_tarea & "' "
-            grillaTareasAdMp.DataSource = filtro_tareas
-            grillaTareasAdMp.Update()
+            ElseIf opc_tareas_mec.Checked And opc_seccion.Checked Then
+                tipo_tarea = "Mecanica"
+                filtro_tareas.RowFilter = "[" & grillaTareasAdMp.Columns(3).Name & "] like '%" & textoFiltro & "%' and Tipo_Mantención = '" & tipo_tarea & "' "
+                grillaTareasAdMp.DataSource = filtro_tareas
+                grillaTareasAdMp.Update()
 
-        ElseIf opc_tareas_mec.Checked And opc_mod_maq.Checked Then
-            tipo_tarea = "Mecanica"
-            filtro_tareas.RowFilter = "[" & grillaTareasAdMp.Columns(4).Name & "] like '%" & textoFiltro & "%' and Tipo_Mantención = '" & tipo_tarea & "' "
-            grillaTareasAdMp.DataSource = filtro_tareas
-            grillaTareasAdMp.Update()
+            ElseIf opc_tareas_mec.Checked And opc_mod_maq.Checked Then
+                tipo_tarea = "Mecanica"
+                filtro_tareas.RowFilter = "[" & grillaTareasAdMp.Columns(4).Name & "] like '%" & textoFiltro & "%' and Tipo_Mantención = '" & tipo_tarea & "' "
+                grillaTareasAdMp.DataSource = filtro_tareas
+                grillaTareasAdMp.Update()
 
-        End If
-
-
+            End If
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Filtrar Tareas)", True, Me)
+        End Try
     End Sub
 
     Private Sub btnAgrTareas_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnAgrTareas.Click
-
         Try
-            If DST_TAREAS.Tables.Count > 0 Then
-                With grillaTareasAdMp
-                    For i = 0 To .RowCount - 1
-                        If True.Equals(.Rows(i).Cells(0).Value) Then
-                            Dim fila As DataRow = DST_TAREAS.Tables(0).NewRow
+            grillaTareasAdMp.EndEdit()
+            If String.IsNullOrWhiteSpace(id_nodo_select) Then
+                MsgBox("Debe seleccionar primero una máquina o nodo en el árbol.", MsgBoxStyle.Exclamation, "Validación")
+                Exit Sub
+            End If
 
-                            fila(1) = id_nodo_select            'ID Nodo seleccionado
-                            fila(0) = .Rows(i).Cells(1).Value   'ID Tarea
-                            fila(2) = If(arbol1.SelectedNode IsNot Nothing, arbol1.SelectedNode.Text, "") 'Nombre Modulo seleccionado
-                            fila(3) = .Rows(i).Cells(5).Value   'Descripcion Tarea seleccionada
-                            fila(4) = 0                         'Tiempo Tarea
-                            DST_TAREAS.Tables(0).Rows.Add(fila)
-                        End If
-                    Next
-                End With
+            Dim seleccionadas As Integer = 0
+            For i = 0 To grillaTareasAdMp.RowCount - 1
+                If True.Equals(grillaTareasAdMp.Rows(i).Cells(0).Value) Then
+                    seleccionadas += 1
+                End If
+            Next
+            If seleccionadas = 0 Then
+                MsgBox("Debe marcar al menos una tarea para agregar.", MsgBoxStyle.Exclamation, "Validación")
+                Exit Sub
+            End If
 
-                MsgBox("Tareas Ingresadas", MsgBoxStyle.Information, "Confirmación")
-
-            Else
+            If DST_TAREAS.Tables.Count = 0 Then
                 Dim mant_prev As New MantPreventiva
                 Dim grillas As New FormatoGrillas
 
@@ -655,29 +751,36 @@ Public Class FrmMp
                 grillaTareasCicloMp.DataSource = DST_TAREAS.Tables(0)
                 DST_TAREAS.Tables(0).Rows.Clear()
                 grillas.grillasMp(grillaTareasCicloMp)
-
-                With grillaTareasAdMp
-                    For i = 0 To .RowCount - 1
-                        If True.Equals(.Rows(i).Cells(0).Value) Then
-                            Dim fila As DataRow = DST_TAREAS.Tables(0).NewRow
-
-                            fila(1) = id_nodo_select            'ID Nodo seleccionado
-                            fila(0) = .Rows(i).Cells(1).Value   'ID Tarea
-                            fila(2) = If(arbol1.SelectedNode IsNot Nothing, arbol1.SelectedNode.Text, "") 'Nombre Modulo seleccionado
-                            fila(3) = .Rows(i).Cells(5).Value   'Descripcion Tarea seleccionada
-                            fila(4) = 0                         'Tiempo Tarea
-                            DST_TAREAS.Tables(0).Rows.Add(fila)
-                        End If
-                    Next
-                End With
-
-                MsgBox("Tareas Ingresadas", MsgBoxStyle.Information, "Confirmación")
             End If
 
+            With grillaTareasAdMp
+                For i = 0 To .RowCount - 1
+                    If True.Equals(.Rows(i).Cells(0).Value) Then
+                        Dim idTareaObj As Object = .Rows(i).Cells(1).Value
+                        Dim existe As Boolean = False
+                        For Each rExist As DataRow In DST_TAREAS.Tables(0).Rows
+                            If rExist.RowState <> DataRowState.Deleted AndAlso Convert.ToString(rExist(0)) = Convert.ToString(idTareaObj) AndAlso Convert.ToString(rExist(1)) = id_nodo_select Then
+                                existe = True
+                                Exit For
+                            End If
+                        Next
+                        If existe Then Continue For
+
+                        Dim fila As DataRow = DST_TAREAS.Tables(0).NewRow
+                        fila(1) = id_nodo_select
+                        fila(0) = idTareaObj
+                        fila(2) = If(arbol1.SelectedNode IsNot Nothing, arbol1.SelectedNode.Text, "")
+                        fila(3) = Convert.ToString(.Rows(i).Cells(5).Value)
+                        fila(4) = 0
+                        DST_TAREAS.Tables(0).Rows.Add(fila)
+                    End If
+                Next
+            End With
+
+            MsgBox("Tareas ingresadas", MsgBoxStyle.Information, "Confirmación")
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Agregar Tareas)", True, Me)
         End Try
-
     End Sub
 
     Private Sub btn_agr_tareas_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_agr_tareas.Click
@@ -710,17 +813,16 @@ Public Class FrmMp
     End Sub
 
     Private Sub opc_tareas_mec_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles opc_tareas_mec.CheckedChanged
-        If opc_tareas_mec.Checked And grillaTareasAdMp.RowCount > 0 Then
+        If opc_tareas_mec.Checked AndAlso filtro_tareas.Table IsNot Nothing Then
             filtro_tareas.RowFilter = "Tipo_Mantención = 'Mecanica' "
             grillaTareasAdMp.DataSource = filtro_tareas
             grillaTareasAdMp.Update()
             lblFiltro.Text = "Ingrese el nombre de la tarea"
         End If
-
     End Sub
 
     Private Sub Opc_tareas_ele_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Opc_tareas_ele.CheckedChanged
-        If Opc_tareas_ele.Checked And grillaTareasAdMp.RowCount > 0 Then
+        If Opc_tareas_ele.Checked AndAlso filtro_tareas.Table IsNot Nothing Then
             filtro_tareas.RowFilter = "Tipo_Mantención = 'Electrica' "
             grillaTareasAdMp.DataSource = filtro_tareas
             grillaTareasAdMp.Update()
@@ -764,28 +866,45 @@ Public Class FrmMp
     End Sub
 
     Private Sub btnCambiarTareas_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnCambiarTareas.Click
-        Dim mant_prev As New MantPreventiva
-        Dim cod_resp As Integer
-        Dim resp As String = ""
-
-        With grillaTareasCicloMp
-            If .RowCount > 0 Then
-                Dim obs_tarea As String
-
-                For i = 0 To .Rows.Count - 1
-                    If True.Equals(.Rows(i).Cells(0).Value) Then
-                        obs_tarea = If(.Rows(i).Cells(6).Value Is Nothing, "", .Rows(i).Cells(6).Value.ToString())
-                        mant_prev.UpdIdNodoTareasMp(txtIdMant.Text, txtIdCiclo.Text, .Rows(i).Cells(1).Value, id_nodo_select, cod_resp, resp)
-                    End If
-
-                Next
-            End If
-
-        End With
-
-        If cod_resp = 0 Then
-            MsgBox(resp, MsgBoxStyle.Information, "Validación")
+        If Not Usuario.PermisoCambiarTareasMp Then
+            MsgBox("No tiene permisos para reasignar tareas de MP.", MsgBoxStyle.Exclamation, "Seguridad")
+            Exit Sub
         End If
+        If String.IsNullOrWhiteSpace(id_nodo_select) Then
+            MsgBox("Debe seleccionar el nodo de destino en el árbol.", MsgBoxStyle.Exclamation, "Validación")
+            Exit Sub
+        End If
+
+        grillaTareasCicloMp.EndEdit()
+
+        Try
+            Dim mant_prev As New MantPreventiva
+            Dim cod_resp As Integer = -1
+            Dim resp As String = ""
+            Dim procesadas As Integer = 0
+
+            With grillaTareasCicloMp
+                If .RowCount > 0 Then
+                    For i = 0 To .Rows.Count - 1
+                        If .Rows(i).IsNewRow Then Continue For
+                        If True.Equals(.Rows(i).Cells(0).Value) Then
+                            mant_prev.UpdIdNodoTareasMp(txtIdMant.Text, txtIdCiclo.Text, Convert.ToString(.Rows(i).Cells(1).Value), id_nodo_select, cod_resp, resp)
+                            procesadas += 1
+                        End If
+                    Next
+                End If
+            End With
+
+            If procesadas = 0 Then
+                MsgBox("Debe marcar al menos una tarea para cambiar su ID de nodo.", MsgBoxStyle.Exclamation, "Validación")
+            ElseIf cod_resp = 1 OrElse cod_resp = 0 Then
+                MsgBox(If(String.IsNullOrWhiteSpace(resp), "Tareas actualizadas correctamente.", resp), MsgBoxStyle.Information, "Validación")
+            ElseIf Not String.IsNullOrWhiteSpace(resp) Then
+                MsgBox(resp, MsgBoxStyle.Critical, "Error")
+            End If
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Cambiar Tareas)", True, Me)
+        End Try
     End Sub
 
     Private Sub btn_Limpiar_tabla_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_Limpiar_tabla.Click
@@ -799,47 +918,62 @@ Public Class FrmMp
     End Sub
 
     Private Sub btnActMp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnActMp.Click
-        Dim existe_mp As Boolean = False
-        Dim mant_prev As New MantPreventiva
-        Dim cod_resp As Integer
-        Dim resp As String = ""
-
-        If txtIdMant.Text = "" Then
-            MsgBox("Faltan campos por completar,revise la informacion de la MP", MsgBoxStyle.Exclamation, "Validación")
+        If Not Usuario.PermisoGuardarMp Then
+            MsgBox("No tiene permisos para actualizar mantenciones preventivas.", MsgBoxStyle.Exclamation, "Seguridad")
             Exit Sub
         End If
 
-        existe_mp = mant_prev.BuscarMp(txtIdMant.Text)
-        If existe_mp Then
-            If txtIdMant.Text <> "" AndAlso txtFrecuenciaMp.Text <> "" AndAlso txtTiempoAviso.Text <> "" Then
-                mant_prev.UpdMantPreventiva(txtIdMant.Text, id_nodo_select, txtFrecuenciaMp.Text, txtTiempoAviso.Text, cmbEstadoMp.Text, cmbTipoMp.Text, principal.lblUsuario.Text, txtObsMant.Text, cod_resp, resp)
-                If cod_resp = 1 Then
-                    MsgBox(resp, MsgBoxStyle.Information, "Validación")
-                    mant_prev.LimpiarFrmMp()
-                ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
-                    MsgBox(resp, MsgBoxStyle.Critical, "Validación")
+        Try
+            Dim existe_mp As Boolean = False
+            Dim mant_prev As New MantPreventiva
+            Dim cod_resp As Integer = 0
+            Dim resp As String = ""
+
+            If String.IsNullOrWhiteSpace(txtIdMant.Text) Then
+                MsgBox("Faltan campos por completar, revise la información de la MP", MsgBoxStyle.Exclamation, "Validación")
+                Exit Sub
+            End If
+            If String.IsNullOrWhiteSpace(id_nodo_select) Then
+                MsgBox("Debe seleccionar un nodo o máquina válido en el árbol.", MsgBoxStyle.Exclamation, "Validación")
+                Exit Sub
+            End If
+
+            existe_mp = mant_prev.BuscarMp(txtIdMant.Text)
+            If existe_mp Then
+                If txtIdMant.Text <> "" AndAlso txtFrecuenciaMp.Text <> "" AndAlso txtTiempoAviso.Text <> "" Then
+                    mant_prev.UpdMantPreventiva(txtIdMant.Text, id_nodo_select, txtFrecuenciaMp.Text, txtTiempoAviso.Text, cmbEstadoMp.Text, cmbTipoMp.Text, principal.lblUsuario.Text, txtObsMant.Text, cod_resp, resp)
+                    If cod_resp = 1 Then
+                        MsgBox(resp, MsgBoxStyle.Information, "Validación")
+                        mant_prev.LimpiarFrmMp()
+                    ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
+                        MsgBox(resp, MsgBoxStyle.Critical, "Validación")
+                    End If
+                Else
+                    MsgBox("Faltan campos por completar, revise la información de la MP", MsgBoxStyle.Exclamation, "Validación")
                 End If
             Else
-                MsgBox("Faltan campos por completar,revise la informacion de la MP", MsgBoxStyle.Exclamation, "Validación")
+                MsgBox("La mantención preventiva indicada no existe en la base de datos.", MsgBoxStyle.Exclamation, "Validación")
             End If
-        End If
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Actualizar MP)", True, Me)
+        End Try
     End Sub
 
     Private Sub btn_plan_ciclos_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_plan_ciclos.Click
-        Dim ultimo_ciclo As Boolean = False
+        Try
+            If txtIdMant.Text <> "" AndAlso txtIdCiclo.Text <> "" Then
+                Dim mant_preventiva As New MantPreventiva
+                Dim ultimo_ciclo As Boolean = mant_preventiva.BuscarUltimoCicloMp(txtIdMant.Text, txtIdCiclo.Text)
 
-        If txtIdMant.Text <> "" And txtIdCiclo.Text <> "" Then
-            Dim mant_preventiva As New MantPreventiva
-
-            ultimo_ciclo = mant_preventiva.BuscarUltimoCicloMp(txtIdMant.Text, txtIdCiclo.Text)
-
-            If ultimo_ciclo Then
-                FrmPlanificarCiclos.Show()
-            Else
-                MsgBox("Debe desplegar el ultimo ciclo para planificar", MsgBoxStyle.Exclamation, "Validación")
+                If ultimo_ciclo Then
+                    FrmPlanificarCiclos.Show()
+                Else
+                    MsgBox("Debe desplegar el último ciclo para planificar", MsgBoxStyle.Exclamation, "Validación")
+                End If
             End If
-
-        End If
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Mantención Preventiva (Planificar Ciclos)", True, Me)
+        End Try
     End Sub
 
     Private Sub opc_seccion_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles opc_seccion.CheckedChanged

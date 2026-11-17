@@ -25,6 +25,8 @@ Public Class FrmInfMantPrev
             opcFechas.Checked = True
             ActualizarVisibilidadFiltros()
             Utilitarios.AplicarTemaModerno(Me)
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Mantención Preventiva (Carga)", True, Me)
         Finally
             Arbol2.EndUpdate()
             Me.ResumeLayout(True)
@@ -145,6 +147,12 @@ Public Class FrmInfMantPrev
         grillaTareasInfMp.SuspendLayout()
         grillaTareasPendInfMp.SuspendLayout()
         Try
+            grillaDetalleCicloMp.DataSource = Nothing
+            grillaTareasInfMp.DataSource = Nothing
+            grillaTareasPendInfMp.DataSource = Nothing
+            grillaPersonalInfMp.DataSource = Nothing
+            grillaInsumosInfMp.DataSource = Nothing
+
             If opcFechas.Checked Then
                 opcion = 1
                 mant_prev.InfMpFechas(id_nodo_select, f_ini_inf_mp.Value, f_fin_inf_mp.Value, CmbTipoMp.Text, opcion, DST)
@@ -234,10 +242,13 @@ Public Class FrmInfMantPrev
         Dim mant_prev As New MantPreventiva
         Dim formato_grid As New FormatoGrillas
         Try
-            If e.RowIndex < 0 Then Exit Sub
+            If e.RowIndex < 0 OrElse grillaInfMant.Rows(e.RowIndex).IsNewRow Then Exit Sub
+            Dim valIdMp As Object = grillaInfMant.Rows(e.RowIndex).Cells(0).Value
+            If valIdMp Is Nothing OrElse IsDBNull(valIdMp) OrElse String.IsNullOrWhiteSpace(valIdMp.ToString()) Then Exit Sub
+
             Dim DST As New DataSet
             grillaDetalleCicloMp.SuspendLayout()
-            mant_prev.InfCicloMp(grillaInfMant.Rows(e.RowIndex).Cells(0).Value, DST)
+            mant_prev.InfCicloMp(valIdMp.ToString(), DST)
             If DST.Tables.Count > 0 Then
                 grillaDetalleCicloMp.DataSource = DST.Tables(0)
                 formato_grid.grillasMp(grillaDetalleCicloMp)
@@ -249,7 +260,6 @@ Public Class FrmInfMantPrev
         Finally
             grillaDetalleCicloMp.ResumeLayout(False)
         End Try
-
     End Sub
 
     Private Sub opcTipoMp_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles opcTipoMp.CheckedChanged
@@ -265,11 +275,17 @@ Public Class FrmInfMantPrev
         Dim DST5 As New DataSet
         Try
             If e.RowIndex < 0 OrElse grillaInfMant.CurrentRow Is Nothing OrElse grillaDetalleCicloMp.CurrentRow Is Nothing Then Exit Sub
+            Dim idMpObj As Object = grillaInfMant.CurrentRow.Cells(0).Value
+            Dim idCicloObj As Object = grillaDetalleCicloMp.CurrentRow.Cells(0).Value
+            If idMpObj Is Nothing OrElse IsDBNull(idMpObj) OrElse idCicloObj Is Nothing OrElse IsDBNull(idCicloObj) Then Exit Sub
+            Dim idMpStr As String = idMpObj.ToString()
+            Dim idCicloStr As String = idCicloObj.ToString()
+
             TabDetalleCicloMp.SuspendLayout()
-            mant_prev.InfTareasCicloMp(grillaInfMant.Rows(grillaInfMant.CurrentRow.Index).Cells(0).Value, grillaDetalleCicloMp.Rows(grillaDetalleCicloMp.CurrentRow.Index).Cells(0).Value, id_nodo_select, DST2)
-            mant_prev.InfTareasPendCicloMp(grillaInfMant.Rows(grillaInfMant.CurrentRow.Index).Cells(0).Value, grillaDetalleCicloMp.Rows(grillaDetalleCicloMp.CurrentRow.Index).Cells(0).Value, id_nodo_select, DST5)
-            mant_prev.InfPersonalCicloMp(grillaInfMant.Rows(grillaInfMant.CurrentRow.Index).Cells(0).Value, grillaDetalleCicloMp.Rows(grillaDetalleCicloMp.CurrentRow.Index).Cells(0).Value, DST3)
-            mant_prev.InfInsumosCicloMp(grillaInfMant.Rows(grillaInfMant.CurrentRow.Index).Cells(0).Value, grillaDetalleCicloMp.Rows(grillaDetalleCicloMp.CurrentRow.Index).Cells(0).Value, DST4)
+            mant_prev.InfTareasCicloMp(idMpStr, idCicloStr, id_nodo_select, DST2)
+            mant_prev.InfTareasPendCicloMp(idMpStr, idCicloStr, id_nodo_select, DST5)
+            mant_prev.InfPersonalCicloMp(idMpStr, idCicloStr, DST3)
+            mant_prev.InfInsumosCicloMp(idMpStr, idCicloStr, DST4)
 
             If DST2.Tables.Count > 0 Then
                 grillaTareasInfMp.DataSource = DST2.Tables(0)
@@ -426,6 +442,7 @@ Public Class FrmInfMantPrev
             grillaInsumosInfMp.Columns.Clear()
         End If
 
+        nombre_nodo_select = ""
         btnGantt.Enabled = False
     End Sub
 End Class

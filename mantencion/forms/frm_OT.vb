@@ -55,6 +55,10 @@ Public Class frm_OT
     End Sub
 
     Private Sub btn_guardar_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_guardar.Click
+        If Not Usuario.PermisoGuardarOt Then
+            MessageBox.Show(Me, "No posee permisos para ingresar o modificar órdenes de trabajo.", "Acceso restringido", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
         Dim cod_resp As Integer = 0
         Dim resp As String = ""
         Dim existe_ot As String = ""
@@ -75,8 +79,8 @@ Public Class frm_OT
                         estado_ot = "cerrada"
                     ElseIf cmbEstadoOt.Text = "NULA" Then
                         estado_ot = "nula"
-                    ElseIf cmbEstadoOt.Text = "ABIERTA" And txtDuracionOt.Text = "" And txtCerradoPor.Text = "" Then
-                        MsgBox("Debe Seleccionar la opcion 'OT CERRADA',si no desea cerrar la OT Presione Limpiar", MsgBoxStyle.Exclamation, "Validación")
+                    Else
+                        MsgBox("Debe seleccionar el estado 'CERRADA' o 'NULA'. Si no desea cerrar la OT presione Limpiar.", MsgBoxStyle.Exclamation, "Validación")
                         Exit Sub
                     End If
 
@@ -87,12 +91,17 @@ Public Class frm_OT
                     OT.IngOtCerrada(txtNot.Text, id_nodo_ot_select, cmbSintoma.SelectedValue, cmbFalla.SelectedValue, dt_fecha_rec.Value, dt_hr_rec.Value, dt_fecha_ini.Value, dt_hr_ini.Value, dt_fecha_ter.Value, dt_hr_ter.Value, dt_fecha_cierre.Value, dt_hr_cierre.Value, txtDuracionOt.Text, cmb_Tipo_Det.SelectedValue, cmb_det.Text, text_des_falla.Text, txtDescTrab.Text, txtSolicitadoPor.Text, txtRecibidoPor.Text, txtCerradoPor.Text, cmb_Tipo_trab.SelectedValue, principal.lblUsuario.Text, estado_ot, mant_interna, cod_resp, resp)
                     If grillaPersonalOt.RowCount > 0 Then
                         For i = 0 To grillaPersonalOt.RowCount - 1
-                            OT.IngPersonalOt(grillaPersonalOt.Rows(i).Cells(0).Value, txtNot.Text, CeldaStr(grillaPersonalOt.Rows(i), 2))
+                            If grillaPersonalOt.Rows(i).IsNewRow Then Continue For
+                            Dim rutPer As String = CeldaStr(grillaPersonalOt.Rows(i), 0)
+                            If Not String.IsNullOrEmpty(rutPer) Then
+                                OT.IngPersonalOt(rutPer, txtNot.Text, CeldaStr(grillaPersonalOt.Rows(i), 2))
+                            End If
                         Next
                     End If
 
                     If grillaInsumosOt.RowCount > 0 Then
                         For i = 0 To grillaInsumosOt.RowCount - 1
+                            If grillaInsumosOt.Rows(i).IsNewRow Then Continue For
                             Dim codIns As String = CeldaStr(grillaInsumosOt.Rows(i), 0)
                             If Not String.IsNullOrEmpty(codIns) Then
                                 OT.IngInsumosOt(txtNot.Text, codIns, CeldaStr(grillaInsumosOt.Rows(i), 3), CeldaStr(grillaInsumosOt.Rows(i), 4))
@@ -102,6 +111,7 @@ Public Class frm_OT
 
                     If grillaOtExternas.RowCount > 0 Then
                         For i = 0 To grillaOtExternas.RowCount - 1
+                            If grillaOtExternas.Rows(i).IsNewRow Then Continue For
                             Dim codExt As String = CeldaStr(grillaOtExternas.Rows(i), 0)
                             If Not String.IsNullOrEmpty(codExt) Then
                                 OT.IngOtExterna(txtNot.Text, codExt, CeldaStr(grillaOtExternas.Rows(i), 1))
@@ -121,14 +131,18 @@ Public Class frm_OT
                         estado_ot = "cerrada"
 
                     ElseIf cmbEstadoOt.Text = "NULA" Then
-                        If MsgBox("¿Esta seguro de anular la OT " & txtNot.Text & " ?", MsgBoxStyle.YesNo, "Anular Orden De Trabajo") = MsgBoxResult.Yes Then
+                        If Not Usuario.PermisoAnularOt AndAlso Not Usuario.EsAdministrador Then
+                            MessageBox.Show(Me, "No posee permisos para anular órdenes de trabajo.", "Acceso restringido", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                            Exit Sub
+                        End If
+                        If MsgBox("¿Está seguro de anular la OT " & txtNot.Text & " ?", MsgBoxStyle.YesNo, "Anular Orden De Trabajo") = MsgBoxResult.Yes Then
                             estado_ot = "nula"
                         Else
                             Exit Sub
                         End If
 
-                    ElseIf cmbEstadoOt.Text = "ABIERTA" And txtDuracionOt.Text = "" And txtCerradoPor.Text = "" Then
-                        MsgBox("Opcion Inválida, debe ser OT CERRADA O OT NULA", MsgBoxStyle.Exclamation, "Validación")
+                    Else
+                        MsgBox("Opción inválida: debe seleccionar el estado 'CERRADA' o 'NULA'.", MsgBoxStyle.Exclamation, "Validación")
                         Exit Sub
                     End If
 
@@ -140,12 +154,17 @@ Public Class frm_OT
 
                     If grillaPersonalOt.RowCount > 0 Then
                         For i = 0 To grillaPersonalOt.RowCount - 1
-                            OT.UpdPersonalOt(txtNot.Text, grillaPersonalOt.Rows(i).Cells(0).Value, CeldaStr(grillaPersonalOt.Rows(i), 2))
+                            If grillaPersonalOt.Rows(i).IsNewRow Then Continue For
+                            Dim rutPer As String = CeldaStr(grillaPersonalOt.Rows(i), 0)
+                            If Not String.IsNullOrEmpty(rutPer) Then
+                                OT.UpdPersonalOt(txtNot.Text, rutPer, CeldaStr(grillaPersonalOt.Rows(i), 2))
+                            End If
                         Next
                     End If
 
                     If grillaInsumosOt.RowCount > 0 Then
                         For i = 0 To grillaInsumosOt.RowCount - 1
+                            If grillaInsumosOt.Rows(i).IsNewRow Then Continue For
                             Dim codIns As String = CeldaStr(grillaInsumosOt.Rows(i), 0)
                             If Not String.IsNullOrEmpty(codIns) Then
                                 OT.UpdInsumosOt(txtNot.Text, codIns, CeldaStr(grillaInsumosOt.Rows(i), 3), CeldaStr(grillaInsumosOt.Rows(i), 4))
@@ -155,6 +174,7 @@ Public Class frm_OT
 
                     If grillaOtExternas.RowCount > 0 Then
                         For i = 0 To grillaOtExternas.RowCount - 1
+                            If grillaOtExternas.Rows(i).IsNewRow Then Continue For
                             Dim codExt As String = CeldaStr(grillaOtExternas.Rows(i), 0)
                             If Not String.IsNullOrEmpty(codExt) Then
                                 OT.UpdOtExterna(txtNot.Text, codExt, CeldaStr(grillaOtExternas.Rows(i), 1))
@@ -187,12 +207,17 @@ Public Class frm_OT
 
                     If grillaPersonalOt.RowCount > 0 Then
                         For i = 0 To grillaPersonalOt.RowCount - 1
-                            OT.IngPersonalOt(grillaPersonalOt.Rows(i).Cells(0).Value, txtNot.Text, CeldaStr(grillaPersonalOt.Rows(i), 2))
+                            If grillaPersonalOt.Rows(i).IsNewRow Then Continue For
+                            Dim rutPer As String = CeldaStr(grillaPersonalOt.Rows(i), 0)
+                            If Not String.IsNullOrEmpty(rutPer) Then
+                                OT.IngPersonalOt(rutPer, txtNot.Text, CeldaStr(grillaPersonalOt.Rows(i), 2))
+                            End If
                         Next
                     End If
 
                     If grillaInsumosOt.RowCount > 0 Then
                         For i = 0 To grillaInsumosOt.RowCount - 1
+                            If grillaInsumosOt.Rows(i).IsNewRow Then Continue For
                             Dim codIns As String = CeldaStr(grillaInsumosOt.Rows(i), 0)
                             If Not String.IsNullOrEmpty(codIns) Then
                                 OT.IngInsumosOt(txtNot.Text, codIns, CeldaStr(grillaInsumosOt.Rows(i), 3), CeldaStr(grillaInsumosOt.Rows(i), 4))
@@ -202,6 +227,7 @@ Public Class frm_OT
 
                     If grillaOtExternas.RowCount > 0 Then
                         For i = 0 To grillaOtExternas.RowCount - 1
+                            If grillaOtExternas.Rows(i).IsNewRow Then Continue For
                             Dim codExt As String = CeldaStr(grillaOtExternas.Rows(i), 0)
                             If Not String.IsNullOrEmpty(codExt) Then
                                 OT.IngOtExterna(txtNot.Text, codExt, CeldaStr(grillaOtExternas.Rows(i), 1))
@@ -224,12 +250,17 @@ Public Class frm_OT
 
                     If grillaPersonalOt.RowCount > 0 Then
                         For i = 0 To grillaPersonalOt.RowCount - 1
-                            OT.UpdPersonalOt(txtNot.Text, grillaPersonalOt.Rows(i).Cells(0).Value, CeldaStr(grillaPersonalOt.Rows(i), 2))
+                            If grillaPersonalOt.Rows(i).IsNewRow Then Continue For
+                            Dim rutPer As String = CeldaStr(grillaPersonalOt.Rows(i), 0)
+                            If Not String.IsNullOrEmpty(rutPer) Then
+                                OT.UpdPersonalOt(txtNot.Text, rutPer, CeldaStr(grillaPersonalOt.Rows(i), 2))
+                            End If
                         Next
                     End If
 
                     If grillaInsumosOt.RowCount > 0 Then
                         For i = 0 To grillaInsumosOt.RowCount - 1
+                            If grillaInsumosOt.Rows(i).IsNewRow Then Continue For
                             Dim codIns As String = CeldaStr(grillaInsumosOt.Rows(i), 0)
                             If Not String.IsNullOrEmpty(codIns) Then
                                 OT.UpdInsumosOt(txtNot.Text, codIns, CeldaStr(grillaInsumosOt.Rows(i), 3), CeldaStr(grillaInsumosOt.Rows(i), 4))
@@ -239,6 +270,7 @@ Public Class frm_OT
 
                     If grillaOtExternas.RowCount > 0 Then
                         For i = 0 To grillaOtExternas.RowCount - 1
+                            If grillaOtExternas.Rows(i).IsNewRow Then Continue For
                             Dim codExt As String = CeldaStr(grillaOtExternas.Rows(i), 0)
                             If Not String.IsNullOrEmpty(codExt) Then
                                 OT.UpdOtExterna(txtNot.Text, codExt, CeldaStr(grillaOtExternas.Rows(i), 1))
@@ -382,39 +414,41 @@ Public Class frm_OT
             Exit Sub
         End If
 
-        If txtNot.Text <> "" Then
-            Dim OT As New OT
-            Dim resp_num_ot As String = ""
-            Dim DST_OT As New DataSet
-            Dim id_nodo As String = ""
-            Dim fecha_inicio As DateTime
+        If Not String.IsNullOrEmpty(numOtActual) Then
+            Try
+                Dim OT As New OT
+                Dim resp_num_ot As String = ""
+                Dim DST_OT As New DataSet
+                Dim id_nodo As String = ""
+                Dim fecha_inicio As DateTime
 
-            resp_num_ot = OT.BuscarNumOt(txtNot.Text)
-            If resp_num_ot <> "" Then
-                If (MsgBox(resp_num_ot & Chr(13) & "¿ Desea Modificarla ?", MsgBoxStyle.YesNo, "Validacion")) = MsgBoxResult.Yes Then
-                    If DSIOT.Tables.Count > 0 Then
-                        DSIOT.Tables.Clear()
-                    End If
+                resp_num_ot = OT.BuscarNumOt(numOtActual)
+                If resp_num_ot <> "" Then
+                    If (MsgBox(resp_num_ot & Chr(13) & "¿ Desea Modificarla ?", MsgBoxStyle.YesNo, "Validación")) = MsgBoxResult.Yes Then
+                        If DSIOT.Tables.Count > 0 Then
+                            DSIOT.Tables.Clear()
+                        End If
 
-                    If DSPOT.Tables.Count > 0 Then
-                        DSPOT.Tables.Clear()
-                    End If
+                        If DSPOT.Tables.Count > 0 Then
+                            DSPOT.Tables.Clear()
+                        End If
 
-                    If DSOEXOT.Tables.Count > 0 Then
-                        DSOEXOT.Tables.Clear()
-                    End If
+                        If DSOEXOT.Tables.Count > 0 Then
+                            DSOEXOT.Tables.Clear()
+                        End If
 
-                    OT.CrgOrdenTrabajo(txtNot.Text, DST_OT)
-                    If DST_OT.Tables.Count = 0 OrElse DST_OT.Tables(0).Rows.Count = 0 Then Exit Sub
-                    OT.LimpiarFrmOt()
+                        OT.CrgOrdenTrabajo(numOtActual, DST_OT)
+                        If DST_OT.Tables.Count = 0 OrElse DST_OT.Tables(0).Rows.Count = 0 Then Exit Sub
+                        OT.LimpiarFrmOt()
 
-                    ' Conversión segura de fecha_inicio para evitar caídas si el registro contiene valores nulos
-                    fecha_inicio = DateTime.Today
-                    If Not IsDBNull(DST_OT.Tables(0).Rows(0).Item(8)) Then
-                        DateTime.TryParse(DST_OT.Tables(0).Rows(0).Item(8).ToString(), fecha_inicio)
-                    End If
+                        ' Conversión segura de fecha_inicio para evitar caídas si el registro contiene valores nulos
+                        fecha_inicio = DateTime.Today
+                        If Not IsDBNull(DST_OT.Tables(0).Rows(0).Item(8)) Then
+                            DateTime.TryParse(DST_OT.Tables(0).Rows(0).Item(8).ToString(), fecha_inicio)
+                        End If
 
-                    If DST_OT.Tables(0).Rows(0).Item(17).ToString = "abierta" Then
+                        Dim estadoOt As String = If(IsDBNull(DST_OT.Tables(0).Rows(0).Item(17)), String.Empty, DST_OT.Tables(0).Rows(0).Item(17).ToString().Trim().ToLowerInvariant())
+                        If estadoOt = "abierta" Then
                         txtNot.Text = DST_OT.Tables(0).Rows(0).Item(0).ToString
                         cmb_Tipo_Det.Text = DST_OT.Tables(0).Rows(0).Item(5).ToString
                         cmbSintoma.Text = DST_OT.Tables(0).Rows(0).Item(3).ToString
@@ -447,7 +481,7 @@ Public Class frm_OT
                             End If
                         End If
 
-                    ElseIf DST_OT.Tables(0).Rows(0).Item(17).ToString = "cerrada" Then
+                    ElseIf estadoOt = "cerrada" Then
                         chkOtCierre.Checked = True
                         chkOtCierre.Enabled = False
                         cmbEstadoOt.Enabled = True
@@ -524,7 +558,7 @@ Public Class frm_OT
                                 formato_grid.grillasOT(grillaOtExternas)
                             End If
                         End If
-                    ElseIf DST_OT.Tables(0).Rows(0).Item(17).ToString = "nula" Then
+                    ElseIf estadoOt = "nula" Then
                         cmbEstadoOt.Enabled = True
                         chkOtCierre.Enabled = True
                         chkOtCierre.Checked = True
@@ -609,10 +643,17 @@ Public Class frm_OT
                     txtNot.ResetText()
                     txtNot.Focus()
                 End If
-            Else
-                ot_cargada_actual = numOtActual
-            End If
+                Else
+                    ot_cargada_actual = numOtActual
+                End If
+            Catch ex As Exception
+                RegistroErrores.MostrarYRegistrar(ex, "Cargar Orden de Trabajo", True, Me)
+            End Try
         End If
+    End Sub
+
+    Private Sub grillaInsumosOt_DataError(ByVal sender As Object, ByVal e As DataGridViewDataErrorEventArgs) Handles grillaInsumosOt.DataError
+        e.ThrowException = False
     End Sub
 
     Private Sub arbol3_BeforeSelect(ByVal sender As Object, ByVal e As System.Windows.Forms.TreeViewCancelEventArgs) Handles arbol3.BeforeSelect
@@ -620,6 +661,10 @@ Public Class frm_OT
     End Sub
 
     Private Sub btn_eliminar_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_eliminar.Click
+        If Not Usuario.PermisoEliminarOt Then
+            MessageBox.Show(Me, "No posee permisos para eliminar órdenes de trabajo.", "Acceso restringido", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
         If txtNot.Text = "" Then
             MsgBox("Debe ingresar un N° de OT antes de eliminar", MsgBoxStyle.Exclamation, "Validación")
         Else
@@ -647,71 +692,62 @@ Public Class frm_OT
         Dim OT As New OT
 
         Try
+            If TabOt.SelectedTab Is Nothing Then Exit Sub
             Select Case TabOt.SelectedTab.Text
                 Case "Personal"
                     If DSPOT.Tables.Count > 0 Then
                         With grillaPersonalOt
-                            If .CurrentRow Is Nothing Then Exit Sub
-                            If .CurrentRow.Cells(0).Value Is Nothing OrElse .CurrentRow.Cells(0).Value.ToString = "" Then
+                            If .CurrentRow Is Nothing OrElse .CurrentRow.IsNewRow Then Exit Sub
+                            Dim rutPer As String = CeldaStr(.CurrentRow, 0)
+                            If String.IsNullOrEmpty(rutPer) Then
                                 .Rows.Remove(.CurrentRow)
                                 Exit Sub
                             End If
-                        End With
 
-                        If grillaPersonalOt.CurrentRow.Cells(0).Value.ToString <> "" Then
-                            If MsgBox("Esta seguro que desea eliminar el personal :" & grillaPersonalOt.CurrentRow.Cells(1).Value, MsgBoxStyle.YesNo, "Validación") = MsgBoxResult.Yes Then
-
+                            If MsgBox("¿Está seguro que desea eliminar el personal: " & CeldaStr(.CurrentRow, 1) & "?", MsgBoxStyle.YesNo, "Validación") = MsgBoxResult.Yes Then
                                 Dim cod_resp As Integer = 0
                                 Dim resp As String = ""
-                                Dim ind As Integer = 0
-
-                                OT.DelPersonalOt(txtNot.Text, grillaPersonalOt.CurrentRow.Cells(0).Value, cod_resp, resp)
+                                OT.DelPersonalOt(txtNot.Text, rutPer, cod_resp, resp)
 
                                 If cod_resp = 1 Then
                                     MsgBox(resp, MsgBoxStyle.Information, "Validación")
-                                    grillaPersonalOt.Rows.Remove(grillaPersonalOt.CurrentRow)
+                                    .Rows.Remove(.CurrentRow)
                                     Exit Sub
                                 ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                                     MsgBox(resp, MsgBoxStyle.Exclamation, "Validación")
                                     Exit Sub
                                 End If
                             End If
-                        End If
+                        End With
                     Else
                         With grillaPersonalOt
-                            If .RowCount = 0 OrElse .CurrentRow Is Nothing Then
-                                MsgBox("No se pueden eliminar mas filas !!!", MsgBoxStyle.Exclamation, "Validación")
+                            If .RowCount = 0 OrElse .CurrentRow Is Nothing OrElse .CurrentRow.IsNewRow Then
+                                MsgBox("No hay una fila válida seleccionada para eliminar.", MsgBoxStyle.Exclamation, "Validación")
                                 Exit Sub
                             End If
-                            If .CurrentRow.Cells(0).Value Is Nothing OrElse .CurrentRow.Cells(0).Value.ToString = "" Then
-                                .Rows.Remove(.CurrentRow)
-                                Exit Sub
-                            End If
+                            .Rows.Remove(.CurrentRow)
                         End With
-
-                        If grillaPersonalOt.RowCount > 0 Then
-                            grillaPersonalOt.Rows.Remove(grillaPersonalOt.CurrentRow)
-                        End If
                     End If
 
                 Case "Insumos, Repuestos"
                     With grillaInsumosOt
-                        If .RowCount = 0 OrElse .CurrentRow Is Nothing Then
-                            MsgBox("No se pueden eliminar mas filas !!!", MsgBoxStyle.Exclamation, "Validación")
+                        If .RowCount = 0 OrElse .CurrentRow Is Nothing OrElse .CurrentRow.IsNewRow Then
+                            MsgBox("No hay una fila válida seleccionada para eliminar.", MsgBoxStyle.Exclamation, "Validación")
                             Exit Sub
-                        ElseIf .CurrentRow.Cells(3).Value Is Nothing OrElse .CurrentRow.Cells(3).Value.ToString = "" OrElse .CurrentRow.Cells(4).Value Is Nothing OrElse .CurrentRow.Cells(4).Value.ToString = "" Then
+                        End If
+                        Dim codIns As String = CeldaStr(.CurrentRow, 0)
+                        If String.IsNullOrEmpty(codIns) OrElse String.IsNullOrEmpty(CeldaStr(.CurrentRow, 3)) OrElse String.IsNullOrEmpty(CeldaStr(.CurrentRow, 4)) Then
                             .Rows.Remove(.CurrentRow)
                             Exit Sub
                         Else
-                            If MsgBox("¿Esta seguro de eliminar el insumo seleccionado?", MsgBoxStyle.YesNo, "Validación") = MsgBoxResult.Yes Then
+                            If MsgBox("¿Está seguro de eliminar el insumo seleccionado?", MsgBoxStyle.YesNo, "Validación") = MsgBoxResult.Yes Then
                                 Dim cod_resp As Integer = 0
                                 Dim resp As String = ""
-
-                                OT.DelInsumoOt(txtNot.Text, grillaInsumosOt.Rows(grillaInsumosOt.CurrentRow.Index).Cells(0).Value, cod_resp, resp)
+                                OT.DelInsumoOt(txtNot.Text, codIns, cod_resp, resp)
 
                                 If cod_resp = 1 Then
                                     MsgBox(resp, MsgBoxStyle.Information, "Validación")
-                                    grillaInsumosOt.Rows.Remove(grillaInsumosOt.CurrentRow)
+                                    .Rows.Remove(.CurrentRow)
                                 ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
                                     MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                                 End If
@@ -722,36 +758,32 @@ Public Class frm_OT
                 Case "OT Externas"
                     If DSOEXOT.Tables.Count > 0 Then
                         With grillaOtExternas
-                            If .CurrentRow Is Nothing Then Exit Sub
-                            If .CurrentRow.Cells(0).Value Is Nothing OrElse .CurrentRow.Cells(0).Value.ToString = "" Then
+                            If .CurrentRow Is Nothing OrElse .CurrentRow.IsNewRow Then Exit Sub
+                            Dim codExt As String = CeldaStr(.CurrentRow, 0)
+                            If String.IsNullOrEmpty(codExt) Then
                                 .Rows.Remove(.CurrentRow)
                                 Exit Sub
+                            End If
+
+                            If MsgBox("¿Está seguro de eliminar la orden externa: " & codExt & "?", MsgBoxStyle.YesNo, "Validación") = MsgBoxResult.Yes Then
+                                Dim cod_resp As Integer = 0
+                                Dim resp As String = ""
+                                OT.DelOtExterna(txtNot.Text, codExt, cod_resp, resp)
+                                If cod_resp = 1 Then
+                                    MsgBox(resp, MsgBoxStyle.Information, "Validación")
+                                    .Rows.Remove(.CurrentRow)
+                                ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
+                                    MsgBox(resp, MsgBoxStyle.Critical, "Validación")
+                                End If
                             End If
                         End With
-
-                        If MsgBox("¿Esta seguro de eliminar la orden externa? :" & grillaOtExternas.CurrentRow.Cells(0).Value, MsgBoxStyle.YesNo, "Validación") = MsgBoxResult.Yes Then
-                            Dim cod_resp As Integer = 0
-                            Dim resp As String = ""
-
-                            OT.DelOtExterna(txtNot.Text, grillaOtExternas.CurrentRow.Cells(0).Value, cod_resp, resp)
-                            If cod_resp = 1 Then
-                                MsgBox(resp, MsgBoxStyle.Information, "Validación")
-                                grillaOtExternas.Rows.Remove(grillaOtExternas.CurrentRow)
-                            ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
-                                MsgBox(resp, MsgBoxStyle.Critical, "Validación")
-                            End If
-                        End If
                     Else
                         With grillaOtExternas
-                            If .RowCount = 0 OrElse .CurrentRow Is Nothing Then
-                                MsgBox("No se pueden eliminar mas filas !!!", MsgBoxStyle.Exclamation, "Validación")
+                            If .RowCount = 0 OrElse .CurrentRow Is Nothing OrElse .CurrentRow.IsNewRow Then
+                                MsgBox("No hay una fila válida seleccionada para eliminar.", MsgBoxStyle.Exclamation, "Validación")
                                 Exit Sub
-                            ElseIf .Rows(.CurrentRow.Index).Cells(0).Value Is Nothing OrElse .Rows(.CurrentRow.Index).Cells(0).Value.ToString = "" OrElse .Rows(.CurrentRow.Index).Cells(1).Value Is Nothing OrElse .Rows(.CurrentRow.Index).Cells(1).Value.ToString = "" Then
-                                .Rows.Remove(.CurrentRow)
-                                Exit Sub
-
                             End If
-
+                            .Rows.Remove(.CurrentRow)
                         End With
                     End If
             End Select
@@ -769,14 +801,12 @@ Public Class frm_OT
     End Sub
 
     Private Sub dt_hr_ini_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles dt_hr_ini.LostFocus
-        Dim fecha_hora_rec As DateTime
-        Dim fecha_hora_ini As DateTime
-
-        fecha_hora_rec = dt_fecha_rec.Value.Date.Add(New TimeSpan(dt_hr_rec.Value.Hour, dt_hr_rec.Value.Minute, 0))
-        fecha_hora_ini = dt_fecha_ini.Value.Date.Add(New TimeSpan(dt_hr_ini.Value.Hour, dt_hr_ini.Value.Minute, 0))
+        If Me.Disposing OrElse btn_salir.Focused OrElse btn_limpiar.Focused Then Exit Sub
+        Dim fecha_hora_rec As DateTime = dt_fecha_rec.Value.Date.Add(New TimeSpan(dt_hr_rec.Value.Hour, dt_hr_rec.Value.Minute, 0))
+        Dim fecha_hora_ini As DateTime = dt_fecha_ini.Value.Date.Add(New TimeSpan(dt_hr_ini.Value.Hour, dt_hr_ini.Value.Minute, 0))
 
         If fecha_hora_rec > fecha_hora_ini Then
-            MsgBox("La fecha de recepción debe ser mayor o igual a la fecha de inicio", MsgBoxStyle.Critical, "Validación")
+            MsgBox("La fecha de recepción no puede ser mayor a la fecha de inicio.", MsgBoxStyle.Exclamation, "Validación")
             dt_fecha_rec.Focus()
         End If
     End Sub
@@ -819,31 +849,24 @@ Public Class frm_OT
         End If
     End Sub
 
+    Private Sub ValidarFormatoPersonalTextBox(ByVal tb As TextBox, ByVal titulo As String)
+        If Me.Disposing OrElse btn_salir.Focused OrElse btn_limpiar.Focused OrElse tb Is Nothing Then Exit Sub
+        Dim val As String = tb.Text
+        If val.Contains(" "c) OrElse val.Contains("."c) Then
+            MsgBox("Ingreso de texto incorrecto, debe ser en este formato" & Environment.NewLine & "Ejemplo: ADIAZ (sin espacios ni puntos).", MsgBoxStyle.Exclamation, titulo)
+            tb.ResetText()
+            tb.Focus()
+        Else
+            tb.Text = UCase(Trim(val))
+        End If
+    End Sub
+
     Private Sub txtRecibidoPor_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles txtRecibidoPor.KeyPress
         utilitario.ValidarPersonalOT(e)
     End Sub
 
     Private Sub txtRecibidoPor_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtRecibidoPor.LostFocus
-        Dim recibido_por As String = ""
-        Dim texto_invalido As Boolean = False
-
-        recibido_por = txtRecibidoPor.Text
-
-        For i = 0 To recibido_por.Length - 1
-            If recibido_por(i).ToString = " " Then
-                texto_invalido = True
-            ElseIf recibido_por(i).ToString = "." Then
-                texto_invalido = True
-            End If
-        Next
-
-        If texto_invalido Then
-            MsgBox("Ingreso de Texto incorrecto, debe ser en este formato" & Chr(13) & "Ejemplo : ADIAZ, sin espacios ni puntos", MsgBoxStyle.Exclamation, "Validación Personal Recibido")
-            txtRecibidoPor.ResetText()
-            txtRecibidoPor.Focus()
-        Else
-            txtRecibidoPor.Text = UCase(Trim(txtRecibidoPor.Text))
-        End If
+        ValidarFormatoPersonalTextBox(txtRecibidoPor, "Validación Personal Recibido")
     End Sub
 
     Private Sub txtSolicitadoPor_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles txtSolicitadoPor.KeyPress
@@ -851,26 +874,7 @@ Public Class frm_OT
     End Sub
 
     Private Sub txtSolicitadoPor_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtSolicitadoPor.LostFocus
-        Dim solicitado_por As String = ""
-        Dim texto_invalido As Boolean = False
-
-        solicitado_por = txtSolicitadoPor.Text
-
-        For i = 0 To solicitado_por.Length - 1
-            If solicitado_por(i).ToString = " " Then
-                texto_invalido = True
-            ElseIf solicitado_por(i).ToString = "." Then
-                texto_invalido = True
-            End If
-        Next
-
-        If texto_invalido Then
-            MsgBox("Ingreso de Texto incorrecto, debe ser en este formato" & Chr(13) & "Ejemplo : ADIAZ, sin espacios ni puntos", MsgBoxStyle.Exclamation, "Validación Personal Solicitado")
-            txtSolicitadoPor.ResetText()
-            txtSolicitadoPor.Focus()
-        Else
-            txtSolicitadoPor.Text = UCase(Trim(txtSolicitadoPor.Text))
-        End If
+        ValidarFormatoPersonalTextBox(txtSolicitadoPor, "Validación Personal Solicitado")
     End Sub
 
     Private Sub txtCerradoPor_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles txtCerradoPor.KeyPress
@@ -878,25 +882,6 @@ Public Class frm_OT
     End Sub
 
     Private Sub txtCerradoPor_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtCerradoPor.LostFocus
-        Dim cerrado_por As String = ""
-        Dim texto_invalido As Boolean = False
-
-        cerrado_por = txtCerradoPor.Text
-
-        For i = 0 To cerrado_por.Length - 1
-            If cerrado_por(i).ToString = " " Then
-                texto_invalido = True
-            ElseIf cerrado_por(i).ToString = "." Then
-                texto_invalido = True
-            End If
-        Next
-
-        If texto_invalido Then
-            MsgBox("Ingreso de Texto incorrecto, debe ser en este formato" & Chr(13) & "Ejemplo : ADIAZ, sin espacios ni puntos", MsgBoxStyle.Exclamation, "Validación Personal de Cierre")
-            txtCerradoPor.ResetText()
-            txtCerradoPor.Focus()
-        Else
-            txtCerradoPor.Text = UCase(Trim(txtCerradoPor.Text))
-        End If
+        ValidarFormatoPersonalTextBox(txtCerradoPor, "Validación Personal de Cierre")
     End Sub
 End Class

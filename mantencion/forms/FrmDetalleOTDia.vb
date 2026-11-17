@@ -5,7 +5,7 @@ Public Class FrmDetalleOTDia
     Public opcion As Integer = 0
     Public tipo_falla As String = ""
     Public turno As String = ""
-    Public fecha As DateTime
+    Public fecha As DateTime = Now
     Public estado As String = ""
     Public nodo_padre As String = ""
     Private Sub FrmDetalleOTDia_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
@@ -25,7 +25,7 @@ Public Class FrmDetalleOTDia
                 formato_grid.grillasOT(grillaOtDetalleDia)
                 Utilitarios.AjustarColumnasGrilla(grillaOtDetalleDia)
             End If
-            Label1.Text = "OT Recibidas En : " & fecha
+            Label1.Text = "OT Recibidas En : " & fecha.ToString("dd-MM-yyyy")
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Detalle OT por Día", True, Me)
         Finally

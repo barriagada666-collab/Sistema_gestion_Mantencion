@@ -37,10 +37,17 @@ Public Class FrmDetalleOt
             grillaInsumosOt.SuspendLayout()
             GrillaOtExternasDetalle.SuspendLayout()
 
-            If FrmInfOT.grillaInfOt.CurrentRow IsNot Nothing Then
+            If FrmInfOT.grillaInfOt.CurrentRow IsNot Nothing AndAlso Not FrmInfOT.grillaInfOt.CurrentRow.IsNewRow Then
                 With FrmInfOT.grillaInfOt
-                    OT.CrgOrdenTrabajo(.Rows(.CurrentRow.Index).Cells(0).Value.ToString(), DST_ORDEN_TRABAJO)
+                    Dim otCellVal As Object = .Rows(.CurrentRow.Index).Cells(0).Value
+                    Dim otBuscada As String = If(otCellVal Is Nothing OrElse IsDBNull(otCellVal), num_ot, otCellVal.ToString().Trim())
+                    If Not String.IsNullOrEmpty(otBuscada) Then
+                        num_ot = otBuscada
+                        OT.CrgOrdenTrabajo(otBuscada, DST_ORDEN_TRABAJO)
+                    End If
                 End With
+            ElseIf Not String.IsNullOrEmpty(num_ot) Then
+                OT.CrgOrdenTrabajo(num_ot, DST_ORDEN_TRABAJO)
             End If
 
             If DST_ORDEN_TRABAJO.Tables.Count > 0 AndAlso DST_ORDEN_TRABAJO.Tables(0).Rows.Count > 0 Then
@@ -77,9 +84,16 @@ Public Class FrmDetalleOt
                 Utilitarios.AjustarColumnasGrilla(grillaInsumosOt)
                 Utilitarios.AjustarColumnasGrilla(GrillaOtExternasDetalle)
 
-                If FrmInfOT.grillaInfOt.CurrentRow IsNot Nothing Then
-                    lblItem.Text = FrmInfOT.grillaInfOt.Rows(FrmInfOT.grillaInfOt.CurrentRow.Index).Cells(1).Value & "/" & FrmInfOT.grillaInfOt.Rows(FrmInfOT.grillaInfOt.CurrentRow.Index).Cells(2).Value
+                If FrmInfOT.grillaInfOt.CurrentRow IsNot Nothing AndAlso FrmInfOT.grillaInfOt.Columns.Count >= 3 Then
+                    Dim c1 = FrmInfOT.grillaInfOt.Rows(FrmInfOT.grillaInfOt.CurrentRow.Index).Cells(1).Value
+                    Dim c2 = FrmInfOT.grillaInfOt.Rows(FrmInfOT.grillaInfOt.CurrentRow.Index).Cells(2).Value
+                    lblItem.Text = If(c1 Is Nothing OrElse IsDBNull(c1), "", c1.ToString()) & "/" & If(c2 Is Nothing OrElse IsDBNull(c2), "", c2.ToString())
+                Else
+                    lblItem.Text = ""
                 End If
+            Else
+                lblNumOt.Text = If(num_ot, "")
+                lblItem.Text = ""
             End If
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Detalle de OT", True, Me)

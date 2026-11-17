@@ -9,9 +9,13 @@ Imports System.Windows.Forms
 Public Class FrmInfOtCR
 
     Private Sub FrmInfOtCR_Load(ByVal sender As Object, ByVal e As EventArgs) Handles MyBase.Load
-        Me.DoubleBuffered = True
-        Utilitarios.AplicarTemaModerno(Me)
-        Me.CRV_INF_OT.RefreshReport()
+        Try
+            Me.DoubleBuffered = True
+            Utilitarios.AplicarTemaModerno(Me)
+            Me.CRV_INF_OT.RefreshReport()
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Visor de Informes", True, Me)
+        End Try
     End Sub
 
 End Class
@@ -105,16 +109,21 @@ Public Class NativeReportViewer
     End Property
 
     Public Sub RefreshReport()
-        Dim rpt As InfOt = ObtenerInformeActual()
-        If rpt IsNot Nothing Then
-            _browser.DocumentText = rpt.GenerarHtml()
-            Dim total As Integer = If(rpt.DataSource IsNot Nothing, rpt.DataSource.Rows.Count, 0)
-            _lblEstado.Text = "Registros: " & total.ToString()
-        Else
-            Dim tempRpt As New InfOt()
-            _browser.DocumentText = tempRpt.GenerarHtml()
-            _lblEstado.Text = "Sin origen de datos"
-        End If
+        Try
+            If _browser Is Nothing OrElse _browser.IsDisposed Then Exit Sub
+            Dim rpt As InfOt = ObtenerInformeActual()
+            If rpt IsNot Nothing Then
+                _browser.DocumentText = rpt.GenerarHtml()
+                Dim total As Integer = If(rpt.DataSource IsNot Nothing, rpt.DataSource.Rows.Count, 0)
+                _lblEstado.Text = "Registros: " & total.ToString()
+            Else
+                Dim tempRpt As New InfOt()
+                _browser.DocumentText = tempRpt.GenerarHtml()
+                _lblEstado.Text = "Sin origen de datos"
+            End If
+        Catch ex As Exception
+            RegistroErrores.RegistrarError(ex, "Refrescar Visor Nativo")
+        End Try
     End Sub
 
     Private Function ObtenerInformeActual() As InfOt

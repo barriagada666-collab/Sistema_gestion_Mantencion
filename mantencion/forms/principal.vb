@@ -96,13 +96,17 @@ Public Class principal
             Else
                 Me.Refresh()
             End If
-            formularioDestino.PerformLayout()
-            formularioDestino.Invalidate(True)
-            formularioDestino.Update()
+            If formularioDestino IsNot Nothing AndAlso Not formularioDestino.IsDisposed Then
+                formularioDestino.PerformLayout()
+                formularioDestino.Invalidate(True)
+                formularioDestino.Update()
+            End If
             CambiandoAmbiente = False
 
             ' 6. Optimización de memoria RAM desacoplada del hilo de renderizado (no congela la transición de UI)
-            Me.BeginInvoke(New Action(AddressOf Utilitarios.OptimizarMemoria))
+            If Not Me.IsDisposed AndAlso Me.IsHandleCreated Then
+                Me.BeginInvoke(New Action(AddressOf Utilitarios.OptimizarMemoria))
+            End If
         End Try
     End Sub
 
@@ -147,16 +151,15 @@ Public Class principal
     Public Sub ActualizarIndicadorServidor()
         If lblServidorEstado Is Nothing Then Exit Sub
         Try
-            Dim sb = Conexion.ObtenerParametrosActuales()
-            lblServidorEstado.Image = Utilitarios.ObtenerIconoFarolEstado(True, 14)
-            lblServidorEstado.Text = Conexion.FormatearEstadoConexion(sb.DataSource, sb.InitialCatalog, True)
+            Dim estCache = Conexion.ObtenerEstadoConexionActual(False)
+            lblServidorEstado.Image = Utilitarios.ObtenerIconoFarolEstado(estCache.Conectado, 14)
+            lblServidorEstado.Text = Conexion.FormatearEstadoConexion(estCache.Servidor, estCache.BaseDatos, estCache.Conectado)
         Catch
         End Try
 
         System.Threading.ThreadPool.QueueUserWorkItem(Sub()
                                                          Try
                                                              Dim est = Conexion.ObtenerEstadoConexionActual(True)
-                                                             If Me.IsDisposed OrElse Not Me.IsHandleCreated Then Exit Sub
                                                              Me.BeginInvoke(New Action(Sub()
                                                                                            If Me.IsDisposed OrElse lblServidorEstado Is Nothing Then Exit Sub
                                                                                            lblServidorEstado.Image = Utilitarios.ObtenerIconoFarolEstado(est.Conectado, 14)
@@ -294,7 +297,19 @@ Public Class principal
             Catch
             End Try
         Next
+        ' Cerrar cualquier ventana flotante auxiliar abierta durante la sesión (p. ej. buscadores/detalles)
+        For Each frm As Form In Application.OpenForms.Cast(Of Form)().ToArray()
+            If frm IsNot Me AndAlso Not (TypeOf frm Is Login) AndAlso Not frm.IsDisposed Then
+                Try
+                    frm.Close()
+                Catch
+                End Try
+            End If
+        Next
         Usuario.LimpiarSesion()
+        OT.InvalidarCachePersonal()
+        Nodo.InvalidarCacheNodos()
+        Conexion.InvalidarCacheCatalogos()
         Login.Show()
         Me.Close()
     End Sub

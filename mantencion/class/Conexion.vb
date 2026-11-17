@@ -6,6 +6,7 @@ Imports System.Xml
 Public Class Conexion
 
     Private Shared ReadOnly DefaultConnectionString As String = "Data Source = SrvMagicInfo; Initial Catalog = mantencion; User Id = mantencion; Password = cambiaso"
+    Private Shared ReadOnly _estadoLock As New Object()
 
     Private Shared _connectionStringCache As String = Nothing
 
@@ -63,7 +64,9 @@ Public Class Conexion
     ''' Obtiene la cadena de conexión activa con pool optimizado y reutilización de sockets.
     ''' </summary>
     Public Shared Function ObtenerConnectionString() As String
-        If _connectionStringCache IsNot Nothing Then Return _connectionStringCache
+        SyncLock _estadoLock
+            If _connectionStringCache IsNot Nothing Then Return _connectionStringCache
+        End SyncLock
 
         Dim cadena As String = DefaultConnectionString
 
@@ -111,8 +114,12 @@ Public Class Conexion
         Catch
         End Try
 
-        _connectionStringCache = cadena
-        Return cadena
+        SyncLock _estadoLock
+            If _connectionStringCache Is Nothing Then
+                _connectionStringCache = cadena
+            End If
+            Return _connectionStringCache
+        End SyncLock
     End Function
 
     Private Shared ReadOnly _catalogoCache As New System.Collections.Concurrent.ConcurrentDictionary(Of String, DataTable)(StringComparer.OrdinalIgnoreCase)
@@ -126,10 +133,10 @@ Public Class Conexion
         If _catalogoCache.TryGetValue(clave, dt) AndAlso dt IsNot Nothing Then
             Return dt.Copy()
         End If
-        dt = cargador()
-        If dt IsNot Nothing Then
-            _catalogoCache(clave) = dt
-            Return dt.Copy()
+        Dim nuevoDt As DataTable = cargador()
+        If nuevoDt IsNot Nothing Then
+            dt = _catalogoCache.GetOrAdd(clave, nuevoDt)
+            Return If(dt IsNot Nothing, dt.Copy(), nuevoDt.Copy())
         End If
         Return Nothing
     End Function
@@ -165,15 +172,23 @@ Public Class Conexion
                                                              Using cnx As New SqlConnection(sb.ConnectionString)
                                                                  cnx.Open()
                                                              End Using
-                                                             _ultimoEstadoConectado = True
-                                                             _ultimoServidorConectado = srv
-                                                             _ultimaBaseDatosConectada = bd
+                                                             SyncLock _estadoLock
+                                                                 _ultimoEstadoConectado = True
+                                                                 _ultimoServidorConectado = srv
+                                                                 _ultimaBaseDatosConectada = bd
+                                                             End SyncLock
                                                          Catch ex As Exception
-                                                             _ultimoEstadoConectado = False
-                                                             _ultimoServidorConectado = srv
-                                                             _ultimaBaseDatosConectada = bd
-                                                             If Not _poolPrecalentadoIntentado Then
-                                                                 _poolPrecalentadoIntentado = True
+                                                             Dim debeRegistrar As Boolean = False
+                                                             SyncLock _estadoLock
+                                                                 _ultimoEstadoConectado = False
+                                                                 _ultimoServidorConectado = srv
+                                                                 _ultimaBaseDatosConectada = bd
+                                                                 If Not _poolPrecalentadoIntentado Then
+                                                                     _poolPrecalentadoIntentado = True
+                                                                     debeRegistrar = True
+                                                                 End If
+                                                             End SyncLock
+                                                             If debeRegistrar Then
                                                                  RegistroErrores.RegistrarError(ex, "Precalentamiento de Pool SQL (Inicio)", "Fallo en segundo plano al verificar disponibilidad inicial del servidor.")
                                                              End If
                                                          End Try
@@ -200,10 +215,14 @@ Public Class Conexion
         Dim srv As String = If(sb.DataSource, String.Empty).Trim()
         Dim bd As String = If(sb.InitialCatalog, String.Empty).Trim()
 
-        If Not forzarPrueba AndAlso _ultimoEstadoConectado.HasValue AndAlso
-           String.Equals(_ultimoServidorConectado, srv, StringComparison.OrdinalIgnoreCase) AndAlso
-           String.Equals(_ultimaBaseDatosConectada, bd, StringComparison.OrdinalIgnoreCase) Then
-            Return (_ultimoEstadoConectado.Value, srv, bd)
+        If Not forzarPrueba Then
+            SyncLock _estadoLock
+                If _ultimoEstadoConectado.HasValue AndAlso
+                   String.Equals(_ultimoServidorConectado, srv, StringComparison.OrdinalIgnoreCase) AndAlso
+                   String.Equals(_ultimaBaseDatosConectada, bd, StringComparison.OrdinalIgnoreCase) Then
+                    Return (_ultimoEstadoConectado.Value, srv, bd)
+                End If
+            End SyncLock
         End If
 
         Try
@@ -212,14 +231,18 @@ Public Class Conexion
             Using testCnx As New SqlConnection(sbTest.ConnectionString)
                 testCnx.Open()
             End Using
-            _ultimoEstadoConectado = True
-            _ultimoServidorConectado = srv
-            _ultimaBaseDatosConectada = bd
+            SyncLock _estadoLock
+                _ultimoEstadoConectado = True
+                _ultimoServidorConectado = srv
+                _ultimaBaseDatosConectada = bd
+            End SyncLock
             Return (True, srv, bd)
         Catch
-            _ultimoEstadoConectado = False
-            _ultimoServidorConectado = srv
-            _ultimaBaseDatosConectada = bd
+            SyncLock _estadoLock
+                _ultimoEstadoConectado = False
+                _ultimoServidorConectado = srv
+                _ultimaBaseDatosConectada = bd
+            End SyncLock
             Return (False, srv, bd)
         End Try
     End Function
@@ -260,6 +283,13 @@ Public Class Conexion
     ''' </summary>
     Public Shared Function GuardarNuevaConexion(ByVal nuevaCadena As String) As (Exito As Boolean, Mensaje As String)
         Try
+            If String.IsNullOrWhiteSpace(nuevaCadena) Then
+                Return (False, "La cadena de conexión no puede estar vacía.")
+            End If
+            ' Validar sintaxis de cadena de conexión antes de persistir
+            Dim sbValid As New SqlConnectionStringBuilder(nuevaCadena)
+            Dim cadenaValidada As String = sbValid.ConnectionString
+
             Dim timestamp As String = DateTime.Now.ToString("yyyyMMdd_HHmmss")
 
             ' 1. Guardar en LocalApplicationData (siempre escribible en Windows Program Files y macOS)
@@ -270,8 +300,9 @@ Public Class Conexion
             End If
             If File.Exists(rutaUsuarioCfg) Then
                 File.Copy(rutaUsuarioCfg, rutaUsuarioCfg & "." & timestamp & ".bak", True)
+                DepurarBackupsConfig(dirUsuario, Path.GetFileName(rutaUsuarioCfg))
             End If
-            File.WriteAllText(rutaUsuarioCfg, nuevaCadena)
+            File.WriteAllText(rutaUsuarioCfg, cadenaValidada)
 
             ' 2. Copia best-effort en directorio base (instalaciones portables o desarrollo)
             Try
@@ -279,8 +310,9 @@ Public Class Conexion
                 If Not String.Equals(rutaPortableCfg, rutaUsuarioCfg, StringComparison.OrdinalIgnoreCase) Then
                     If File.Exists(rutaPortableCfg) Then
                         File.Copy(rutaPortableCfg, rutaPortableCfg & "." & timestamp & ".bak", True)
+                        DepurarBackupsConfig(Path.GetDirectoryName(rutaPortableCfg), Path.GetFileName(rutaPortableCfg))
                     End If
-                    File.WriteAllText(rutaPortableCfg, nuevaCadena)
+                    File.WriteAllText(rutaPortableCfg, cadenaValidada)
                 End If
             Catch
             End Try
@@ -294,43 +326,27 @@ Public Class Conexion
                         File.Copy(rutaXml, rutaOriginalBak, False)
                     End If
                     File.Copy(rutaXml, rutaXml & "." & timestamp & ".bak", True)
+                    DepurarBackupsConfig(Path.GetDirectoryName(rutaXml), Path.GetFileName(rutaXml))
 
                     Dim doc As New XmlDocument()
                     doc.Load(rutaXml)
                     Dim node As XmlNode = doc.SelectSingleNode("//connectionStrings/add[@name='MantencionConnectionString']")
                     If node IsNot Nothing AndAlso node.Attributes("connectionString") IsNot Nothing Then
-                        node.Attributes("connectionString").Value = nuevaCadena
+                        node.Attributes("connectionString").Value = cadenaValidada
                         doc.Save(rutaXml)
                     End If
                 End If
             Catch
             End Try
 
-            ' 4. Actualizar también app.config si existe en la ruta de desarrollo
-            Try
-                Dim rutaAppConfig As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\..\..\app.config")
-                If File.Exists(rutaAppConfig) Then
-                    Dim fullAppConfig As String = Path.GetFullPath(rutaAppConfig)
-                    If Not File.Exists(fullAppConfig & ".original.bak") Then
-                        File.Copy(fullAppConfig, fullAppConfig & ".original.bak", False)
-                    End If
-                    Dim docApp As New XmlDocument()
-                    docApp.Load(fullAppConfig)
-                    Dim nodeApp As XmlNode = docApp.SelectSingleNode("//connectionStrings/add[@name='MantencionConnectionString']")
-                    If nodeApp IsNot Nothing AndAlso nodeApp.Attributes("connectionString") IsNot Nothing Then
-                        nodeApp.Attributes("connectionString").Value = nuevaCadena
-                        docApp.Save(fullAppConfig)
-                    End If
-                End If
-            Catch
-            End Try
-
-            ' 5. Invalidar el caché en memoria para que tome efecto inmediato en caliente
-            _connectionStringCache = Nothing
-            _poolPrecalentadoIntentado = False
-            _ultimoEstadoConectado = Nothing
-            _ultimoServidorConectado = Nothing
-            _ultimaBaseDatosConectada = Nothing
+            ' 4. Invalidar el caché en memoria para que tome efecto inmediato en caliente
+            SyncLock _estadoLock
+                _connectionStringCache = Nothing
+                _poolPrecalentadoIntentado = False
+                _ultimoEstadoConectado = Nothing
+                _ultimoServidorConectado = Nothing
+                _ultimaBaseDatosConectada = Nothing
+            End SyncLock
             InvalidarCacheCatalogos()
             ObtenerConnectionString()
 
@@ -341,6 +357,23 @@ Public Class Conexion
         End Try
     End Function
 
+    Private Shared Sub DepurarBackupsConfig(ByVal carpeta As String, ByVal prefijoArchivo As String)
+        If String.IsNullOrWhiteSpace(carpeta) OrElse Not Directory.Exists(carpeta) Then Exit Sub
+        Try
+            Dim backups = Directory.GetFiles(carpeta, prefijoArchivo & ".*.bak").
+                Where(Function(p) Not p.EndsWith(".original.bak", StringComparison.OrdinalIgnoreCase)).
+                OrderByDescending(Function(p) File.GetLastWriteTimeUtc(p)).
+                Skip(3)
+            For Each antiguo In backups
+                Try
+                    File.Delete(antiguo)
+                Catch
+                End Try
+            Next
+        Catch
+        End Try
+    End Sub
+
     ''' <summary>
     ''' Restaura los valores de conexión de fábrica de Cambiaso Hnos. S.A.C. (SrvMagicInfo).
     ''' </summary>
@@ -350,19 +383,17 @@ Public Class Conexion
 
     Public Sub Conectar(ByVal cnx As SqlConnection)
         If cnx Is Nothing Then Throw New ArgumentNullException(NameOf(cnx))
-        Try
-            If cnx.State = ConnectionState.Open Then Exit Sub
-            If cnx.State = ConnectionState.Broken Then cnx.Close()
-            If String.IsNullOrEmpty(cnx.ConnectionString) Then
-                cnx.ConnectionString = ObtenerConnectionString()
-            End If
-            cnx.Open()
+        If cnx.State = ConnectionState.Open Then Exit Sub
+        If cnx.State = ConnectionState.Broken Then cnx.Close()
+        If String.IsNullOrEmpty(cnx.ConnectionString) Then
+            cnx.ConnectionString = ObtenerConnectionString()
+        End If
+        cnx.Open()
+        SyncLock _estadoLock
             _ultimoEstadoConectado = True
             _ultimoServidorConectado = cnx.DataSource
             _ultimaBaseDatosConectada = cnx.Database
-        Catch ex As Exception
-            Throw
-        End Try
+        End SyncLock
     End Sub
 
     Public Sub Desconectar(ByVal cnx As SqlConnection)

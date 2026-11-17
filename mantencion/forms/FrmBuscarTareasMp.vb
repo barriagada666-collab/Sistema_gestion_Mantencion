@@ -42,61 +42,77 @@ Public Class FrmBuscarTareasMp
     End Sub
 
     Private Sub btnAgrTareas_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnAgrTareas.Click
-        Dim formato_grid As New FormatoGrillas
+        Try
+            grillaTareasNodoMp.EndEdit()
+            Dim formato_grid As New FormatoGrillas
+            Dim agregadas As Integer = 0
+            Dim omitidas As Integer = 0
 
-        With FrmMp
-            If .grillaTareasCicloMp.RowCount > 0 Then
-                If .DST_TAREAS.Tables.Count = 0 Then Exit Sub
-                For i = 0 To grillaTareasNodoMp.RowCount - 1
-                    If True.Equals(grillaTareasNodoMp.Rows(i).Cells(0).Value) Then
-                        For j = 0 To .grillaTareasCicloMp.RowCount - 1
-                            If .grillaTareasCicloMp.Rows(j).Cells(1).Value = grillaTareasNodoMp.Rows(i).Cells(1).Value Then
-                                MsgBox("La tarea seleccionada ya se encuentra registrada en el ciclo, fila n° " & j + 1, MsgBoxStyle.Exclamation, "Validación")
-                                Exit Sub
-                            End If
-                        Next
-                        Dim fila As DataRow = .DST_TAREAS.Tables(0).NewRow
+            With FrmMp
+                If .grillaTareasCicloMp.RowCount > 0 Then
+                    If .DST_TAREAS.Tables.Count = 0 Then Exit Sub
+                    For i = 0 To grillaTareasNodoMp.RowCount - 1
+                        If grillaTareasNodoMp.Rows(i).IsNewRow Then Continue For
+                        If True.Equals(grillaTareasNodoMp.Rows(i).Cells(0).Value) Then
+                            Dim idTareaNueva As String = Convert.ToString(grillaTareasNodoMp.Rows(i).Cells(1).Value)
+                            Dim yaExiste As Boolean = False
+                            For j = 0 To .grillaTareasCicloMp.RowCount - 1
+                                If String.Equals(Convert.ToString(.grillaTareasCicloMp.Rows(j).Cells(1).Value), idTareaNueva, StringComparison.OrdinalIgnoreCase) Then
+                                    yaExiste = True
+                                    omitidas += 1
+                                    Exit For
+                                End If
+                            Next
+                            If yaExiste Then Continue For
 
-                        fila(0) = grillaTareasNodoMp.Rows(i).Cells(1).Value
-                        fila(1) = grillaTareasNodoMp.Rows(i).Cells(2).Value
-                        fila(2) = grillaTareasNodoMp.Rows(i).Cells(3).Value
-                        fila(3) = grillaTareasNodoMp.Rows(i).Cells(4).Value
-                        fila(4) = 0
-                        .DST_TAREAS.Tables(0).Rows.Add(fila)
-                    End If
-                Next
+                            Dim fila As DataRow = .DST_TAREAS.Tables(0).NewRow
+                            fila(0) = grillaTareasNodoMp.Rows(i).Cells(1).Value
+                            fila(1) = grillaTareasNodoMp.Rows(i).Cells(2).Value
+                            fila(2) = grillaTareasNodoMp.Rows(i).Cells(3).Value
+                            fila(3) = grillaTareasNodoMp.Rows(i).Cells(4).Value
+                            fila(4) = 0
+                            .DST_TAREAS.Tables(0).Rows.Add(fila)
+                            agregadas += 1
+                        End If
+                    Next
+                Else
+                    If DST_TAREAS_MP.Tables.Count = 0 Then Exit Sub
+                    .DST_TAREAS = DST_TAREAS_MP.Clone
+                    .DST_TAREAS.Tables(0).Columns.Add("tiempo")
+                    .DST_TAREAS.Tables(0).Columns.Add("observacion_ciclo")
 
-                'deja todos los checkbox sin tickear
-                For i = 0 To grillaTareasNodoMp.RowCount - 1
-                    grillaTareasNodoMp.Rows(i).Cells(0).Value = False
-                Next
+                    For i = 0 To grillaTareasNodoMp.RowCount - 1
+                        If grillaTareasNodoMp.Rows(i).IsNewRow Then Continue For
+                        If True.Equals(grillaTareasNodoMp.Rows(i).Cells(0).Value) Then
+                            Dim fila As DataRow = .DST_TAREAS.Tables(0).NewRow
+                            fila(0) = grillaTareasNodoMp.Rows(i).Cells(1).Value
+                            fila(1) = grillaTareasNodoMp.Rows(i).Cells(2).Value
+                            fila(2) = grillaTareasNodoMp.Rows(i).Cells(3).Value
+                            fila(3) = grillaTareasNodoMp.Rows(i).Cells(4).Value
+                            fila(4) = 0
+                            .DST_TAREAS.Tables(0).Rows.Add(fila)
+                            agregadas += 1
+                        End If
+                    Next
+
+                    .grillaTareasCicloMp.DataSource = .DST_TAREAS.Tables(0)
+                    formato_grid.grillasMp(.grillaTareasCicloMp)
+                End If
+            End With
+
+            For i = 0 To grillaTareasNodoMp.RowCount - 1
+                grillaTareasNodoMp.Rows(i).Cells(0).Value = False
+            Next
+
+            If agregadas = 0 AndAlso omitidas = 0 Then
+                MsgBox("Debe seleccionar al menos una tarea para agregar.", MsgBoxStyle.Exclamation, "Validación")
+            ElseIf omitidas > 0 Then
+                MsgBox(String.Format("Se agregaron {0} tarea(s). Se omitieron {1} que ya existían en el ciclo.", agregadas, omitidas), MsgBoxStyle.Information, "Validación")
             Else
-                If DST_TAREAS_MP.Tables.Count = 0 Then Exit Sub
-                .DST_TAREAS = DST_TAREAS_MP.Clone
-                .DST_TAREAS.Tables(0).Columns.Add("tiempo")
-                .DST_TAREAS.Tables(0).Columns.Add("observacion_ciclo")
-
-                For i = 0 To grillaTareasNodoMp.RowCount - 1
-                    If True.Equals(grillaTareasNodoMp.Rows(i).Cells(0).Value) Then
-                        Dim fila As DataRow = .DST_TAREAS.Tables(0).NewRow
-
-                        fila(0) = grillaTareasNodoMp.Rows(i).Cells(1).Value
-                        fila(1) = grillaTareasNodoMp.Rows(i).Cells(2).Value
-                        fila(2) = grillaTareasNodoMp.Rows(i).Cells(3).Value
-                        fila(3) = grillaTareasNodoMp.Rows(i).Cells(4).Value
-                        fila(4) = 0
-                        .DST_TAREAS.Tables(0).Rows.Add(fila)
-                    End If
-                Next
-
-                .grillaTareasCicloMp.DataSource = .DST_TAREAS.Tables(0)
-                formato_grid.grillasMp(.grillaTareasCicloMp)
-
-                'deja todos los checkbox sin tickear
-                For i = 0 To grillaTareasNodoMp.RowCount - 1
-                    grillaTareasNodoMp.Rows(i).Cells(0).Value = False
-                Next
+                MsgBox(String.Format("Se agregaron {0} tarea(s) al ciclo.", agregadas), MsgBoxStyle.Information, "Confirmación")
             End If
-        End With
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Buscar Tareas MP (Agregar Tareas)", True, Me)
+        End Try
     End Sub
 End Class

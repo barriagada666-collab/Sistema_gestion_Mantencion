@@ -4,7 +4,6 @@ Public Class FrmCartaGantt
     Private Sub FrmCartaGantt_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Me.DoubleBuffered = True
         Me.SuspendLayout()
-        Dim fila As Integer = 0
         Dim informes As New Informes
 
         Try
@@ -58,9 +57,13 @@ Public Class FrmCartaGantt
 
     Private Sub btnExpExcel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnExpExcel.Click
         Dim informes As New Informes
-        If grillaInfoGantt.RowCount > 0 And grillaGraficoGantt.RowCount > 0 Then
+        If grillaInfoGantt.RowCount > 0 AndAlso grillaGraficoGantt.RowCount > 0 Then
             Try
-                informes.expInfGraficoGanttVariasMaq(grillaInfoGantt, grillaGraficoGantt, item_gantt, lblDesdeGantt.Text, lblHastaGantt.Text)
+                If form = "FrmInfMantPrev" Then
+                    informes.expInfGraficoGantt(FrmInfMantPrev.grillaInfMant, grillaInfoGantt, grillaGraficoGantt, item_gantt)
+                Else
+                    informes.expInfGraficoGanttVariasMaq(grillaInfoGantt, grillaGraficoGantt, item_gantt, lblDesdeGantt.Text, lblHastaGantt.Text)
+                End If
             Catch ex As Exception
                 RegistroErrores.MostrarYRegistrar(ex, "Carta Gantt (Exportar Excel)", True, Me)
             End Try

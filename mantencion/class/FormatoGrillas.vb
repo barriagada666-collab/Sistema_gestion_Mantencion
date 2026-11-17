@@ -3,6 +3,9 @@ Imports System.Windows.Forms
 
 Public Class FormatoGrillas
 
+    Private Shared ReadOnly _fontHeader As New Font("Segoe UI", 8.75F, FontStyle.Bold)
+    Private Shared ReadOnly _fontCelda As New Font("Segoe UI", 8.5F, FontStyle.Regular)
+
     ''' <summary>
     ''' Aplica paleta de colores moderna, encabezados estilizados, filas alternadas y doble buffer a cualquier DataGridView.
     ''' </summary>
@@ -22,7 +25,7 @@ Public Class FormatoGrillas
             grilla.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single
             grilla.ColumnHeadersDefaultCellStyle.BackColor = Utilitarios.ColorPrimario
             grilla.ColumnHeadersDefaultCellStyle.ForeColor = Color.White
-            grilla.ColumnHeadersDefaultCellStyle.Font = New Font("Segoe UI", 8.75F, FontStyle.Bold)
+            grilla.ColumnHeadersDefaultCellStyle.Font = _fontHeader
             grilla.ColumnHeadersDefaultCellStyle.SelectionBackColor = Utilitarios.ColorPrimario
             grilla.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White
 
@@ -32,7 +35,7 @@ Public Class FormatoGrillas
 
             grilla.DefaultCellStyle.BackColor = Color.White
             grilla.DefaultCellStyle.ForeColor = Utilitarios.ColorTextoPrincipal
-            grilla.DefaultCellStyle.Font = New Font("Segoe UI", 8.5F, FontStyle.Regular)
+            grilla.DefaultCellStyle.Font = _fontCelda
             grilla.DefaultCellStyle.SelectionBackColor = Utilitarios.ColorSeleccion
             grilla.DefaultCellStyle.SelectionForeColor = Utilitarios.ColorTextoSeleccion
 
@@ -62,22 +65,22 @@ Public Class FormatoGrillas
         Try
             Select Case grilla.Name
                 Case "grillaPersonalOt"
-                If grilla.Columns.Count = 0 Then
-                    frm_OT.grillaPersonalOt.Columns.Add("RUT", "Rut")
-                    frm_OT.grillaPersonalOt.Columns.Add("Alias_personal", "Alias")
-                    frm_OT.grillaPersonalOt.Columns.Add("observacion_ot", "Observación")
-                End If
-                SetCol(grilla, 0, 80, True)
-                SetCol(grilla, 1, 80, True)
-                SetCol(grilla, 2, 395)
+                    If grilla.Columns.Count = 0 Then
+                        grilla.Columns.Add("RUT", "Rut")
+                        grilla.Columns.Add("Alias_personal", "Alias")
+                        grilla.Columns.Add("observacion_ot", "Observación")
+                    End If
+                    SetCol(grilla, 0, 80, True)
+                    SetCol(grilla, 1, 80, True)
+                    SetCol(grilla, 2, 395)
 
-            Case "grillaOtExternas"
-                If grilla.Columns.Count = 0 Then
-                    frm_OT.grillaOtExternas.Columns.Add("n_ot_externa", "N°De OT Externa")
-                    frm_OT.grillaOtExternas.Columns.Add("desc_ot_externa", "Descripción OT Externa")
-                End If
-                SetCol(grilla, 0, 120)
-                SetCol(grilla, 1, 435)
+                Case "grillaOtExternas"
+                    If grilla.Columns.Count = 0 Then
+                        grilla.Columns.Add("n_ot_externa", "N°De OT Externa")
+                        grilla.Columns.Add("desc_ot_externa", "Descripción OT Externa")
+                    End If
+                    SetCol(grilla, 0, 120)
+                    SetCol(grilla, 1, 435)
 
             Case "grillaInsumosOt"
                 SetCol(grilla, 0, 80)
@@ -363,33 +366,7 @@ Public Class FormatoGrillas
         Try
             Select Case grilla.Name
                 Case "grillaDatosTecnicosNodo"
-                    If FrmDatosTecnicosNodo.nivel >= 3 Then
-                        SetCol(grilla, 0, 80, Nothing, False)
-                        SetCol(grilla, 1, 80, Nothing, False)
-                        SetCol(grilla, 2, 150, True)
-                        SetCol(grilla, 3, 180, True)
-                        SetCol(grilla, 4, 200)
-                        SetCol(grilla, 5, 100, Nothing, False)
-
-                    ElseIf FrmDatosTecnicosNodo.nivel = 2 Then
-                        SetCol(grilla, 0, 80, Nothing, False)
-                        SetCol(grilla, 1, 80, Nothing, False)
-                        SetCol(grilla, 2, 120, True)
-                        SetCol(grilla, 3, 150, True)
-                        SetCol(grilla, 4, 180, True)
-                        SetCol(grilla, 5, 200)
-                        SetCol(grilla, 6, 100, Nothing, False)
-
-                    ElseIf FrmDatosTecnicosNodo.nivel = 1 Then
-                        SetCol(grilla, 0, 80, Nothing, False)
-                        SetCol(grilla, 1, 80, Nothing, False)
-                        SetCol(grilla, 2, 120, True)
-                        SetCol(grilla, 3, 120, True)
-                        SetCol(grilla, 4, 150, True)
-                        SetCol(grilla, 5, 180, True)
-                        SetCol(grilla, 6, 200)
-                        SetCol(grilla, 7, 100, Nothing, False)
-                    End If
+                    AplicarColumnasDatosTecnicos(grilla, FrmDatosTecnicosNodo.nivel)
 
                 Case "grillaDatosTecnicos"
                     If FrmBuscarDatosTecnicos.nombre_form = "FrmDatosTecnicos" Then
@@ -405,36 +382,38 @@ Public Class FormatoGrillas
                     End If
 
                 Case "grillaDatosTecnicosAsoc"
-                    If FrmVerDatosTecnicos.nivel >= 3 Then
-                        SetCol(grilla, 0, 80, Nothing, False)
-                        SetCol(grilla, 1, 80, Nothing, False)
-                        SetCol(grilla, 2, 150, True)
-                        SetCol(grilla, 3, 180, True)
-                        SetCol(grilla, 4, 200)
-                        SetCol(grilla, 5, 100, Nothing, False)
-
-                    ElseIf FrmVerDatosTecnicos.nivel = 2 Then
-                        SetCol(grilla, 0, 80, Nothing, False)
-                        SetCol(grilla, 1, 80, Nothing, False)
-                        SetCol(grilla, 2, 120, True)
-                        SetCol(grilla, 3, 150, True)
-                        SetCol(grilla, 4, 180, True)
-                        SetCol(grilla, 5, 200)
-                        SetCol(grilla, 6, 100, Nothing, False)
-
-                    ElseIf FrmVerDatosTecnicos.nivel = 1 Then
-                        SetCol(grilla, 0, 80, Nothing, False)
-                        SetCol(grilla, 1, 80, Nothing, False)
-                        SetCol(grilla, 2, 120, True)
-                        SetCol(grilla, 3, 120, True)
-                        SetCol(grilla, 4, 150, True)
-                        SetCol(grilla, 5, 180, True)
-                        SetCol(grilla, 6, 200)
-                        SetCol(grilla, 7, 100, Nothing, False)
-                    End If
+                    AplicarColumnasDatosTecnicos(grilla, FrmVerDatosTecnicos.nivel)
             End Select
         Finally
             grilla.ResumeLayout(False)
         End Try
+    End Sub
+
+    Private Shared Sub AplicarColumnasDatosTecnicos(ByVal grilla As DataGridView, ByVal nivel As Integer)
+        If nivel >= 3 Then
+            SetCol(grilla, 0, 80, Nothing, False)
+            SetCol(grilla, 1, 80, Nothing, False)
+            SetCol(grilla, 2, 150, True)
+            SetCol(grilla, 3, 180, True)
+            SetCol(grilla, 4, 200)
+            SetCol(grilla, 5, 100, Nothing, False)
+        ElseIf nivel = 2 Then
+            SetCol(grilla, 0, 80, Nothing, False)
+            SetCol(grilla, 1, 80, Nothing, False)
+            SetCol(grilla, 2, 120, True)
+            SetCol(grilla, 3, 150, True)
+            SetCol(grilla, 4, 180, True)
+            SetCol(grilla, 5, 200)
+            SetCol(grilla, 6, 100, Nothing, False)
+        ElseIf nivel = 1 Then
+            SetCol(grilla, 0, 80, Nothing, False)
+            SetCol(grilla, 1, 80, Nothing, False)
+            SetCol(grilla, 2, 120, True)
+            SetCol(grilla, 3, 120, True)
+            SetCol(grilla, 4, 150, True)
+            SetCol(grilla, 5, 180, True)
+            SetCol(grilla, 6, 200)
+            SetCol(grilla, 7, 100, Nothing, False)
+        End If
     End Sub
 End Class

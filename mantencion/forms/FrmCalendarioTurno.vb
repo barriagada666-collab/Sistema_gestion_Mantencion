@@ -22,34 +22,38 @@ Public Class FrmCalendarioTurno
     End Sub
 
     Private Sub btn_crear_fechas_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_crear_fechas.Click
-        Dim fecha_inicio As DateTime
-        Dim fecha_fin As DateTime
-        Dim fecha As DateTime
+        Dim fecha_inicio As DateTime = fecha_desde_cal.Value.Date
+        Dim fecha_fin As DateTime = fecha_hasta_cal.Value.Date
         Dim formato_grid As New FormatoGrillas
+
+        If fecha_inicio > fecha_fin Then
+            MessageBox.Show(Me, "La fecha 'Desde' no puede ser mayor que la fecha 'Hasta'.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            Exit Sub
+        End If
+        If (fecha_fin - fecha_inicio).TotalDays > 93 Then
+            MessageBox.Show(Me, "El rango máximo permitido para el calendario de turnos es de 93 días.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            Exit Sub
+        End If
 
         Try
             grillaCalendarioTurno.SuspendLayout()
-            fecha_inicio = fecha_desde_cal.Value.Date
-            fecha_fin = fecha_hasta_cal.Value.Date
-            fecha = fecha_inicio
-
             If grillaCalendarioTurno.ColumnCount > 0 Then
                 grillaCalendarioTurno.Columns.Clear()
             End If
 
+            Dim fecha As DateTime = fecha_inicio
             While fecha <= fecha_fin
                 grillaCalendarioTurno.Columns.Add(fecha.ToString("yyyyMMdd"), fecha.ToString("dd-MM-yy"))
-                fecha = DateAdd(DateInterval.Day, 1, fecha)
+                fecha = fecha.AddDays(1)
             End While
             formato_grid.grillaCalendario(grillaCalendarioTurno)
-            grpTurnosPersonal.Enabled = True
-            grpOperaciones.Enabled = True
+            grpTurnosPersonal.Enabled = (grillaCalendarioTurno.ColumnCount > 0)
+            grpOperaciones.Enabled = (grillaCalendarioTurno.ColumnCount > 0)
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Calendario de Turnos (Crear Fechas)", True, Me)
         Finally
             grillaCalendarioTurno.ResumeLayout(True)
         End Try
-
     End Sub
 
     Private Sub btn_limpiar_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_limpiar.Click
@@ -62,6 +66,8 @@ Public Class FrmCalendarioTurno
                 grillaPersonalTurno.Rows.Clear()
             End If
 
+            grpTurnosPersonal.Enabled = False
+            grpOperaciones.Enabled = False
             fecha_desde_cal.Value = Now
             fecha_hasta_cal.Value = Now
             fecha_desde.Value = Now
@@ -69,18 +75,45 @@ Public Class FrmCalendarioTurno
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Calendario de Turnos (Limpiar)", True, Me)
         End Try
-
     End Sub
 
     Private Sub btn_agregar_personal_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_agregar_personal.Click
-        Dim calendario_personal As New CalendarioPersonal
+        If grillaCalendarioTurno.ColumnCount = 0 Then
+            MessageBox.Show(Me, "Primero genere las fechas del calendario.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            Exit Sub
+        End If
+        If String.IsNullOrWhiteSpace(txtPersonalTurno.Text) OrElse String.IsNullOrWhiteSpace(cmbTurno.Text) Then
+            MessageBox.Show(Me, "Debe ingresar el técnico y seleccionar el turno.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            txtPersonalTurno.Focus()
+            Exit Sub
+        End If
+        If fecha_desde.Value.Date > fecha_hasta.Value.Date Then
+            MessageBox.Show(Me, "La fecha 'Desde' del turno no puede ser mayor que la fecha 'Hasta'.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            Exit Sub
+        End If
 
+        Dim calendario_personal As New CalendarioPersonal
         Try
-            calendario_personal.agregarPersonalCalendario(txtPersonalTurno.Text, fecha_desde.Value, fecha_hasta.Value, cmbTurno.Text)
+            calendario_personal.agregarPersonalCalendario(txtPersonalTurno.Text.Trim(), fecha_desde.Value, fecha_hasta.Value, cmbTurno.Text)
             calendario_personal.limpiarProgramacionTurno()
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Calendario de Turnos (Agregar Personal)", True, Me)
         End Try
-        
+    End Sub
+
+    Private Sub btn_guardar_turno_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_guardar_turno.Click
+        If grillaPersonalTurno.RowCount = 0 OrElse grillaCalendarioTurno.ColumnCount = 0 Then
+            MessageBox.Show(Me, "Debe agregar al menos una asignación de turno antes de exportar o guardar.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            Exit Sub
+        End If
+        Try
+            Dim hojas As New List(Of KeyValuePair(Of String, DataGridView)) From {
+                New KeyValuePair(Of String, DataGridView)("Asignaciones", grillaPersonalTurno),
+                New KeyValuePair(Of String, DataGridView)("Calendario", grillaCalendarioTurno)
+            }
+            Utilitarios.ExportarGrillasAExcelNativo(hojas, "Calendario_Turnos", "Programación de Turnos de Personal")
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Calendario de Turnos (Guardar)", True, Me)
+        End Try
     End Sub
 End Class

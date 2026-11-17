@@ -2,52 +2,71 @@ Public Class FrmCargo
 
     Private Sub btn_limpiar_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_limpiar.Click
         Dim cargo As New Cargo
-
         cargo.LimpiarFrmCargo()
     End Sub
 
+    Private Sub txtCodCargo_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles txtCodCargo.KeyPress
+        If Not Char.IsDigit(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) Then
+            e.Handled = True
+        End If
+    End Sub
+
     Private Sub btn_guardar_cargo_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_guardar_cargo.Click
+        Dim codLimpio As String = txtCodCargo.Text.Trim()
+        Dim descLimpia As String = txtDescCargo.Text.Trim()
+        Dim idVal As Integer = 0
+        If Not Integer.TryParse(codLimpio, idVal) Then
+            MessageBox.Show(Me, "Debe ingresar un código numérico de cargo.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            txtCodCargo.Focus()
+            Exit Sub
+        End If
+        If String.IsNullOrWhiteSpace(descLimpia) Then
+            MessageBox.Show(Me, "Debe ingresar la descripción del cargo.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            txtDescCargo.Focus()
+            Exit Sub
+        End If
+
         Dim cargo As New Cargo
         Dim resp As String = ""
-        Dim cod_resp As Integer = cargo.BuscarCargo(txtCodCargo.Text)
-        If cod_resp = -1 Then Exit Sub
+        Dim cod_resp As Integer = cargo.BuscarCargo(codLimpio)
+        If cod_resp < 0 Then Exit Sub
 
         If cod_resp = 0 Then
-            cod_resp = 0
-            cargo.IngCargo(txtCodCargo.Text, txtDescCargo.Text, principal.lblUsuario.Text, cod_resp, resp)
-
-            If cod_resp = 1 Then
-                MsgBox(resp, MsgBoxStyle.Information, "Validación")
-                cargo.LimpiarFrmCargo()
-            ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
-                MsgBox(resp, MsgBoxStyle.Critical, "Error")
-            End If
+            cargo.IngCargo(codLimpio, descLimpia, principal.lblUsuario.Text, cod_resp, resp)
         Else
             cod_resp = 0
-            cargo.UpdCargo(txtCodCargo.Text, txtDescCargo.Text, principal.lblUsuario.Text, cod_resp, resp)
+            cargo.UpdCargo(codLimpio, descLimpia, principal.lblUsuario.Text, cod_resp, resp)
+        End If
 
-            If cod_resp = 1 Then
-                MsgBox(resp, MsgBoxStyle.Information, "Validación")
-                cargo.LimpiarFrmCargo()
-            ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
-                MsgBox(resp, MsgBoxStyle.Critical, "Error")
-            End If
+        If cod_resp = 1 Then
+            MessageBox.Show(Me, resp, "Cargos", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            cargo.LimpiarFrmCargo()
+        ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
+            MessageBox.Show(Me, resp, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
         End If
     End Sub
 
     Private Sub btn_eliminar_cargo_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_eliminar_cargo.Click
-        If MsgBox("¿Esta seguro de eliminar el cargo " & txtDescCargo.Text & " ?", MsgBoxStyle.YesNo, "Confirmación") = MsgBoxResult.Yes Then
+        Dim codLimpio As String = txtCodCargo.Text.Trim()
+        Dim idVal As Integer = 0
+        If Not Integer.TryParse(codLimpio, idVal) Then
+            MessageBox.Show(Me, "Debe seleccionar o ingresar un código de cargo válido.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            txtCodCargo.Focus()
+            Exit Sub
+        End If
+
+        If MessageBox.Show(Me, "¿Está seguro de eliminar el cargo '" & txtDescCargo.Text.Trim() & "'?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) = DialogResult.Yes Then
             Dim cargo As New Cargo
             Dim cod_resp As Integer = 0
             Dim resp As String = ""
 
-            cargo.DelCargo(txtCodCargo.Text, principal.lblUsuario.Text, cod_resp, resp)
+            cargo.DelCargo(codLimpio, principal.lblUsuario.Text, cod_resp, resp)
 
             If cod_resp = 1 Then
-                MsgBox(resp, MsgBoxStyle.Information, "Validación")
+                MessageBox.Show(Me, resp, "Cargos", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 cargo.LimpiarFrmCargo()
             ElseIf cod_resp <> -1 AndAlso Not String.IsNullOrWhiteSpace(resp) Then
-                MsgBox(resp, MsgBoxStyle.Critical, "Error")
+                MessageBox.Show(Me, resp, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             End If
         End If
     End Sub
@@ -84,13 +103,13 @@ Public Class FrmCargo
         Me.Close()
     End Sub
 
-    Private Sub grillaCargos_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaCargos.CellContentDoubleClick
-        If e.RowIndex < 0 OrElse grillaCargos.CurrentRow Is Nothing Then Exit Sub
+    Private Sub grillaCargos_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaCargos.CellContentDoubleClick, grillaCargos.CellDoubleClick
+        If e.RowIndex < 0 OrElse e.RowIndex >= grillaCargos.RowCount Then Exit Sub
         Try
-            With grillaCargos
-                txtCodCargo.Text = .Rows(.CurrentRow.Index).Cells(0).Value
-                txtDescCargo.Text = .Rows(.CurrentRow.Index).Cells(1).Value
-            End With
+            Dim row = grillaCargos.Rows(e.RowIndex)
+            If row Is Nothing OrElse row.IsNewRow OrElse grillaCargos.Columns.Count < 2 Then Exit Sub
+            txtCodCargo.Text = If(row.Cells(0).Value Is Nothing OrElse IsDBNull(row.Cells(0).Value), String.Empty, row.Cells(0).Value.ToString().Trim())
+            txtDescCargo.Text = If(row.Cells(1).Value Is Nothing OrElse IsDBNull(row.Cells(1).Value), String.Empty, row.Cells(1).Value.ToString().Trim())
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Cargos (Grilla Cargos)", True, Me)
         End Try

@@ -506,11 +506,15 @@ Public Class OT
 
             If .grillaInsumosOt.RowCount > 0 Then
                 .DSIOT.Tables.Clear()
-                i = .grillaInsumosOt.RowCount - 1
-                While .grillaInsumosOt.RowCount > 0
-                    .grillaInsumosOt.Rows.Remove(.grillaInsumosOt.Rows(i))
-                    i = i - 1
-                End While
+                If .grillaInsumosOt.DataSource IsNot Nothing Then
+                    .grillaInsumosOt.DataSource = Nothing
+                Else
+                    For idx As Integer = .grillaInsumosOt.RowCount - 1 To 0 Step -1
+                        If Not .grillaInsumosOt.Rows(idx).IsNewRow Then
+                            .grillaInsumosOt.Rows.RemoveAt(idx)
+                        End If
+                    Next
+                End If
             End If
 
             If .grillaOtExternas.RowCount > 0 Then
@@ -679,36 +683,42 @@ Public Class OT
 
 
     Private Shared _cacheAutocompletarPersonal As AutoCompleteStringCollection = Nothing
+    Private Shared ReadOnly _cachePersonalLock As New Object()
 
     Public Shared Sub InvalidarCachePersonal()
-        _cacheAutocompletarPersonal = Nothing
+        SyncLock _cachePersonalLock
+            _cacheAutocompletarPersonal = Nothing
+        End SyncLock
     End Sub
 
     Public Shared Function ObtenerColeccionAutocompletarPersonal() As AutoCompleteStringCollection
-        If _cacheAutocompletarPersonal IsNot Nothing AndAlso _cacheAutocompletarPersonal.Count > 0 Then
-            Return _cacheAutocompletarPersonal
-        End If
+        SyncLock _cachePersonalLock
+            If _cacheAutocompletarPersonal IsNot Nothing AndAlso _cacheAutocompletarPersonal.Count > 0 Then
+                Return _cacheAutocompletarPersonal
+            End If
+        End SyncLock
 
         Dim coleccion As New AutoCompleteStringCollection
-        Dim cnx As New SqlConnection
         Dim conexion As New Conexion
         Try
-            conexion.Conectar(cnx)
-            Using com As New SqlCommand("AUTOCOMPLETAR_PERSONAL", cnx)
-                com.CommandType = CommandType.StoredProcedure
-                Using dr As SqlDataReader = com.ExecuteReader()
-                    While dr.Read()
-                        If Not dr.IsDBNull(1) Then
-                            coleccion.Add(dr(1).ToString())
-                        End If
-                    End While
+            Using cnx As New SqlConnection
+                conexion.Conectar(cnx)
+                Using com As New SqlCommand("AUTOCOMPLETAR_PERSONAL", cnx)
+                    com.CommandType = CommandType.StoredProcedure
+                    Using dr As SqlDataReader = com.ExecuteReader()
+                        While dr.Read()
+                            If dr.FieldCount > 1 AndAlso Not dr.IsDBNull(1) Then
+                                coleccion.Add(dr(1).ToString())
+                            End If
+                        End While
+                    End Using
                 End Using
             End Using
-            _cacheAutocompletarPersonal = coleccion
+            SyncLock _cachePersonalLock
+                _cacheAutocompletarPersonal = coleccion
+            End SyncLock
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Obtener Colección Autocompletar Personal")
-        Finally
-            conexion.Desconectar(cnx)
         End Try
         Return coleccion
     End Function
@@ -821,7 +831,8 @@ Public Class OT
 
             With frm_OT.grillaPersonalOt
                 For i = 0 To .RowCount - 1
-                    If .Rows(i).Cells(0).Value Is Nothing OrElse .Rows(i).Cells(0).Value.ToString = "" Then
+                    If .Rows(i).IsNewRow Then Continue For
+                    If .Rows(i).Cells(0).Value Is Nothing OrElse IsDBNull(.Rows(i).Cells(0).Value) OrElse String.IsNullOrWhiteSpace(.Rows(i).Cells(0).Value.ToString()) Then
                         resp = resp & "Debe ingresar una persona en la fila :" & i + 1 & Chr(13)
                     End If
                 Next
@@ -1384,6 +1395,7 @@ Public Class OT
                     End If
                 Next
                 For i As Integer = 0 To grilla.RowCount - 1
+                    If grilla.Rows(i).IsNewRow Then Continue For
                     Dim dr As DataRow = dt.NewRow()
                     Dim colIdx As Integer = 0
                     For j As Integer = 0 To grilla.ColumnCount - 1
@@ -1429,8 +1441,10 @@ Public Class OT
                 Dim p_turno As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@turno", turno)
 
                 Dim p_fecha As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha", fecha.ToString("yyyyMMdd"))
-                Dim p_estado As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@estado", estado)
-                Dim p_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(nodo_padre))
+                Dim p_estado As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@estado", If(estado, String.Empty))
+                Dim idNodoPadre As Integer = 1
+                Integer.TryParse(If(nodo_padre, String.Empty).Trim(), idNodoPadre)
+                Dim p_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", idNodoPadre)
 
                 DA.Fill(DS)
             End Using

@@ -162,7 +162,7 @@ Public Class Informes
         Dim worksheet_3 As Excel.Worksheet
         Dim num_mant As Integer = 0
 
-        If grilla_ciclos_mp.RowCount = 0 Then Return
+        If grilla_ciclos_mp Is Nothing OrElse grilla_ciclos_mp.RowCount = 0 OrElse grilla_info_mp Is Nothing OrElse grilla_info_mp.CurrentRow Is Nothing OrElse grilla_grafico Is Nothing Then Return
 
         Try
             excelApp = New Excel.Application
@@ -236,7 +236,7 @@ Public Class Informes
         Dim cont_fila As Integer = 0
         Dim cont_col As Integer = 0
 
-        If grilla_ciclos_mp.RowCount = 0 Then Return
+        If grilla_ciclos_mp Is Nothing OrElse grilla_ciclos_mp.RowCount = 0 OrElse grilla_info_mp Is Nothing OrElse grilla_info_mp.CurrentRow Is Nothing OrElse grilla_grafico Is Nothing Then Return
 
         Try
             excelApp = New Excel.Application
@@ -274,7 +274,17 @@ Public Class Informes
             '---------------------------------------------------------------------------------------
 
             fecha_inicio = CDate(grilla_ciclos_mp.Rows(0).Cells(colIniIdx).Value).Date
-            fecha_fin = CDate(grilla_ciclos_mp.Rows(grilla_ciclos_mp.RowCount - 1).Cells(colFinIdx).Value).Date
+            fecha_fin = CDate(grilla_ciclos_mp.Rows(0).Cells(colFinIdx).Value).Date
+            For i = 1 To grilla_ciclos_mp.RowCount - 1
+                If IsDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value) Then
+                    Dim fI As DateTime = CDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
+                    If fI < fecha_inicio Then fecha_inicio = fI
+                End If
+                If IsDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value) Then
+                    Dim fF As DateTime = CDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date
+                    If fF > fecha_fin Then fecha_fin = fF
+                End If
+            Next
             fecha = fecha_inicio
 
             Dim col_excel As Integer = 5
@@ -289,8 +299,12 @@ Public Class Informes
             cont_fila = 11
 
             For i = 0 To grilla_ciclos_mp.RowCount - 1
+                If Not IsDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value) OrElse Not IsDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value) Then
+                    cont_fila = cont_fila + 1
+                    Continue For
+                End If
                 fecha_ini = CDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
-                num_mant = DateDiff(DateInterval.Day, fecha_ini, CDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date) + 1
+                num_mant = Math.Max(1, CInt(DateDiff(DateInterval.Day, fecha_ini, CDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date) + 1))
 
                 For j = 0 To grilla_grafico.Columns.Count - 1
                     If fecha_ini.ToString("yyyyMMdd") = grilla_grafico.Columns(j).Name OrElse fecha_ini.ToString("dd-MM-yy") = grilla_grafico.Columns(j).Name Then
@@ -341,7 +355,7 @@ Public Class Informes
         Dim cont_fila As Integer = 0
         Dim cont_col As Integer = 0
 
-        If grilla_ciclos_mp.RowCount = 0 Then Return
+        If grilla_ciclos_mp Is Nothing OrElse grilla_ciclos_mp.RowCount = 0 OrElse grilla_info_mp Is Nothing OrElse grilla_info_mp.CurrentRow Is Nothing OrElse grilla_grafico Is Nothing Then Return
 
         Try
             excelApp = New Excel.Application
@@ -405,7 +419,17 @@ Public Class Informes
             '---------------------------------------------------------------------------------------
 
             fecha_inicio = CDate(grilla_ciclos_mp.Rows(0).Cells(colIniIdx).Value).Date
-            fecha_fin = CDate(grilla_ciclos_mp.Rows(grilla_ciclos_mp.RowCount - 1).Cells(colFinIdx).Value).Date
+            fecha_fin = CDate(grilla_ciclos_mp.Rows(0).Cells(colFinIdx).Value).Date
+            For i = 1 To grilla_ciclos_mp.RowCount - 1
+                If IsDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value) Then
+                    Dim fI As DateTime = CDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
+                    If fI < fecha_inicio Then fecha_inicio = fI
+                End If
+                If IsDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value) Then
+                    Dim fF As DateTime = CDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date
+                    If fF > fecha_fin Then fecha_fin = fF
+                End If
+            Next
             fecha = fecha_inicio
 
             Dim col_excel As Integer = 5
@@ -420,8 +444,12 @@ Public Class Informes
             cont_fila = 11
 
             For i = 0 To grilla_ciclos_mp.RowCount - 1
+                If Not IsDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value) OrElse Not IsDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value) Then
+                    cont_fila = cont_fila + 1
+                    Continue For
+                End If
                 fecha_ini = CDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
-                num_mant = DateDiff(DateInterval.Day, fecha_ini, CDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date) + 1
+                num_mant = Math.Max(1, CInt(DateDiff(DateInterval.Day, fecha_ini, CDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date) + 1))
 
                 For j = 0 To grilla_grafico.Columns.Count - 1
                     Dim colDate As DateTime
@@ -478,7 +506,7 @@ Public Class Informes
         Dim cont_fila As Integer = 0
         Dim cont_col As Integer = 0
 
-        If grilla_ciclos_mp.RowCount = 0 Then Return
+        If grilla_ciclos_mp Is Nothing OrElse grilla_ciclos_mp.RowCount = 0 OrElse grilla_grafico Is Nothing Then Return
 
         Try
             excelApp = New Excel.Application
@@ -1200,6 +1228,10 @@ Public Class Informes
     End Function
 
     Public Sub expInfDatosTecnicos(ByVal grilla_datos_tecnicos As DataGridView)
+        If grilla_datos_tecnicos Is Nothing OrElse grilla_datos_tecnicos.RowCount = 0 OrElse FrmDatosTecnicosNodo.nivel < 1 Then
+            MsgBox("No hay datos técnicos válidos para exportar.", MsgBoxStyle.Exclamation, "Exportar Datos Técnicos")
+            Return
+        End If
         Dim excelApp As Excel.Application = Nothing
         Dim workbook As Excel.Workbook = Nothing
         Dim worksheet_1 As Excel.Worksheet
@@ -1320,6 +1352,7 @@ Public Class Informes
                 excelApp.Visible = True
             Else
                 Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
+                Utilitarios.CerrarExcelEnError(excelApp, workbook)
             End If
         Catch ex As Exception
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
@@ -1335,6 +1368,10 @@ Public Class Informes
     End Sub
 
     Public Sub expInfListadoCiclo(ByVal grilla_ciclos_mp As DataGridView, ByVal fecha_desde As DateTime, ByVal fecha_hasta As DateTime)
+        If grilla_ciclos_mp Is Nothing OrElse grilla_ciclos_mp.RowCount = 0 OrElse grilla_ciclos_mp.ColumnCount < 7 Then
+            MsgBox("No hay ciclos válidos para exportar a Excel.", MsgBoxStyle.Exclamation, "Exportar Excel")
+            Return
+        End If
         Dim excelApp As Excel.Application = Nothing
         Dim workbook As Excel.Workbook = Nothing
         Dim worksheet_1 As Excel.Worksheet = Nothing

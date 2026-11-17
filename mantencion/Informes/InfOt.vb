@@ -158,8 +158,9 @@ Public Class InfOt
 
         Dim doc As New Document(PageSize.LETTER.Rotate(), 20.0F, 20.0F, 25.0F, 25.0F)
         Using fs As New FileStream(rutaArchivo, FileMode.Create, FileAccess.Write, FileShare.None)
-            Dim writer As PdfWriter = PdfWriter.GetInstance(doc, fs)
+            PdfWriter.GetInstance(doc, fs)
             doc.Open()
+            Try
 
             Dim fontTitulo As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 13.0F, BaseColor.DarkGray)
             Dim fontSub As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA, 8.5F, BaseColor.Gray)
@@ -220,7 +221,9 @@ Public Class InfOt
                 doc.Add(New Paragraph("No hay datos disponibles para mostrar en el informe.", fontSub))
             End If
 
-            doc.Close()
+            Finally
+                If doc.IsOpen() Then doc.Close()
+            End Try
         End Using
     End Sub
 
@@ -252,7 +255,9 @@ Public Class InfOt
               brushHeaderBg As New SolidBrush(Color.FromArgb(2, 94, 135)),
               brushAltBg As New SolidBrush(Color.FromArgb(234, 243, 245)),
               penBorder As New Pen(Color.FromArgb(160, 197, 207), 0.5F),
-              brushTitle As New SolidBrush(Color.FromArgb(2, 94, 135))
+              brushTitle As New SolidBrush(Color.FromArgb(2, 94, 135)),
+              sfHeader As New StringFormat() With {.Alignment = StringAlignment.Center, .LineAlignment = StringAlignment.Center, .Trimming = StringTrimming.EllipsisCharacter},
+              sfCell As New StringFormat() With {.Alignment = StringAlignment.Near, .LineAlignment = StringAlignment.Center, .Trimming = StringTrimming.EllipsisCharacter}
 
             If _printRowIndex = 0 Then
                 g.DrawString(_titulo, fTitle, brushTitle, bounds.Left, y)
@@ -279,15 +284,15 @@ Public Class InfOt
                 Dim rectHeader As New RectangleF(x, y, colWidth, headerHeight)
                 g.FillRectangle(brushHeaderBg, rectHeader)
                 g.DrawRectangle(penBorder, rectHeader.X, rectHeader.Y, rectHeader.Width, rectHeader.Height)
-                Dim sf As New StringFormat() With {.Alignment = StringAlignment.Center, .LineAlignment = StringAlignment.Center, .Trimming = StringTrimming.EllipsisCharacter}
-                g.DrawString(_dataSource.Columns(i).Caption, fHeader, Brushes.White, rectHeader, sf)
+                g.DrawString(_dataSource.Columns(i).Caption, fHeader, Brushes.White, rectHeader, sfHeader)
                 x += colWidth
             Next
             y += headerHeight
 
             Dim rowHeight As Single = 20.0F
+            Dim filasEnPagina As Integer = 0
             While _printRowIndex < _dataSource.Rows.Count
-                If y + rowHeight > bounds.Bottom Then
+                If y + rowHeight > bounds.Bottom AndAlso filasEnPagina > 0 Then
                     e.HasMorePages = True
                     Return
                 End If
@@ -302,13 +307,13 @@ Public Class InfOt
                     g.DrawRectangle(penBorder, rectCell.X, rectCell.Y, rectCell.Width, rectCell.Height)
                     Dim val As Object = row(i)
                     Dim txt As String = If(val Is Nothing OrElse IsDBNull(val), "", val.ToString())
-                    Dim sfCell As New StringFormat() With {.Alignment = StringAlignment.Near, .LineAlignment = StringAlignment.Center, .Trimming = StringTrimming.EllipsisCharacter}
                     g.DrawString(txt, fCell, Brushes.Black, rectCell, sfCell)
                     x += colWidth
                 Next
 
                 y += rowHeight
                 _printRowIndex += 1
+                filasEnPagina += 1
             End While
 
             e.HasMorePages = False

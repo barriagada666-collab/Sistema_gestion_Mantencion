@@ -16,7 +16,7 @@ Public Class FrmBuscarMp
                 Utilitarios.AplicarTemaModerno(Me)
             Else
                 MsgBox("No hay datos para mostrar!!!", MsgBoxStyle.Exclamation, "Validación")
-                Me.Close()
+                Me.BeginInvoke(New Action(AddressOf Me.Close))
             End If
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Buscar Mantención Preventiva", True, Me)
@@ -26,20 +26,28 @@ Public Class FrmBuscarMp
     End Sub
 
     Private Sub grillaBuscarMp_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaBuscarMp.CellContentDoubleClick
-        If e.RowIndex < 0 OrElse grillaBuscarMp.CurrentRow Is Nothing Then Exit Sub
+        If e.RowIndex < 0 OrElse grillaBuscarMp.Rows(e.RowIndex).IsNewRow Then Exit Sub
         Try
+            Dim row As DataGridViewRow = grillaBuscarMp.Rows(e.RowIndex)
+            Dim valCell = Function(idx As Integer) As String
+                              If idx < 0 OrElse idx >= row.Cells.Count OrElse row.Cells(idx).Value Is Nothing OrElse IsDBNull(row.Cells(idx).Value) Then
+                                  Return String.Empty
+                              End If
+                              Return row.Cells(idx).Value.ToString()
+                          End Function
+            Dim mp As New MantPreventiva
+            mp.LimpiarFrmMp()
             With FrmMp
-                .txtIdMant.Text = grillaBuscarMp.Rows(grillaBuscarMp.CurrentRow.Index).Cells(0).Value
-                .txtFrecuenciaMp.Text = grillaBuscarMp.Rows(grillaBuscarMp.CurrentRow.Index).Cells(1).Value
-                .txtTiempoAviso.Text = grillaBuscarMp.Rows(grillaBuscarMp.CurrentRow.Index).Cells(2).Value
-                .cmbEstadoMp.Text = grillaBuscarMp.Rows(grillaBuscarMp.CurrentRow.Index).Cells(3).Value
-                .cmbTipoMp.Text = grillaBuscarMp.Rows(grillaBuscarMp.CurrentRow.Index).Cells(5).Value
-                .txtObsMant.Text = grillaBuscarMp.Rows(grillaBuscarMp.CurrentRow.Index).Cells(6).Value
+                .txtIdMant.Text = valCell(0)
+                .txtFrecuenciaMp.Text = valCell(1)
+                .txtTiempoAviso.Text = valCell(2)
+                .cmbEstadoMp.Text = valCell(3)
+                .cmbTipoMp.Text = valCell(5)
+                .txtObsMant.Text = valCell(6)
             End With
             Me.Close()
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Buscar Mantención Preventiva (Grilla Buscar MP)", True, Me)
         End Try
-        
     End Sub
 End Class
