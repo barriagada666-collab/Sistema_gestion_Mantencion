@@ -157,8 +157,8 @@ Digitaliza de extremo a extremo el ciclo de vida de cada intervención técnica 
 
 | Plataforma / Compilación | Formato y Descripción del Instalador | Tamaño | Enlace Directo |
 | :--- | :--- | :---: | :--- |
-| 🪟 **Windows 10 / 11** (`win-x64`) | **`.exe` (Inno Setup `LZMA2`)** — Instalador autocontenido con .NET 8 Desktop, SQL nativo, Excel XML e `iTextSharp` PDF | `41.41 MB` | [⬇️ **Descargar Instalador Windows**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) |
-| 🍏 **macOS Universal Nativo** (Apple Silicon M1–M4 sin Rosetta 2 + Intel) | **`.dmg` (`ULMO LZMA`)** — Imagen macOS con binario Universal (`arm64` + `x86_64`), motores nativos depurados e instalador en 1 clic (`Instalar_en_Mac.command`) | `288.94 MB` | [⬇️ **Descargar Imagen DMG para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) |
+| 🪟 **Windows 10 / 11** (`win-x64`) | **`.exe` (Inno Setup `LZMA2`)** — Instalador autocontenido con .NET 8 Desktop, SQL nativo, Excel XML e `iTextSharp` PDF | `41.42 MB` | [⬇️ **Descargar Instalador Windows**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) |
+| 🍏 **macOS Universal Nativo** (Apple Silicon M1–M4 sin Rosetta 2 + Intel) | **`.dmg` (`ULMO LZMA`)** — Imagen macOS con binario Universal (`arm64` + `x86_64`), motores nativos depurados e instalador en 1 clic (`Instalar_en_Mac.command`) | `294.92 MB` | [⬇️ **Descargar Imagen DMG para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) |
 | 🍏 **macOS Universal Nativo** (Apple Silicon M1–M4 sin Rosetta 2 + Intel) | **`.zip` (`-9`)** — Paquete portátil con `.app` Universal nativo, script instalador y guía HTML | `365.07 MB` | [⬇️ **Descargar Paquete ZIP para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) |
 | 📦 **GitHub Packages / NuGet** | **`.nupkg`** — Paquete compilado .NET 8 con documentación, ícono y metadatos del ensamblado | `2.18 MB` | [⬇️ **Descargar Paquete NuGet**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Sistema.Gestion.Mantencion.2026.1.0.nupkg) |
 
@@ -167,10 +167,10 @@ Digitaliza de extremo a extremo el ciclo de vida de cada intervención técnica 
 
 | Archivo | SHA-256 |
 | :--- | :--- |
-| `Instalador_Sistema_Mantencion_v2026.1.exe` | `95FE548BCEF70D23CEF50A36DEA9B62D9EC453D3309A1A17E1E14702A2B22B54` |
-| `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` | `1640323905448f47ac8e3d17d1f0de515602299810fbf36bdc325446e67fbff5` |
-| `Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip` | `abc0f363ad81f2ab14187dea69c5d6f84b23e0d16cea3cbee161dcd4b0812b3d` |
-| `Sistema.Gestion.Mantencion.2026.1.0.nupkg` | `77b8ff6525baa461b6b7cb44dbdf3438614d4120df59e47b19c4e0b3f3e3d22b` |
+| `Instalador_Sistema_Mantencion_v2026.1.exe` | `D036B13466E5753068F8E6B6FE91AD724C9ACA1DFFE520E78FDBA86B45A8BE53` |
+| `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` | `5e45bf8b74e267b5a476cff4e8b84fd495f9f3be3777a9c6b12ca6e3589c0cc1` |
+| `Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip` | `7781f01eebbf38b85d2203a3ca73b542d893593991791b25716d16f8f038643c` |
+| `Sistema.Gestion.Mantencion.2026.1.0.nupkg` | `54990232cf009c0b6ca780db133cb79d3ce99e07dd9f06928110f08ebc8f4fbb` |
 
 </details>
 
@@ -191,9 +191,9 @@ Digitaliza de extremo a extremo el ciclo de vida de cada intervención técnica 
 3. También puede arrastrar la aplicación directamente a **Aplicaciones** (ejecuta como **Aplicación Universal** nativa sin Rosetta 2 en Apple Silicon M1–M4 y es compatible con macOS 27 Golden Gate y 28+).
 
 ### Conexión a Base de Datos en el Primer Inicio:
-1. Al iniciar sesión, si ocurre un fallo de conexión o el servidor SQL de su empresa usa otro nombre o IP distinto a `SrvMagicInfo` (frecuente fuera de la red LAN corporativa o en macOS), el sistema explicará la causa y le ofrecerá abrir automáticamente **Configurar Servidor BD**. Una vez dentro del sistema también puede acceder desde **Mantenedores > Configurar Servidor BD...**.
+1. Al iniciar sesión, si ocurre un fallo de conexión o el servidor SQL de su empresa usa otro nombre o IP distinto a `SrvMagicInfo` (frecuente fuera de la red LAN corporativa o en macOS), el sistema explicará la causa y le ofrecerá abrir automáticamente **Configurar Servidor BD**. Una vez dentro del sistema, el menú **Mantenedores > Configurar Servidor BD...** está restringido exclusivamente a usuarios con perfil **`Administrador`**.
 2. Ingrese el Host/IP, Base de Datos y Credenciales.
-3. Presione **Probar Conexión** y luego **Guardar y Aplicar**.
+3. Presione **Probar Conexión** y luego **Guardar y Aplicar** (la aplicación se reiniciará automáticamente cuando cambien los datos de conexión para arrancar con el nuevo servidor/BD).
 
 ---
 
@@ -213,7 +213,7 @@ dotnet add package Sistema.Gestion.Mantencion --version 2026.1.0
 
 * **🎨 Identidad Visual Corporativa Unificada (`Segoe UI`):** Paleta corporativa oficial (`#025E87`, `#0191B3`, `#66C9D3`, `#0F2D44`, `#DDE7E8`, `#F2F6F6`) aplicada globalmente en los 40 formularios, grillas, menús/barras, botones primarios/secundarios/destructivos y escritorio MDI renovado con logotipo institucional y título centrado.
 * **🧩 Iconografía de Botones Normalizada (`16x16`):** Depuración de fotogramas `.ico` sobredimensionados y ajuste automático por código (`NormalizarIconoBoton`) para evitar recortes o superposiciones de iconos sobre textos en formularios y buscadores.
-* **🛡️ Configuración SQL Bajo Demanda y Diagnóstico Claro de Errores:** Pantalla de **Inicio de Sesión** limpia; ante fallos SQL, de red/VPN o permisos, explica la causa en español, ofrece abrir **Configurar Servidor BD** en un clic (también disponible desde **Mantenedores > Configurar Servidor BD...**) y registra la bitácora en `%LOCALAPPDATA%\SistemaMantencion\logs\errores_yyyyMMdd.log`.
+* **🛡️ Configuración SQL Bajo Demanda, Indicador en Vivo y Control por Perfil:** Barra de estado inferior con farol verde/rojo que indica el servidor y BD activos junto a *Sesión activa*; acceso al menú **Mantenedores > Configurar Servidor BD...** restringido exclusivamente al perfil **`Administrador`** y reinicio automático de la aplicación al guardar cambios de conexión. Ante fallos SQL, de red/VPN o permisos, explica la causa en español y registra bitácora en `%LOCALAPPDATA%\SistemaMantencion\logs\errores_yyyyMMdd.log`.
 * **📅 Filtrado Obligatorio por Rango de Fechas en Todos los Informes:** Selección `Desde` / `Hasta` siempre visible, habilitada y validada en OT, Mantención Preventiva, Ciclos por Máquina, Carta Gantt, Resúmenes Estadísticos y Auditoría.
 * **📑 Exportación Excel y PDF Sin Dependencias:** Motor nativo SpreadsheetML (`.xls`) y motor vectorial `iTextSharp` (`.pdf`) integrados en todos los informes cuando Microsoft Excel no está presente.
 * **⚡ Transiciones MDI y Consultas Optimizadas:** `DoubleBuffered`, `SuspendLayout`/`ResumeLayout`, caché de catálogos, precalentamiento de pool SQL y búsquedas `O(1)` en generación de Carta Gantt.
