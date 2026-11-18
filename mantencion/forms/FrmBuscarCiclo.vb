@@ -22,8 +22,16 @@ Public Class FrmBuscarCiclo
         End Try
     End Sub
 
-    Private Sub grillaBuscarCiclo_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaBuscarCiclo.CellContentDoubleClick
-        If e.RowIndex < 0 OrElse grillaBuscarCiclo.Rows(e.RowIndex).IsNewRow Then Exit Sub
+    Private Sub grillaBuscarCiclo_KeyDown(ByVal sender As Object, ByVal e As KeyEventArgs) Handles grillaBuscarCiclo.KeyDown
+        If e.KeyCode = Keys.Enter AndAlso grillaBuscarCiclo.CurrentRow IsNot Nothing Then
+            e.Handled = True
+            e.SuppressKeyPress = True
+            grillaBuscarCiclo_CellDoubleClick(grillaBuscarCiclo, New DataGridViewCellEventArgs(0, grillaBuscarCiclo.CurrentRow.Index))
+        End If
+    End Sub
+
+    Private Sub grillaBuscarCiclo_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaBuscarCiclo.CellDoubleClick
+        If e.RowIndex < 0 OrElse e.RowIndex >= grillaBuscarCiclo.RowCount OrElse grillaBuscarCiclo.Rows(e.RowIndex).IsNewRow Then Exit Sub
         Dim rowSel As DataGridViewRow = grillaBuscarCiclo.Rows(e.RowIndex)
         Dim DST3 As New DataSet
         Dim mant_prev As New MantPreventiva
@@ -42,6 +50,14 @@ Public Class FrmBuscarCiclo
                 .del_index_tareas.Clear()
                 .del_index_personal.Clear()
                 .grillaInsumosMp.Rows.Clear()
+
+                If String.IsNullOrWhiteSpace(.id_nodo_select) Then
+                    Dim nodoResuelto As String = mant_prev.ObtenerIdNodoMp(.txtIdMant.Text)
+                    .id_nodo_select = If(String.IsNullOrWhiteSpace(nodoResuelto), "1", nodoResuelto)
+                    If .arbol1.Nodes.Count > 0 Then
+                        Nodo.SeleccionarNodoPorId(.arbol1, .id_nodo_select, .id_nodo_select)
+                    End If
+                End If
 
                 .txtIdCiclo.Text = valCell(0)
                 Dim fIni As DateTime

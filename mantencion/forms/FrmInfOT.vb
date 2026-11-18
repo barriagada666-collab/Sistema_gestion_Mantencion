@@ -481,7 +481,7 @@ Public Class FrmInfOT
         Nodo.LimpiarResaltadoNodos(arbol5.Nodes)
     End Sub
 
-    Private Sub grillaInfOt_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaInfOt.CellContentDoubleClick, grillaInfOt.CellDoubleClick
+    Private Sub grillaInfOt_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaInfOt.CellDoubleClick
         If e.RowIndex < 0 OrElse e.RowIndex >= grillaInfOt.RowCount Then Exit Sub
         Dim valOt = grillaInfOt.Rows(e.RowIndex).Cells(0).Value
         If valOt Is Nothing OrElse IsDBNull(valOt) OrElse String.IsNullOrWhiteSpace(valOt.ToString()) Then Exit Sub

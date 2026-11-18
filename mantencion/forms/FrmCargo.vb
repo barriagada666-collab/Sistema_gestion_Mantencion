@@ -103,7 +103,7 @@ Public Class FrmCargo
         Me.Close()
     End Sub
 
-    Private Sub grillaCargos_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaCargos.CellContentDoubleClick, grillaCargos.CellDoubleClick
+    Private Sub grillaCargos_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaCargos.CellDoubleClick
         If e.RowIndex < 0 OrElse e.RowIndex >= grillaCargos.RowCount Then Exit Sub
         Try
             Dim row = grillaCargos.Rows(e.RowIndex)

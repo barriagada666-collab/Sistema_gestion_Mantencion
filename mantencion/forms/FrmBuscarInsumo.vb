@@ -49,7 +49,7 @@ Public Class FrmBuscarInsumo
         AplicarFiltroInsumos()
     End Sub
 
-    Private Sub grillaInsumos_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaInsumos.CellContentDoubleClick
+    Private Sub grillaInsumos_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaInsumos.CellDoubleClick
         If e.RowIndex < 0 OrElse grillaInsumos.Rows(e.RowIndex).IsNewRow OrElse grillaInsumos.ColumnCount < 4 Then Exit Sub
         Try
             Dim row As DataGridViewRow = grillaInsumos.Rows(e.RowIndex)

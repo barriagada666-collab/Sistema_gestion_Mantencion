@@ -74,6 +74,10 @@ Public Class frm_OT
             If respuesta = "" Then
                 existe_ot = OT.BuscarNumOt(txtNot.Text)
                 If existe_ot = "" Then
+                    If Not Usuario.PermisoIngresarOt Then
+                        MessageBox.Show(Me, "No posee permisos para ingresar nuevas órdenes de trabajo.", "Acceso restringido", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                        Exit Sub
+                    End If
 
                     If cmbEstadoOt.Text = "CERRADA" Then
                         estado_ot = "cerrada"
@@ -126,6 +130,10 @@ Public Class frm_OT
                         MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                     End If
                 Else
+                    If Not Usuario.PermisoModificarOt Then
+                        MessageBox.Show(Me, "No posee permisos para modificar órdenes de trabajo.", "Acceso restringido", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                        Exit Sub
+                    End If
 
                     If cmbEstadoOt.Text = "CERRADA" Then
                         estado_ot = "cerrada"
@@ -198,6 +206,10 @@ Public Class frm_OT
             If resp_ot_abierta = "" Then
                 existe_ot = OT.BuscarNumOt(txtNot.Text)
                 If existe_ot = "" Then
+                    If Not Usuario.PermisoIngresarOt Then
+                        MessageBox.Show(Me, "No posee permisos para ingresar nuevas órdenes de trabajo.", "Acceso restringido", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                        Exit Sub
+                    End If
 
                     If chkOtMpInterna.Checked Then
                         mant_interna = True
@@ -242,6 +254,11 @@ Public Class frm_OT
                         MsgBox(resp, MsgBoxStyle.Critical, "Validación")
                     End If
                 Else
+                    If Not Usuario.PermisoModificarOt Then
+                        MessageBox.Show(Me, "No posee permisos para modificar órdenes de trabajo.", "Acceso restringido", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                        Exit Sub
+                    End If
+
                     If chkOtMpInterna.Checked Then
                         mant_interna = True
                     End If

@@ -12,21 +12,30 @@ Public Class MantPreventiva
             Using com As New SqlCommand("ING_MANT_PREVENTIVA", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_nodo", CInt(id_nodo))
-                com.Parameters.AddWithValue("@frecuencia", CInt(frecuencia))
-                com.Parameters.AddWithValue("@tiempo_aviso", CInt(tiempo_aviso_previo))
-                com.Parameters.AddWithValue("@estado_mp", estado_mp)
-                com.Parameters.AddWithValue("@fecha_creacion", Now.ToString("yyyyMMdd"))
-                com.Parameters.AddWithValue("@tipo_mantencion", tipo_mp)
-                com.Parameters.AddWithValue("@sesion", sesion)
-                com.Parameters.AddWithValue("@obs_mantencion", obs_mantencion)
+                Dim idMpInt, idNodoInt, frecInt, avisoInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_nodo, idNodoInt) OrElse
+                   Not Utilitarios.TrySafeInt(frecuencia, frecInt) OrElse
+                   Not Utilitarios.TrySafeInt(tiempo_aviso_previo, avisoInt) Then
+                    cod_resp = 0
+                    resp = "Los identificadores y valores numéricos de MP, frecuencia y aviso deben ser válidos."
+                    Exit Sub
+                End If
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_nodo", idNodoInt)
+                com.Parameters.AddWithValue("@frecuencia", frecInt)
+                com.Parameters.AddWithValue("@tiempo_aviso", avisoInt)
+                com.Parameters.AddWithValue("@estado_mp", If(estado_mp, String.Empty))
+                Utilitarios.AgregarParametroFecha(com, "@fecha_creacion", DateTime.Today)
+                com.Parameters.AddWithValue("@tipo_mantencion", If(tipo_mp, String.Empty))
+                com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty))
+                com.Parameters.AddWithValue("@obs_mantencion", If(obs_mantencion, String.Empty))
                 com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
 
                 Using DR As SqlDataReader = com.ExecuteReader()
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -47,9 +56,11 @@ Public Class MantPreventiva
             Using com As New SqlCommand("ING_PERSONAL_CICLO_MP", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
-                com.Parameters.AddWithValue("@rut", rut)
+                Dim idMpInt, idCicloInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) Then Exit Sub
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                com.Parameters.AddWithValue("@rut", If(rut, String.Empty).Trim())
 
                 com.ExecuteNonQuery()
             End Using
@@ -70,16 +81,23 @@ Public Class MantPreventiva
             Using com As New SqlCommand("ING_TAREAS_CICLO_MP", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
-                com.Parameters.AddWithValue("@id_tarea", CInt(id_tarea))
-                com.Parameters.AddWithValue("@id_nodo", CInt(id_nodo))
-                com.Parameters.AddWithValue("@tiempo_tarea", CDbl(tiempo_tarea))
-                com.Parameters.AddWithValue("@obs_tarea", obs_tarea)
+                Dim idMpInt, idCicloInt, idTareaInt, idNodoInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_tarea, idTareaInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_nodo, idNodoInt) Then
+                    Exit Sub
+                End If
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                com.Parameters.AddWithValue("@id_tarea", idTareaInt)
+                com.Parameters.AddWithValue("@id_nodo", idNodoInt)
+                com.Parameters.AddWithValue("@tiempo_tarea", Utilitarios.SafeDouble(tiempo_tarea, 0.0))
+                com.Parameters.AddWithValue("@obs_tarea", If(obs_tarea, String.Empty))
 
                 Using DR As SqlDataReader = com.ExecuteReader()
                     If DR.Read() Then
-                        cod_resp = DR(0)
+                        cod_resp = If(IsDBNull(DR(0)), 0, Convert.ToInt32(DR(0)))
                     End If
                 End Using
             End Using
@@ -99,22 +117,28 @@ Public Class MantPreventiva
             Using com As New SqlCommand("ING_CICLO_MP", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
-                com.Parameters.AddWithValue("@fecha_ini", fecha_ini_ciclo.ToString("yyyyMMdd"))
-                com.Parameters.AddWithValue("@hora_ini", hr_ini_ciclo.ToString("HH:mm"))
-                com.Parameters.AddWithValue("@fecha_fin", fecha_fin_ciclo.ToString("yyyyMMdd"))
-                com.Parameters.AddWithValue("@hora_fin", hr_fin_ciclo.ToString("HH:mm"))
-                com.Parameters.AddWithValue("@duracion", CDbl(duracion))
-                com.Parameters.AddWithValue("@obs_ciclo", obs_ciclo)
-                com.Parameters.AddWithValue("@estado_ciclo", estado_ciclo)
-                com.Parameters.AddWithValue("@sesion", sesion)
+                Dim idMpInt, idCicloInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) Then
+                    cod_resp = 0
+                    resp = "Identificador de MP o ciclo no válido."
+                    Exit Sub
+                End If
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                Utilitarios.AgregarParametroFecha(com, "@fecha_ini", Utilitarios.SafeSqlDateStart(fecha_ini_ciclo))
+                Utilitarios.AgregarParametroFecha(com, "@hora_ini", Utilitarios.SafeSqlTime(hr_ini_ciclo))
+                Utilitarios.AgregarParametroFecha(com, "@fecha_fin", Utilitarios.SafeSqlDateStart(fecha_fin_ciclo))
+                Utilitarios.AgregarParametroFecha(com, "@hora_fin", Utilitarios.SafeSqlTime(hr_fin_ciclo))
+                com.Parameters.AddWithValue("@duracion", Utilitarios.SafeDouble(duracion, 0.0))
+                com.Parameters.AddWithValue("@obs_ciclo", If(obs_ciclo, String.Empty))
+                com.Parameters.AddWithValue("@estado_ciclo", If(estado_ciclo, String.Empty))
+                com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty))
                 com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
 
                 Using DR As SqlDataReader = com.ExecuteReader()
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -136,15 +160,22 @@ Public Class MantPreventiva
             Using com As New SqlCommand("ING_TAREAS_PEND_CICLO_MP", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
-                com.Parameters.AddWithValue("@id_tarea", CInt(id_tarea))
-                com.Parameters.AddWithValue("@id_nodo", CInt(id_nodo))
-                com.Parameters.AddWithValue("@obs_tarea", obs_tarea)
+                Dim idMpInt, idCicloInt, idTareaInt, idNodoInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_tarea, idTareaInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_nodo, idNodoInt) Then
+                    Exit Sub
+                End If
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                com.Parameters.AddWithValue("@id_tarea", idTareaInt)
+                com.Parameters.AddWithValue("@id_nodo", idNodoInt)
+                com.Parameters.AddWithValue("@obs_tarea", If(obs_tarea, String.Empty))
 
                 Using DR As SqlDataReader = com.ExecuteReader()
                     If DR.Read() Then
-                        cod_resp = DR(0)
+                        cod_resp = If(IsDBNull(DR(0)), 0, Convert.ToInt32(DR(0)))
                     End If
                 End Using
             End Using
@@ -165,15 +196,21 @@ Public Class MantPreventiva
             Using com As New SqlCommand("ING_INSUMOS_MP", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
-                com.Parameters.AddWithValue("@id_insumo", CInt(id_insumo))
-                com.Parameters.AddWithValue("@cantidad", CInt(cantidad))
-                com.Parameters.AddWithValue("@unid_medida", unid_medida)
+                Dim idMpInt, idCicloInt, idInsInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_insumo, idInsInt) Then
+                    Exit Sub
+                End If
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                com.Parameters.AddWithValue("@id_insumo", idInsInt)
+                com.Parameters.AddWithValue("@cantidad", Utilitarios.SafeInt(cantidad, 0))
+                com.Parameters.AddWithValue("@unid_medida", If(unid_medida, String.Empty))
 
                 Using DR As SqlDataReader = com.ExecuteReader()
                     If DR.Read() Then
-                        cod_resp = DR(0)
+                        cod_resp = If(IsDBNull(DR(0)), 0, Convert.ToInt32(DR(0)))
                     End If
                 End Using
             End Using
@@ -193,10 +230,16 @@ Public Class MantPreventiva
             Using com As New SqlCommand("UPD_MANT_PREVENTIVA", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_nodo", CInt(id_nodo))
-                com.Parameters.AddWithValue("@frecuencia", CInt(frecuencia))
-                com.Parameters.AddWithValue("@tiempo_aviso_mp", CInt(tiempo_aviso_previo))
+                Dim idMpInt, idNodoInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_nodo, idNodoInt) Then
+                    cod_resp = 0
+                    resp = "El ID de mantención preventiva o nodo no es válido."
+                    Exit Sub
+                End If
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_nodo", idNodoInt)
+                com.Parameters.AddWithValue("@frecuencia", Utilitarios.SafeInt(frecuencia, 0))
+                com.Parameters.AddWithValue("@tiempo_aviso_mp", Utilitarios.SafeInt(tiempo_aviso_previo, 0))
                 com.Parameters.AddWithValue("@estado_mp", estado_mp)
                 com.Parameters.AddWithValue("@tipo_mantencion", tipo_mp)
                 com.Parameters.AddWithValue("@sesion", sesion)
@@ -205,8 +248,8 @@ Public Class MantPreventiva
 
                 Using DR As SqlDataReader = com.ExecuteReader()
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -227,16 +270,23 @@ Public Class MantPreventiva
             Using com As New SqlCommand("UPD_TAREAS_CICLO_MP", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
-                com.Parameters.AddWithValue("@id_tarea", CInt(id_tarea))
-                com.Parameters.AddWithValue("@id_nodo", CInt(id_nodo))
-                com.Parameters.AddWithValue("@tiempo_tarea", CDbl(tiempo_tarea))
-                com.Parameters.AddWithValue("@obs_tarea", obs_tarea)
+                Dim idMpInt, idCicloInt, idTareaInt, idNodoInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_tarea, idTareaInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_nodo, idNodoInt) Then
+                    Exit Sub
+                End If
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                com.Parameters.AddWithValue("@id_tarea", idTareaInt)
+                com.Parameters.AddWithValue("@id_nodo", idNodoInt)
+                com.Parameters.AddWithValue("@tiempo_tarea", Utilitarios.SafeDouble(tiempo_tarea, 0.0))
+                com.Parameters.AddWithValue("@obs_tarea", If(obs_tarea, String.Empty))
 
                 Using DR As SqlDataReader = com.ExecuteReader()
                     If DR.Read() Then
-                        cod_resp = DR(0)
+                        cod_resp = If(IsDBNull(DR(0)), 0, Convert.ToInt32(DR(0)))
                     End If
                 End Using
             End Using
@@ -256,15 +306,21 @@ Public Class MantPreventiva
             Using com As New SqlCommand("UPD_INSUMOS_CICLO_MP", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
-                com.Parameters.AddWithValue("@id_insumo", CInt(id_insumo))
-                com.Parameters.AddWithValue("@cantidad", CInt(cantidad))
-                com.Parameters.AddWithValue("@unid_medida", unid_medida)
+                Dim idMpInt, idCicloInt, idInsInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_insumo, idInsInt) Then
+                    Exit Sub
+                End If
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                com.Parameters.AddWithValue("@id_insumo", idInsInt)
+                com.Parameters.AddWithValue("@cantidad", Utilitarios.SafeInt(cantidad, 0))
+                com.Parameters.AddWithValue("@unid_medida", If(unid_medida, String.Empty))
 
                 Using DR As SqlDataReader = com.ExecuteReader()
                     If DR.Read() Then
-                        cod_resp = DR(0)
+                        cod_resp = If(IsDBNull(DR(0)), 0, Convert.ToInt32(DR(0)))
                     End If
                 End Using
             End Using
@@ -284,22 +340,28 @@ Public Class MantPreventiva
             Using com As New SqlCommand("UPD_CICLO_MP", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
-                com.Parameters.AddWithValue("@fecha_inicio", fecha_ini_ciclo.ToString("yyyyMMdd"))
-                com.Parameters.AddWithValue("@hora_inicio", hr_ini_ciclo.ToString("HH:mm"))
-                com.Parameters.AddWithValue("@fecha_termino", fecha_fin_ciclo.ToString("yyyyMMdd"))
-                com.Parameters.AddWithValue("@hora_termino", hr_fin_ciclo.ToString("HH:mm"))
-                com.Parameters.AddWithValue("@duracion", CDbl(duracion))
-                com.Parameters.AddWithValue("@obs_ciclo", obs_ciclo)
-                com.Parameters.AddWithValue("@estado_ciclo", estado_ciclo)
-                com.Parameters.AddWithValue("@sesion", sesion)
+                Dim idMpInt, idCicloInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) Then
+                    cod_resp = 0
+                    resp = "Identificador de MP o ciclo no válido."
+                    Exit Sub
+                End If
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                Utilitarios.AgregarParametroFecha(com, "@fecha_inicio", Utilitarios.SafeSqlDateStart(fecha_ini_ciclo))
+                Utilitarios.AgregarParametroFecha(com, "@hora_inicio", Utilitarios.SafeSqlTime(hr_ini_ciclo))
+                Utilitarios.AgregarParametroFecha(com, "@fecha_termino", Utilitarios.SafeSqlDateStart(fecha_fin_ciclo))
+                Utilitarios.AgregarParametroFecha(com, "@hora_termino", Utilitarios.SafeSqlTime(hr_fin_ciclo))
+                com.Parameters.AddWithValue("@duracion", Utilitarios.SafeDouble(duracion, 0.0))
+                com.Parameters.AddWithValue("@obs_ciclo", If(obs_ciclo, String.Empty))
+                com.Parameters.AddWithValue("@estado_ciclo", If(estado_ciclo, String.Empty))
+                com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty))
                 com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
 
                 Using DR As SqlDataReader = com.ExecuteReader()
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -320,9 +382,11 @@ Public Class MantPreventiva
             Using com As New SqlCommand("UPD_PERSONAL_CICLO_MP", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
-                com.Parameters.AddWithValue("@rut", rut)
+                Dim idMpInt, idCicloInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) Then Exit Sub
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                com.Parameters.AddWithValue("@rut", If(rut, String.Empty).Trim())
 
                 Using DR As SqlDataReader = com.ExecuteReader()
                     If DR.Read() Then
@@ -397,6 +461,11 @@ Public Class MantPreventiva
     End Sub
 
     Public Sub CrgMpNodo(ByVal id_nodo As String, ByVal tipo_mp As String, ByRef DS As DataSet)
+        If DS Is Nothing Then DS = New DataSet()
+        Dim idNodoInt As Integer = Utilitarios.SafeInt(id_nodo, 1)
+        If idNodoInt <= 0 Then idNodoInt = 1
+        Dim tipoLimpio As String = If(String.IsNullOrWhiteSpace(tipo_mp), "Todos", tipo_mp.Trim())
+
         Dim cnx As New SqlConnection
         Dim conexion As New Conexion
 
@@ -404,8 +473,8 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("CRG_MP_NODO", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_nodo", id_nodo)
-                DA.SelectCommand.Parameters.AddWithValue("@tipo_mantencion", tipo_mp)
+                DA.SelectCommand.Parameters.AddWithValue("@id_nodo", idNodoInt)
+                DA.SelectCommand.Parameters.AddWithValue("@tipo_mantencion", tipoLimpio)
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
@@ -423,7 +492,9 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("CRG_CICLOS_MP_NODO", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_mp", CInt(id_mp))
+                Dim idMpInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) Then Exit Sub
+                DA.SelectCommand.Parameters.AddWithValue("@id_mp", idMpInt)
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
@@ -441,8 +512,10 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("CRG_PERSONAL_CICLO_MP", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                DA.SelectCommand.Parameters.AddWithValue("@id_ciclo_mp", CInt(id_ciclo_mp))
+                Dim idMpInt, idCicloInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_ciclo_mp, idCicloInt) Then Exit Sub
+                DA.SelectCommand.Parameters.AddWithValue("@id_mp", idMpInt)
+                DA.SelectCommand.Parameters.AddWithValue("@id_ciclo_mp", idCicloInt)
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
@@ -452,7 +525,43 @@ Public Class MantPreventiva
         End Try
     End Sub
 
+    ''' <summary>
+    ''' Obtiene el identificador del nodo asociado a una mantención preventiva desde SQL Server.
+    ''' </summary>
+    Public Function ObtenerIdNodoMp(ByVal id_mp As String) As String
+        Dim idMpInt As Integer = 0
+        If Not Utilitarios.TrySafeInt(id_mp, idMpInt) Then Return String.Empty
+        Dim cnx As New SqlConnection
+        Dim conexion As New Conexion
+        Try
+            conexion.Conectar(cnx)
+            Using com As New SqlCommand("SELECT TOP 1 idnodo FROM mant_preventiva WHERE idmant = @id_mp", cnx)
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                Dim res As Object = com.ExecuteScalar()
+                If res IsNot Nothing AndAlso Not IsDBNull(res) Then
+                    Return res.ToString().Trim()
+                End If
+            End Using
+        Catch ex As Exception
+            RegistroErrores.RegistrarError(ex, "Obtener Nodo MP")
+        Finally
+            conexion.Desconectar(cnx)
+        End Try
+        Return String.Empty
+    End Function
+
     Public Sub CrgTareasCicloMp(ByVal id_mp As String, ByVal id_ciclo As String, ByVal nodo_padre As String, ByRef DST As DataSet)
+        If DST Is Nothing Then DST = New DataSet()
+        Dim idMpInt, idCicloInt As Integer
+        If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) Then Exit Sub
+
+        Dim nodoPadreInt As Integer = 0
+        If Not Utilitarios.TrySafeInt(nodo_padre, nodoPadreInt) OrElse nodoPadreInt <= 0 Then
+            Dim idResuelto As String = ObtenerIdNodoMp(idMpInt.ToString())
+            nodoPadreInt = Utilitarios.SafeInt(idResuelto, 1)
+            If nodoPadreInt <= 0 Then nodoPadreInt = 1
+        End If
+
         Dim cnx As New SqlConnection
         Dim conexion As New Conexion
 
@@ -460,9 +569,9 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("CRG_TAREAS_CICLO_MP", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                DA.SelectCommand.Parameters.AddWithValue("@id_ciclo", id_ciclo)
-                DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(nodo_padre))
+                DA.SelectCommand.Parameters.AddWithValue("@id_mp", idMpInt)
+                DA.SelectCommand.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", nodoPadreInt)
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
@@ -480,8 +589,10 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("CRG_TAREAS_PEND_CICLO_MP", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                DA.SelectCommand.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
+                Dim idMpInt, idCicloInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) Then Exit Sub
+                DA.SelectCommand.Parameters.AddWithValue("@id_mp", idMpInt)
+                DA.SelectCommand.Parameters.AddWithValue("@id_ciclo", idCicloInt)
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
@@ -498,7 +609,9 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("CRG_CMB_CICLOS_MP", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_mp", CInt(id_mp))
+                Dim idMpInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) Then Exit Sub
+                DA.SelectCommand.Parameters.AddWithValue("@id_mp", idMpInt)
                 Dim DS As New DataSet
 
                 DA.Fill(DS)
@@ -523,8 +636,10 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("CRG_INSUMOS_CICLO_MP", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                DA.SelectCommand.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
+                Dim idMpInt, idCicloInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) Then Exit Sub
+                DA.SelectCommand.Parameters.AddWithValue("@id_mp", idMpInt)
+                DA.SelectCommand.Parameters.AddWithValue("@id_ciclo", idCicloInt)
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
@@ -559,7 +674,9 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("CRG_NODOS_HIJOS_MP", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(nodo_padre))
+                Dim nodoPadreInt As Integer = Utilitarios.SafeInt(nodo_padre, 1)
+                If nodoPadreInt <= 0 Then nodoPadreInt = 1
+                DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", nodoPadreInt)
                 DA.Fill(DS)
             End Using
         Catch ex As Exception
@@ -580,8 +697,8 @@ Public Class MantPreventiva
                 com.CommandType = CommandType.StoredProcedure
 
                 Using DR As SqlDataReader = com.ExecuteReader()
-                    If DR.Read() Then
-                        id_mp = DR(0)
+                    If DR.Read() AndAlso Not IsDBNull(DR(0)) Then
+                        id_mp = Convert.ToInt32(DR(0))
                     End If
                 End Using
             End Using
@@ -602,11 +719,13 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using com As New SqlCommand("NUEVO_ID_CICLO_MP", cnx)
                 com.CommandType = CommandType.StoredProcedure
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
+                Dim idMpInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) Then Return 0
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
 
                 Using DR As SqlDataReader = com.ExecuteReader()
-                    If DR.Read() Then
-                        id_ciclo = DR(0)
+                    If DR.Read() AndAlso Not IsDBNull(DR(0)) Then
+                        id_ciclo = Convert.ToInt32(DR(0))
                     End If
                 End Using
             End Using
@@ -627,11 +746,13 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using com As New SqlCommand("BUSCAR_MANT_PREVENTIVA", cnx)
                 com.CommandType = CommandType.StoredProcedure
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
+                Dim idMpInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) Then Return False
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
 
                 Using DR As SqlDataReader = com.ExecuteReader()
-                    If DR.Read() Then
-                        If DR(0) = 1 Then
+                    If DR.Read() AndAlso Not IsDBNull(DR(0)) Then
+                        If Convert.ToInt32(DR(0)) = 1 Then
                             encontrado = True
                         End If
                     End If
@@ -654,12 +775,14 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using com As New SqlCommand("BUSCAR_CICLO_MP", cnx)
                 com.CommandType = CommandType.StoredProcedure
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo_mp", CInt(id_ciclo))
+                Dim idMpInt, idCicloInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) Then Return False
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_ciclo_mp", idCicloInt)
 
                 Using DR As SqlDataReader = com.ExecuteReader()
-                    If DR.Read() Then
-                        If DR(0) = 1 Then
+                    If DR.Read() AndAlso Not IsDBNull(DR(0)) Then
+                        If Convert.ToInt32(DR(0)) = 1 Then
                             encontrado = True
                         End If
                     End If
@@ -682,12 +805,14 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using com As New SqlCommand("BUSCAR_ULTIMO_CICLO_MP", cnx)
                 com.CommandType = CommandType.StoredProcedure
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
+                Dim idMpInt, idCicloInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) Then Return False
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_ciclo", idCicloInt)
 
                 Using DR As SqlDataReader = com.ExecuteReader()
-                    If DR.Read() Then
-                        If DR(0).ToString = "True" Then
+                    If DR.Read() AndAlso Not IsDBNull(DR(0)) Then
+                        If DR(0).ToString().Equals("True", StringComparison.OrdinalIgnoreCase) OrElse DR(0).ToString().Trim() = "1" Then
                             encontrado = True
                         End If
                     End If
@@ -754,15 +879,17 @@ Public Class MantPreventiva
             Using com As New SqlCommand("DEL_CICLO_MP", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
-                com.Parameters.AddWithValue("@sesion", sesion)
+                Dim idMpInt, idCicloInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) Then Exit Sub
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty))
                 com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
 
                 Using DR As SqlDataReader = com.ExecuteReader()
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -782,14 +909,16 @@ Public Class MantPreventiva
             Using com As New SqlCommand("DEL_MANT_PREV", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@sesion", sesion)
+                Dim idMpInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) Then Exit Sub
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty))
                 com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
 
                 Using DR As SqlDataReader = com.ExecuteReader()
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -809,14 +938,20 @@ Public Class MantPreventiva
             Using com As New SqlCommand("DEL_INSUMO_CICLO_MP", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
-                com.Parameters.AddWithValue("@id_insumo", CInt(id_insumo))
+                Dim idMpInt, idCicloInt, idInsInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_insumo, idInsInt) Then
+                    Exit Sub
+                End If
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                com.Parameters.AddWithValue("@id_insumo", idInsInt)
 
                 Using DR As SqlDataReader = com.ExecuteReader()
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -836,14 +971,16 @@ Public Class MantPreventiva
             Using com As New SqlCommand("DEL_PERSONAL_CICLO_MP", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
-                com.Parameters.AddWithValue("@rut", rut)
+                Dim idMpInt, idCicloInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) Then Exit Sub
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                com.Parameters.AddWithValue("@rut", If(rut, String.Empty).Trim())
 
                 Using DR As SqlDataReader = com.ExecuteReader()
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -863,14 +1000,20 @@ Public Class MantPreventiva
             Using com As New SqlCommand("DEL_TAREA_CICLO_MP", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                com.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                com.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
-                com.Parameters.AddWithValue("@id_tarea", CInt(id_tarea))
+                Dim idMpInt, idCicloInt, idTareaInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) OrElse
+                   Not Utilitarios.TrySafeInt(id_tarea, idTareaInt) Then
+                    Exit Sub
+                End If
+                com.Parameters.AddWithValue("@id_mp", idMpInt)
+                com.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                com.Parameters.AddWithValue("@id_tarea", idTareaInt)
 
                 Using DR As SqlDataReader = com.ExecuteReader()
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -996,10 +1139,10 @@ Public Class MantPreventiva
             End If
             Using DA As New SqlDataAdapter("INF_MP", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_nodo", id_nodo)
-                DA.SelectCommand.Parameters.AddWithValue("@fecha_ini", fecha_inicio.ToString("yyyyMMdd"))
-                DA.SelectCommand.Parameters.AddWithValue("@fecha_fin", fecha_fin.ToString("yyyyMMdd"))
-                DA.SelectCommand.Parameters.AddWithValue("@tipo_mp", tipo_mp)
+                DA.SelectCommand.Parameters.AddWithValue("@id_nodo", Utilitarios.SafeInt(id_nodo, 1))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_ini", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin", Utilitarios.SafeSqlDateEnd(fecha_fin))
+                DA.SelectCommand.Parameters.AddWithValue("@tipo_mp", If(String.IsNullOrWhiteSpace(tipo_mp), "Todos", tipo_mp.Trim()))
                 DA.SelectCommand.Parameters.AddWithValue("@opcion", opcion)
 
                 DA.Fill(DST)
@@ -1019,7 +1162,9 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("INF_CICLO_MP", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_mp", CInt(id_mp))
+                Dim idMpInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) Then Exit Sub
+                DA.SelectCommand.Parameters.AddWithValue("@id_mp", idMpInt)
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
@@ -1037,9 +1182,14 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("INF_TAREAS_CICLO_MP", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                DA.SelectCommand.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
-                DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(nodo_padre))
+                Dim idMpInt, idCicloInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) Then Exit Sub
+                Dim nodoPadreInt As Integer = Utilitarios.SafeInt(nodo_padre, 0)
+                If nodoPadreInt <= 0 Then nodoPadreInt = Utilitarios.SafeInt(ObtenerIdNodoMp(idMpInt.ToString()), 1)
+                If nodoPadreInt <= 0 Then nodoPadreInt = 1
+                DA.SelectCommand.Parameters.AddWithValue("@id_mp", idMpInt)
+                DA.SelectCommand.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", nodoPadreInt)
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
@@ -1060,10 +1210,10 @@ Public Class MantPreventiva
             End If
             Using DA As New SqlDataAdapter("INF_MP", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_nodo", id_nodo)
-                DA.SelectCommand.Parameters.AddWithValue("@fecha_ini", fecha_inicio.ToString("yyyyMMdd"))
-                DA.SelectCommand.Parameters.AddWithValue("@fecha_fin", fecha_fin.ToString("yyyyMMdd"))
-                DA.SelectCommand.Parameters.AddWithValue("@tipo_mp", tipo_mp)
+                DA.SelectCommand.Parameters.AddWithValue("@id_nodo", Utilitarios.SafeInt(id_nodo, 1))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_ini", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin", Utilitarios.SafeSqlDateEnd(fecha_fin))
+                DA.SelectCommand.Parameters.AddWithValue("@tipo_mp", If(String.IsNullOrWhiteSpace(tipo_mp), "Todos", tipo_mp.Trim()))
                 DA.SelectCommand.Parameters.AddWithValue("@opcion", opcion)
 
                 DA.Fill(DST)
@@ -1086,10 +1236,10 @@ Public Class MantPreventiva
             End If
             Using DA As New SqlDataAdapter("INF_MP", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_nodo", id_nodo)
-                DA.SelectCommand.Parameters.AddWithValue("@fecha_ini", fecha_inicio.ToString("yyyyMMdd"))
-                DA.SelectCommand.Parameters.AddWithValue("@fecha_fin", fecha_fin.ToString("yyyyMMdd"))
-                DA.SelectCommand.Parameters.AddWithValue("@tipo_mp", tipo_mp)
+                DA.SelectCommand.Parameters.AddWithValue("@id_nodo", Utilitarios.SafeInt(id_nodo, 1))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_ini", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin", Utilitarios.SafeSqlDateEnd(fecha_fin))
+                DA.SelectCommand.Parameters.AddWithValue("@tipo_mp", If(String.IsNullOrWhiteSpace(tipo_mp), "Todos", tipo_mp.Trim()))
                 DA.SelectCommand.Parameters.AddWithValue("@opcion", opcion)
 
                 DA.Fill(DST)
@@ -1109,8 +1259,8 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("CRG_SOLO_TAREAS_INF_MP", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@opcion", CInt(opcion))
-                DA.SelectCommand.Parameters.AddWithValue("@id_nodo", CInt(id_nodo))
+                DA.SelectCommand.Parameters.AddWithValue("@opcion", Utilitarios.SafeInt(opcion, 0))
+                DA.SelectCommand.Parameters.AddWithValue("@id_nodo", Utilitarios.SafeInt(id_nodo, 1))
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
@@ -1128,8 +1278,10 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("INF_PERSONAL_CICLO_MP", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                DA.SelectCommand.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
+                Dim idMpInt, idCicloInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) Then Exit Sub
+                DA.SelectCommand.Parameters.AddWithValue("@id_mp", idMpInt)
+                DA.SelectCommand.Parameters.AddWithValue("@id_ciclo", idCicloInt)
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
@@ -1147,8 +1299,10 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("INF_INSUMOS_CICLO_MP", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                DA.SelectCommand.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
+                Dim idMpInt, idCicloInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) Then Exit Sub
+                DA.SelectCommand.Parameters.AddWithValue("@id_mp", idMpInt)
+                DA.SelectCommand.Parameters.AddWithValue("@id_ciclo", idCicloInt)
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
@@ -1166,9 +1320,14 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("INF_TAREAS_PEND_CICLO_MP", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_mp", CInt(id_mp))
-                DA.SelectCommand.Parameters.AddWithValue("@id_ciclo", CInt(id_ciclo))
-                DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(nodo_padre))
+                Dim idMpInt, idCicloInt As Integer
+                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) OrElse Not Utilitarios.TrySafeInt(id_ciclo, idCicloInt) Then Exit Sub
+                Dim nodoPadreInt As Integer = Utilitarios.SafeInt(nodo_padre, 0)
+                If nodoPadreInt <= 0 Then nodoPadreInt = Utilitarios.SafeInt(ObtenerIdNodoMp(idMpInt.ToString()), 1)
+                If nodoPadreInt <= 0 Then nodoPadreInt = 1
+                DA.SelectCommand.Parameters.AddWithValue("@id_mp", idMpInt)
+                DA.SelectCommand.Parameters.AddWithValue("@id_ciclo", idCicloInt)
+                DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", nodoPadreInt)
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
@@ -1186,10 +1345,10 @@ Public Class MantPreventiva
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("INF_CICLOS_MP_MAQUINAS", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(id_padre))
-                DA.SelectCommand.Parameters.AddWithValue("@fecha_inicio_ciclo", fecha_inicio.ToString("yyyyMMdd"))
-                DA.SelectCommand.Parameters.AddWithValue("@fecha_fin_ciclo", fecha_fin.ToString("yyyyMMdd"))
-                DA.SelectCommand.Parameters.AddWithValue("@tipo_mantencion", tipo_mantencion)
+                DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", Math.Max(1, Utilitarios.SafeInt(id_padre, 1)))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_inicio_ciclo", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin_ciclo", Utilitarios.SafeSqlDateEnd(fecha_fin))
+                DA.SelectCommand.Parameters.AddWithValue("@tipo_mantencion", If(tipo_mantencion, String.Empty))
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
@@ -1572,15 +1731,15 @@ Public Class MantPreventiva
             Next
             '---------------------------------------------------------------------------------------
 
-            fecha_inicio = CDate(grilla_ciclos_mp.Rows(0).Cells(colIniIdx).Value).Date
-            fecha_fin = CDate(grilla_ciclos_mp.Rows(0).Cells(colFinIdx).Value).Date
+            fecha_inicio = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(0).Cells(colIniIdx).Value).Date
+            fecha_fin = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(0).Cells(colFinIdx).Value).Date
             For i = 1 To grilla_ciclos_mp.RowCount - 1
                 If IsDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value) Then
-                    Dim fI As DateTime = CDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
+                    Dim fI As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
                     If fI < fecha_inicio Then fecha_inicio = fI
                 End If
                 If IsDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value) Then
-                    Dim fF As DateTime = CDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date
+                    Dim fF As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date
                     If fF > fecha_fin Then fecha_fin = fF
                 End If
             Next
@@ -1602,8 +1761,9 @@ Public Class MantPreventiva
                     cont_fila = cont_fila + 1
                     Continue For
                 End If
-                fecha_ini = CDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
-                num_mant = Math.Max(1, CInt(DateDiff(DateInterval.Day, fecha_ini, CDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date) + 1))
+                fecha_ini = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
+                Dim fechaFinRow As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value, fecha_ini).Date
+                num_mant = Math.Max(1, CInt(DateDiff(DateInterval.Day, fecha_ini, fechaFinRow) + 1))
 
                 For j = 0 To grilla_grafico.Columns.Count - 1
                     If fecha_ini.ToString("yyyyMMdd") = grilla_grafico.Columns(j).Name OrElse fecha_ini.ToString("dd-MM-yy") = grilla_grafico.Columns(j).Name Then

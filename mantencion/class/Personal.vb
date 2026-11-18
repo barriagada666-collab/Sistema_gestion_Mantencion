@@ -47,7 +47,7 @@ Public Class Personal
                     com.Parameters.AddWithValue("@nombres", If(nombres, String.Empty).Trim())
                     com.Parameters.AddWithValue("@ap_paterno", If(ap_paterno, String.Empty).Trim())
                     com.Parameters.AddWithValue("@ap_materno", If(ap_materno, String.Empty).Trim())
-                    com.Parameters.AddWithValue("@fecha_nacimiento", fecha_nac.ToString("yyyyMMdd"))
+                    Utilitarios.AgregarParametroFecha(com, "@fecha_nacimiento", Utilitarios.SafeSqlDateStart(fecha_nac))
                     com.Parameters.AddWithValue("@fono", fonoNum)
                     com.Parameters.AddWithValue("@email", If(email, String.Empty).Trim())
                     com.Parameters.AddWithValue("@idcentro", idPlanta)
@@ -57,7 +57,7 @@ Public Class Personal
                     com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty).Trim())
                     com.Parameters.AddWithValue("@activo", activo)
                     com.Parameters.AddWithValue("@direccion", If(direccion, String.Empty).Trim())
-                    com.Parameters.AddWithValue("@fecha_ingreso", fecha_ingreso.ToString("yyyyMMdd"))
+                    Utilitarios.AgregarParametroFecha(com, "@fecha_ingreso", Utilitarios.SafeSqlDateStart(fecha_ingreso))
                     com.Parameters.AddWithValue("@celular", celNum)
                     com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
 
@@ -113,7 +113,7 @@ Public Class Personal
                     com.Parameters.AddWithValue("@nombres", If(nombres, String.Empty).Trim())
                     com.Parameters.AddWithValue("@ap_paterno", If(ap_paterno, String.Empty).Trim())
                     com.Parameters.AddWithValue("@ap_materno", If(ap_materno, String.Empty).Trim())
-                    com.Parameters.AddWithValue("@fecha_nacimiento", fecha_nac.ToString("yyyyMMdd"))
+                    Utilitarios.AgregarParametroFecha(com, "@fecha_nacimiento", Utilitarios.SafeSqlDateStart(fecha_nac))
                     com.Parameters.AddWithValue("@fono", fonoNum)
                     com.Parameters.AddWithValue("@email", If(email, String.Empty).Trim())
                     com.Parameters.AddWithValue("@idcentro", idPlanta)
@@ -123,7 +123,7 @@ Public Class Personal
                     com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty).Trim())
                     com.Parameters.AddWithValue("@activo", activo)
                     com.Parameters.AddWithValue("@direccion", If(direccion, String.Empty).Trim())
-                    com.Parameters.AddWithValue("@fecha_ingreso", fecha_ingreso.ToString("yyyyMMdd"))
+                    Utilitarios.AgregarParametroFecha(com, "@fecha_ingreso", Utilitarios.SafeSqlDateStart(fecha_ingreso))
                     com.Parameters.AddWithValue("@celular", celNum)
                     com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
 
@@ -258,28 +258,28 @@ Public Class Personal
                         If DST.Tables.Count > 0 AndAlso DST.Tables(0).Rows.Count > 0 Then
                             Dim dr As DataRow = DST.Tables(0).Rows(0)
                             With FrmPersonal
-                                .txtRut.Text = dr.Item(0).ToString().Trim()
-                                .txtDv.Text = dr.Item(1).ToString().Trim()
-                                .cmbPlanta.Text = dr.Item(2).ToString().Trim()
-                                .cmbSeccion.Text = dr.Item(3).ToString().Trim()
-                                .cmbCargo.Text = dr.Item(4).ToString().Trim()
-                                .txtCodInt.Text = dr.Item(8).ToString().Trim()
-                                .txtNombres.Text = dr.Item(5).ToString().Trim()
-                                .txtApPaterno.Text = dr.Item(6).ToString().Trim()
-                                .txtApMaterno.Text = dr.Item(7).ToString().Trim()
+                                .txtRut.Text = If(IsDBNull(dr.Item(0)), String.Empty, dr.Item(0).ToString().Trim())
+                                .txtDv.Text = If(IsDBNull(dr.Item(1)), String.Empty, dr.Item(1).ToString().Trim())
+                                .cmbPlanta.Text = If(IsDBNull(dr.Item(2)), String.Empty, dr.Item(2).ToString().Trim())
+                                .cmbSeccion.Text = If(IsDBNull(dr.Item(3)), String.Empty, dr.Item(3).ToString().Trim())
+                                .cmbCargo.Text = If(IsDBNull(dr.Item(4)), String.Empty, dr.Item(4).ToString().Trim())
+                                .txtCodInt.Text = If(IsDBNull(dr.Item(8)), String.Empty, dr.Item(8).ToString().Trim())
+                                .txtNombres.Text = If(IsDBNull(dr.Item(5)), String.Empty, dr.Item(5).ToString().Trim())
+                                .txtApPaterno.Text = If(IsDBNull(dr.Item(6)), String.Empty, dr.Item(6).ToString().Trim())
+                                .txtApMaterno.Text = If(IsDBNull(dr.Item(7)), String.Empty, dr.Item(7).ToString().Trim())
                                 Utilitarios.AsignarFechaSegura(.fecha_nac, dr.Item(9), DateTime.Today)
-                                .txtfono.Text = dr.Item(10).ToString().Trim()
-                                .txtEmail.Text = dr.Item(11).ToString().Trim()
-                                .txtAlias.Text = dr.Item(12).ToString().Trim()
+                                .txtfono.Text = If(IsDBNull(dr.Item(10)), String.Empty, dr.Item(10).ToString().Trim())
+                                .txtEmail.Text = If(IsDBNull(dr.Item(11)), String.Empty, dr.Item(11).ToString().Trim())
+                                .txtAlias.Text = If(IsDBNull(dr.Item(12)), String.Empty, dr.Item(12).ToString().Trim())
                                 Dim actStr As String = If(IsDBNull(dr.Item(13)), String.Empty, dr.Item(13).ToString().Trim())
                                 If actStr.Equals("True", StringComparison.OrdinalIgnoreCase) OrElse actStr = "1" Then
                                     .opc_activo_si.Checked = True
                                 Else
                                     .opc_activo_no.Checked = True
                                 End If
-                                .txtDireccion.Text = dr.Item(14).ToString().Trim()
+                                .txtDireccion.Text = If(IsDBNull(dr.Item(14)), String.Empty, dr.Item(14).ToString().Trim())
                                 Utilitarios.AsignarFechaSegura(.fecha_ingreso, dr.Item(15), DateTime.Today)
-                                .txtCelular.Text = dr.Item(16).ToString().Trim()
+                                .txtCelular.Text = If(IsDBNull(dr.Item(16)), String.Empty, dr.Item(16).ToString().Trim())
                                 .btnActualizar.Visible = True
                                 .btnIngresar.Visible = False
                             End With

@@ -66,7 +66,12 @@ Public Class FrmSeccion
 
     Private Sub FrmSeccion_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Me.DoubleBuffered = True
-        Utilitarios.AplicarTemaModerno(Me)
+        Me.SuspendLayout()
+        Try
+            Utilitarios.AplicarTemaModerno(Me)
+        Finally
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub btn_salir_seccion_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_salir_seccion.Click

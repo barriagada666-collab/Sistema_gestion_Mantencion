@@ -453,8 +453,8 @@ Public Class Nodo
                     com.Parameters.AddWithValue("@cod_rmes", If(cod_rmes, String.Empty))
                     com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty))
                     com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
-                    com.Parameters.AddWithValue("@fecha_instalacion", fecha_instalacion)
-                    com.Parameters.AddWithValue("@fecha_creacion", Now.ToString("yyyyMMdd"))
+                    Utilitarios.AgregarParametroFecha(com, "@fecha_instalacion", fecha_instalacion)
+                    Utilitarios.AgregarParametroFecha(com, "@fecha_creacion", DateTime.Today)
                     com.Parameters.AddWithValue("@prioridad", prioInt)
                     com.Parameters.AddWithValue("@codigo_sap", If(cod_sap, String.Empty))
                     com.Parameters.AddWithValue("@aplica_mantencion", aplica_mant)
@@ -555,7 +555,7 @@ Public Class Nodo
                     com.Parameters.AddWithValue("@cod_rmes", If(cod_rmes, String.Empty).Trim())
                     com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty).Trim())
                     com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
-                    com.Parameters.AddWithValue("@fecha_instalacion", fecha_instalacion)
+                    Utilitarios.AgregarParametroFecha(com, "@fecha_instalacion", fecha_instalacion)
                     com.Parameters.AddWithValue("@prioridad", prioInt)
                     com.Parameters.AddWithValue("@codigo_sap", If(cod_sap, String.Empty).Trim())
                     com.Parameters.AddWithValue("@aplica_mantencion", aplica_mant)
@@ -662,8 +662,8 @@ Public Class Nodo
                 com.CommandType = CommandType.StoredProcedure
 
                 Using DR As SqlDataReader = com.ExecuteReader
-                    If DR.Read() Then
-                        id_tarea = DR(0)
+                    If DR.Read() AndAlso Not IsDBNull(DR(0)) Then
+                        id_tarea = Convert.ToInt32(DR(0))
                     End If
                 End Using
             End Using
@@ -946,11 +946,11 @@ Public Class Nodo
             conexion.Conectar(cnx)
             Using com As New SqlCommand("BUSCAR_NODO_LIKE", cnx)
                 com.CommandType = CommandType.StoredProcedure
-                com.Parameters.AddWithValue("@nombre_nodo", desc_nodo)
+                com.Parameters.AddWithValue("@nombre_nodo", If(desc_nodo, String.Empty))
                 com.Parameters.AddWithValue("@opcion", opcion)
 
                 Using DR As SqlDataReader = com.ExecuteReader
-                    If DR.Read() Then
+                    If DR.Read() AndAlso Not IsDBNull(DR(0)) Then
                         cod_nodo = DR(0).ToString()
                     End If
                 End Using

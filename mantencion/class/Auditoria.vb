@@ -9,8 +9,8 @@ Public Class Auditoria
                 conexion.Conectar(cnx)
                 Using DA As New SqlDataAdapter("INF_AUDITORIA", cnx)
                     DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                    DA.SelectCommand.Parameters.AddWithValue("@fecha_inicio", fecha_inicio.ToString("yyyyMMdd 00:00:00"))
-                    DA.SelectCommand.Parameters.AddWithValue("@fecha_fin", fecha_fin.ToString("yyyyMMdd 23:59:59"))
+                    Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_inicio", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                    Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin", Utilitarios.SafeSqlDateEnd(fecha_fin))
                     DA.Fill(DS)
                 End Using
             End Using

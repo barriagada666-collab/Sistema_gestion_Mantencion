@@ -11,32 +11,39 @@ Public Class OT
             Using com As New SqlCommand("ING_OT_ABIERTA", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@n_ot", CInt(N_OT))
-                Dim p_id_nodo As SqlParameter = com.Parameters.AddWithValue("@id_nodo", CInt(id_nodo))
+                Dim nOtInt As Integer = 0
+                Dim idNodoInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(N_OT, nOtInt) OrElse Not Utilitarios.TrySafeInt(id_nodo, idNodoInt) Then
+                    cod_resp = 0
+                    resp = "El número de OT y el nodo seleccionado deben ser numéricos válidos."
+                    Exit Sub
+                End If
+                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@n_ot", nOtInt)
+                Dim p_id_nodo As SqlParameter = com.Parameters.AddWithValue("@id_nodo", idNodoInt)
                 Dim p_tipo_det As SqlParameter = com.Parameters.AddWithValue("@id_tipo", tipo_det)
                 Dim p_tipo_trab As SqlParameter = com.Parameters.AddWithValue("@tipo_trabajo", tipo_trab)
                 Dim p_id_sintoma As SqlParameter = com.Parameters.AddWithValue("@id_sintoma", id_sintoma)
                 Dim p_id_modo_falla As SqlParameter = com.Parameters.AddWithValue("@id_modo_falla", id_modo_falla)
 
                 ' Reparación formato fecha y hora universal
-                Dim p_fecha_r As SqlParameter = com.Parameters.AddWithValue("@fecha_recep", fecha_r.ToString("yyyyMMdd"))
-                Dim p_hr_r As SqlParameter = com.Parameters.AddWithValue("@hr_recep", hr_r.ToString("HH:mm"))
-                Dim p_fecha_ini As SqlParameter = com.Parameters.AddWithValue("@fecha_ini", fecha_ini.ToString("yyyyMMdd"))
-                Dim p_hr_ini As SqlParameter = com.Parameters.AddWithValue("@hr_ini", hr_ini.ToString("HH:mm"))
+                Utilitarios.AgregarParametroFecha(com, "@fecha_recep", Utilitarios.SafeSqlDateStart(fecha_r))
+                Utilitarios.AgregarParametroFecha(com, "@hr_recep", Utilitarios.SafeSqlTime(hr_r))
+                Utilitarios.AgregarParametroFecha(com, "@fecha_ini", Utilitarios.SafeSqlDateStart(fecha_ini))
+                Utilitarios.AgregarParametroFecha(com, "@hr_ini", Utilitarios.SafeSqlTime(hr_ini))
 
-                Dim p_detencion As SqlParameter = com.Parameters.AddWithValue("@detencion", detencion)
-                Dim p_desc_falla As SqlParameter = com.Parameters.AddWithValue("@desc_breve", desc_falla)
-                Dim p_solitado_por As SqlParameter = com.Parameters.AddWithValue("@per_solicita", solicitado_por)
-                Dim p_recibido_por As SqlParameter = com.Parameters.AddWithValue("@per_recepcion", recibido_por)
-                Dim p_sesion As SqlParameter = com.Parameters.AddWithValue("@sesion", sesion)
+                Dim p_detencion As SqlParameter = com.Parameters.AddWithValue("@detencion", If(detencion, String.Empty))
+                Dim p_desc_falla As SqlParameter = com.Parameters.AddWithValue("@desc_breve", If(desc_falla, String.Empty))
+                Dim p_solitado_por As SqlParameter = com.Parameters.AddWithValue("@per_solicita", If(solicitado_por, String.Empty))
+                Dim p_recibido_por As SqlParameter = com.Parameters.AddWithValue("@per_recepcion", If(recibido_por, String.Empty))
+                Dim p_sesion As SqlParameter = com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty))
                 Dim p_nombre_pc As SqlParameter = com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
-                Dim p_desc_tecnica As SqlParameter = com.Parameters.AddWithValue("@desc_tecnica", desc_tecnica)
+                Dim p_desc_tecnica As SqlParameter = com.Parameters.AddWithValue("@desc_tecnica", If(desc_tecnica, String.Empty))
                 Dim p_mant_interna As SqlParameter = com.Parameters.AddWithValue("@mant_interna", mant_interna)
 
                 Using DR As SqlDataReader = com.ExecuteReader
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -57,39 +64,46 @@ Public Class OT
             Using com As New SqlCommand("ING_OT_CERRADA", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@n_ot", CInt(N_OT))
-                Dim p_id_nodo As SqlParameter = com.Parameters.AddWithValue("@id_nodo", CInt(id_nodo))
+                Dim nOtInt As Integer = 0
+                Dim idNodoInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(N_OT, nOtInt) OrElse Not Utilitarios.TrySafeInt(id_nodo, idNodoInt) Then
+                    cod_resp = 0
+                    resp = "El número de OT y el nodo seleccionado deben ser numéricos válidos."
+                    Exit Sub
+                End If
+                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@n_ot", nOtInt)
+                Dim p_id_nodo As SqlParameter = com.Parameters.AddWithValue("@id_nodo", idNodoInt)
                 Dim p_tipo_det As SqlParameter = com.Parameters.AddWithValue("@id_tipo", tipo_det)
                 Dim p_tipo_trab As SqlParameter = com.Parameters.AddWithValue("@tipo_trab", tipo_trab)
                 Dim p_id_sintoma As SqlParameter = com.Parameters.AddWithValue("@id_sintoma", id_sintoma)
                 Dim p_id_modo_falla As SqlParameter = com.Parameters.AddWithValue("@id_modo_falla", id_modo_falla)
 
                 ' Reparación formato fecha y hora universal
-                Dim p_fecha_r As SqlParameter = com.Parameters.AddWithValue("@fecha_recep", fecha_r.ToString("yyyyMMdd"))
-                Dim p_hr_r As SqlParameter = com.Parameters.AddWithValue("@hora_recep", hr_r.ToString("HH:mm"))
-                Dim p_fecha_ini As SqlParameter = com.Parameters.AddWithValue("@fecha_ini_ot", fecha_ini.ToString("yyyyMMdd"))
-                Dim p_hr_ini As SqlParameter = com.Parameters.AddWithValue("@hora_ini_ot", hr_ini.ToString("HH:mm"))
-                Dim p_fecha_fin As SqlParameter = com.Parameters.AddWithValue("@fecha_fin_ot", fecha_fin.ToString("yyyyMMdd"))
-                Dim p_hr_fin As SqlParameter = com.Parameters.AddWithValue("@hora_fin_ot", hora_fin.ToString("HH:mm"))
-                Dim p_fecha_ent As SqlParameter = com.Parameters.AddWithValue("@fecha_entrega", fecha_entrega.ToString("yyyyMMdd"))
-                Dim p_hr_ent As SqlParameter = com.Parameters.AddWithValue("@hora_entrega", hora_entrega.ToString("HH:mm"))
+                Utilitarios.AgregarParametroFecha(com, "@fecha_recep", Utilitarios.SafeSqlDateStart(fecha_r))
+                Utilitarios.AgregarParametroFecha(com, "@hora_recep", Utilitarios.SafeSqlTime(hr_r))
+                Utilitarios.AgregarParametroFecha(com, "@fecha_ini_ot", Utilitarios.SafeSqlDateStart(fecha_ini))
+                Utilitarios.AgregarParametroFecha(com, "@hora_ini_ot", Utilitarios.SafeSqlTime(hr_ini))
+                Utilitarios.AgregarParametroFecha(com, "@fecha_fin_ot", Utilitarios.SafeSqlDateStart(fecha_fin))
+                Utilitarios.AgregarParametroFecha(com, "@hora_fin_ot", Utilitarios.SafeSqlTime(hora_fin))
+                Utilitarios.AgregarParametroFecha(com, "@fecha_entrega", Utilitarios.SafeSqlDateStart(fecha_entrega))
+                Utilitarios.AgregarParametroFecha(com, "@hora_entrega", Utilitarios.SafeSqlTime(hora_entrega))
 
-                Dim p_detencion As SqlParameter = com.Parameters.AddWithValue("@detencion", detencion)
-                Dim p_desc_falla As SqlParameter = com.Parameters.AddWithValue("@desc_breve", desc_falla)
-                Dim p_desc_tecnica As SqlParameter = com.Parameters.AddWithValue("@desc_tecnica", desc_tecnica)
-                Dim p_tiempo_ot As SqlParameter = com.Parameters.AddWithValue("@tiempo_det", If(IsNumeric(duracion), CDbl(duracion), 0.0))
-                Dim p_solitado_por As SqlParameter = com.Parameters.AddWithValue("@per_solicita", solicitado_por)
-                Dim p_recibido_por As SqlParameter = com.Parameters.AddWithValue("@per_recepcion", recibido_por)
-                Dim p_cerrada_por As SqlParameter = com.Parameters.AddWithValue("@per_cierre", cerrada_por)
-                Dim p_sesion As SqlParameter = com.Parameters.AddWithValue("@sesion", sesion)
+                Dim p_detencion As SqlParameter = com.Parameters.AddWithValue("@detencion", If(detencion, String.Empty))
+                Dim p_desc_falla As SqlParameter = com.Parameters.AddWithValue("@desc_breve", If(desc_falla, String.Empty))
+                Dim p_desc_tecnica As SqlParameter = com.Parameters.AddWithValue("@desc_tecnica", If(desc_tecnica, String.Empty))
+                Dim p_tiempo_ot As SqlParameter = com.Parameters.AddWithValue("@tiempo_det", Utilitarios.SafeDouble(duracion, 0.0))
+                Dim p_solitado_por As SqlParameter = com.Parameters.AddWithValue("@per_solicita", If(solicitado_por, String.Empty))
+                Dim p_recibido_por As SqlParameter = com.Parameters.AddWithValue("@per_recepcion", If(recibido_por, String.Empty))
+                Dim p_cerrada_por As SqlParameter = com.Parameters.AddWithValue("@per_cierre", If(cerrada_por, String.Empty))
+                Dim p_sesion As SqlParameter = com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty))
                 Dim p_nombre_pc As SqlParameter = com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
                 Dim p_estado_ot As SqlParameter = com.Parameters.AddWithValue("@estado_ot", estado_ot)
                 Dim p_mant_interna As SqlParameter = com.Parameters.AddWithValue("@mant_interna", mant_interna)
 
                 Using DR As SqlDataReader = com.ExecuteReader
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -114,7 +128,9 @@ Public Class OT
             Using com As New SqlCommand("ING_PERSONAL_OT", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                Dim p_num_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", CInt(id_ot))
+                Dim idOtInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(id_ot, idOtInt) Then Exit Sub
+                Dim p_num_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", idOtInt)
                 Dim p_rut_per As SqlParameter = com.Parameters.AddWithValue("@rut", rut)
                 Dim p_obs_per As SqlParameter = com.Parameters.AddWithValue("@obs_personal", obs_personal)
 
@@ -143,8 +159,11 @@ Public Class OT
             Using com As New SqlCommand("ING_OT_EXTERNA_OT", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                Dim p_num_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", CInt(num_ot))
-                Dim p_num_ot_ext As SqlParameter = com.Parameters.AddWithValue("@num_ot_ext", CInt(num_ot_ext))
+                Dim numOtInt As Integer = 0
+                Dim numOtExtInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(num_ot, numOtInt) OrElse Not Utilitarios.TrySafeInt(num_ot_ext, numOtExtInt) Then Exit Sub
+                Dim p_num_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", numOtInt)
+                Dim p_num_ot_ext As SqlParameter = com.Parameters.AddWithValue("@num_ot_ext", numOtExtInt)
                 Dim p_obs_ot_ext As SqlParameter = com.Parameters.AddWithValue("@obs_ot_ext", obs_ot_ext)
 
                 Using DR As SqlDataReader = com.ExecuteReader
@@ -169,9 +188,12 @@ Public Class OT
             Using com As New SqlCommand("ING_INSUMOS_OT", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                Dim p_num_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", CInt(num_ot))
-                Dim p_id_insumo As SqlParameter = com.Parameters.AddWithValue("@idinsumo", CInt(id_insumo))
-                Dim p_cantidad As SqlParameter = com.Parameters.AddWithValue("@cantidad", CInt(cantidad))
+                Dim numOtInt As Integer = 0
+                Dim idInsInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(num_ot, numOtInt) OrElse Not Utilitarios.TrySafeInt(id_insumo, idInsInt) Then Exit Sub
+                Dim p_num_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", numOtInt)
+                Dim p_id_insumo As SqlParameter = com.Parameters.AddWithValue("@idinsumo", idInsInt)
+                Dim p_cantidad As SqlParameter = com.Parameters.AddWithValue("@cantidad", Utilitarios.SafeInt(cantidad, 0))
                 Dim p_unid_medida As SqlParameter = com.Parameters.AddWithValue("@unid_medida", If(unid_medida, ""))
 
                 Using DR As SqlDataReader = com.ExecuteReader
@@ -195,32 +217,39 @@ Public Class OT
             Using com As New SqlCommand("UPD_OT_ABIERTA", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@n_ot", CInt(N_OT))
-                Dim p_id_nodo As SqlParameter = com.Parameters.AddWithValue("@id_nodo", CInt(id_nodo))
+                Dim nOtInt As Integer = 0
+                Dim idNodoInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(N_OT, nOtInt) OrElse Not Utilitarios.TrySafeInt(id_nodo, idNodoInt) Then
+                    cod_resp = 0
+                    resp = "El número de OT y el nodo seleccionado deben ser numéricos válidos."
+                    Exit Sub
+                End If
+                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@n_ot", nOtInt)
+                Dim p_id_nodo As SqlParameter = com.Parameters.AddWithValue("@id_nodo", idNodoInt)
                 Dim p_tipo_det As SqlParameter = com.Parameters.AddWithValue("@id_tipo", tipo_det)
                 Dim p_tipo_trab As SqlParameter = com.Parameters.AddWithValue("@tipo_trabajo", tipo_trab)
                 Dim p_id_sintoma As SqlParameter = com.Parameters.AddWithValue("@id_sintoma", id_sintoma)
                 Dim p_id_modo_falla As SqlParameter = com.Parameters.AddWithValue("@id_modo_falla", id_modo_falla)
 
                 ' Reparación formato fecha y hora universal
-                Dim p_fecha_r As SqlParameter = com.Parameters.AddWithValue("@fecha_recep", fecha_r.ToString("yyyyMMdd"))
-                Dim p_hr_r As SqlParameter = com.Parameters.AddWithValue("@hr_recep", hr_r.ToString("HH:mm"))
-                Dim p_fecha_ini As SqlParameter = com.Parameters.AddWithValue("@fecha_ini", fecha_ini.ToString("yyyyMMdd"))
-                Dim p_hr_ini As SqlParameter = com.Parameters.AddWithValue("@hr_ini", hr_ini.ToString("HH:mm"))
+                Utilitarios.AgregarParametroFecha(com, "@fecha_recep", Utilitarios.SafeSqlDateStart(fecha_r))
+                Utilitarios.AgregarParametroFecha(com, "@hr_recep", Utilitarios.SafeSqlTime(hr_r))
+                Utilitarios.AgregarParametroFecha(com, "@fecha_ini", Utilitarios.SafeSqlDateStart(fecha_ini))
+                Utilitarios.AgregarParametroFecha(com, "@hr_ini", Utilitarios.SafeSqlTime(hr_ini))
 
-                Dim p_detencion As SqlParameter = com.Parameters.AddWithValue("@detencion", detencion)
-                Dim p_desc_falla As SqlParameter = com.Parameters.AddWithValue("@desc_breve", desc_falla)
-                Dim p_solitado_por As SqlParameter = com.Parameters.AddWithValue("@per_solicita", solicitado_por)
-                Dim p_recibido_por As SqlParameter = com.Parameters.AddWithValue("@per_recepcion", recibido_por)
-                Dim p_sesion As SqlParameter = com.Parameters.AddWithValue("@sesion", sesion)
+                Dim p_detencion As SqlParameter = com.Parameters.AddWithValue("@detencion", If(detencion, String.Empty))
+                Dim p_desc_falla As SqlParameter = com.Parameters.AddWithValue("@desc_breve", If(desc_falla, String.Empty))
+                Dim p_solitado_por As SqlParameter = com.Parameters.AddWithValue("@per_solicita", If(solicitado_por, String.Empty))
+                Dim p_recibido_por As SqlParameter = com.Parameters.AddWithValue("@per_recepcion", If(recibido_por, String.Empty))
+                Dim p_sesion As SqlParameter = com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty))
                 Dim p_nombre_pc As SqlParameter = com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
-                Dim p_desc_tecnica As SqlParameter = com.Parameters.AddWithValue("@desc_tecnica", desc_tecnica)
+                Dim p_desc_tecnica As SqlParameter = com.Parameters.AddWithValue("@desc_tecnica", If(desc_tecnica, String.Empty))
                 Dim p_mant_interna As SqlParameter = com.Parameters.AddWithValue("@mant_interna", mant_interna)
 
                 Using DR As SqlDataReader = com.ExecuteReader
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -241,39 +270,46 @@ Public Class OT
             Using com As New SqlCommand("UPD_OT_CERRADA", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@n_ot", CInt(N_OT))
-                Dim p_id_nodo As SqlParameter = com.Parameters.AddWithValue("@id_nodo", CInt(id_nodo))
+                Dim nOtInt As Integer = 0
+                Dim idNodoInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(N_OT, nOtInt) OrElse Not Utilitarios.TrySafeInt(id_nodo, idNodoInt) Then
+                    cod_resp = 0
+                    resp = "El número de OT y el nodo seleccionado deben ser numéricos válidos."
+                    Exit Sub
+                End If
+                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@n_ot", nOtInt)
+                Dim p_id_nodo As SqlParameter = com.Parameters.AddWithValue("@id_nodo", idNodoInt)
                 Dim p_tipo_det As SqlParameter = com.Parameters.AddWithValue("@id_tipo", tipo_det)
                 Dim p_tipo_trab As SqlParameter = com.Parameters.AddWithValue("@tipo_trabajo", tipo_trab)
                 Dim p_id_sintoma As SqlParameter = com.Parameters.AddWithValue("@id_sintoma", id_sintoma)
                 Dim p_id_modo_falla As SqlParameter = com.Parameters.AddWithValue("@id_modo_falla", id_modo_falla)
 
                 ' Reparación formato fecha y hora universal
-                Dim p_fecha_r As SqlParameter = com.Parameters.AddWithValue("@fecha_recep", fecha_r.ToString("yyyyMMdd"))
-                Dim p_hr_r As SqlParameter = com.Parameters.AddWithValue("@hora_recep", hr_r.ToString("HH:mm"))
-                Dim p_fecha_ini As SqlParameter = com.Parameters.AddWithValue("@fecha_ini_ot", fecha_ini.ToString("yyyyMMdd"))
-                Dim p_hr_ini As SqlParameter = com.Parameters.AddWithValue("@hora_ini_ot", hr_ini.ToString("HH:mm"))
-                Dim p_fecha_fin As SqlParameter = com.Parameters.AddWithValue("@fecha_fin_ot", fecha_fin.ToString("yyyyMMdd"))
-                Dim p_hr_fin As SqlParameter = com.Parameters.AddWithValue("@hora_fin_ot", hora_fin.ToString("HH:mm"))
-                Dim p_fecha_ent As SqlParameter = com.Parameters.AddWithValue("@fecha_entrega", fecha_entrega.ToString("yyyyMMdd"))
-                Dim p_hr_ent As SqlParameter = com.Parameters.AddWithValue("@hora_entrega", hora_entrega.ToString("HH:mm"))
+                Utilitarios.AgregarParametroFecha(com, "@fecha_recep", Utilitarios.SafeSqlDateStart(fecha_r))
+                Utilitarios.AgregarParametroFecha(com, "@hora_recep", Utilitarios.SafeSqlTime(hr_r))
+                Utilitarios.AgregarParametroFecha(com, "@fecha_ini_ot", Utilitarios.SafeSqlDateStart(fecha_ini))
+                Utilitarios.AgregarParametroFecha(com, "@hora_ini_ot", Utilitarios.SafeSqlTime(hr_ini))
+                Utilitarios.AgregarParametroFecha(com, "@fecha_fin_ot", Utilitarios.SafeSqlDateStart(fecha_fin))
+                Utilitarios.AgregarParametroFecha(com, "@hora_fin_ot", Utilitarios.SafeSqlTime(hora_fin))
+                Utilitarios.AgregarParametroFecha(com, "@fecha_entrega", Utilitarios.SafeSqlDateStart(fecha_entrega))
+                Utilitarios.AgregarParametroFecha(com, "@hora_entrega", Utilitarios.SafeSqlTime(hora_entrega))
 
-                Dim p_detencion As SqlParameter = com.Parameters.AddWithValue("@detencion", detencion)
-                Dim p_desc_falla As SqlParameter = com.Parameters.AddWithValue("@desc_breve", desc_falla)
-                Dim p_desc_tecnica As SqlParameter = com.Parameters.AddWithValue("@desc_tecnica", desc_tecnica)
-                Dim p_tiempo_ot As SqlParameter = com.Parameters.AddWithValue("@tiempo_det", If(IsNumeric(duracion), CDbl(duracion), 0.0))
-                Dim p_solitado_por As SqlParameter = com.Parameters.AddWithValue("@per_solicita", solicitado_por)
-                Dim p_recibido_por As SqlParameter = com.Parameters.AddWithValue("@per_recepcion", recibido_por)
-                Dim p_cerrada_por As SqlParameter = com.Parameters.AddWithValue("@per_cierre", cerrada_por)
-                Dim p_sesion As SqlParameter = com.Parameters.AddWithValue("@sesion", sesion)
+                Dim p_detencion As SqlParameter = com.Parameters.AddWithValue("@detencion", If(detencion, String.Empty))
+                Dim p_desc_falla As SqlParameter = com.Parameters.AddWithValue("@desc_breve", If(desc_falla, String.Empty))
+                Dim p_desc_tecnica As SqlParameter = com.Parameters.AddWithValue("@desc_tecnica", If(desc_tecnica, String.Empty))
+                Dim p_tiempo_ot As SqlParameter = com.Parameters.AddWithValue("@tiempo_det", Utilitarios.SafeDouble(duracion, 0.0))
+                Dim p_solitado_por As SqlParameter = com.Parameters.AddWithValue("@per_solicita", If(solicitado_por, String.Empty))
+                Dim p_recibido_por As SqlParameter = com.Parameters.AddWithValue("@per_recepcion", If(recibido_por, String.Empty))
+                Dim p_cerrada_por As SqlParameter = com.Parameters.AddWithValue("@per_cierre", If(cerrada_por, String.Empty))
+                Dim p_sesion As SqlParameter = com.Parameters.AddWithValue("@sesion", If(sesion, String.Empty))
                 Dim p_nombre_pc As SqlParameter = com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
                 Dim p_estado_ot As SqlParameter = com.Parameters.AddWithValue("@estado_ot", estado_ot)
                 Dim p_mant_interna As SqlParameter = com.Parameters.AddWithValue("@mant_interna", mant_interna)
 
                 Using DR As SqlDataReader = com.ExecuteReader
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -297,7 +333,9 @@ Public Class OT
                 If obs_personal Is Nothing Then
                     obs_personal = ""
                 End If
-                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", CInt(N_OT))
+                Dim nOtInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(N_OT, nOtInt) Then Exit Sub
+                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", nOtInt)
                 Dim p_rut_per As SqlParameter = com.Parameters.AddWithValue("@rut", rut)
                 Dim p_obs_personal As SqlParameter = com.Parameters.AddWithValue("@obs_personal", obs_personal)
 
@@ -320,9 +358,12 @@ Public Class OT
             Using com As New SqlCommand("UPD_INSUMOS_OT", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", CInt(N_OT))
-                Dim p_id_insumo As SqlParameter = com.Parameters.AddWithValue("@id_insumo", CInt(id_insumo))
-                Dim p_cantidad As SqlParameter = com.Parameters.AddWithValue("@cantidad", CInt(cantidad))
+                Dim nOtInt As Integer = 0
+                Dim idInsInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(N_OT, nOtInt) OrElse Not Utilitarios.TrySafeInt(id_insumo, idInsInt) Then Exit Sub
+                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", nOtInt)
+                Dim p_id_insumo As SqlParameter = com.Parameters.AddWithValue("@id_insumo", idInsInt)
+                Dim p_cantidad As SqlParameter = com.Parameters.AddWithValue("@cantidad", Utilitarios.SafeInt(cantidad, 0))
                 Dim p_unid_medida As SqlParameter = com.Parameters.AddWithValue("@unid_medida", If(unid_medida, ""))
 
                 com.ExecuteNonQuery()
@@ -346,8 +387,11 @@ Public Class OT
                 If obs_ot_ext Is Nothing Then
                     obs_ot_ext = ""
                 End If
-                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", CInt(N_OT))
-                Dim p_n_ot_ext As SqlParameter = com.Parameters.AddWithValue("@num_ot_ext", CInt(num_ot_ext))
+                Dim nOtInt As Integer = 0
+                Dim numOtExtInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(N_OT, nOtInt) OrElse Not Utilitarios.TrySafeInt(num_ot_ext, numOtExtInt) Then Exit Sub
+                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", nOtInt)
+                Dim p_n_ot_ext As SqlParameter = com.Parameters.AddWithValue("@num_ot_ext", numOtExtInt)
                 Dim p_obs_ot_ext As SqlParameter = com.Parameters.AddWithValue("@obs_ot_ext", obs_ot_ext)
 
                 com.ExecuteNonQuery()
@@ -389,7 +433,9 @@ Public Class OT
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("CRG_ORDEN_TRABAJO", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                Dim p_num_ot As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@num_ot", CInt(num_ot))
+                Dim numOtInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(num_ot, numOtInt) Then Exit Sub
+                Dim p_num_ot As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@num_ot", numOtInt)
 
                 DA.Fill(DS)
             End Using
@@ -409,7 +455,9 @@ Public Class OT
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("CRG_PERSONAL_OT", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                Dim p_num_ot As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@num_ot", CInt(num_ot))
+                Dim numOtInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(num_ot, numOtInt) Then Exit Sub
+                Dim p_num_ot As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@num_ot", numOtInt)
 
                 DA.Fill(DS)
             End Using
@@ -429,7 +477,9 @@ Public Class OT
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("CRG_OT_EXTERNA_OT", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                Dim p_num_ot As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@num_ot", CInt(num_ot))
+                Dim numOtInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(num_ot, numOtInt) Then Exit Sub
+                Dim p_num_ot As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@num_ot", numOtInt)
 
                 DA.Fill(DS)
             End Using
@@ -449,7 +499,9 @@ Public Class OT
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("CRG_INSUMOS_OT", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                Dim p_num_ot As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@num_ot", CInt(num_ot))
+                Dim numOtInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(num_ot, numOtInt) Then Exit Sub
+                Dim p_num_ot As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@num_ot", numOtInt)
 
                 DA.Fill(DS)
             End Using
@@ -553,12 +605,14 @@ Public Class OT
             conexion.Conectar(cnx)
             Using com As New SqlCommand("BUSCAR_NUM_OT", cnx)
                 com.CommandType = CommandType.StoredProcedure
-                Dim p_num_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", CInt(num_ot))
+                Dim numOtInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(num_ot, numOtInt) Then Return String.Empty
+                Dim p_num_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", numOtInt)
 
                 Using DR As SqlDataReader = com.ExecuteReader
                     If DR.Read Then
-                        If DR(0) = 1 Then
-                            resp = DR(1)
+                        If Not IsDBNull(DR(0)) AndAlso Convert.ToInt32(DR(0)) = 1 AndAlso DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)) Then
+                            resp = DR(1).ToString()
                         Else
                             resp = ""
                         End If
@@ -581,14 +635,20 @@ Public Class OT
             Using com As New SqlCommand("DEL_ORDEN_TRABAJO", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", CInt(N_OT))
+                Dim nOtInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(N_OT, nOtInt) Then
+                    cod_resp = 0
+                    resp = "El número de OT debe ser un valor numérico válido."
+                    Exit Sub
+                End If
+                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", nOtInt)
                 Dim p_sesion As SqlParameter = com.Parameters.AddWithValue("@sesion", sesion)
                 Dim p_nombre_pc As SqlParameter = com.Parameters.AddWithValue("@nombre_pc", My.Computer.Name)
 
                 Using DR As SqlDataReader = com.ExecuteReader
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -609,13 +669,15 @@ Public Class OT
             Using com As New SqlCommand("DEL_PERSONAL_OT", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", CInt(N_OT))
+                Dim nOtInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(N_OT, nOtInt) Then Exit Sub
+                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", nOtInt)
                 Dim p_rut As SqlParameter = com.Parameters.AddWithValue("@rut", rut)
 
                 Using DR As SqlDataReader = com.ExecuteReader
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -636,13 +698,16 @@ Public Class OT
             Using com As New SqlCommand("DEL_OT_EXTERNA_OT", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", CInt(N_OT))
-                Dim p_rut As SqlParameter = com.Parameters.AddWithValue("@num_ot_ext", CInt(num_ot_ext))
+                Dim nOtInt As Integer = 0
+                Dim numOtExtInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(N_OT, nOtInt) OrElse Not Utilitarios.TrySafeInt(num_ot_ext, numOtExtInt) Then Exit Sub
+                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", nOtInt)
+                Dim p_rut As SqlParameter = com.Parameters.AddWithValue("@num_ot_ext", numOtExtInt)
 
                 Using DR As SqlDataReader = com.ExecuteReader
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -663,13 +728,16 @@ Public Class OT
             Using com As New SqlCommand("DEL_INSUMO_OT", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", CInt(N_OT))
-                Dim p_rut As SqlParameter = com.Parameters.AddWithValue("@id_insumo", CInt(id_insumo))
+                Dim nOtInt As Integer = 0
+                Dim idInsInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(N_OT, nOtInt) OrElse Not Utilitarios.TrySafeInt(id_insumo, idInsInt) Then Exit Sub
+                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", nOtInt)
+                Dim p_rut As SqlParameter = com.Parameters.AddWithValue("@id_insumo", idInsInt)
 
                 Using DR As SqlDataReader = com.ExecuteReader
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -825,7 +893,7 @@ Public Class OT
                 resp = resp & "La fecha de recepcion no puede ser mayor a la fecha de cierre" & Chr(13)
             End If
 
-            If Not IsNumeric(.txtDuracionOt.Text) OrElse CDbl(.txtDuracionOt.Text) <= 0 Then
+            If Utilitarios.SafeDouble(.txtDuracionOt.Text, 0.0) <= 0 Then
                 resp = resp & "El tiempo de duración debe ser mayor a cero" & Chr(13)
             End If
 
@@ -852,18 +920,20 @@ Public Class OT
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("INF_OT_2", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                Dim p_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(nodo_padre))
-                Dim p_num_ot As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@num_ot", CInt(num_ot))
+                Dim idNodoPadreInf As Integer = Utilitarios.SafeInt(nodo_padre, 1)
+                If idNodoPadreInf <= 0 Then idNodoPadreInf = 1
+                Dim p_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", idNodoPadreInf)
+                Dim p_num_ot As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@num_ot", Utilitarios.SafeInt(num_ot, 0))
 
                 ' Rango corregido para abarcar todo el día
-                Dim p_fecha_ini As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_inicio_ot", fecha_inicio.ToString("yyyyMMdd 00:00:00"))
-                Dim p_fecha_fin As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_fin_ot", fecha_fin.ToString("yyyyMMdd 23:59:59"))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_inicio_ot", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin_ot", Utilitarios.SafeSqlDateEnd(fecha_fin))
 
-                Dim p_estado As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@estado", estado)
-                Dim p_detencion As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@detencion", detencion)
-                Dim p_opcion As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@opcion", CInt(opcion))
-                Dim p_tipo_trabajo As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@tipo_trabajo", tipo_trabajo)
-                Dim p_tipo_detencion As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@tipo_detencion", tipo_detencion)
+                Dim p_estado As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@estado", If(estado, String.Empty))
+                Dim p_detencion As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@detencion", If(detencion, String.Empty))
+                Dim p_opcion As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@opcion", opcion)
+                Dim p_tipo_trabajo As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@tipo_trabajo", If(tipo_trabajo, String.Empty))
+                Dim p_tipo_detencion As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@tipo_detencion", If(tipo_detencion, String.Empty))
 
                 DA.Fill(DST)
             End Using
@@ -885,17 +955,19 @@ Public Class OT
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("INF_OT_HISTORICO", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                Dim p_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(nodo_padre))
-                Dim p_num_ot As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@num_ot", CInt(num_ot))
+                Dim idNodoPadreInf As Integer = Utilitarios.SafeInt(nodo_padre, 1)
+                If idNodoPadreInf <= 0 Then idNodoPadreInf = 1
+                Dim p_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", idNodoPadreInf)
+                Dim p_num_ot As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@num_ot", Utilitarios.SafeInt(num_ot, 0))
 
-                Dim p_fecha_ini As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_inicio_ot", fecha_inicio.ToString("yyyyMMdd 00:00:00"))
-                Dim p_fecha_fin As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_fin_ot", fecha_fin.ToString("yyyyMMdd 23:59:59"))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_inicio_ot", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin_ot", Utilitarios.SafeSqlDateEnd(fecha_fin))
 
-                Dim p_estado As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@estado", estado)
-                Dim p_detencion As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@detencion", detencion)
-                Dim p_opcion As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@opcion", CInt(opcion))
-                Dim p_tipo_trabajo As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@tipo_trabajo", tipo_trabajo)
-                Dim p_tipo_detencion As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@tipo_detencion", tipo_detencion)
+                Dim p_estado As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@estado", If(estado, String.Empty))
+                Dim p_detencion As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@detencion", If(detencion, String.Empty))
+                Dim p_opcion As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@opcion", opcion)
+                Dim p_tipo_trabajo As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@tipo_trabajo", If(tipo_trabajo, String.Empty))
+                Dim p_tipo_detencion As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@tipo_detencion", If(tipo_detencion, String.Empty))
 
                 DA.Fill(DST)
             End Using
@@ -938,9 +1010,11 @@ Public Class OT
 
             Using cmd As New SqlCommand(sql, cnx)
                 cmd.CommandTimeout = 60
-                cmd.Parameters.AddWithValue("@nodo_padre", CInt(id_nodo_padre))
-                cmd.Parameters.AddWithValue("@fecha_inicio", fecha_inicio.Date)
-                cmd.Parameters.AddWithValue("@fecha_fin", fecha_fin.Date.AddDays(1).AddSeconds(-1))
+                Dim idNodoPadreInt As Integer = Utilitarios.SafeInt(id_nodo_padre, 1)
+                If idNodoPadreInt <= 0 Then idNodoPadreInt = 1
+                cmd.Parameters.AddWithValue("@nodo_padre", idNodoPadreInt)
+                Utilitarios.AgregarParametroFecha(cmd, "@fecha_inicio", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                Utilitarios.AgregarParametroFecha(cmd, "@fecha_fin", Utilitarios.SafeSqlDateEnd(fecha_fin))
                 Using da As New SqlDataAdapter(cmd)
                     da.Fill(DT)
                 End Using
@@ -961,9 +1035,9 @@ Public Class OT
             Using DA As New SqlDataAdapter("INF_OT_PENDIENTES_X_RECEPCION", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
 
-                Dim p_fecha_inicio As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_inicio", fecha_inicio.ToString("yyyyMMdd 00:00:00"))
-                Dim p_fecha_fin As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_fin", fecha_fin.ToString("yyyyMMdd 23:59:59"))
-                Dim p_id_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(id_nodo_padre))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_inicio", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin", Utilitarios.SafeSqlDateEnd(fecha_fin))
+                Dim p_id_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", Utilitarios.SafeInt(id_nodo_padre, 1))
 
                 DA.Fill(DST)
             End Using
@@ -983,9 +1057,9 @@ Public Class OT
             Using DA As New SqlDataAdapter("INF_OT_CERRADA_X_TECNICO", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
 
-                Dim p_fecha_inicio As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_inicio", fecha_inicio.ToString("yyyyMMdd 00:00:00"))
-                Dim p_fecha_fin As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_fin", fecha_fin.ToString("yyyyMMdd 23:59:59"))
-                Dim p_id_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(id_nodo_padre))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_inicio", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin", Utilitarios.SafeSqlDateEnd(fecha_fin))
+                Dim p_id_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", Utilitarios.SafeInt(id_nodo_padre, 1))
 
                 DA.Fill(DST)
             End Using
@@ -1005,9 +1079,9 @@ Public Class OT
             Using DA As New SqlDataAdapter("INF_OT_X_DIA", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
 
-                Dim p_fecha_inicio As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_inicio", fecha_inicio.ToString("yyyyMMdd 00:00:00"))
-                Dim p_fecha_fin As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_fin", fecha_fin.ToString("yyyyMMdd 23:59:59"))
-                Dim p_id_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(id_nodo_padre))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_inicio", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin", Utilitarios.SafeSqlDateEnd(fecha_fin))
+                Dim p_id_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", Utilitarios.SafeInt(id_nodo_padre, 1))
 
                 DA.Fill(DST)
             End Using
@@ -1027,9 +1101,9 @@ Public Class OT
             Using DA As New SqlDataAdapter("INF_OT_X_MES", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
 
-                Dim p_fecha_inicio As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_inicio", fecha_inicio.ToString("yyyyMMdd 00:00:00"))
-                Dim p_fecha_fin As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_fin", fecha_fin.ToString("yyyyMMdd 23:59:59"))
-                Dim p_id_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(id_nodo_padre))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_inicio", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin", Utilitarios.SafeSqlDateEnd(fecha_fin))
+                Dim p_id_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", Utilitarios.SafeInt(id_nodo_padre, 1))
 
                 DA.Fill(DST)
             End Using
@@ -1049,9 +1123,9 @@ Public Class OT
             Using DA As New SqlDataAdapter("INF_OT_X_TURNO", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
 
-                Dim p_fecha_inicio As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_inicio", fecha_inicio.ToString("yyyyMMdd 00:00:00"))
-                Dim p_fecha_fin As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_fin", fecha_fin.ToString("yyyyMMdd 23:59:59"))
-                Dim p_id_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(id_nodo_padre))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_inicio", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin", Utilitarios.SafeSqlDateEnd(fecha_fin))
+                Dim p_id_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", Utilitarios.SafeInt(id_nodo_padre, 1))
 
                 DA.Fill(DST)
             End Using
@@ -1071,9 +1145,9 @@ Public Class OT
             Using DA As New SqlDataAdapter("INF_OT_X_TIPO_FALLA", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
 
-                Dim p_fecha_inicio As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_inicio", fecha_inicio.ToString("yyyyMMdd 00:00:00"))
-                Dim p_fecha_fin As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_fin", fecha_fin.ToString("yyyyMMdd 23:59:59"))
-                Dim p_id_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(id_nodo_padre))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_inicio", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin", Utilitarios.SafeSqlDateEnd(fecha_fin))
+                Dim p_id_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", Utilitarios.SafeInt(id_nodo_padre, 1))
 
                 DA.Fill(DST)
             End Using
@@ -1093,9 +1167,9 @@ Public Class OT
             Using DA As New SqlDataAdapter("INF_OT_X_ESTADO", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
 
-                Dim p_fecha_inicio As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_inicio", fecha_inicio.ToString("yyyyMMdd 00:00:00"))
-                Dim p_fecha_fin As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_fin", fecha_fin.ToString("yyyyMMdd 23:59:59"))
-                Dim p_id_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", CInt(id_nodo_padre))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_inicio", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin", Utilitarios.SafeSqlDateEnd(fecha_fin))
+                Dim p_id_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", Utilitarios.SafeInt(id_nodo_padre, 1))
 
                 DA.Fill(DST)
             End Using
@@ -1241,12 +1315,18 @@ Public Class OT
             Using com As New SqlCommand("ANULAR_OT", cnx)
                 com.CommandType = CommandType.StoredProcedure
 
-                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", CInt(N_OT))
+                Dim nOtInt As Integer = 0
+                If Not Utilitarios.TrySafeInt(N_OT, nOtInt) Then
+                    cod_resp = 0
+                    resp = "El número de OT debe ser un valor numérico válido."
+                    Exit Sub
+                End If
+                Dim p_n_ot As SqlParameter = com.Parameters.AddWithValue("@num_ot", nOtInt)
 
                 Using DR As SqlDataReader = com.ExecuteReader
                     If DR.Read() Then
-                        cod_resp = DR(0)
-                        resp = DR(1)
+                        cod_resp = If(IsDBNull(DR(0)), -1, Convert.ToInt32(DR(0)))
+                        resp = If(DR.FieldCount > 1 AndAlso Not IsDBNull(DR(1)), DR(1).ToString(), String.Empty)
                     End If
                 End Using
             End Using
@@ -1267,8 +1347,8 @@ Public Class OT
             Using DA As New SqlDataAdapter("INF_PERSONAL_OT", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
 
-                Dim p_fecha_ini As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_inicio_ot", fecha_inicio.ToString("yyyyMMdd 00:00:00"))
-                Dim p_fecha_fin As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_fin_ot", fecha_fin.ToString("yyyyMMdd 23:59:59"))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_inicio_ot", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin_ot", Utilitarios.SafeSqlDateEnd(fecha_fin))
 
                 DA.Fill(DST)
             End Using
@@ -1449,25 +1529,27 @@ Public Class OT
 
 
     Public Sub CrgDetalleResumenOt(ByVal personal As String, ByVal fecha_inicio As DateTime, ByVal fecha_termino As DateTime, ByVal opcion As Integer, ByVal tipo_falla As String, ByVal turno As String, ByVal fecha As DateTime, ByVal estado As String, ByVal nodo_padre As String, ByRef DS As DataSet)
+        If opcion <= 0 Then Exit Sub
+        If DS Is Nothing Then DS = New DataSet()
         Dim cnx As New SqlConnection
         Dim conexion As New Conexion
         Try
             conexion.Conectar(cnx)
             Using DA As New SqlDataAdapter("CRG_DETALLE_RESUMEN_OT", cnx)
                 DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                Dim p_personal As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@personal", personal)
+                DA.SelectCommand.Parameters.AddWithValue("@personal", If(personal, String.Empty).Trim())
 
-                Dim p_fecha_inicio As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_inicio", fecha_inicio.ToString("yyyyMMdd 00:00:00"))
-                Dim p_fecha_termino As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha_termino", fecha_termino.ToString("yyyyMMdd 23:59:59"))
-                Dim p_opcion As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@opcion", opcion)
-                Dim p_tipo_falla As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@tipo_falla", tipo_falla)
-                Dim p_turno As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@turno", turno)
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_inicio", Utilitarios.SafeSqlDateStart(fecha_inicio))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_termino", Utilitarios.SafeSqlDateEnd(fecha_termino))
+                DA.SelectCommand.Parameters.AddWithValue("@opcion", opcion)
+                DA.SelectCommand.Parameters.AddWithValue("@tipo_falla", If(tipo_falla, String.Empty).Trim())
+                DA.SelectCommand.Parameters.AddWithValue("@turno", If(turno, String.Empty).Trim())
 
-                Dim p_fecha As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@fecha", fecha.ToString("yyyyMMdd"))
-                Dim p_estado As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@estado", If(estado, String.Empty))
-                Dim idNodoPadre As Integer = 1
-                Integer.TryParse(If(nodo_padre, String.Empty).Trim(), idNodoPadre)
-                Dim p_nodo_padre As SqlParameter = DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", idNodoPadre)
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha", Utilitarios.SafeSqlDateStart(fecha))
+                DA.SelectCommand.Parameters.AddWithValue("@estado", If(estado, String.Empty).Trim())
+                Dim idNodoPadre As Integer = Utilitarios.SafeInt(nodo_padre, 1)
+                If idNodoPadre <= 0 Then idNodoPadre = 1
+                DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", idNodoPadre)
 
                 DA.Fill(DS)
             End Using

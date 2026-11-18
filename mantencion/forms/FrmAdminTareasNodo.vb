@@ -104,7 +104,7 @@ Public Class FrmAdminTareasNodo
         End Try
     End Sub
 
-    Private Sub grillaTareasNodo_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaTareasNodo.CellContentDoubleClick, grillaTareasNodo.CellDoubleClick
+    Private Sub grillaTareasNodo_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaTareasNodo.CellDoubleClick
         If e.RowIndex < 0 OrElse e.RowIndex >= grillaTareasNodo.RowCount Then Exit Sub
         Try
             Dim row = grillaTareasNodo.Rows(e.RowIndex)

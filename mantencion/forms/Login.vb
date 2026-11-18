@@ -52,12 +52,17 @@ Public Class Login
 
     Private Sub Login_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Me.DoubleBuffered = True
-        Conexion.PrecalentarPool()
-        Utilitarios.RegistrarTemaGlobal()
-        Utilitarios.AplicarTemaModerno(Me)
-        Me.BackColor = Utilitarios.ColorFondoPanel
-        UsernameLabel.BackColor = Utilitarios.ColorFondoPanel
-        PasswordLabel.BackColor = Utilitarios.ColorFondoPanel
+        Me.SuspendLayout()
+        Try
+            Conexion.PrecalentarPool()
+            Utilitarios.RegistrarTemaGlobal()
+            Utilitarios.AplicarTemaModerno(Me)
+            Me.BackColor = Utilitarios.ColorFondoPanel
+            UsernameLabel.BackColor = Utilitarios.ColorFondoPanel
+            PasswordLabel.BackColor = Utilitarios.ColorFondoPanel
+        Finally
+            Me.ResumeLayout(True)
+        End Try
     End Sub
 
     Private Sub pnlLateral_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles pnlLateral.Paint

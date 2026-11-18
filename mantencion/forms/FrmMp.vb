@@ -2,7 +2,7 @@ Imports System.Data.SqlClient
 Public Class FrmMp
     Public DS2 As New DataSet
     Public DST_TAREAS As New DataSet
-    Public id_nodo_select As String
+    Public id_nodo_select As String = "1"
     Public nodo_anterior As String = ""
     Public nodo_anterior2 As String = ""
     Public filtro_tareas As New DataView
@@ -10,7 +10,7 @@ Public Class FrmMp
     Public del_index_personal As New Collection
     Public form_limpio As Boolean = False
     Public DST_NODOS_HIJOS As New DataSet
-    Public id_nodo_padre As String
+    Public id_nodo_padre As String = "1"
 
     Private Sub FrmMp_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Me.DoubleBuffered = True
@@ -27,6 +27,8 @@ Public Class FrmMp
             arbol1.BeginUpdate()
             arbol1.Nodes.Clear()
             arbol1.Nodes.Add(nodoRaiz)
+            arbol1.SelectedNode = nodoRaiz
+            id_nodo_select = "1"
             arbol1.EndUpdate()
             mantPrev.CrgCmbEstadoCiclo(cmbEstadoCiclo)
             mantPrev.CrgCmbEstadoMp(cmbEstadoMp)
@@ -742,24 +744,32 @@ Public Class FrmMp
             End If
 
             If DST_TAREAS.Tables.Count = 0 Then
-                Dim mant_prev As New MantPreventiva
                 Dim grillas As New FormatoGrillas
 
+                Dim dtEsquema As New DataTable("TareasCiclo")
+                dtEsquema.Columns.Add("ID Tarea", GetType(Integer))
+                dtEsquema.Columns.Add("ID Modulo", GetType(Integer))
+                dtEsquema.Columns.Add("Modulo", GetType(String))
+                dtEsquema.Columns.Add("Descripcion", GetType(String))
+                dtEsquema.Columns.Add("Tiempo Tarea(Min)", GetType(Decimal))
+                dtEsquema.Columns.Add("Observación", GetType(String))
+
                 DST_TAREAS.Tables.Clear()
-                mant_prev.CrgTareasCicloMp(73, 1, 2, DST_TAREAS)
-                If DST_TAREAS.Tables.Count = 0 Then Exit Sub
+                DST_TAREAS.Tables.Add(dtEsquema)
                 grillaTareasCicloMp.DataSource = DST_TAREAS.Tables(0)
-                DST_TAREAS.Tables(0).Rows.Clear()
                 grillas.grillasMp(grillaTareasCicloMp)
             End If
 
             With grillaTareasAdMp
                 For i = 0 To .RowCount - 1
                     If True.Equals(.Rows(i).Cells(0).Value) Then
-                        Dim idTareaObj As Object = .Rows(i).Cells(1).Value
+                        Dim idTareaInt As Integer = Utilitarios.SafeInt(.Rows(i).Cells(1).Value, 0)
+                        Dim idModuloInt As Integer = Math.Max(1, Utilitarios.SafeInt(id_nodo_select, 1))
+                        If idTareaInt <= 0 Then Continue For
+
                         Dim existe As Boolean = False
                         For Each rExist As DataRow In DST_TAREAS.Tables(0).Rows
-                            If rExist.RowState <> DataRowState.Deleted AndAlso Convert.ToString(rExist(0)) = Convert.ToString(idTareaObj) AndAlso Convert.ToString(rExist(1)) = id_nodo_select Then
+                            If rExist.RowState <> DataRowState.Deleted AndAlso Convert.ToString(rExist(0)) = idTareaInt.ToString() AndAlso Convert.ToString(rExist(1)) = idModuloInt.ToString() Then
                                 existe = True
                                 Exit For
                             End If
@@ -767,11 +777,12 @@ Public Class FrmMp
                         If existe Then Continue For
 
                         Dim fila As DataRow = DST_TAREAS.Tables(0).NewRow
-                        fila(1) = id_nodo_select
-                        fila(0) = idTareaObj
+                        fila(0) = idTareaInt
+                        fila(1) = idModuloInt
                         fila(2) = If(arbol1.SelectedNode IsNot Nothing, arbol1.SelectedNode.Text, "")
-                        fila(3) = Convert.ToString(.Rows(i).Cells(5).Value)
-                        fila(4) = 0
+                        fila(3) = Utilitarios.CeldaTexto(.Rows(i), 5)
+                        fila(4) = 0D
+                        fila(5) = String.Empty
                         DST_TAREAS.Tables(0).Rows.Add(fila)
                     End If
                 Next

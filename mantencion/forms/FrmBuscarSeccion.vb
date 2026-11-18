@@ -22,7 +22,7 @@ Public Class FrmBuscarSeccion
         End Try
     End Sub
 
-    Private Sub grilla_buscar_seccion_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grilla_buscar_seccion.CellContentDoubleClick
+    Private Sub grilla_buscar_seccion_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grilla_buscar_seccion.CellDoubleClick
         If e.RowIndex < 0 OrElse grilla_buscar_seccion.Rows(e.RowIndex).IsNewRow OrElse grilla_buscar_seccion.ColumnCount < 2 Then Exit Sub
         Try
             Dim row As DataGridViewRow = grilla_buscar_seccion.Rows(e.RowIndex)

@@ -362,7 +362,7 @@ Public Class FrmAdminAuditoria
 
             If fechaRaw IsNot Nothing AndAlso Not IsDBNull(fechaRaw) Then
                 If TypeOf fechaRaw Is DateTime Then
-                    fecha = CDate(fechaRaw).ToString("dd-MM-yyyy")
+                    fecha = DirectCast(fechaRaw, DateTime).ToString("dd-MM-yyyy")
                 Else
                     Dim dtParsed As DateTime
                     If DateTime.TryParse(fechaRaw.ToString(), dtParsed) Then
@@ -547,33 +547,37 @@ Public Class FrmAdminAuditoria
 
     ' Doble clic interactivo en estadísticas para filtrar la grilla principal
     Private Sub grillaStatSesion_CellDoubleClick(ByVal sender As Object, ByVal e As DataGridViewCellEventArgs) Handles grillaStatSesion.CellDoubleClick
-        If e.RowIndex >= 0 AndAlso grillaStatSesion.Rows(e.RowIndex).Cells(0).Value IsNot Nothing Then
-            Dim sesion As String = grillaStatSesion.Rows(e.RowIndex).Cells(0).Value.ToString()
-            cboFiltroSesion.Text = sesion
+        If e.RowIndex < 0 OrElse e.RowIndex >= grillaStatSesion.RowCount OrElse grillaStatSesion.Rows(e.RowIndex).IsNewRow Then Exit Sub
+        Dim val As String = Utilitarios.CeldaTexto(grillaStatSesion.Rows(e.RowIndex), 0)
+        If Not String.IsNullOrEmpty(val) Then
+            cboFiltroSesion.Text = val
             tabAuditoria.SelectedTab = tabDetalle
         End If
     End Sub
 
     Private Sub grillaStatOperacion_CellDoubleClick(ByVal sender As Object, ByVal e As DataGridViewCellEventArgs) Handles grillaStatOperacion.CellDoubleClick
-        If e.RowIndex >= 0 AndAlso grillaStatOperacion.Rows(e.RowIndex).Cells(0).Value IsNot Nothing Then
-            Dim op As String = grillaStatOperacion.Rows(e.RowIndex).Cells(0).Value.ToString()
-            cboFiltroOperacion.Text = op
+        If e.RowIndex < 0 OrElse e.RowIndex >= grillaStatOperacion.RowCount OrElse grillaStatOperacion.Rows(e.RowIndex).IsNewRow Then Exit Sub
+        Dim val As String = Utilitarios.CeldaTexto(grillaStatOperacion.Rows(e.RowIndex), 0)
+        If Not String.IsNullOrEmpty(val) Then
+            cboFiltroOperacion.Text = val
             tabAuditoria.SelectedTab = tabDetalle
         End If
     End Sub
 
     Private Sub grillaStatPc_CellDoubleClick(ByVal sender As Object, ByVal e As DataGridViewCellEventArgs) Handles grillaStatPc.CellDoubleClick
-        If e.RowIndex >= 0 AndAlso grillaStatPc.Rows(e.RowIndex).Cells(0).Value IsNot Nothing Then
-            Dim pc As String = grillaStatPc.Rows(e.RowIndex).Cells(0).Value.ToString()
-            cboFiltroPc.Text = pc
+        If e.RowIndex < 0 OrElse e.RowIndex >= grillaStatPc.RowCount OrElse grillaStatPc.Rows(e.RowIndex).IsNewRow Then Exit Sub
+        Dim val As String = Utilitarios.CeldaTexto(grillaStatPc.Rows(e.RowIndex), 0)
+        If Not String.IsNullOrEmpty(val) Then
+            cboFiltroPc.Text = val
             tabAuditoria.SelectedTab = tabDetalle
         End If
     End Sub
 
     Private Sub grillaStatTabla_CellDoubleClick(ByVal sender As Object, ByVal e As DataGridViewCellEventArgs) Handles grillaStatTabla.CellDoubleClick
-        If e.RowIndex >= 0 AndAlso grillaStatTabla.Rows(e.RowIndex).Cells(0).Value IsNot Nothing Then
-            Dim tabla As String = grillaStatTabla.Rows(e.RowIndex).Cells(0).Value.ToString()
-            cboFiltroTabla.Text = tabla
+        If e.RowIndex < 0 OrElse e.RowIndex >= grillaStatTabla.RowCount OrElse grillaStatTabla.Rows(e.RowIndex).IsNewRow Then Exit Sub
+        Dim val As String = Utilitarios.CeldaTexto(grillaStatTabla.Rows(e.RowIndex), 0)
+        If Not String.IsNullOrEmpty(val) Then
+            cboFiltroTabla.Text = val
             tabAuditoria.SelectedTab = tabDetalle
         End If
     End Sub

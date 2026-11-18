@@ -347,7 +347,7 @@ Public Class FrmAdminUsuarios
         Me.Close()
     End Sub
 
-    Private Sub grillaUsuarios_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaUsuarios.CellDoubleClick, grillaUsuarios.CellContentDoubleClick
+    Private Sub grillaUsuarios_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaUsuarios.CellDoubleClick
         If e.RowIndex < 0 OrElse e.RowIndex >= grillaUsuarios.RowCount Then Exit Sub
         Try
             Dim row As DataGridViewRow = grillaUsuarios.Rows(e.RowIndex)

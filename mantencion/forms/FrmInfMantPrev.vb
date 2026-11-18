@@ -238,7 +238,7 @@ Public Class FrmInfMantPrev
         End Try
     End Sub
 
-    Private Sub grillaInfMant_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaInfMant.CellContentDoubleClick
+    Private Sub grillaInfMant_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaInfMant.CellDoubleClick
         Dim mant_prev As New MantPreventiva
         Dim formato_grid As New FormatoGrillas
         Try
@@ -266,7 +266,7 @@ Public Class FrmInfMantPrev
         If opcTipoMp.Checked Then ActualizarVisibilidadFiltros()
     End Sub
 
-    Private Sub grillaDetalleCicloMp_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaDetalleCicloMp.CellContentDoubleClick
+    Private Sub grillaDetalleCicloMp_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaDetalleCicloMp.CellDoubleClick
         Dim mant_prev As New MantPreventiva
         Dim formato_grid As New FormatoGrillas
         Dim DST2 As New DataSet

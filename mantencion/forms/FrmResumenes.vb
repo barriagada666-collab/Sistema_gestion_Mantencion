@@ -785,7 +785,7 @@ Public Class FrmResumenes
         End If
     End Sub
 
-    Private Sub grillaOtRecibidaPor_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtRecibidaPor.CellContentDoubleClick, grillaOtRecibidaPor.CellDoubleClick
+    Private Sub grillaOtRecibidaPor_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtRecibidaPor.CellDoubleClick
         If e.RowIndex < 0 OrElse e.RowIndex >= grillaOtRecibidaPor.RowCount Then Exit Sub
         Dim row = grillaOtRecibidaPor.Rows(e.RowIndex)
         If row Is Nothing OrElse row.IsNewRow Then Exit Sub
@@ -813,7 +813,7 @@ Public Class FrmResumenes
         End If
     End Sub
 
-    Private Sub grillaOtCerradaPorTec_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtCerradaPorTec.CellContentDoubleClick, grillaOtCerradaPorTec.CellDoubleClick
+    Private Sub grillaOtCerradaPorTec_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtCerradaPorTec.CellDoubleClick
         If e.RowIndex < 0 OrElse e.RowIndex >= grillaOtCerradaPorTec.RowCount Then Exit Sub
         Dim row = grillaOtCerradaPorTec.Rows(e.RowIndex)
         If row Is Nothing OrElse row.IsNewRow Then Exit Sub
@@ -833,7 +833,7 @@ Public Class FrmResumenes
         End Try
     End Sub
 
-    Private Sub grillaOtPorTipoFalla_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtPorTipoFalla.CellContentDoubleClick, grillaOtPorTipoFalla.CellDoubleClick
+    Private Sub grillaOtPorTipoFalla_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtPorTipoFalla.CellDoubleClick
         If e.RowIndex < 0 OrElse e.RowIndex >= grillaOtPorTipoFalla.RowCount Then Exit Sub
         Dim row = grillaOtPorTipoFalla.Rows(e.RowIndex)
         If row Is Nothing OrElse row.IsNewRow Then Exit Sub
@@ -853,7 +853,7 @@ Public Class FrmResumenes
         End Try
     End Sub
 
-    Private Sub grillaOtPorTurno_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtPorTurno.CellContentDoubleClick, grillaOtPorTurno.CellDoubleClick
+    Private Sub grillaOtPorTurno_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtPorTurno.CellDoubleClick
         If e.RowIndex < 0 OrElse e.RowIndex >= grillaOtPorTurno.RowCount Then Exit Sub
         Dim row = grillaOtPorTurno.Rows(e.RowIndex)
         If row Is Nothing OrElse row.IsNewRow Then Exit Sub
@@ -873,7 +873,7 @@ Public Class FrmResumenes
         End Try
     End Sub
 
-    Private Sub grillaOtPorDia_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtPorDia.CellContentDoubleClick, grillaOtPorDia.CellDoubleClick
+    Private Sub grillaOtPorDia_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaOtPorDia.CellDoubleClick
         If e.RowIndex < 0 OrElse e.RowIndex >= grillaOtPorDia.RowCount Then Exit Sub
         Dim row = grillaOtPorDia.Rows(e.RowIndex)
         If row Is Nothing OrElse row.IsNewRow Then Exit Sub
@@ -894,7 +894,7 @@ Public Class FrmResumenes
         End Try
     End Sub
 
-    Private Sub grillaTotalesPeriodo_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaTotalesPeriodo.CellContentDoubleClick, grillaTotalesPeriodo.CellDoubleClick
+    Private Sub grillaTotalesPeriodo_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaTotalesPeriodo.CellDoubleClick
         If e.RowIndex < 0 OrElse e.RowIndex >= grillaTotalesPeriodo.RowCount Then Exit Sub
         Dim row = grillaTotalesPeriodo.Rows(e.RowIndex)
         If row Is Nothing OrElse row.IsNewRow Then Exit Sub

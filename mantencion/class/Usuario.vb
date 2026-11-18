@@ -1,6 +1,8 @@
 Imports System.Data.SqlClient
 
 Public Class Usuario
+    Public Shared PermisoIngresarOt As Boolean = False
+    Public Shared PermisoModificarOt As Boolean = False
     Public Shared PermisoGuardarOt As Boolean = False
     Public Shared PermisoEliminarOt As Boolean = False
     Public Shared PermisoAnularOt As Boolean = False
@@ -23,6 +25,8 @@ Public Class Usuario
         RutUsuarioActual = String.Empty
         PerfilActual = String.Empty
         EsAdministrador = False
+        PermisoIngresarOt = False
+        PermisoModificarOt = False
         PermisoGuardarOt = False
         PermisoEliminarOt = False
         PermisoAnularOt = False
@@ -682,7 +686,9 @@ Public Class Usuario
             principal.InformesToolStripMenuItem.Enabled = ObtenerPermisoPorId(mapa, 3, False)
             principal.MantenedorToolStripMenuItem.Enabled = ObtenerPermisoPorId(mapa, 4, False)
 
-            PermisoGuardarOt = ObtenerPermisoPorId(mapa, 5, False) OrElse ObtenerPermisoPorId(mapa, 6, False)
+            PermisoIngresarOt = ObtenerPermisoPorId(mapa, 5, False)
+            PermisoModificarOt = ObtenerPermisoPorId(mapa, 6, False)
+            PermisoGuardarOt = PermisoIngresarOt OrElse PermisoModificarOt
             PermisoEliminarOt = ObtenerPermisoPorId(mapa, 7, False)
             PermisoAnularOt = ObtenerPermisoPorId(mapa, 8, False)
 

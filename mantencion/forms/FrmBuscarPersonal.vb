@@ -56,7 +56,7 @@ Public Class FrmBuscarPersonal
         nombre_form = ""
     End Sub
 
-    Private Sub grillaPersonal_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaPersonal.CellContentDoubleClick
+    Private Sub grillaPersonal_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaPersonal.CellDoubleClick
         If e.RowIndex < 0 OrElse grillaPersonal.Rows(e.RowIndex).IsNewRow Then Exit Sub
         Try
             Dim personal As New Personal

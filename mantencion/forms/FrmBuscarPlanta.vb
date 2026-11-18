@@ -20,7 +20,7 @@ Public Class FrmBuscarPlanta
         End Try
     End Sub
 
-    Private Sub grillaPlanta_CellContentDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaPlanta.CellContentDoubleClick
+    Private Sub grillaPlanta_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles grillaPlanta.CellDoubleClick
         If e.RowIndex < 0 OrElse grillaPlanta.Rows(e.RowIndex).IsNewRow OrElse grillaPlanta.ColumnCount < 2 Then Exit Sub
         Try
             FrmPlantas.txtCodPlanta.Text = Convert.ToString(grillaPlanta.Rows(e.RowIndex).Cells(0).Value)

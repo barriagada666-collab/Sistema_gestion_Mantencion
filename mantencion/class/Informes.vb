@@ -273,15 +273,15 @@ Public Class Informes
             Next
             '---------------------------------------------------------------------------------------
 
-            fecha_inicio = CDate(grilla_ciclos_mp.Rows(0).Cells(colIniIdx).Value).Date
-            fecha_fin = CDate(grilla_ciclos_mp.Rows(0).Cells(colFinIdx).Value).Date
+            fecha_inicio = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(0).Cells(colIniIdx).Value).Date
+            fecha_fin = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(0).Cells(colFinIdx).Value).Date
             For i = 1 To grilla_ciclos_mp.RowCount - 1
                 If IsDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value) Then
-                    Dim fI As DateTime = CDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
+                    Dim fI As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
                     If fI < fecha_inicio Then fecha_inicio = fI
                 End If
                 If IsDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value) Then
-                    Dim fF As DateTime = CDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date
+                    Dim fF As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date
                     If fF > fecha_fin Then fecha_fin = fF
                 End If
             Next
@@ -303,8 +303,9 @@ Public Class Informes
                     cont_fila = cont_fila + 1
                     Continue For
                 End If
-                fecha_ini = CDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
-                num_mant = Math.Max(1, CInt(DateDiff(DateInterval.Day, fecha_ini, CDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date) + 1))
+                fecha_ini = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
+                Dim fechaFinRow As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value, fecha_ini).Date
+                num_mant = Math.Max(1, CInt(DateDiff(DateInterval.Day, fecha_ini, fechaFinRow) + 1))
 
                 For j = 0 To grilla_grafico.Columns.Count - 1
                     If fecha_ini.ToString("yyyyMMdd") = grilla_grafico.Columns(j).Name OrElse fecha_ini.ToString("dd-MM-yy") = grilla_grafico.Columns(j).Name Then
@@ -418,15 +419,15 @@ Public Class Informes
             Next
             '---------------------------------------------------------------------------------------
 
-            fecha_inicio = CDate(grilla_ciclos_mp.Rows(0).Cells(colIniIdx).Value).Date
-            fecha_fin = CDate(grilla_ciclos_mp.Rows(0).Cells(colFinIdx).Value).Date
+            fecha_inicio = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(0).Cells(colIniIdx).Value).Date
+            fecha_fin = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(0).Cells(colFinIdx).Value).Date
             For i = 1 To grilla_ciclos_mp.RowCount - 1
                 If IsDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value) Then
-                    Dim fI As DateTime = CDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
+                    Dim fI As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
                     If fI < fecha_inicio Then fecha_inicio = fI
                 End If
                 If IsDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value) Then
-                    Dim fF As DateTime = CDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date
+                    Dim fF As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date
                     If fF > fecha_fin Then fecha_fin = fF
                 End If
             Next
@@ -448,8 +449,9 @@ Public Class Informes
                     cont_fila = cont_fila + 1
                     Continue For
                 End If
-                fecha_ini = CDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
-                num_mant = Math.Max(1, CInt(DateDiff(DateInterval.Day, fecha_ini, CDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date) + 1))
+                fecha_ini = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
+                Dim fechaFinRow As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value, fecha_ini).Date
+                num_mant = Math.Max(1, CInt(DateDiff(DateInterval.Day, fecha_ini, fechaFinRow) + 1))
 
                 For j = 0 To grilla_grafico.Columns.Count - 1
                     Dim colDate As DateTime
@@ -538,15 +540,15 @@ Public Class Informes
             Next
             '---------------------------------------------------------------------------------------
 
-            fecha_inicio = CDate(grilla_ciclos_mp.Rows(0).Cells(3).Value).Date
-            fecha_fin = CDate(grilla_ciclos_mp.Rows(0).Cells(4).Value).Date
+            fecha_inicio = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(0).Cells(3).Value).Date
+            fecha_fin = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(0).Cells(4).Value).Date
             For i = 1 To grilla_ciclos_mp.RowCount - 1
                 If IsDate(grilla_ciclos_mp.Rows(i).Cells(3).Value) Then
-                    Dim fI As DateTime = CDate(grilla_ciclos_mp.Rows(i).Cells(3).Value).Date
+                    Dim fI As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(3).Value).Date
                     If fI < fecha_inicio Then fecha_inicio = fI
                 End If
                 If IsDate(grilla_ciclos_mp.Rows(i).Cells(4).Value) Then
-                    Dim fF As DateTime = CDate(grilla_ciclos_mp.Rows(i).Cells(4).Value).Date
+                    Dim fF As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(4).Value).Date
                     If fF > fecha_fin Then fecha_fin = fF
                 End If
             Next
@@ -568,8 +570,9 @@ Public Class Informes
                     cont_fila = cont_fila + 1
                     Continue For
                 End If
-                fecha_ini = CDate(grilla_ciclos_mp.Rows(i).Cells(3).Value).Date
-                num_mant = Math.Max(1, CInt(DateDiff(DateInterval.Day, fecha_ini, CDate(grilla_ciclos_mp.Rows(i).Cells(4).Value).Date) + 1))
+                fecha_ini = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(3).Value).Date
+                Dim fechaFinRow As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(4).Value, fecha_ini).Date
+                num_mant = Math.Max(1, CInt(DateDiff(DateInterval.Day, fecha_ini, fechaFinRow) + 1))
 
                 For j = 0 To grilla_grafico.Columns.Count - 1
                     Dim colDate As DateTime

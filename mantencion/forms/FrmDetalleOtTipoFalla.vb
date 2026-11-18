@@ -1,7 +1,7 @@
 Public Class FrmDetalleOtTipoFalla
     Public personal As String = ""
-    Public fecha_inicio As DateTime
-    Public fecha_termino As DateTime
+    Public fecha_inicio As DateTime = DateTime.Today.AddDays(-30)
+    Public fecha_termino As DateTime = DateTime.Today
     Public opcion As Integer = 0
     Public tipo_falla As String = ""
     Public turno As String = ""
@@ -19,7 +19,9 @@ Public Class FrmDetalleOtTipoFalla
             Me.Cursor = Cursors.WaitCursor
             grillaOtTipoFalla.SuspendLayout()
             Utilitarios.AplicarTemaModerno(Me)
-            OT.CrgDetalleResumenOt(personal, fecha_inicio, fecha_termino, opcion, tipo_falla, turno, fecha, estado, nodo_padre, DST_OT_TIPO_FALLA)
+            If opcion > 0 Then
+                OT.CrgDetalleResumenOt(personal, fecha_inicio, fecha_termino, opcion, tipo_falla, turno, fecha, estado, nodo_padre, DST_OT_TIPO_FALLA)
+            End If
             If DST_OT_TIPO_FALLA.Tables.Count > 0 Then
                 grillaOtTipoFalla.DataSource = DST_OT_TIPO_FALLA.Tables(0)
                 formato_grid.grillasOT(grillaOtTipoFalla)

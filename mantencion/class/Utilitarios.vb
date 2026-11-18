@@ -1625,4 +1625,140 @@ Public Class Utilitarios
         Catch
         End Try
     End Sub
+
+    ''' <summary>
+    ''' Intenta convertir de forma segura un objeto o texto a Entero (sin excepciones por cadenas vacías o nulas).
+    ''' </summary>
+    Public Shared Function TrySafeInt(ByVal valor As Object, ByRef resultado As Integer) As Boolean
+        resultado = 0
+        If valor Is Nothing OrElse IsDBNull(valor) Then Return False
+        If TypeOf valor Is Integer Then
+            resultado = DirectCast(valor, Integer)
+            Return True
+        End If
+        Dim s As String = valor.ToString().Trim()
+        If String.IsNullOrEmpty(s) Then Return False
+        If Integer.TryParse(s, Globalization.NumberStyles.Integer, Globalization.CultureInfo.CurrentCulture, resultado) Then
+            Return True
+        End If
+        Dim dec As Decimal
+        If Decimal.TryParse(s, Globalization.NumberStyles.Any, Globalization.CultureInfo.InvariantCulture, dec) AndAlso
+           dec >= Integer.MinValue AndAlso dec <= Integer.MaxValue AndAlso dec = Math.Truncate(dec) Then
+            resultado = Convert.ToInt32(dec)
+            Return True
+        End If
+        Return False
+    End Function
+
+    ''' <summary>
+    ''' Convierte de forma segura un objeto o texto a Entero devolviendo el valor por defecto si es inválido.
+    ''' </summary>
+    Public Shared Function SafeInt(ByVal valor As Object, Optional ByVal defecto As Integer = 0) As Integer
+        Dim res As Integer = 0
+        If TrySafeInt(valor, res) Then Return res
+        Return defecto
+    End Function
+
+    ''' <summary>
+    ''' Intenta convertir de forma segura un objeto o texto a Double admitiendo cultura local e invariante.
+    ''' </summary>
+    Public Shared Function TrySafeDouble(ByVal valor As Object, ByRef resultado As Double) As Boolean
+        resultado = 0.0
+        If valor Is Nothing OrElse IsDBNull(valor) Then Return False
+        If TypeOf valor Is Double Then
+            resultado = DirectCast(valor, Double)
+            Return True
+        End If
+        If TypeOf valor Is Decimal Then
+            resultado = Convert.ToDouble(DirectCast(valor, Decimal))
+            Return True
+        End If
+        If TypeOf valor Is Integer Then
+            resultado = Convert.ToDouble(DirectCast(valor, Integer))
+            Return True
+        End If
+        Dim s As String = valor.ToString().Trim()
+        If String.IsNullOrEmpty(s) Then Return False
+        If Double.TryParse(s, Globalization.NumberStyles.Any, Globalization.CultureInfo.CurrentCulture, resultado) Then Return True
+        Return Double.TryParse(s, Globalization.NumberStyles.Any, Globalization.CultureInfo.InvariantCulture, resultado)
+    End Function
+
+    ''' <summary>
+    ''' Convierte de forma segura un objeto o texto a Double devolviendo el valor por defecto si es inválido.
+    ''' </summary>
+    Public Shared Function SafeDouble(ByVal valor As Object, Optional ByVal defecto As Double = 0.0) As Double
+        Dim res As Double = 0.0
+        If TrySafeDouble(valor, res) Then Return res
+        Return defecto
+    End Function
+
+    ''' <summary>
+    ''' Acota un DateTime al rango válido de SQL Server DATETIME (>= 1753-01-01).
+    ''' </summary>
+    Public Shared Function SafeSqlDateTime(ByVal fecha As DateTime) As DateTime
+        Dim sqlMin As New DateTime(1753, 1, 1)
+        If fecha < sqlMin Then Return DateTime.Today
+        Return fecha
+    End Function
+
+    ''' <summary>
+    ''' Devuelve el inicio del día (00:00:00) dentro del rango válido de SQL Server DATETIME.
+    ''' </summary>
+    Public Shared Function SafeSqlDateStart(ByVal fecha As DateTime) As DateTime
+        Return SafeSqlDateTime(fecha).Date
+    End Function
+
+    ''' <summary>
+    ''' Devuelve el fin del día (23:59:59) dentro del rango válido de SQL Server DATETIME.
+    ''' </summary>
+    Public Shared Function SafeSqlDateEnd(ByVal fecha As DateTime) As DateTime
+        Return SafeSqlDateTime(fecha).Date.AddHours(23).AddMinutes(59).AddSeconds(59)
+    End Function
+
+    ''' <summary>
+    ''' Normaliza un componente horario a la fecha base SQL Server 1900-01-01 para columnas de hora.
+    ''' </summary>
+    Public Shared Function SafeSqlTime(ByVal hora As DateTime) As DateTime
+        Return New DateTime(1900, 1, 1, hora.Hour, hora.Minute, hora.Second)
+    End Function
+
+    ''' <summary>
+    ''' Agrega un parámetro SqlDbType.DateTime tipado y acotado al rango SQL válido (>= 1753-01-01).
+    ''' Evita errores de conversión NVARCHAR -> DATETIME dependientes del idioma/DATEFORMAT.
+    ''' </summary>
+    Public Shared Sub AgregarParametroFecha(ByVal cmd As SqlCommand, ByVal nombre As String, ByVal valor As DateTime)
+        If cmd Is Nothing OrElse String.IsNullOrEmpty(nombre) Then Exit Sub
+        Dim par As New SqlParameter(nombre, SqlDbType.DateTime)
+        par.Value = SafeSqlDateTime(valor)
+        cmd.Parameters.Add(par)
+    End Sub
+
+    ''' <summary>
+    ''' Parsea de forma segura un DateTime desde objetos/cadenas/DataRowView sin lanzar InvalidCastException.
+    ''' </summary>
+    Public Shared Function ObtenerFechaSegura(ByVal valor As Object, Optional ByVal defecto As DateTime = Nothing) As DateTime
+        Dim fallback As DateTime = If(defecto = DateTime.MinValue, DateTime.Today, SafeSqlDateTime(defecto))
+        If valor Is Nothing OrElse IsDBNull(valor) Then Return fallback
+        If TypeOf valor Is DateTime Then Return SafeSqlDateTime(DirectCast(valor, DateTime))
+        Dim parsed As DateTime
+        If DateTime.TryParse(valor.ToString().Trim(), Globalization.CultureInfo.CurrentCulture, Globalization.DateTimeStyles.None, parsed) Then
+            Return SafeSqlDateTime(parsed)
+        End If
+        If DateTime.TryParse(valor.ToString().Trim(), Globalization.CultureInfo.InvariantCulture, Globalization.DateTimeStyles.None, parsed) Then
+            Return SafeSqlDateTime(parsed)
+        End If
+        Return fallback
+    End Function
+
+    ''' <summary>
+    ''' Lee el texto recortado de una celda de DataGridView tolerando índices fuera de rango, Nothing y DBNull.
+    ''' </summary>
+    Public Shared Function CeldaTexto(ByVal fila As DataGridViewRow, ByVal indiceCol As Integer) As String
+        If fila Is Nothing OrElse fila.IsNewRow OrElse indiceCol < 0 OrElse indiceCol >= fila.Cells.Count Then
+            Return String.Empty
+        End If
+        Dim v As Object = fila.Cells(indiceCol).Value
+        If v Is Nothing OrElse IsDBNull(v) Then Return String.Empty
+        Return v.ToString().Trim()
+    End Function
 End Class
