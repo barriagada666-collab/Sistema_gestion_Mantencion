@@ -9,12 +9,15 @@ Imports System.Windows.Forms
 Public Class FrmInfOtCR
 
     Private Sub FrmInfOtCR_Load(ByVal sender As Object, ByVal e As EventArgs) Handles MyBase.Load
+        Me.DoubleBuffered = True
+        Me.SuspendLayout()
         Try
-            Me.DoubleBuffered = True
             Utilitarios.AplicarTemaModerno(Me)
             Me.CRV_INF_OT.RefreshReport()
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Visor de Informes", True, Me)
+        Finally
+            Me.ResumeLayout(True)
         End Try
     End Sub
 

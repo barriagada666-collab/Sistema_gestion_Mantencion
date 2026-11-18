@@ -359,7 +359,7 @@ Partial Class FrmAdminAuditoria
         '
         'btn_exp_excel
         '
-        Me.btn_exp_excel.BackColor = System.Drawing.Color.FromArgb(16, 120, 80)
+        Me.btn_exp_excel.BackColor = System.Drawing.Color.FromArgb(2, 94, 135)
         Me.btn_exp_excel.Cursor = System.Windows.Forms.Cursors.Hand
         Me.btn_exp_excel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btn_exp_excel.Font = New System.Drawing.Font("Calibri", 8.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -496,7 +496,7 @@ Partial Class FrmAdminAuditoria
         '
         Me.lblTitKpi2.AutoSize = True
         Me.lblTitKpi2.Font = New System.Drawing.Font("Calibri", 8.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblTitKpi2.ForeColor = System.Drawing.Color.FromArgb(16, 120, 80)
+        Me.lblTitKpi2.ForeColor = System.Drawing.Color.FromArgb(1, 145, 179)
         Me.lblTitKpi2.Location = New System.Drawing.Point(6, 4)
         Me.lblTitKpi2.Name = "lblTitKpi2"
         Me.lblTitKpi2.Size = New System.Drawing.Size(76, 13)
@@ -507,7 +507,7 @@ Partial Class FrmAdminAuditoria
         '
         Me.lblKpiInserciones.AutoSize = True
         Me.lblKpiInserciones.Font = New System.Drawing.Font("Calibri", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblKpiInserciones.ForeColor = System.Drawing.Color.FromArgb(16, 120, 80)
+        Me.lblKpiInserciones.ForeColor = System.Drawing.Color.FromArgb(1, 145, 179)
         Me.lblKpiInserciones.Location = New System.Drawing.Point(6, 23)
         Me.lblKpiInserciones.Name = "lblKpiInserciones"
         Me.lblKpiInserciones.Size = New System.Drawing.Size(52, 19)
@@ -710,7 +710,7 @@ Partial Class FrmAdminAuditoria
         '
         'pnlStatusAuditoria
         '
-        Me.pnlStatusAuditoria.BackColor = System.Drawing.Color.FromArgb(235, 240, 242)
+        Me.pnlStatusAuditoria.BackColor = System.Drawing.Color.FromArgb(221, 231, 232)
         Me.pnlStatusAuditoria.Controls.Add(Me.lblEstadoRegistros)
         Me.pnlStatusAuditoria.Controls.Add(Me.lblEstadoSeleccion)
         Me.pnlStatusAuditoria.Dock = System.Windows.Forms.DockStyle.Bottom
@@ -931,7 +931,7 @@ Partial Class FrmAdminAuditoria
         '
         Me.lblTipStats.AutoSize = True
         Me.lblTipStats.Font = New System.Drawing.Font("Segoe UI", 8.0!, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblTipStats.ForeColor = System.Drawing.Color.FromArgb(100, 116, 139)
+        Me.lblTipStats.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105)
         Me.lblTipStats.Location = New System.Drawing.Point(320, 12)
         Me.lblTipStats.Name = "lblTipStats"
         Me.lblTipStats.Size = New System.Drawing.Size(370, 13)
@@ -941,7 +941,7 @@ Partial Class FrmAdminAuditoria
         'btnExpEstadisticas
         '
         Me.btnExpEstadisticas.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnExpEstadisticas.BackColor = System.Drawing.Color.FromArgb(16, 120, 80)
+        Me.btnExpEstadisticas.BackColor = System.Drawing.Color.FromArgb(2, 94, 135)
         Me.btnExpEstadisticas.Cursor = System.Windows.Forms.Cursors.Hand
         Me.btnExpEstadisticas.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnExpEstadisticas.Font = New System.Drawing.Font("Calibri", 8.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))

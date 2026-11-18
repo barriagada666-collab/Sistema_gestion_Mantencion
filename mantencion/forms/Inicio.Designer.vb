@@ -126,7 +126,7 @@ Partial Class Inicio
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
-        Me.BackColor = System.Drawing.Color.FromArgb(242, 246, 248)
+        Me.BackColor = System.Drawing.Color.FromArgb(242, 246, 246)
         Me.BackgroundImage = Global.mantencion.My.Resources.Resources.inicio_gear_bg
         Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
         Me.ClientSize = New System.Drawing.Size(560, 312)

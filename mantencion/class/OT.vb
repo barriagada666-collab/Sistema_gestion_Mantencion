@@ -1315,9 +1315,32 @@ Public Class OT
         Dim filaFin As Integer = 10 + totalFilas - 1
         Dim rangoDatos As Excel.Range = worksheet.Range("A10:O" & filaFin.ToString())
         rangoDatos.Value2 = datos
+        Try
+            rangoDatos.WrapText = True
+            rangoDatos.VerticalAlignment = Excel.XlVAlign.xlVAlignTop
+            rangoDatos.Font.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorTextoPrincipal)
+        Catch
+        End Try
 
         Dim rangoBordes As Excel.Range = worksheet.Range("A10:O" & (filaFin + 1).ToString())
         rangoBordes.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
+        Try
+            rangoBordes.Borders.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorBordeGrilla)
+        Catch
+        End Try
+
+        ' Ajustar configuración horizontal para que exportaciones extensas ocupen 100% del ancho de página sin encoger verticalmente
+        Try
+            Dim ps As Excel.PageSetup = worksheet.PageSetup
+            ps.Orientation = Excel.XlPageOrientation.xlLandscape
+            ps.PaperSize = Excel.XlPaperSize.xlPaperLetter
+            ps.Zoom = False
+            ps.FitToPagesWide = 1
+            ps.FitToPagesTall = False
+            ps.CenterHorizontally = True
+            ps.PrintTitleRows = "$1:$9"
+        Catch
+        End Try
     End Sub
 
     Public Sub exportarInfOtExcel(ByRef grilla As DataGridView, ByVal fecha_inicio As DateTime, ByVal fecha_fin As DateTime, ByVal planta As String)

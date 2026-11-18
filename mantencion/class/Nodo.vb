@@ -6,16 +6,19 @@ Imports System.Windows.Forms
 
 Public Class Nodo
 
+    Private Shared ReadOnly _cacheLock As New Object()
     Private Shared _cacheRaizActivos As TreeNode = Nothing
     Private Shared _cacheRaizTodos As TreeNode = Nothing
     Private Shared _cacheRaizMantSi As TreeNode = Nothing
     Private Shared _cacheAutocompletado As AutoCompleteStringCollection = Nothing
 
     Public Shared Sub InvalidarCacheNodos()
-        _cacheRaizActivos = Nothing
-        _cacheRaizTodos = Nothing
-        _cacheRaizMantSi = Nothing
-        _cacheAutocompletado = Nothing
+        SyncLock _cacheLock
+            _cacheRaizActivos = Nothing
+            _cacheRaizTodos = Nothing
+            _cacheRaizMantSi = Nothing
+            _cacheAutocompletado = Nothing
+        End SyncLock
     End Sub
 
     Private Shared Sub CopiarHijos(ByVal origen As TreeNode, ByVal destino As TreeNode)
@@ -25,6 +28,23 @@ Public Class Nodo
             listaHijos.Add(DirectCast(hijo.Clone(), TreeNode))
         Next
         destino.Nodes.AddRange(listaHijos.ToArray())
+    End Sub
+
+    ''' <summary>
+    ''' Precalienta en segundo plano las cachés principales del árbol de nodos y personal para acelerar la apertura de formularios MDI.
+    ''' </summary>
+    Public Shared Sub PrecalentarCachesAsync()
+        System.Threading.Tasks.Task.Run(Sub()
+                                            Try
+                                                Dim nd As New Nodo()
+                                                Dim dummy As New TreeNode("Cambiaso Hnos S.A.") With {.Name = "1"}
+                                                nd.CRG_NODO_HIJO(dummy)
+                                                Dim dummyMant As New TreeNode("Cambiaso Hnos S.A.") With {.Name = "1"}
+                                                nd.CRG_NODO_MANT_SI(dummyMant)
+                                                OT.ObtenerColeccionAutocompletarPersonal()
+                                            Catch
+                                            End Try
+                                        End Sub)
     End Sub
 
     Public Function CRG_NODO(ByVal id_nodo As Integer) As DataSet
@@ -68,24 +88,87 @@ Public Class Nodo
     Public Sub CRG_NODO_HIJO(ByRef nodo As TreeNode)
         If nodo Is Nothing Then Exit Sub
 
-        If nodo.Name = "1" AndAlso _cacheRaizActivos IsNot Nothing Then
-            CopiarHijos(_cacheRaizActivos, nodo)
-            Exit Sub
-        End If
+        SyncLock _cacheLock
+            If nodo.Name = "1" AndAlso _cacheRaizActivos IsNot Nothing Then
+                CopiarHijos(_cacheRaizActivos, nodo)
+                Exit Sub
+            End If
+        End SyncLock
 
         Dim conexion As New Conexion
         Try
             Using cnx As New SqlConnection
                 conexion.Conectar(cnx)
                 Dim visitados As New HashSet(Of Integer)()
-                CargarHijosConConexion(nodo, cnx, 1, visitados)
+                If Not CargarArbolEnUnViaje(nodo, cnx, 1, visitados) Then
+                    CargarHijosConConexion(nodo, cnx, 1, visitados)
+                End If
                 If nodo.Name = "1" Then
-                    _cacheRaizActivos = DirectCast(nodo.Clone(), TreeNode)
+                    Dim clon As TreeNode = DirectCast(nodo.Clone(), TreeNode)
+                    SyncLock _cacheLock
+                        _cacheRaizActivos = clon
+                    End SyncLock
                 End If
             End Using
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Cargar Hijos de Nodo")
         End Try
+    End Sub
+
+    Private Function CargarArbolEnUnViaje(ByVal nodoRaiz As TreeNode, ByVal cnx As SqlConnection, ByVal modo As Integer, ByVal visitados As HashSet(Of Integer)) As Boolean
+        If nodoRaiz Is Nothing OrElse cnx Is Nothing Then Return False
+        Dim idRaiz As Integer = 0
+        If Not Integer.TryParse(If(nodoRaiz.Name, String.Empty).Trim(), idRaiz) Then Return False
+
+        Try
+            Dim sql As String
+            Select Case modo
+                Case 2
+                    sql = "SELECT idnodo, ISNULL(nodo_padre, 0) AS nodo_padre, desc_nodo FROM nodo ORDER BY desc_nodo"
+                Case 3
+                    sql = "SELECT idnodo, ISNULL(nodo_padre, 0) AS nodo_padre, desc_nodo FROM nodo WHERE estado_nodo = 1 AND aplica_mantencion = 1 ORDER BY desc_nodo"
+                Case Else
+                    sql = "SELECT idnodo, ISNULL(nodo_padre, 0) AS nodo_padre, desc_nodo FROM nodo WHERE estado_nodo = 1 ORDER BY desc_nodo"
+            End Select
+
+            Dim mapaHijos As New Dictionary(Of Integer, List(Of (Id As Integer, Desc As String)))()
+            Using cmd As New SqlCommand(sql, cnx)
+                Using dr As SqlDataReader = cmd.ExecuteReader()
+                    While dr.Read()
+                        Dim idHijo As Integer = If(IsDBNull(dr(0)), 0, Convert.ToInt32(dr(0)))
+                        Dim idPadre As Integer = If(IsDBNull(dr(1)), 0, Convert.ToInt32(dr(1)))
+                        Dim desc As String = If(IsDBNull(dr(2)), String.Empty, dr(2).ToString())
+                        Dim lista As List(Of (Id As Integer, Desc As String)) = Nothing
+                        If Not mapaHijos.TryGetValue(idPadre, lista) Then
+                            lista = New List(Of (Id As Integer, Desc As String))()
+                            mapaHijos(idPadre) = lista
+                        End If
+                        lista.Add((idHijo, desc))
+                    End While
+                End Using
+            End Using
+
+            PoblarSubArbolEnMemoria(nodoRaiz, idRaiz, mapaHijos, visitados)
+            Return True
+        Catch
+            nodoRaiz.Nodes.Clear()
+            If visitados IsNot Nothing Then visitados.Clear()
+            Return False
+        End Try
+    End Function
+
+    Private Sub PoblarSubArbolEnMemoria(ByVal nodoPadre As TreeNode, ByVal idPadre As Integer, ByVal mapaHijos As Dictionary(Of Integer, List(Of (Id As Integer, Desc As String))), ByVal visitados As HashSet(Of Integer))
+        If visitados IsNot Nothing AndAlso Not visitados.Add(idPadre) Then Exit Sub
+        Dim hijos As List(Of (Id As Integer, Desc As String)) = Nothing
+        If Not mapaHijos.TryGetValue(idPadre, hijos) OrElse hijos.Count = 0 Then Exit Sub
+
+        Dim listaNodos As New List(Of TreeNode)(hijos.Count)
+        For Each h In hijos
+            Dim tn As New TreeNode(h.Desc) With {.Name = h.Id.ToString()}
+            PoblarSubArbolEnMemoria(tn, h.Id, mapaHijos, visitados)
+            listaNodos.Add(tn)
+        Next
+        nodoPadre.Nodes.AddRange(listaNodos.ToArray())
     End Sub
 
     Private Sub CargarHijosConConexion(ByVal nodoPadre As TreeNode, ByVal cnx As SqlConnection, ByVal modo As Integer, ByVal visitados As HashSet(Of Integer))
@@ -199,19 +282,26 @@ Public Class Nodo
     Public Sub CRG_NODO_HIJO_TODOS(ByRef nodo As TreeNode)
         If nodo Is Nothing Then Exit Sub
 
-        If nodo.Name = "1" AndAlso _cacheRaizTodos IsNot Nothing Then
-            CopiarHijos(_cacheRaizTodos, nodo)
-            Exit Sub
-        End If
+        SyncLock _cacheLock
+            If nodo.Name = "1" AndAlso _cacheRaizTodos IsNot Nothing Then
+                CopiarHijos(_cacheRaizTodos, nodo)
+                Exit Sub
+            End If
+        End SyncLock
 
         Dim conexion As New Conexion
         Try
             Using cnx As New SqlConnection
                 conexion.Conectar(cnx)
                 Dim visitados As New HashSet(Of Integer)()
-                CargarHijosConConexion(nodo, cnx, 2, visitados)
+                If Not CargarArbolEnUnViaje(nodo, cnx, 2, visitados) Then
+                    CargarHijosConConexion(nodo, cnx, 2, visitados)
+                End If
                 If nodo.Name = "1" Then
-                    _cacheRaizTodos = DirectCast(nodo.Clone(), TreeNode)
+                    Dim clon As TreeNode = DirectCast(nodo.Clone(), TreeNode)
+                    SyncLock _cacheLock
+                        _cacheRaizTodos = clon
+                    End SyncLock
                 End If
             End Using
         Catch ex As Exception
@@ -222,19 +312,26 @@ Public Class Nodo
     Public Sub CRG_NODO_MANT_SI(ByRef nodo As TreeNode)
         If nodo Is Nothing Then Exit Sub
 
-        If nodo.Name = "1" AndAlso _cacheRaizMantSi IsNot Nothing Then
-            CopiarHijos(_cacheRaizMantSi, nodo)
-            Exit Sub
-        End If
+        SyncLock _cacheLock
+            If nodo.Name = "1" AndAlso _cacheRaizMantSi IsNot Nothing Then
+                CopiarHijos(_cacheRaizMantSi, nodo)
+                Exit Sub
+            End If
+        End SyncLock
 
         Dim conexion As New Conexion
         Try
             Using cnx As New SqlConnection
                 conexion.Conectar(cnx)
                 Dim visitados As New HashSet(Of Integer)()
-                CargarHijosConConexion(nodo, cnx, 3, visitados)
+                If Not CargarArbolEnUnViaje(nodo, cnx, 3, visitados) Then
+                    CargarHijosConConexion(nodo, cnx, 3, visitados)
+                End If
                 If nodo.Name = "1" Then
-                    _cacheRaizMantSi = DirectCast(nodo.Clone(), TreeNode)
+                    Dim clon As TreeNode = DirectCast(nodo.Clone(), TreeNode)
+                    SyncLock _cacheLock
+                        _cacheRaizMantSi = clon
+                    End SyncLock
                 End If
             End Using
         Catch ex As Exception
@@ -779,8 +876,8 @@ Public Class Nodo
         End If
 
         If coincidencias.Count > 0 Then
-            ' Fondo verde/cian muy suave indicando coincidencia encontrada
-            txtBuscar.BackColor = Color.FromArgb(240, 253, 250)
+            ' Fondo turquesa suave corporativo indicando coincidencia encontrada
+            txtBuscar.BackColor = Utilitarios.ColorFondoFoco
             txtBuscar.ForeColor = Utilitarios.ColorTextoPrincipal
             Dim elegido As TreeNode = coincidencias(0)
 
@@ -796,15 +893,15 @@ Public Class Nodo
 
             ' 1. Resaltar TODAS las ramas/nodos coincidentes con el tono turquesa suave de la paleta
             For Each cNode As TreeNode In coincidencias
-                cNode.BackColor = Color.FromArgb(217, 241, 244) ' Turquesa suave (#D9F1F4)
-                cNode.ForeColor = Color.FromArgb(2, 94, 135)    ' Azul petróleo (#025E87)
+                cNode.BackColor = Utilitarios.ColorBotonHover
+                cNode.ForeColor = Utilitarios.ColorPrimario
             Next
 
             ' 2. Destacar prominentemente el nodo ACTIVO seleccionado con el color principal de la paleta
             elegido.EnsureVisible()
             arbol.SelectedNode = elegido
-            elegido.BackColor = Color.FromArgb(2, 94, 135)       ' Azul petróleo corporativo (#025E87)
-            elegido.ForeColor = Color.White                      ' Texto blanco alto contraste
+            elegido.BackColor = Utilitarios.ColorPrimario
+            elegido.ForeColor = Color.White
             idNodoSelect = elegido.Name
             nodoAnterior = elegido.Name
 
@@ -817,13 +914,13 @@ Public Class Nodo
                                                        LimpiarResaltadoNodos(arbol.Nodes)
                                                        For Each cNode As TreeNode In todasCoincidencias
                                                            If cNode.TreeView Is arbol Then
-                                                               cNode.BackColor = Color.FromArgb(217, 241, 244)
-                                                               cNode.ForeColor = Color.FromArgb(2, 94, 135)
+                                                               cNode.BackColor = Utilitarios.ColorBotonHover
+                                                               cNode.ForeColor = Utilitarios.ColorPrimario
                                                            End If
                                                        Next
                                                        targetNode.EnsureVisible()
                                                        arbol.SelectedNode = targetNode
-                                                       targetNode.BackColor = Color.FromArgb(2, 94, 135)
+                                                       targetNode.BackColor = Utilitarios.ColorPrimario
                                                        targetNode.ForeColor = Color.White
                                                        arbol.Invalidate()
                                                    End If

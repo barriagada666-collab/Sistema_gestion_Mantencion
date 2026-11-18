@@ -156,70 +156,98 @@ Public Class InfOt
             Throw New ArgumentNullException("rutaArchivo")
         End If
 
-        Dim doc As New Document(PageSize.LETTER.Rotate(), 20.0F, 20.0F, 25.0F, 25.0F)
+        Dim doc As New Document(PageSize.LETTER.Rotate(), 14.0F, 14.0F, 20.0F, 20.0F)
         Using fs As New FileStream(rutaArchivo, FileMode.Create, FileAccess.Write, FileShare.None)
             PdfWriter.GetInstance(doc, fs)
             doc.Open()
             Try
+                Dim cDeep As New BaseColor(Utilitarios.ColorDeepNavy.R, Utilitarios.ColorDeepNavy.G, Utilitarios.ColorDeepNavy.B)
+                Dim cSec As New BaseColor(Utilitarios.ColorSecundario.R, Utilitarios.ColorSecundario.G, Utilitarios.ColorSecundario.B)
+                Dim cText As New BaseColor(Utilitarios.ColorTextoPrincipal.R, Utilitarios.ColorTextoPrincipal.G, Utilitarios.ColorTextoPrincipal.B)
+                Dim cBorder As New BaseColor(Utilitarios.ColorBordeGrilla.R, Utilitarios.ColorBordeGrilla.G, Utilitarios.ColorBordeGrilla.B)
 
-            Dim fontTitulo As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 13.0F, BaseColor.DarkGray)
-            Dim fontSub As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA, 8.5F, BaseColor.Gray)
-            Dim fontHeader As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 7.0F, BaseColor.White)
-            Dim fontCell As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA, 6.8F, BaseColor.Black)
+                Dim colCount As Integer = If(_dataSource IsNot Nothing, _dataSource.Columns.Count, 1)
+                Dim tamHeader As Single = If(colCount >= 13, 6.2F, If(colCount >= 9, 6.8F, 7.2F))
+                Dim tamCell As Single = If(colCount >= 13, 5.8F, If(colCount >= 9, 6.3F, 6.8F))
 
-            Dim pTitulo As New Paragraph(_titulo, fontTitulo)
-            pTitulo.SpacingAfter = 3.0F
-            doc.Add(pTitulo)
+                Dim fontTitulo As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12.5F, cDeep)
+                Dim fontSub As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA, 8.2F, cSec)
+                Dim fontHeader As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, tamHeader, BaseColor.White)
+                Dim fontCell As iTextSharp.text.Font = FontFactory.GetFont(FontFactory.HELVETICA, tamCell, cText)
 
-            Dim meta As String = "Generado el: " & DateTime.Now.ToString("dd/MM/yyyy HH:mm")
-            If Not String.IsNullOrEmpty(_planta) Then meta &= "   |   Planta: " & _planta
-            If Not String.IsNullOrEmpty(_subtitulo) Then meta &= "   |   " & _subtitulo
-            Dim pMeta As New Paragraph(meta, fontSub)
-            pMeta.SpacingAfter = 10.0F
-            doc.Add(pMeta)
+                Dim pTitulo As New Paragraph(_titulo, fontTitulo)
+                pTitulo.SpacingAfter = 2.5F
+                doc.Add(pTitulo)
 
-            If _dataSource IsNot Nothing AndAlso _dataSource.Columns.Count > 0 Then
-                Dim colCount As Integer = _dataSource.Columns.Count
-                Dim tabla As New PdfPTable(colCount)
-                tabla.WidthPercentage = 100.0F
-                tabla.HeaderRows = 1
+                Dim meta As String = "Generado el: " & DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+                If Not String.IsNullOrEmpty(_planta) Then meta &= "   |   Planta: " & _planta
+                If Not String.IsNullOrEmpty(_subtitulo) Then meta &= "   |   " & _subtitulo
+                Dim pMeta As New Paragraph(meta, fontSub)
+                pMeta.SpacingAfter = 8.0F
+                doc.Add(pMeta)
 
-                Dim bgHeader As New BaseColor(2, 94, 135)
-                Dim bgRowAlt As New BaseColor(234, 243, 245)
+                If _dataSource IsNot Nothing AndAlso _dataSource.Columns.Count > 0 Then
+                    Dim tabla As New PdfPTable(colCount)
+                    tabla.WidthPercentage = 100.0F
+                    tabla.HeaderRows = 1
+                    tabla.SplitLate = False
+                    tabla.SplitRows = True
 
-                For Each col As DataColumn In _dataSource.Columns
-                    Dim cell As New PdfPCell(New Phrase(col.Caption, fontHeader))
-                    cell.BackgroundColor = bgHeader
-                    cell.HorizontalAlignment = Element.ALIGN_CENTER
-                    cell.VerticalAlignment = Element.ALIGN_MIDDLE
-                    cell.Padding = 4.0F
-                    tabla.AddCell(cell)
-                Next
+                    ' Pesos proporcionales según longitud de encabezado y muestra de datos (ajuste total 100% en horizontal)
+                    Dim widths(colCount - 1) As Single
+                    Dim sampleRows As Integer = Math.Min(_dataSource.Rows.Count - 1, 80)
+                    For c As Integer = 0 To colCount - 1
+                        Dim col As DataColumn = _dataSource.Columns(c)
+                        Dim maxLen As Integer = If(col.Caption, col.ColumnName).Trim().Length
+                        For r As Integer = 0 To sampleRows
+                            Dim rv As Object = _dataSource.Rows(r)(col)
+                            If rv IsNot Nothing AndAlso Not IsDBNull(rv) Then
+                                Dim l As Integer = rv.ToString().Trim().Length
+                                If l > maxLen Then maxLen = l
+                            End If
+                        Next
+                        widths(c) = Math.Max(18.0F, Math.Min(160.0F, If(col.Caption, "").Length * 1.1F + Math.Min(maxLen, 45) * 1.4F))
+                    Next
+                    tabla.SetWidths(widths)
 
-                Dim rowIndex As Integer = 0
-                For Each row As DataRow In _dataSource.Rows
-                    Dim isAlt As Boolean = (rowIndex Mod 2 = 1)
+                    Dim bgHeader As New BaseColor(Utilitarios.ColorPrimario.R, Utilitarios.ColorPrimario.G, Utilitarios.ColorPrimario.B)
+                    Dim bgRowAlt As New BaseColor(Utilitarios.ColorFilaAlterna.R, Utilitarios.ColorFilaAlterna.G, Utilitarios.ColorFilaAlterna.B)
+
                     For Each col As DataColumn In _dataSource.Columns
-                        Dim rawVal As Object = row(col)
-                        Dim texto As String = If(rawVal Is Nothing OrElse IsDBNull(rawVal), "", rawVal.ToString())
-                        Dim cell As New PdfPCell(New Phrase(texto, fontCell))
-                        If isAlt Then cell.BackgroundColor = bgRowAlt
-                        cell.VerticalAlignment = Element.ALIGN_TOP
-                        cell.Padding = 3.0F
+                        Dim cell As New PdfPCell(New Phrase(col.Caption, fontHeader))
+                        cell.BackgroundColor = bgHeader
+                        cell.BorderColor = cDeep
+                        cell.HorizontalAlignment = Element.ALIGN_CENTER
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE
+                        cell.Padding = If(colCount >= 13, 2.8F, 3.5F)
                         tabla.AddCell(cell)
                     Next
-                    rowIndex += 1
-                Next
 
-                doc.Add(tabla)
+                    Dim rowIndex As Integer = 0
+                    For Each row As DataRow In _dataSource.Rows
+                        Dim isAlt As Boolean = (rowIndex Mod 2 = 1)
+                        For Each col As DataColumn In _dataSource.Columns
+                            Dim rawVal As Object = row(col)
+                            Dim texto As String = If(rawVal Is Nothing OrElse IsDBNull(rawVal), "", rawVal.ToString())
+                            Dim cell As New PdfPCell(New Phrase(texto, fontCell))
+                            If isAlt Then cell.BackgroundColor = bgRowAlt
+                            cell.BorderColor = cBorder
+                            cell.VerticalAlignment = Element.ALIGN_TOP
+                            cell.Padding = If(colCount >= 13, 2.2F, 2.8F)
+                            tabla.AddCell(cell)
+                        Next
+                        rowIndex += 1
+                    Next
 
-                Dim pTotal As New Paragraph("Total de registros: " & _dataSource.Rows.Count.ToString(), fontSub)
-                pTotal.Alignment = Element.ALIGN_RIGHT
-                pTotal.SpacingBefore = 8.0F
-                doc.Add(pTotal)
-            Else
-                doc.Add(New Paragraph("No hay datos disponibles para mostrar en el informe.", fontSub))
-            End If
+                    doc.Add(tabla)
+
+                    Dim pTotal As New Paragraph("Total de registros: " & _dataSource.Rows.Count.ToString(), fontSub)
+                    pTotal.Alignment = Element.ALIGN_RIGHT
+                    pTotal.SpacingBefore = 6.0F
+                    doc.Add(pTotal)
+                Else
+                    doc.Add(New Paragraph("No hay datos disponibles para mostrar en el informe.", fontSub))
+                End If
 
             Finally
                 If doc.IsOpen() Then doc.Close()

@@ -43,6 +43,9 @@ Public Class FrmAdminNodos
 
             GrpInfoNuevoNodo.Enabled = False
             ds_arbol = nd.CRG_NODOS_DST()
+            If ds_arbol IsNot Nothing AndAlso ds_arbol.Tables.Count > 0 AndAlso ds_arbol.Tables(0).Columns.Contains("idnodo") Then
+                ds_arbol.Tables(0).PrimaryKey = New DataColumn() {ds_arbol.Tables(0).Columns("idnodo")}
+            End If
             arbol4.BeginUpdate()
             arbol4.Nodes.Clear()
             nodoRaiz.Name = "1"
@@ -87,11 +90,14 @@ Public Class FrmAdminNodos
         txtDescNodoSel.Text = arbol4.SelectedNode.Text
         nivel_nodo_padre = arbol4.SelectedNode.Level
 
-        If ds_arbol IsNot Nothing AndAlso ds_arbol.Tables.Count > 0 AndAlso ds_arbol.Tables(0).Columns.Contains("idnodo") Then
-            Dim columna_clave(0) As DataColumn
-            columna_clave(0) = ds_arbol.Tables(0).Columns("idnodo")
-            ds_arbol.Tables(0).PrimaryKey = columna_clave
-            Dim fila As DataRow = ds_arbol.Tables(0).Rows.Find(txtIDNodoSel.Text)
+        If ds_arbol IsNot Nothing AndAlso ds_arbol.Tables.Count > 0 AndAlso ds_arbol.Tables(0).PrimaryKey IsNot Nothing AndAlso ds_arbol.Tables(0).PrimaryKey.Length > 0 Then
+            Dim pkType As Type = ds_arbol.Tables(0).PrimaryKey(0).DataType
+            Dim claveBuscada As Object = txtIDNodoSel.Text
+            If pkType Is GetType(Integer) Then
+                Dim idInt As Integer = 0
+                If Integer.TryParse(txtIDNodoSel.Text.Trim(), idInt) Then claveBuscada = idInt
+            End If
+            Dim fila As DataRow = ds_arbol.Tables(0).Rows.Find(claveBuscada)
             PoblarDetalleNodoDesdeFila(fila)
         End If
     End Sub

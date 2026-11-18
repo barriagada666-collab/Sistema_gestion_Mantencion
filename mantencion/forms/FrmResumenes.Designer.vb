@@ -420,7 +420,7 @@ Partial Class FrmResumenes
         '
         Me.lblKpiCerradas.Dock = System.Windows.Forms.DockStyle.Fill
         Me.lblKpiCerradas.Font = New System.Drawing.Font("Calibri", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblKpiCerradas.ForeColor = System.Drawing.Color.FromArgb(16, 120, 60)
+        Me.lblKpiCerradas.ForeColor = System.Drawing.Color.FromArgb(1, 145, 179)
         Me.lblKpiCerradas.Location = New System.Drawing.Point(0, 16)
         Me.lblKpiCerradas.Name = "lblKpiCerradas"
         Me.lblKpiCerradas.Size = New System.Drawing.Size(123, 44)

@@ -36,6 +36,7 @@ Public Class Login
                 Exit Sub
             End If
             principal.lblUsuario.Text = UCase(nombreUsuario)
+            Nodo.PrecalentarCachesAsync()
             principal.Show()
             Me.Close()
         ElseIf cod_resp = -1 Then

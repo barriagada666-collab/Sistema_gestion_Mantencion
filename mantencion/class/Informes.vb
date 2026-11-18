@@ -539,7 +539,17 @@ Public Class Informes
             '---------------------------------------------------------------------------------------
 
             fecha_inicio = CDate(grilla_ciclos_mp.Rows(0).Cells(3).Value).Date
-            fecha_fin = CDate(grilla_ciclos_mp.Rows(grilla_ciclos_mp.RowCount - 1).Cells(4).Value).Date
+            fecha_fin = CDate(grilla_ciclos_mp.Rows(0).Cells(4).Value).Date
+            For i = 1 To grilla_ciclos_mp.RowCount - 1
+                If IsDate(grilla_ciclos_mp.Rows(i).Cells(3).Value) Then
+                    Dim fI As DateTime = CDate(grilla_ciclos_mp.Rows(i).Cells(3).Value).Date
+                    If fI < fecha_inicio Then fecha_inicio = fI
+                End If
+                If IsDate(grilla_ciclos_mp.Rows(i).Cells(4).Value) Then
+                    Dim fF As DateTime = CDate(grilla_ciclos_mp.Rows(i).Cells(4).Value).Date
+                    If fF > fecha_fin Then fecha_fin = fF
+                End If
+            Next
             fecha = fecha_inicio
 
             Dim col_excel As Integer = 6
@@ -554,8 +564,12 @@ Public Class Informes
             cont_fila = 10
 
             For i = 0 To grilla_ciclos_mp.RowCount - 1
+                If Not IsDate(grilla_ciclos_mp.Rows(i).Cells(3).Value) OrElse Not IsDate(grilla_ciclos_mp.Rows(i).Cells(4).Value) Then
+                    cont_fila = cont_fila + 1
+                    Continue For
+                End If
                 fecha_ini = CDate(grilla_ciclos_mp.Rows(i).Cells(3).Value).Date
-                num_mant = DateDiff(DateInterval.Day, fecha_ini, CDate(grilla_ciclos_mp.Rows(i).Cells(4).Value).Date) + 1
+                num_mant = Math.Max(1, CInt(DateDiff(DateInterval.Day, fecha_ini, CDate(grilla_ciclos_mp.Rows(i).Cells(4).Value).Date) + 1))
 
                 For j = 0 To grilla_grafico.Columns.Count - 1
                     Dim colDate As DateTime
@@ -1113,21 +1127,27 @@ Public Class Informes
                 wsTop.Cells(2, 2) = "INFORME ESTADÍSTICO - TOP MÁQUINAS Y COMPONENTES"
                 wsTop.Cells(2, 2).Font.Bold = True
                 wsTop.Cells(2, 2).Font.Size = 13
+                wsTop.Cells(2, 2).Font.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorDeepNavy)
 
                 wsTop.Cells(3, 2) = "Período: " & fecha_inicio.ToString("dd-MM-yyyy") & " al " & fecha_fin.ToString("dd-MM-yyyy")
                 wsTop.Cells(3, 2).Font.Italic = True
+                wsTop.Cells(3, 2).Font.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorSecundario)
 
                 ' Top Máquinas
                 Dim fRow As Integer = 5
                 wsTop.Cells(fRow, 2) = "TOP MÁQUINAS CON MÁS ÓRDENES DE TRABAJO"
                 wsTop.Cells(fRow, 2).Font.Bold = True
+                wsTop.Cells(fRow, 2).Font.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorPrimario)
 
                 fRow += 1
                 Dim cabMaq() As String = {"Ranking", "Máquina / Equipo", "Total OTs", "% Participación", "OTs Cerradas", "OTs Abiertas", "% Resueltas"}
                 For c As Integer = 0 To cabMaq.Length - 1
                     wsTop.Cells(fRow, c + 2) = cabMaq(c)
-                    wsTop.Cells(fRow, c + 2).Font.Bold = True
                 Next
+                Dim rCabMaq As Excel.Range = wsTop.Range(wsTop.Cells(fRow, 2), wsTop.Cells(fRow, cabMaq.Length + 1))
+                rCabMaq.Font.Bold = True
+                rCabMaq.Interior.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorPrimario)
+                rCabMaq.Font.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.White)
 
                 fRow += 1
                 With FrmResumenes.grillaTopMaquinas
@@ -1143,13 +1163,17 @@ Public Class Informes
                 fRow += 2
                 wsTop.Cells(fRow, 2) = "TOP COMPONENTES / PARTES CON MÁS ÓRDENES"
                 wsTop.Cells(fRow, 2).Font.Bold = True
+                wsTop.Cells(fRow, 2).Font.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorPrimario)
 
                 fRow += 1
                 Dim cabComp() As String = {"Ranking", "Componente / Parte", "Máquina Asociada", "Total OTs", "% Participación", "OTs Cerradas", "OTs Abiertas"}
                 For c As Integer = 0 To cabComp.Length - 1
                     wsTop.Cells(fRow, c + 2) = cabComp(c)
-                    wsTop.Cells(fRow, c + 2).Font.Bold = True
                 Next
+                Dim rCabComp As Excel.Range = wsTop.Range(wsTop.Cells(fRow, 2), wsTop.Cells(fRow, cabComp.Length + 1))
+                rCabComp.Font.Bold = True
+                rCabComp.Interior.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorPrimario)
+                rCabComp.Font.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.White)
 
                 fRow += 1
                 With FrmResumenes.grillaTopComponentes

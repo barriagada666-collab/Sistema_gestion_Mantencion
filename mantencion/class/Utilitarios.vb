@@ -262,6 +262,8 @@ Public Class Utilitarios
 
         Dim exportadoOk As Boolean = False
 
+        ConfigurarImpresionHorizontalAjustada(workbook)
+
         ' 1. Exportación directa nativa a PDF de alta velocidad (Excel.XlFixedFormatType.xlTypePDF = 0)
         Try
             Dim objWorkbook As Object = workbook
@@ -315,8 +317,66 @@ Public Class Utilitarios
     End Sub
 
     ''' <summary>
+    ''' Fuerza orientación horizontal y ajuste automático al 100% del ancho de página (1 página de ancho x N páginas de alto)
+    ''' en todas las hojas visibles de un libro Excel para evitar cortes horizontales al exportar PDF con muchos registros.
+    ''' </summary>
+    Public Shared Sub ConfigurarImpresionHorizontalAjustada(ByVal workbook As Excel.Workbook)
+        If workbook Is Nothing Then Exit Sub
+        Try
+            For Each sh As Object In workbook.Worksheets
+                Dim ws As Excel.Worksheet = TryCast(sh, Excel.Worksheet)
+                If ws Is Nothing Then Continue For
+                Try
+                    If ws.Visible = Excel.XlSheetVisibility.xlSheetVisible Then
+                        Dim ps As Excel.PageSetup = ws.PageSetup
+                        ps.Orientation = Excel.XlPageOrientation.xlLandscape
+                        ps.PaperSize = Excel.XlPaperSize.xlPaperLetter
+                        ps.Zoom = False
+                        ps.FitToPagesWide = 1
+                        ps.FitToPagesTall = False
+                        ps.CenterHorizontally = True
+                        ps.LeftMargin = 14
+                        ps.RightMargin = 14
+                        ps.TopMargin = 20
+                        ps.BottomMargin = 20
+                        ps.HeaderMargin = 10
+                        ps.FooterMargin = 10
+                    End If
+                Catch
+                End Try
+            Next
+        Catch
+        End Try
+    End Sub
+
+    Private Shared Function CalcularPesosColumnasPdf(ByVal colsVis As List(Of DataGridViewColumn), ByVal grilla As DataGridView) As Single()
+        Dim n As Integer = colsVis.Count
+        Dim pesos(n - 1) As Single
+        Dim muestraMax As Integer = Math.Min(grilla.RowCount - 1, 80)
+
+        For c As Integer = 0 To n - 1
+            Dim col As DataGridViewColumn = colsVis(c)
+            Dim headerLen As Integer = If(col.HeaderText, "").Trim().Length
+            Dim maxDataLen As Integer = headerLen
+            For r As Integer = 0 To muestraMax
+                If grilla.Rows(r).IsNewRow Then Continue For
+                Dim v As Object = grilla.Rows(r).Cells(col.Index).Value
+                If v IsNot Nothing AndAlso Not IsDBNull(v) Then
+                    Dim l As Integer = v.ToString().Trim().Length
+                    If l > maxDataLen Then maxDataLen = l
+                End If
+            Next
+
+            Dim anchoBase As Single = Math.Max(32.0F, Math.Min(260.0F, CSng(col.Width)))
+            Dim pesoContenido As Single = Math.Max(6.0F, Math.Min(42.0F, headerLen * 1.1F + Math.Min(maxDataLen, 45) * 0.65F))
+            pesos(c) = Math.Max(22.0F, Math.Min(220.0F, (anchoBase * 0.55F) + (pesoContenido * 2.2F)))
+        Next
+        Return pesos
+    End Function
+
+    ''' <summary>
     ''' Exporta el contenido visible de un DataGridView directamente a un archivo PDF utilizando iTextSharp.
-    ''' Solución 100% nativa que no requiere Excel ni controladores de impresora virtual, garantizando cero bloqueos o diálogos modales.
+    ''' Solución 100% nativa con ajuste completo a ancho horizontal en hoja Carta/Letter Landscape.
     ''' </summary>
     Public Shared Function ExportarGrillaAPdf(ByVal grilla As DataGridView, ByVal rutaArchivo As String, ByVal titulo As String, Optional ByVal subtitulo As String = "") As Boolean
         If grilla Is Nothing OrElse grilla.Columns.Count = 0 OrElse String.IsNullOrEmpty(rutaArchivo) Then Return False
@@ -336,63 +396,76 @@ Public Class Utilitarios
                 End Try
             End If
 
-            Dim doc As New iTextSharp.text.Document(iTextSharp.text.PageSize.LETTER.Rotate(), 20.0F, 20.0F, 25.0F, 25.0F)
+            Dim doc As New iTextSharp.text.Document(iTextSharp.text.PageSize.LETTER.Rotate(), 14.0F, 14.0F, 20.0F, 20.0F)
             Using fs As New FileStream(rutaArchivo, FileMode.Create, FileAccess.Write, FileShare.None)
                 iTextSharp.text.pdf.PdfWriter.GetInstance(doc, fs)
                 doc.Open()
                 Try
-                    Dim fontTitulo As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, 13.0F, iTextSharp.text.BaseColor.DarkGray)
-                Dim fontSub As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, 8.5F, iTextSharp.text.BaseColor.Gray)
-                Dim fontHeader As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, 7.2F, iTextSharp.text.BaseColor.White)
-                Dim fontCell As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, 6.8F, iTextSharp.text.BaseColor.Black)
+                    Dim colCount As Integer = columnasVisibles.Count
+                    Dim tamHeader As Single = If(colCount >= 13, 6.2F, If(colCount >= 9, 6.8F, 7.4F))
+                    Dim tamCell As Single = If(colCount >= 13, 5.8F, If(colCount >= 9, 6.4F, 6.9F))
+                    Dim cDeep As New iTextSharp.text.BaseColor(ColorDeepNavy.R, ColorDeepNavy.G, ColorDeepNavy.B)
+                    Dim cSec As New iTextSharp.text.BaseColor(ColorSecundario.R, ColorSecundario.G, ColorSecundario.B)
+                    Dim cText As New iTextSharp.text.BaseColor(ColorTextoPrincipal.R, ColorTextoPrincipal.G, ColorTextoPrincipal.B)
+                    Dim cBorder As New iTextSharp.text.BaseColor(ColorBordeGrilla.R, ColorBordeGrilla.G, ColorBordeGrilla.B)
 
-                Dim pTitulo As New iTextSharp.text.Paragraph(titulo, fontTitulo)
-                pTitulo.SpacingAfter = 3.0F
-                doc.Add(pTitulo)
+                    Dim fontTitulo As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, 12.5F, cDeep)
+                    Dim fontSub As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, 8.2F, cSec)
+                    Dim fontHeader As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, tamHeader, iTextSharp.text.BaseColor.White)
+                    Dim fontCell As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, tamCell, cText)
 
-                Dim meta As String = "Generado el: " & DateTime.Now.ToString("dd/MM/yyyy HH:mm")
-                If Not String.IsNullOrEmpty(subtitulo) Then meta &= "   |   " & subtitulo
-                Dim pMeta As New iTextSharp.text.Paragraph(meta, fontSub)
-                pMeta.SpacingAfter = 10.0F
-                doc.Add(pMeta)
+                    Dim pTitulo As New iTextSharp.text.Paragraph(titulo, fontTitulo)
+                    pTitulo.SpacingAfter = 2.5F
+                    doc.Add(pTitulo)
 
-                Dim tabla As New iTextSharp.text.pdf.PdfPTable(columnasVisibles.Count)
-                tabla.WidthPercentage = 100.0F
-                tabla.HeaderRows = 1
+                    Dim meta As String = "Generado el: " & DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+                    If Not String.IsNullOrEmpty(subtitulo) Then meta &= "   |   " & subtitulo
+                    Dim pMeta As New iTextSharp.text.Paragraph(meta, fontSub)
+                    pMeta.SpacingAfter = 8.0F
+                    doc.Add(pMeta)
 
-                Dim bgHeader As New iTextSharp.text.BaseColor(ColorPrimario.R, ColorPrimario.G, ColorPrimario.B)
-                Dim bgRowAlt As New iTextSharp.text.BaseColor(ColorFilaAlterna.R, ColorFilaAlterna.G, ColorFilaAlterna.B)
+                    Dim tabla As New iTextSharp.text.pdf.PdfPTable(colCount)
+                    tabla.WidthPercentage = 100.0F
+                    tabla.HeaderRows = 1
+                    tabla.SplitLate = False
+                    tabla.SplitRows = True
+                    tabla.SetWidths(CalcularPesosColumnasPdf(columnasVisibles, grilla))
 
-                For Each col As DataGridViewColumn In columnasVisibles
-                    Dim celdaEncabezado As New iTextSharp.text.pdf.PdfPCell(New iTextSharp.text.Phrase(col.HeaderText, fontHeader))
-                    celdaEncabezado.BackgroundColor = bgHeader
-                    celdaEncabezado.HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER
-                    celdaEncabezado.VerticalAlignment = iTextSharp.text.Element.ALIGN_MIDDLE
-                    celdaEncabezado.Padding = 4.0F
-                    tabla.AddCell(celdaEncabezado)
-                Next
+                    Dim bgHeader As New iTextSharp.text.BaseColor(ColorPrimario.R, ColorPrimario.G, ColorPrimario.B)
+                    Dim bgRowAlt As New iTextSharp.text.BaseColor(ColorFilaAlterna.R, ColorFilaAlterna.G, ColorFilaAlterna.B)
 
-                Dim rowIndex As Integer = 0
-                For i As Integer = 0 To grilla.RowCount - 1
-                    If grilla.Rows(i).IsNewRow Then Continue For
-                    Dim isAlt As Boolean = (rowIndex Mod 2 = 1)
                     For Each col As DataGridViewColumn In columnasVisibles
-                        Dim val As Object = grilla.Rows(i).Cells(col.Index).Value
-                        Dim texto As String = If(val Is Nothing OrElse IsDBNull(val), "", val.ToString())
-                        Dim celdaDato As New iTextSharp.text.pdf.PdfPCell(New iTextSharp.text.Phrase(texto, fontCell))
-                        If isAlt Then celdaDato.BackgroundColor = bgRowAlt
-                        celdaDato.VerticalAlignment = iTextSharp.text.Element.ALIGN_TOP
-                        celdaDato.Padding = 3.0F
-                        tabla.AddCell(celdaDato)
+                        Dim celdaEncabezado As New iTextSharp.text.pdf.PdfPCell(New iTextSharp.text.Phrase(col.HeaderText, fontHeader))
+                        celdaEncabezado.BackgroundColor = bgHeader
+                        celdaEncabezado.BorderColor = cDeep
+                        celdaEncabezado.HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER
+                        celdaEncabezado.VerticalAlignment = iTextSharp.text.Element.ALIGN_MIDDLE
+                        celdaEncabezado.Padding = If(colCount >= 13, 2.8F, 3.6F)
+                        tabla.AddCell(celdaEncabezado)
                     Next
-                    rowIndex += 1
-                Next
 
-                doc.Add(tabla)
+                    Dim rowIndex As Integer = 0
+                    For i As Integer = 0 To grilla.RowCount - 1
+                        If grilla.Rows(i).IsNewRow Then Continue For
+                        Dim isAlt As Boolean = (rowIndex Mod 2 = 1)
+                        For Each col As DataGridViewColumn In columnasVisibles
+                            Dim val As Object = grilla.Rows(i).Cells(col.Index).Value
+                            Dim texto As String = If(val Is Nothing OrElse IsDBNull(val), "", val.ToString())
+                            Dim celdaDato As New iTextSharp.text.pdf.PdfPCell(New iTextSharp.text.Phrase(texto, fontCell))
+                            If isAlt Then celdaDato.BackgroundColor = bgRowAlt
+                            celdaDato.BorderColor = cBorder
+                            celdaDato.VerticalAlignment = iTextSharp.text.Element.ALIGN_TOP
+                            celdaDato.Padding = If(colCount >= 13, 2.2F, 2.8F)
+                            tabla.AddCell(celdaDato)
+                        Next
+                        rowIndex += 1
+                    Next
+
+                    doc.Add(tabla)
 
                     Dim pTotal As New iTextSharp.text.Paragraph("Total de registros: " & rowIndex.ToString(), fontSub)
                     pTotal.Alignment = iTextSharp.text.Element.ALIGN_RIGHT
-                    pTotal.SpacingBefore = 8.0F
+                    pTotal.SpacingBefore = 6.0F
                     doc.Add(pTotal)
                 Finally
                     If doc.IsOpen() Then doc.Close()
@@ -419,83 +492,96 @@ Public Class Utilitarios
                 End Try
             End If
 
-            Dim doc As New iTextSharp.text.Document(iTextSharp.text.PageSize.LETTER.Rotate(), 20.0F, 20.0F, 25.0F, 25.0F)
+            Dim doc As New iTextSharp.text.Document(iTextSharp.text.PageSize.LETTER.Rotate(), 14.0F, 14.0F, 20.0F, 20.0F)
             Dim tablasAgregadas As Integer = 0
 
             Using fs As New FileStream(rutaArchivo, FileMode.Create, FileAccess.Write, FileShare.None)
                 iTextSharp.text.pdf.PdfWriter.GetInstance(doc, fs)
                 doc.Open()
                 Try
+                    Dim cDeep As New iTextSharp.text.BaseColor(ColorDeepNavy.R, ColorDeepNavy.G, ColorDeepNavy.B)
+                    Dim cSec As New iTextSharp.text.BaseColor(ColorSecundario.R, ColorSecundario.G, ColorSecundario.B)
+                    Dim cText As New iTextSharp.text.BaseColor(ColorTextoPrincipal.R, ColorTextoPrincipal.G, ColorTextoPrincipal.B)
+                    Dim cBorder As New iTextSharp.text.BaseColor(ColorBordeGrilla.R, ColorBordeGrilla.G, ColorBordeGrilla.B)
 
-                Dim fontTitulo As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, 13.0F, iTextSharp.text.BaseColor.DarkGray)
-                Dim fontSub As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, 8.5F, iTextSharp.text.BaseColor.Gray)
-                Dim fontSeccion As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, 10.0F, New iTextSharp.text.BaseColor(ColorPrimario.R, ColorPrimario.G, ColorPrimario.B))
-                Dim fontHeader As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, 7.2F, iTextSharp.text.BaseColor.White)
-                Dim fontCell As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, 6.8F, iTextSharp.text.BaseColor.Black)
+                    Dim fontTitulo As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, 12.5F, cDeep)
+                    Dim fontSub As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, 8.2F, cSec)
+                    Dim fontSeccion As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, 9.5F, cSec)
 
-                Dim pTitulo As New iTextSharp.text.Paragraph(titulo, fontTitulo)
-                pTitulo.SpacingAfter = 3.0F
-                doc.Add(pTitulo)
+                    Dim pTitulo As New iTextSharp.text.Paragraph(titulo, fontTitulo)
+                    pTitulo.SpacingAfter = 2.5F
+                    doc.Add(pTitulo)
 
-                Dim meta As String = "Generado el: " & DateTime.Now.ToString("dd/MM/yyyy HH:mm")
-                If Not String.IsNullOrEmpty(subtituloGeneral) Then meta &= "   |   " & subtituloGeneral
-                Dim pMeta As New iTextSharp.text.Paragraph(meta, fontSub)
-                pMeta.SpacingAfter = 8.0F
-                doc.Add(pMeta)
+                    Dim meta As String = "Generado el: " & DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+                    If Not String.IsNullOrEmpty(subtituloGeneral) Then meta &= "   |   " & subtituloGeneral
+                    Dim pMeta As New iTextSharp.text.Paragraph(meta, fontSub)
+                    pMeta.SpacingAfter = 6.0F
+                    doc.Add(pMeta)
 
-                Dim bgHeader As New iTextSharp.text.BaseColor(ColorPrimario.R, ColorPrimario.G, ColorPrimario.B)
-                Dim bgRowAlt As New iTextSharp.text.BaseColor(ColorFilaAlterna.R, ColorFilaAlterna.G, ColorFilaAlterna.B)
+                    Dim bgHeader As New iTextSharp.text.BaseColor(ColorPrimario.R, ColorPrimario.G, ColorPrimario.B)
+                    Dim bgRowAlt As New iTextSharp.text.BaseColor(ColorFilaAlterna.R, ColorFilaAlterna.G, ColorFilaAlterna.B)
 
-                For Each sec As KeyValuePair(Of String, DataGridView) In secciones
-                    Dim grilla As DataGridView = sec.Value
-                    If grilla Is Nothing OrElse grilla.Columns.Count = 0 Then Continue For
+                    For Each sec As KeyValuePair(Of String, DataGridView) In secciones
+                        Dim grilla As DataGridView = sec.Value
+                        If grilla Is Nothing OrElse grilla.Columns.Count = 0 Then Continue For
 
-                    Dim colsVis As New List(Of DataGridViewColumn)()
-                    For Each col As DataGridViewColumn In grilla.Columns
-                        If col.Visible Then colsVis.Add(col)
-                    Next
-                    If colsVis.Count = 0 Then Continue For
-
-                    If Not String.IsNullOrWhiteSpace(sec.Key) Then
-                        Dim pSec As New iTextSharp.text.Paragraph(sec.Key, fontSeccion)
-                        pSec.SpacingBefore = 8.0F
-                        pSec.SpacingAfter = 4.0F
-                        doc.Add(pSec)
-                    End If
-
-                    Dim tabla As New iTextSharp.text.pdf.PdfPTable(colsVis.Count)
-                    tabla.WidthPercentage = 100.0F
-                    tabla.HeaderRows = 1
-                    tabla.SpacingAfter = 6.0F
-
-                    For Each col As DataGridViewColumn In colsVis
-                        Dim celdaEnc As New iTextSharp.text.pdf.PdfPCell(New iTextSharp.text.Phrase(col.HeaderText, fontHeader))
-                        celdaEnc.BackgroundColor = bgHeader
-                        celdaEnc.HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER
-                        celdaEnc.VerticalAlignment = iTextSharp.text.Element.ALIGN_MIDDLE
-                        celdaEnc.Padding = 3.5F
-                        tabla.AddCell(celdaEnc)
-                    Next
-
-                    Dim rowCount As Integer = 0
-                    For i As Integer = 0 To grilla.RowCount - 1
-                        If grilla.Rows(i).IsNewRow Then Continue For
-                        Dim isAlt As Boolean = (rowCount Mod 2 = 1)
-                        For Each col As DataGridViewColumn In colsVis
-                            Dim val As Object = grilla.Rows(i).Cells(col.Index).Value
-                            Dim texto As String = If(val Is Nothing OrElse IsDBNull(val), "", val.ToString())
-                            Dim celdaDato As New iTextSharp.text.pdf.PdfPCell(New iTextSharp.text.Phrase(texto, fontCell))
-                            If isAlt Then celdaDato.BackgroundColor = bgRowAlt
-                            celdaDato.VerticalAlignment = iTextSharp.text.Element.ALIGN_TOP
-                            celdaDato.Padding = 2.8F
-                            tabla.AddCell(celdaDato)
+                        Dim colsVis As New List(Of DataGridViewColumn)()
+                        For Each col As DataGridViewColumn In grilla.Columns
+                            If col.Visible Then colsVis.Add(col)
                         Next
-                        rowCount += 1
-                    Next
+                        If colsVis.Count = 0 Then Continue For
 
-                    doc.Add(tabla)
-                    tablasAgregadas += 1
-                Next
+                        Dim colCount As Integer = colsVis.Count
+                        Dim tamHeader As Single = If(colCount >= 13, 6.2F, If(colCount >= 9, 6.8F, 7.2F))
+                        Dim tamCell As Single = If(colCount >= 13, 5.8F, If(colCount >= 9, 6.4F, 6.8F))
+                        Dim fontHeader As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, tamHeader, iTextSharp.text.BaseColor.White)
+                        Dim fontCell As iTextSharp.text.Font = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, tamCell, cText)
+
+                        If Not String.IsNullOrWhiteSpace(sec.Key) Then
+                            Dim pSec As New iTextSharp.text.Paragraph(sec.Key, fontSeccion)
+                            pSec.SpacingBefore = 7.0F
+                            pSec.SpacingAfter = 3.5F
+                            doc.Add(pSec)
+                        End If
+
+                        Dim tabla As New iTextSharp.text.pdf.PdfPTable(colCount)
+                        tabla.WidthPercentage = 100.0F
+                        tabla.HeaderRows = 1
+                        tabla.SplitLate = False
+                        tabla.SplitRows = True
+                        tabla.SpacingAfter = 6.0F
+                        tabla.SetWidths(CalcularPesosColumnasPdf(colsVis, grilla))
+
+                        For Each col As DataGridViewColumn In colsVis
+                            Dim celdaEnc As New iTextSharp.text.pdf.PdfPCell(New iTextSharp.text.Phrase(col.HeaderText, fontHeader))
+                            celdaEnc.BackgroundColor = bgHeader
+                            celdaEnc.BorderColor = cDeep
+                            celdaEnc.HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER
+                            celdaEnc.VerticalAlignment = iTextSharp.text.Element.ALIGN_MIDDLE
+                            celdaEnc.Padding = If(colCount >= 13, 2.8F, 3.4F)
+                            tabla.AddCell(celdaEnc)
+                        Next
+
+                        Dim rowCount As Integer = 0
+                        For i As Integer = 0 To grilla.RowCount - 1
+                            If grilla.Rows(i).IsNewRow Then Continue For
+                            Dim isAlt As Boolean = (rowCount Mod 2 = 1)
+                            For Each col As DataGridViewColumn In colsVis
+                                Dim val As Object = grilla.Rows(i).Cells(col.Index).Value
+                                Dim texto As String = If(val Is Nothing OrElse IsDBNull(val), "", val.ToString())
+                                Dim celdaDato As New iTextSharp.text.pdf.PdfPCell(New iTextSharp.text.Phrase(texto, fontCell))
+                                If isAlt Then celdaDato.BackgroundColor = bgRowAlt
+                                celdaDato.BorderColor = cBorder
+                                celdaDato.VerticalAlignment = iTextSharp.text.Element.ALIGN_TOP
+                                celdaDato.Padding = If(colCount >= 13, 2.2F, 2.8F)
+                                tabla.AddCell(celdaDato)
+                            Next
+                            rowCount += 1
+                        Next
+
+                        doc.Add(tabla)
+                        tablasAgregadas += 1
+                    Next
                 Finally
                     If doc.IsOpen() Then doc.Close()
                 End Try
@@ -550,13 +636,13 @@ Public Class Utilitarios
             Dim sb As New System.Text.StringBuilder(8192)
             sb.AppendLine("<?xml version=""1.0"" encoding=""utf-8""?>")
             sb.AppendLine("<?mso-application progid=""Excel.Sheet""?>")
-            sb.AppendLine("<Workbook xmlns=""urn:schemas-microsoft-com:office:spreadsheet"" xmlns:ss=""urn:schemas-microsoft-com:office:spreadsheet"">")
+            sb.AppendLine("<Workbook xmlns=""urn:schemas-microsoft-com:office:spreadsheet"" xmlns:ss=""urn:schemas-microsoft-com:office:spreadsheet"" xmlns:x=""urn:schemas-microsoft-com:office:excel"">")
             sb.AppendLine(" <Styles>")
-            sb.AppendLine("  <Style ss:ID=""Titulo""><Font ss:FontName=""Segoe UI"" ss:Size=""13"" ss:Bold=""1"" ss:Color=""#025E87""/></Style>")
+            sb.AppendLine("  <Style ss:ID=""Titulo""><Font ss:FontName=""Segoe UI"" ss:Size=""13"" ss:Bold=""1"" ss:Color=""#0F2D44""/></Style>")
             sb.AppendLine("  <Style ss:ID=""Subtitulo""><Font ss:FontName=""Segoe UI"" ss:Size=""9"" ss:Italic=""1"" ss:Color=""#475569""/></Style>")
-            sb.AppendLine("  <Style ss:ID=""Header""><Font ss:FontName=""Segoe UI"" ss:Size=""9"" ss:Bold=""1"" ss:Color=""#FFFFFF""/><Interior ss:Color=""#025E87"" ss:Pattern=""Solid""/><Alignment ss:Horizontal=""Center"" ss:Vertical=""Center""/></Style>")
-            sb.AppendLine("  <Style ss:ID=""Cell""><Font ss:FontName=""Segoe UI"" ss:Size=""9"" ss:Color=""#0F172A""/><Borders><Border ss:Position=""Bottom"" ss:LineStyle=""Continuous"" ss:Weight=""1"" ss:Color=""#C8DEDF""/></Borders></Style>")
-            sb.AppendLine("  <Style ss:ID=""CellAlt""><Font ss:FontName=""Segoe UI"" ss:Size=""9"" ss:Color=""#0F172A""/><Interior ss:Color=""#EAF3F5"" ss:Pattern=""Solid""/><Borders><Border ss:Position=""Bottom"" ss:LineStyle=""Continuous"" ss:Weight=""1"" ss:Color=""#C8DEDF""/></Borders></Style>")
+            sb.AppendLine("  <Style ss:ID=""Header""><Font ss:FontName=""Segoe UI"" ss:Size=""9"" ss:Bold=""1"" ss:Color=""#FFFFFF""/><Interior ss:Color=""#025E87"" ss:Pattern=""Solid""/><Alignment ss:Horizontal=""Center"" ss:Vertical=""Center"" ss:WrapText=""1""/></Style>")
+            sb.AppendLine("  <Style ss:ID=""Cell""><Font ss:FontName=""Segoe UI"" ss:Size=""9"" ss:Color=""#0F172A""/><Alignment ss:Vertical=""Top"" ss:WrapText=""1""/><Borders><Border ss:Position=""Bottom"" ss:LineStyle=""Continuous"" ss:Weight=""1"" ss:Color=""#C8DEDF""/></Borders></Style>")
+            sb.AppendLine("  <Style ss:ID=""CellAlt""><Font ss:FontName=""Segoe UI"" ss:Size=""9"" ss:Color=""#0F172A""/><Interior ss:Color=""#EAF3F5"" ss:Pattern=""Solid""/><Alignment ss:Vertical=""Top"" ss:WrapText=""1""/><Borders><Border ss:Position=""Bottom"" ss:LineStyle=""Continuous"" ss:Weight=""1"" ss:Color=""#C8DEDF""/></Borders></Style>")
             sb.AppendLine(" </Styles>")
 
             Dim idxHoja As Integer = 1
@@ -618,6 +704,18 @@ Public Class Utilitarios
                 Next
 
                 sb.AppendLine("  </Table>")
+                sb.AppendLine("  <WorksheetOptions xmlns=""urn:schemas-microsoft-com:office:excel"">")
+                sb.AppendLine("   <PageSetup>")
+                sb.AppendLine("    <Layout x:Orientation=""Landscape""/>")
+                sb.AppendLine("    <PageMargins x:Bottom=""0.4"" x:Left=""0.25"" x:Right=""0.25"" x:Top=""0.4""/>")
+                sb.AppendLine("   </PageSetup>")
+                sb.AppendLine("   <FitToPage/>")
+                sb.AppendLine("   <Print>")
+                sb.AppendLine("    <ValidPrinterInfo/>")
+                sb.AppendLine("    <FitWidth>1</FitWidth>")
+                sb.AppendLine("    <FitHeight>0</FitHeight>")
+                sb.AppendLine("   </Print>")
+                sb.AppendLine("  </WorksheetOptions>")
                 sb.AppendLine(" </Worksheet>")
                 idxHoja += 1
             Next
