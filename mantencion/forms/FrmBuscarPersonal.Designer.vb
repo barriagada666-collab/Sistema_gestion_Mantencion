@@ -124,9 +124,11 @@ Partial Class FrmBuscarPersonal
         '
         'btn_agregar_personal
         '
-        Me.btn_agregar_personal.Location = New System.Drawing.Point(453, 24)
+        Me.btn_agregar_personal.Image = Global.mantencion.My.Resources.Resources.add
+        Me.btn_agregar_personal.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btn_agregar_personal.Location = New System.Drawing.Point(440, 22)
         Me.btn_agregar_personal.Name = "btn_agregar_personal"
-        Me.btn_agregar_personal.Size = New System.Drawing.Size(75, 23)
+        Me.btn_agregar_personal.Size = New System.Drawing.Size(88, 26)
         Me.btn_agregar_personal.TabIndex = 4
         Me.btn_agregar_personal.Text = "Agregar"
         Me.btn_agregar_personal.UseVisualStyleBackColor = True

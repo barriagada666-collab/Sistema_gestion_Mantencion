@@ -69,9 +69,11 @@ Partial Class FrmBuscarDatosTecnicos
         'btnAgregar
         '
         Me.btnAgregar.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnAgregar.Location = New System.Drawing.Point(260, 24)
+        Me.btnAgregar.Image = Global.mantencion.My.Resources.Resources.add
+        Me.btnAgregar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnAgregar.Location = New System.Drawing.Point(290, 22)
         Me.btnAgregar.Name = "btnAgregar"
-        Me.btnAgregar.Size = New System.Drawing.Size(59, 23)
+        Me.btnAgregar.Size = New System.Drawing.Size(78, 26)
         Me.btnAgregar.TabIndex = 1
         Me.btnAgregar.Text = "Agregar"
         Me.btnAgregar.UseVisualStyleBackColor = True
@@ -79,7 +81,7 @@ Partial Class FrmBuscarDatosTecnicos
         'chkSelTodo
         '
         Me.chkSelTodo.AutoSize = True
-        Me.chkSelTodo.Location = New System.Drawing.Point(12, 30)
+        Me.chkSelTodo.Location = New System.Drawing.Point(12, 28)
         Me.chkSelTodo.Name = "chkSelTodo"
         Me.chkSelTodo.Size = New System.Drawing.Size(110, 17)
         Me.chkSelTodo.TabIndex = 2
@@ -89,9 +91,11 @@ Partial Class FrmBuscarDatosTecnicos
         'btnCambiarEstado
         '
         Me.btnCambiarEstado.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnCambiarEstado.Location = New System.Drawing.Point(164, 24)
+        Me.btnCambiarEstado.Image = Global.mantencion.My.Resources.Resources.operations
+        Me.btnCambiarEstado.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnCambiarEstado.Location = New System.Drawing.Point(160, 22)
         Me.btnCambiarEstado.Name = "btnCambiarEstado"
-        Me.btnCambiarEstado.Size = New System.Drawing.Size(91, 23)
+        Me.btnCambiarEstado.Size = New System.Drawing.Size(124, 26)
         Me.btnCambiarEstado.TabIndex = 3
         Me.btnCambiarEstado.Text = "Cambiar Estado"
         Me.btnCambiarEstado.UseVisualStyleBackColor = True
@@ -101,7 +105,7 @@ Partial Class FrmBuscarDatosTecnicos
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.FromArgb(229, 235, 235)
-        Me.ClientSize = New System.Drawing.Size(331, 266)
+        Me.ClientSize = New System.Drawing.Size(380, 266)
         Me.Controls.Add(Me.btnCambiarEstado)
         Me.Controls.Add(Me.chkSelTodo)
         Me.Controls.Add(Me.btnAgregar)

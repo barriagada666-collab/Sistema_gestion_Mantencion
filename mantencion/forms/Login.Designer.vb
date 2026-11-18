@@ -88,18 +88,20 @@ Partial Class Login
         '
         'OK
         '
-        Me.OK.Location = New System.Drawing.Point(194, 150)
+        Me.OK.Image = Global.mantencion.My.Resources.Resources.guardar_16x16
+        Me.OK.Location = New System.Drawing.Point(186, 150)
         Me.OK.Name = "OK"
-        Me.OK.Size = New System.Drawing.Size(90, 30)
+        Me.OK.Size = New System.Drawing.Size(96, 30)
         Me.OK.TabIndex = 4
         Me.OK.Text = "&Aceptar"
         '
         'Cancel
         '
         Me.Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.Cancel.Location = New System.Drawing.Point(292, 150)
+        Me.Cancel.Image = Global.mantencion.My.Resources.Resources._16__Exit_
+        Me.Cancel.Location = New System.Drawing.Point(288, 150)
         Me.Cancel.Name = "Cancel"
-        Me.Cancel.Size = New System.Drawing.Size(90, 30)
+        Me.Cancel.Size = New System.Drawing.Size(96, 30)
         Me.Cancel.TabIndex = 5
         Me.Cancel.Text = "&Cancelar"
         '

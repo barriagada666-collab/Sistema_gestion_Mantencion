@@ -497,9 +497,11 @@ Partial Class FrmAdminNodos
         'btnNuevoNodo
         '
         Me.btnNuevoNodo.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnNuevoNodo.Location = New System.Drawing.Point(667, 146)
+        Me.btnNuevoNodo.Image = Global.mantencion.My.Resources.Resources.add
+        Me.btnNuevoNodo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnNuevoNodo.Location = New System.Drawing.Point(638, 144)
         Me.btnNuevoNodo.Name = "btnNuevoNodo"
-        Me.btnNuevoNodo.Size = New System.Drawing.Size(78, 23)
+        Me.btnNuevoNodo.Size = New System.Drawing.Size(107, 26)
         Me.btnNuevoNodo.TabIndex = 6
         Me.btnNuevoNodo.Text = "Nuevo Nodo"
         Me.btnNuevoNodo.UseVisualStyleBackColor = True
@@ -599,9 +601,11 @@ Partial Class FrmAdminNodos
         '
         'btnDatosTecnicos
         '
-        Me.btnDatosTecnicos.Location = New System.Drawing.Point(9, 146)
+        Me.btnDatosTecnicos.Image = Global.mantencion.My.Resources.Resources._16__Find_
+        Me.btnDatosTecnicos.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnDatosTecnicos.Location = New System.Drawing.Point(9, 144)
         Me.btnDatosTecnicos.Name = "btnDatosTecnicos"
-        Me.btnDatosTecnicos.Size = New System.Drawing.Size(112, 23)
+        Me.btnDatosTecnicos.Size = New System.Drawing.Size(138, 26)
         Me.btnDatosTecnicos.TabIndex = 24
         Me.btnDatosTecnicos.Text = "Ver Datos Técnicos"
         Me.btnDatosTecnicos.UseVisualStyleBackColor = True

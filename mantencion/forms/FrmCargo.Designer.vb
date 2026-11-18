@@ -93,9 +93,11 @@ Partial Class FrmCargo
         '
         'btn_buscar_cargo
         '
-        Me.btn_buscar_cargo.Location = New System.Drawing.Point(367, 36)
+        Me.btn_buscar_cargo.Image = Global.mantencion.My.Resources.Resources._16__Find_
+        Me.btn_buscar_cargo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btn_buscar_cargo.Location = New System.Drawing.Point(350, 34)
         Me.btn_buscar_cargo.Name = "btn_buscar_cargo"
-        Me.btn_buscar_cargo.Size = New System.Drawing.Size(75, 23)
+        Me.btn_buscar_cargo.Size = New System.Drawing.Size(92, 26)
         Me.btn_buscar_cargo.TabIndex = 4
         Me.btn_buscar_cargo.Text = "Buscar"
         Me.btn_buscar_cargo.UseVisualStyleBackColor = True

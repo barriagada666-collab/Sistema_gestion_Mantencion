@@ -107,11 +107,11 @@ Partial Class FrmAdminTareasNodo
         Me.btnNuevaTarea.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnNuevaTarea.Image = Global.mantencion.My.Resources.Resources.add
         Me.btnNuevaTarea.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnNuevaTarea.Location = New System.Drawing.Point(649, 80)
+        Me.btnNuevaTarea.Location = New System.Drawing.Point(640, 78)
         Me.btnNuevaTarea.Name = "btnNuevaTarea"
-        Me.btnNuevaTarea.Size = New System.Drawing.Size(100, 23)
+        Me.btnNuevaTarea.Size = New System.Drawing.Size(110, 26)
         Me.btnNuevaTarea.TabIndex = 6
-        Me.btnNuevaTarea.Text = "    Nueva Tarea"
+        Me.btnNuevaTarea.Text = "Nueva Tarea"
         Me.btnNuevaTarea.UseVisualStyleBackColor = True
         '
         'Label3
@@ -308,11 +308,13 @@ Partial Class FrmAdminTareasNodo
         '
         'btnCambiarIDMod
         '
-        Me.btnCambiarIDMod.Location = New System.Drawing.Point(746, 190)
+        Me.btnCambiarIDMod.Image = Global.mantencion.My.Resources.Resources.operations
+        Me.btnCambiarIDMod.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnCambiarIDMod.Location = New System.Drawing.Point(718, 188)
         Me.btnCambiarIDMod.Name = "btnCambiarIDMod"
-        Me.btnCambiarIDMod.Size = New System.Drawing.Size(112, 23)
+        Me.btnCambiarIDMod.Size = New System.Drawing.Size(140, 27)
         Me.btnCambiarIDMod.TabIndex = 8
-        Me.btnCambiarIDMod.Text = "Cambiar ID Modulo"
+        Me.btnCambiarIDMod.Text = "Cambiar ID Módulo"
         Me.btnCambiarIDMod.UseVisualStyleBackColor = True
         '
         'FrmAdminTareasNodo

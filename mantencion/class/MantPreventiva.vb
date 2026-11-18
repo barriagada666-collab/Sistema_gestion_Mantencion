@@ -864,7 +864,7 @@ Public Class MantPreventiva
             .lblHrsCiclo.Visible = False
             .hrsCiclo.Visible = False
             .hrsCiclo.Text = "0"
-            .btnGuardarMp.Text = "   Guardar"
+            .btnGuardarMp.Text = "Guardar"
             .btn_plan_ciclos.Enabled = False
             .del_index_personal.Clear()
             .del_index_tareas.Clear()

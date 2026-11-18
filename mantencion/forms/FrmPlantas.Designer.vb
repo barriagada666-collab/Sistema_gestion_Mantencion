@@ -56,9 +56,11 @@ Partial Class FrmPlantas
         'btnBuscarPlanta
         '
         Me.btnBuscarPlanta.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnBuscarPlanta.Location = New System.Drawing.Point(375, 37)
+        Me.btnBuscarPlanta.Image = Global.mantencion.My.Resources.Resources._16__Find_
+        Me.btnBuscarPlanta.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnBuscarPlanta.Location = New System.Drawing.Point(362, 34)
         Me.btnBuscarPlanta.Name = "btnBuscarPlanta"
-        Me.btnBuscarPlanta.Size = New System.Drawing.Size(75, 23)
+        Me.btnBuscarPlanta.Size = New System.Drawing.Size(92, 26)
         Me.btnBuscarPlanta.TabIndex = 2
         Me.btnBuscarPlanta.Text = "Buscar"
         Me.btnBuscarPlanta.UseVisualStyleBackColor = True
@@ -110,7 +112,7 @@ Partial Class FrmPlantas
         Me.GrpOperaciones.Controls.Add(Me.btnIngPlanta)
         Me.GrpOperaciones.Location = New System.Drawing.Point(12, 100)
         Me.GrpOperaciones.Name = "GrpOperaciones"
-        Me.GrpOperaciones.Size = New System.Drawing.Size(416, 62)
+        Me.GrpOperaciones.Size = New System.Drawing.Size(514, 64)
         Me.GrpOperaciones.TabIndex = 1
         Me.GrpOperaciones.TabStop = False
         Me.GrpOperaciones.Text = "Operaciones"
@@ -118,9 +120,11 @@ Partial Class FrmPlantas
         'btnLimpiarFrmPlanta
         '
         Me.btnLimpiarFrmPlanta.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnLimpiarFrmPlanta.Location = New System.Drawing.Point(251, 28)
+        Me.btnLimpiarFrmPlanta.Image = Global.mantencion.My.Resources.Resources._16__Clear_
+        Me.btnLimpiarFrmPlanta.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnLimpiarFrmPlanta.Location = New System.Drawing.Point(318, 25)
         Me.btnLimpiarFrmPlanta.Name = "btnLimpiarFrmPlanta"
-        Me.btnLimpiarFrmPlanta.Size = New System.Drawing.Size(75, 23)
+        Me.btnLimpiarFrmPlanta.Size = New System.Drawing.Size(92, 27)
         Me.btnLimpiarFrmPlanta.TabIndex = 3
         Me.btnLimpiarFrmPlanta.Text = "Limpiar"
         Me.btnLimpiarFrmPlanta.UseVisualStyleBackColor = True
@@ -128,9 +132,11 @@ Partial Class FrmPlantas
         'btnDelPlanta
         '
         Me.btnDelPlanta.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnDelPlanta.Location = New System.Drawing.Point(170, 28)
+        Me.btnDelPlanta.Image = Global.mantencion.My.Resources.Resources._16__Delete_
+        Me.btnDelPlanta.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnDelPlanta.Location = New System.Drawing.Point(216, 25)
         Me.btnDelPlanta.Name = "btnDelPlanta"
-        Me.btnDelPlanta.Size = New System.Drawing.Size(75, 23)
+        Me.btnDelPlanta.Size = New System.Drawing.Size(94, 27)
         Me.btnDelPlanta.TabIndex = 2
         Me.btnDelPlanta.Text = "Eliminar"
         Me.btnDelPlanta.UseVisualStyleBackColor = True
@@ -138,9 +144,11 @@ Partial Class FrmPlantas
         'btnActPlanta
         '
         Me.btnActPlanta.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnActPlanta.Location = New System.Drawing.Point(88, 28)
+        Me.btnActPlanta.Image = Global.mantencion.My.Resources.Resources.icono_escritura_2
+        Me.btnActPlanta.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnActPlanta.Location = New System.Drawing.Point(108, 25)
         Me.btnActPlanta.Name = "btnActPlanta"
-        Me.btnActPlanta.Size = New System.Drawing.Size(75, 23)
+        Me.btnActPlanta.Size = New System.Drawing.Size(100, 27)
         Me.btnActPlanta.TabIndex = 1
         Me.btnActPlanta.Text = "Actualizar"
         Me.btnActPlanta.UseVisualStyleBackColor = True
@@ -148,9 +156,11 @@ Partial Class FrmPlantas
         'btnIngPlanta
         '
         Me.btnIngPlanta.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnIngPlanta.Location = New System.Drawing.Point(6, 28)
+        Me.btnIngPlanta.Image = Global.mantencion.My.Resources.Resources.guardar_16x16
+        Me.btnIngPlanta.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnIngPlanta.Location = New System.Drawing.Point(8, 25)
         Me.btnIngPlanta.Name = "btnIngPlanta"
-        Me.btnIngPlanta.Size = New System.Drawing.Size(75, 23)
+        Me.btnIngPlanta.Size = New System.Drawing.Size(94, 27)
         Me.btnIngPlanta.TabIndex = 0
         Me.btnIngPlanta.Text = "Ingresar"
         Me.btnIngPlanta.UseVisualStyleBackColor = True
@@ -158,9 +168,11 @@ Partial Class FrmPlantas
         'btn_salir
         '
         Me.btn_salir.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btn_salir.Location = New System.Drawing.Point(330, 28)
+        Me.btn_salir.Image = Global.mantencion.My.Resources.Resources._16__Exit_
+        Me.btn_salir.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btn_salir.Location = New System.Drawing.Point(418, 25)
         Me.btn_salir.Name = "btn_salir"
-        Me.btn_salir.Size = New System.Drawing.Size(75, 23)
+        Me.btn_salir.Size = New System.Drawing.Size(86, 27)
         Me.btn_salir.TabIndex = 4
         Me.btn_salir.Text = "Salir"
         Me.btn_salir.UseVisualStyleBackColor = True

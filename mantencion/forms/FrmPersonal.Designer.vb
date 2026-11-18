@@ -238,11 +238,11 @@ Partial Class FrmPersonal
         '
         Me.btnBuscarPersonal.Image = Global.mantencion.My.Resources.Resources._16__Find_
         Me.btnBuscarPersonal.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnBuscarPersonal.Location = New System.Drawing.Point(152, 46)
+        Me.btnBuscarPersonal.Location = New System.Drawing.Point(152, 44)
         Me.btnBuscarPersonal.Name = "btnBuscarPersonal"
-        Me.btnBuscarPersonal.Size = New System.Drawing.Size(75, 23)
+        Me.btnBuscarPersonal.Size = New System.Drawing.Size(88, 26)
         Me.btnBuscarPersonal.TabIndex = 3
-        Me.btnBuscarPersonal.Text = "     Buscar"
+        Me.btnBuscarPersonal.Text = "Buscar"
         Me.btnBuscarPersonal.UseVisualStyleBackColor = True
         '
         'Label9
@@ -377,7 +377,7 @@ Partial Class FrmPersonal
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(48, 30)
         Me.Label3.TabIndex = 4
-        Me.Label3.Text = "Codigo " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Interno"
+        Me.Label3.Text = "Código " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Interno"
         '
         'txtDv
         '

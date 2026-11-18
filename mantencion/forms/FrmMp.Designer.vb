@@ -187,11 +187,11 @@ Partial Class FrmMp
         Me.btn_plan_ciclos.Enabled = False
         Me.btn_plan_ciclos.Image = Global.mantencion.My.Resources.Resources.Plan_Ciclos_16x16
         Me.btn_plan_ciclos.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btn_plan_ciclos.Location = New System.Drawing.Point(533, 102)
+        Me.btn_plan_ciclos.Location = New System.Drawing.Point(510, 100)
         Me.btn_plan_ciclos.Name = "btn_plan_ciclos"
-        Me.btn_plan_ciclos.Size = New System.Drawing.Size(105, 23)
+        Me.btn_plan_ciclos.Size = New System.Drawing.Size(124, 26)
         Me.btn_plan_ciclos.TabIndex = 23
-        Me.btn_plan_ciclos.Text = "     Planificar Ciclos"
+        Me.btn_plan_ciclos.Text = "Planificar Ciclos"
         Me.btn_plan_ciclos.UseVisualStyleBackColor = True
         '
         'btnActMp
@@ -199,11 +199,11 @@ Partial Class FrmMp
         Me.btnActMp.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnActMp.Image = Global.mantencion.My.Resources.Resources.icono_escritura_2
         Me.btnActMp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnActMp.Location = New System.Drawing.Point(644, 69)
+        Me.btnActMp.Location = New System.Drawing.Point(640, 69)
         Me.btnActMp.Name = "btnActMp"
-        Me.btnActMp.Size = New System.Drawing.Size(96, 23)
+        Me.btnActMp.Size = New System.Drawing.Size(102, 26)
         Me.btnActMp.TabIndex = 22
-        Me.btnActMp.Text = "     Actualizar MP"
+        Me.btnActMp.Text = "Actualizar MP"
         Me.btnActMp.UseVisualStyleBackColor = True
         '
         'Label3
@@ -240,11 +240,11 @@ Partial Class FrmMp
         Me.btnEliminarMp.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnEliminarMp.Image = Global.mantencion.My.Resources.Resources._16__Delete_
         Me.btnEliminarMp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnEliminarMp.Location = New System.Drawing.Point(644, 102)
+        Me.btnEliminarMp.Location = New System.Drawing.Point(640, 100)
         Me.btnEliminarMp.Name = "btnEliminarMp"
-        Me.btnEliminarMp.Size = New System.Drawing.Size(96, 23)
+        Me.btnEliminarMp.Size = New System.Drawing.Size(102, 26)
         Me.btnEliminarMp.TabIndex = 19
-        Me.btnEliminarMp.Text = "   Eliminar MP"
+        Me.btnEliminarMp.Text = "Eliminar MP"
         Me.btnEliminarMp.UseVisualStyleBackColor = True
         '
         'cmbTipoMp
@@ -262,11 +262,11 @@ Partial Class FrmMp
         Me.btnNuevaMp.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnNuevaMp.Image = Global.mantencion.My.Resources.Resources.add
         Me.btnNuevaMp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnNuevaMp.Location = New System.Drawing.Point(644, 39)
+        Me.btnNuevaMp.Location = New System.Drawing.Point(640, 39)
         Me.btnNuevaMp.Name = "btnNuevaMp"
-        Me.btnNuevaMp.Size = New System.Drawing.Size(96, 23)
+        Me.btnNuevaMp.Size = New System.Drawing.Size(102, 26)
         Me.btnNuevaMp.TabIndex = 9
-        Me.btnNuevaMp.Text = "    Nueva MP"
+        Me.btnNuevaMp.Text = "Nueva MP"
         Me.btnNuevaMp.UseVisualStyleBackColor = True
         '
         'btnBuscarMp
@@ -274,11 +274,11 @@ Partial Class FrmMp
         Me.btnBuscarMp.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnBuscarMp.Image = Global.mantencion.My.Resources.Resources._16__Find_
         Me.btnBuscarMp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnBuscarMp.Location = New System.Drawing.Point(644, 10)
+        Me.btnBuscarMp.Location = New System.Drawing.Point(640, 10)
         Me.btnBuscarMp.Name = "btnBuscarMp"
-        Me.btnBuscarMp.Size = New System.Drawing.Size(96, 23)
+        Me.btnBuscarMp.Size = New System.Drawing.Size(102, 26)
         Me.btnBuscarMp.TabIndex = 8
-        Me.btnBuscarMp.Text = "   Buscar MP"
+        Me.btnBuscarMp.Text = "Buscar MP"
         Me.btnBuscarMp.UseVisualStyleBackColor = True
         '
         'lblEstadoMp
@@ -289,7 +289,7 @@ Partial Class FrmMp
         Me.lblEstadoMp.Name = "lblEstadoMp"
         Me.lblEstadoMp.Size = New System.Drawing.Size(64, 15)
         Me.lblEstadoMp.TabIndex = 7
-        Me.lblEstadoMp.Text = "Estado Mp"
+        Me.lblEstadoMp.Text = "Estado MP"
         '
         'cmbEstadoMp
         '
@@ -372,20 +372,22 @@ Partial Class FrmMp
         Me.GrpOperTarea.Controls.Add(Me.btnLimpiarCiclo)
         Me.GrpOperTarea.Controls.Add(Me.btnGuardarMp)
         Me.GrpOperTarea.Controls.Add(Me.btnIngMp)
-        Me.GrpOperTarea.Location = New System.Drawing.Point(303, 585)
+        Me.GrpOperTarea.Location = New System.Drawing.Point(262, 585)
         Me.GrpOperTarea.Name = "GrpOperTarea"
-        Me.GrpOperTarea.Size = New System.Drawing.Size(654, 64)
+        Me.GrpOperTarea.Size = New System.Drawing.Size(746, 64)
         Me.GrpOperTarea.TabIndex = 3
         Me.GrpOperTarea.TabStop = False
         Me.GrpOperTarea.Text = "Operaciones"
         '
         'btnCambiarTareas
         '
-        Me.btnCambiarTareas.Location = New System.Drawing.Point(571, 18)
+        Me.btnCambiarTareas.Image = Global.mantencion.My.Resources.Resources.operations
+        Me.btnCambiarTareas.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnCambiarTareas.Location = New System.Drawing.Point(592, 22)
         Me.btnCambiarTareas.Name = "btnCambiarTareas"
-        Me.btnCambiarTareas.Size = New System.Drawing.Size(77, 36)
+        Me.btnCambiarTareas.Size = New System.Drawing.Size(144, 27)
         Me.btnCambiarTareas.TabIndex = 6
-        Me.btnCambiarTareas.Text = "Cambiar ID Modulos"
+        Me.btnCambiarTareas.Text = "Cambiar ID Módulos"
         Me.btnCambiarTareas.UseVisualStyleBackColor = True
         Me.btnCambiarTareas.Visible = False
         '
@@ -393,55 +395,55 @@ Partial Class FrmMp
         '
         Me.btnSalir.Image = Global.mantencion.My.Resources.Resources._16__Exit_
         Me.btnSalir.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnSalir.Location = New System.Drawing.Point(477, 25)
+        Me.btnSalir.Location = New System.Drawing.Point(504, 22)
         Me.btnSalir.Name = "btnSalir"
-        Me.btnSalir.Size = New System.Drawing.Size(80, 23)
+        Me.btnSalir.Size = New System.Drawing.Size(80, 27)
         Me.btnSalir.TabIndex = 20
-        Me.btnSalir.Text = "   Salir"
+        Me.btnSalir.Text = "Salir"
         Me.btnSalir.UseVisualStyleBackColor = True
         '
         'btnGuardarComoNuevoCiclo
         '
         Me.btnGuardarComoNuevoCiclo.Image = Global.mantencion.My.Resources.Resources.add
         Me.btnGuardarComoNuevoCiclo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnGuardarComoNuevoCiclo.Location = New System.Drawing.Point(138, 25)
+        Me.btnGuardarComoNuevoCiclo.Location = New System.Drawing.Point(116, 22)
         Me.btnGuardarComoNuevoCiclo.Name = "btnGuardarComoNuevoCiclo"
-        Me.btnGuardarComoNuevoCiclo.Size = New System.Drawing.Size(161, 23)
+        Me.btnGuardarComoNuevoCiclo.Size = New System.Drawing.Size(172, 27)
         Me.btnGuardarComoNuevoCiclo.TabIndex = 18
-        Me.btnGuardarComoNuevoCiclo.Text = "    Guardar Como Nuevo Ciclo"
+        Me.btnGuardarComoNuevoCiclo.Text = "Guardar Como Nuevo Ciclo"
         Me.btnGuardarComoNuevoCiclo.UseVisualStyleBackColor = True
         '
         'btnLimpiarCiclo
         '
         Me.btnLimpiarCiclo.Image = Global.mantencion.My.Resources.Resources._16__Clear_
         Me.btnLimpiarCiclo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnLimpiarCiclo.Location = New System.Drawing.Point(391, 25)
+        Me.btnLimpiarCiclo.Location = New System.Drawing.Point(406, 22)
         Me.btnLimpiarCiclo.Name = "btnLimpiarCiclo"
-        Me.btnLimpiarCiclo.Size = New System.Drawing.Size(80, 23)
+        Me.btnLimpiarCiclo.Size = New System.Drawing.Size(90, 27)
         Me.btnLimpiarCiclo.TabIndex = 16
-        Me.btnLimpiarCiclo.Text = "    Limpiar"
+        Me.btnLimpiarCiclo.Text = "Limpiar"
         Me.btnLimpiarCiclo.UseVisualStyleBackColor = True
         '
         'btnGuardarMp
         '
         Me.btnGuardarMp.Image = Global.mantencion.My.Resources.Resources.icono_escritura_2
         Me.btnGuardarMp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnGuardarMp.Location = New System.Drawing.Point(305, 25)
+        Me.btnGuardarMp.Location = New System.Drawing.Point(296, 22)
         Me.btnGuardarMp.Name = "btnGuardarMp"
-        Me.btnGuardarMp.Size = New System.Drawing.Size(80, 23)
+        Me.btnGuardarMp.Size = New System.Drawing.Size(102, 27)
         Me.btnGuardarMp.TabIndex = 1
-        Me.btnGuardarMp.Text = "    Guardar"
+        Me.btnGuardarMp.Text = "Guardar"
         Me.btnGuardarMp.UseVisualStyleBackColor = True
         '
         'btnIngMp
         '
         Me.btnIngMp.Image = Global.mantencion.My.Resources.Resources.guardar_16x16
         Me.btnIngMp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnIngMp.Location = New System.Drawing.Point(42, 25)
+        Me.btnIngMp.Location = New System.Drawing.Point(10, 22)
         Me.btnIngMp.Name = "btnIngMp"
-        Me.btnIngMp.Size = New System.Drawing.Size(90, 23)
+        Me.btnIngMp.Size = New System.Drawing.Size(98, 27)
         Me.btnIngMp.TabIndex = 0
-        Me.btnIngMp.Text = "     Ingresar MP"
+        Me.btnIngMp.Text = "Ingresar MP"
         Me.btnIngMp.UseVisualStyleBackColor = True
         '
         'GrpCiclosMp
@@ -480,11 +482,11 @@ Partial Class FrmMp
         Me.btnBuscarCiclo.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnBuscarCiclo.Image = Global.mantencion.My.Resources.Resources._16__Find_
         Me.btnBuscarCiclo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnBuscarCiclo.Location = New System.Drawing.Point(542, 121)
+        Me.btnBuscarCiclo.Location = New System.Drawing.Point(530, 120)
         Me.btnBuscarCiclo.Name = "btnBuscarCiclo"
-        Me.btnBuscarCiclo.Size = New System.Drawing.Size(96, 23)
+        Me.btnBuscarCiclo.Size = New System.Drawing.Size(102, 26)
         Me.btnBuscarCiclo.TabIndex = 18
-        Me.btnBuscarCiclo.Text = "     Buscar Ciclo"
+        Me.btnBuscarCiclo.Text = "Buscar Ciclo"
         Me.btnBuscarCiclo.UseVisualStyleBackColor = True
         '
         'txtIdCiclo
@@ -502,11 +504,11 @@ Partial Class FrmMp
         Me.btnNuevoCiclo.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnNuevoCiclo.Image = Global.mantencion.My.Resources.Resources.add
         Me.btnNuevoCiclo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnNuevoCiclo.Location = New System.Drawing.Point(644, 92)
+        Me.btnNuevoCiclo.Location = New System.Drawing.Point(640, 90)
         Me.btnNuevoCiclo.Name = "btnNuevoCiclo"
-        Me.btnNuevoCiclo.Size = New System.Drawing.Size(96, 23)
+        Me.btnNuevoCiclo.Size = New System.Drawing.Size(102, 26)
         Me.btnNuevoCiclo.TabIndex = 16
-        Me.btnNuevoCiclo.Text = "    Nuevo Ciclo"
+        Me.btnNuevoCiclo.Text = "Nuevo Ciclo"
         Me.btnNuevoCiclo.UseVisualStyleBackColor = True
         '
         'btnEliminarCiclo
@@ -514,11 +516,11 @@ Partial Class FrmMp
         Me.btnEliminarCiclo.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnEliminarCiclo.Image = Global.mantencion.My.Resources.Resources._16__Delete_
         Me.btnEliminarCiclo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnEliminarCiclo.Location = New System.Drawing.Point(644, 121)
+        Me.btnEliminarCiclo.Location = New System.Drawing.Point(640, 120)
         Me.btnEliminarCiclo.Name = "btnEliminarCiclo"
-        Me.btnEliminarCiclo.Size = New System.Drawing.Size(96, 23)
+        Me.btnEliminarCiclo.Size = New System.Drawing.Size(102, 26)
         Me.btnEliminarCiclo.TabIndex = 17
-        Me.btnEliminarCiclo.Text = "     Eliminar Ciclo"
+        Me.btnEliminarCiclo.Text = "Eliminar Ciclo"
         Me.btnEliminarCiclo.UseVisualStyleBackColor = True
         '
         'lblEstadoCiclo

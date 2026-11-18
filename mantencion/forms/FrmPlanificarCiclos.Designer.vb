@@ -135,11 +135,11 @@ Partial Class FrmPlanificarCiclos
         Me.btnCancelar.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnCancelar.Image = Global.mantencion.My.Resources.Resources._16__Delete_
         Me.btnCancelar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnCancelar.Location = New System.Drawing.Point(375, 452)
+        Me.btnCancelar.Location = New System.Drawing.Point(368, 450)
         Me.btnCancelar.Name = "btnCancelar"
-        Me.btnCancelar.Size = New System.Drawing.Size(90, 23)
+        Me.btnCancelar.Size = New System.Drawing.Size(98, 26)
         Me.btnCancelar.TabIndex = 9
-        Me.btnCancelar.Text = "   Cancelar"
+        Me.btnCancelar.Text = "Cancelar"
         Me.btnCancelar.UseVisualStyleBackColor = True
         '
         'btnCrearCiclos
@@ -147,11 +147,11 @@ Partial Class FrmPlanificarCiclos
         Me.btnCrearCiclos.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnCrearCiclos.Image = Global.mantencion.My.Resources.Resources.add
         Me.btnCrearCiclos.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnCrearCiclos.Location = New System.Drawing.Point(279, 452)
+        Me.btnCrearCiclos.Location = New System.Drawing.Point(252, 450)
         Me.btnCrearCiclos.Name = "btnCrearCiclos"
-        Me.btnCrearCiclos.Size = New System.Drawing.Size(90, 23)
+        Me.btnCrearCiclos.Size = New System.Drawing.Size(110, 26)
         Me.btnCrearCiclos.TabIndex = 8
-        Me.btnCrearCiclos.Text = "     Crear Ciclos"
+        Me.btnCrearCiclos.Text = "Crear Ciclos"
         Me.btnCrearCiclos.UseVisualStyleBackColor = True
         '
         'grillaVistaPrevia
@@ -200,9 +200,11 @@ Partial Class FrmPlanificarCiclos
         '
         'btnCrearVistaPrevia
         '
-        Me.btnCrearVistaPrevia.Location = New System.Drawing.Point(362, 131)
+        Me.btnCrearVistaPrevia.Image = Global.mantencion.My.Resources.Resources.Plan_Ciclos_16x16
+        Me.btnCrearVistaPrevia.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnCrearVistaPrevia.Location = New System.Drawing.Point(326, 129)
         Me.btnCrearVistaPrevia.Name = "btnCrearVistaPrevia"
-        Me.btnCrearVistaPrevia.Size = New System.Drawing.Size(103, 23)
+        Me.btnCrearVistaPrevia.Size = New System.Drawing.Size(140, 26)
         Me.btnCrearVistaPrevia.TabIndex = 12
         Me.btnCrearVistaPrevia.Text = "Crear Vista Previa"
         Me.btnCrearVistaPrevia.UseVisualStyleBackColor = True

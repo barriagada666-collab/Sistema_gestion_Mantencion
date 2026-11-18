@@ -451,7 +451,7 @@ Partial Class FrmInfMantPrev
         Me.lblCiclosMp.Name = "lblCiclosMp"
         Me.lblCiclosMp.Size = New System.Drawing.Size(196, 15)
         Me.lblCiclosMp.TabIndex = 14
-        Me.lblCiclosMp.Text = "Ciclos de la Mantencion preventiva"
+        Me.lblCiclosMp.Text = "Ciclos de la Mantención Preventiva"
         '
         'TabDetalleCicloMp
         '

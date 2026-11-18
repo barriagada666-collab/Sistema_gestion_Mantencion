@@ -55,9 +55,11 @@ Partial Class FrmSeccion
         '
         'btnBuscarSeccion
         '
-        Me.btnBuscarSeccion.Location = New System.Drawing.Point(326, 44)
+        Me.btnBuscarSeccion.Image = Global.mantencion.My.Resources.Resources._16__Find_
+        Me.btnBuscarSeccion.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnBuscarSeccion.Location = New System.Drawing.Point(312, 41)
         Me.btnBuscarSeccion.Name = "btnBuscarSeccion"
-        Me.btnBuscarSeccion.Size = New System.Drawing.Size(75, 23)
+        Me.btnBuscarSeccion.Size = New System.Drawing.Size(92, 26)
         Me.btnBuscarSeccion.TabIndex = 4
         Me.btnBuscarSeccion.Text = "Buscar"
         Me.btnBuscarSeccion.UseVisualStyleBackColor = True

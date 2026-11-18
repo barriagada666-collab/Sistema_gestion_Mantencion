@@ -98,7 +98,7 @@ Partial Class FrmCartaGantt
         '
         'obs_ciclo
         '
-        Me.obs_ciclo.HeaderText = "Observacion Ciclo"
+        Me.obs_ciclo.HeaderText = "Observación Ciclo"
         Me.obs_ciclo.Name = "obs_ciclo"
         Me.obs_ciclo.ReadOnly = True
         '
@@ -116,7 +116,7 @@ Partial Class FrmCartaGantt
         '
         'duracion
         '
-        Me.duracion.HeaderText = "Duracion (Hrs)"
+        Me.duracion.HeaderText = "Duración (Hrs)"
         Me.duracion.Name = "duracion"
         Me.duracion.ReadOnly = True
         Me.duracion.Width = 60

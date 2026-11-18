@@ -139,9 +139,9 @@ Partial Class FrmDatosTecnicosNodo
         '
         Me.btnEliminarDatoTecnico.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnEliminarDatoTecnico.Image = Global.mantencion.My.Resources.Resources.eliminar
-        Me.btnEliminarDatoTecnico.Location = New System.Drawing.Point(860, 179)
+        Me.btnEliminarDatoTecnico.Location = New System.Drawing.Point(858, 178)
         Me.btnEliminarDatoTecnico.Name = "btnEliminarDatoTecnico"
-        Me.btnEliminarDatoTecnico.Size = New System.Drawing.Size(24, 24)
+        Me.btnEliminarDatoTecnico.Size = New System.Drawing.Size(26, 26)
         Me.btnEliminarDatoTecnico.TabIndex = 6
         Me.ToolTip4.SetToolTip(Me.btnEliminarDatoTecnico, "Eliminar Dato Técnico")
         Me.btnEliminarDatoTecnico.UseVisualStyleBackColor = True

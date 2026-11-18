@@ -241,31 +241,36 @@ Public Class FrmConfiguracionServidor
 
         btnProbar = New Button()
         btnProbar.Text = "Probar Conexión"
-        btnProbar.Location = New Point(16, 14)
-        btnProbar.Size = New Size(134, 36)
+        btnProbar.Image = Global.mantencion.My.Resources.Resources._16__Find_
+        btnProbar.Location = New Point(12, 14)
+        btnProbar.Size = New Size(138, 36)
         btnProbar.Font = New Font("Segoe UI", 8.75F, FontStyle.Bold)
 
         btnRestaurar = New Button()
         btnRestaurar.Text = "Original"
+        btnRestaurar.Image = Global.mantencion.My.Resources.Resources._16__Clear_
         btnRestaurar.Location = New Point(156, 14)
-        btnRestaurar.Size = New Size(96, 36)
+        btnRestaurar.Size = New Size(94, 36)
         btnRestaurar.Font = New Font("Segoe UI", 8.75F)
 
         btnVerLogs = New Button()
         btnVerLogs.Text = "Ver Logs"
-        btnVerLogs.Location = New Point(258, 14)
-        btnVerLogs.Size = New Size(86, 36)
+        btnVerLogs.Image = Global.mantencion.My.Resources.Resources.notas
+        btnVerLogs.Location = New Point(256, 14)
+        btnVerLogs.Size = New Size(96, 36)
         btnVerLogs.Font = New Font("Segoe UI", 8.75F)
 
         btnGuardar = New Button()
         btnGuardar.Text = "Guardar y Aplicar"
-        btnGuardar.Location = New Point(358, 14)
-        btnGuardar.Size = New Size(148, 36)
+        btnGuardar.Image = Global.mantencion.My.Resources.Resources.guardar_16x16
+        btnGuardar.Location = New Point(360, 14)
+        btnGuardar.Size = New Size(150, 36)
         btnGuardar.Font = New Font("Segoe UI", 8.75F, FontStyle.Bold)
 
         btnCancelar = New Button()
         btnCancelar.Text = "Cancelar"
-        btnCancelar.Location = New Point(512, 14)
+        btnCancelar.Image = Global.mantencion.My.Resources.Resources._16__Exit_
+        btnCancelar.Location = New Point(516, 14)
         btnCancelar.Size = New Size(96, 36)
         btnCancelar.Font = New Font("Segoe UI", 8.75F)
 

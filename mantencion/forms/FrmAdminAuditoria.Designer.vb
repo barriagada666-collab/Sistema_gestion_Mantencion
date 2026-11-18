@@ -335,6 +335,8 @@ Partial Class FrmAdminAuditoria
         Me.btnLimpiarFiltros.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnLimpiarFiltros.Font = New System.Drawing.Font("Calibri", 8.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnLimpiarFiltros.ForeColor = System.Drawing.Color.FromArgb(15, 23, 42)
+        Me.btnLimpiarFiltros.Image = Global.mantencion.My.Resources.Resources._16__Clear_
+        Me.btnLimpiarFiltros.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.btnLimpiarFiltros.Location = New System.Drawing.Point(586, 58)
         Me.btnLimpiarFiltros.Name = "btnLimpiarFiltros"
         Me.btnLimpiarFiltros.Size = New System.Drawing.Size(140, 26)

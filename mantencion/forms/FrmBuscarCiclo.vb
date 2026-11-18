@@ -141,7 +141,7 @@ Public Class FrmBuscarCiclo
                     .hrsCiclo.Visible = False
                 End With
             End If
-            FrmMp.btnGuardarMp.Text = "    Actualizar"
+            FrmMp.btnGuardarMp.Text = "Actualizar"
             FrmMp.btnGuardarMp.Enabled = Usuario.PermisoGuardarMp
             Me.Close()
         Catch ex As Exception

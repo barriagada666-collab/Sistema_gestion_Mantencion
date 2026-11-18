@@ -336,11 +336,11 @@ Partial Class FrmAdminUsuarios
         Me.btnGestionPerfiles.BackColor = System.Drawing.Color.White
         Me.btnGestionPerfiles.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnGestionPerfiles.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnGestionPerfiles.Image = Global.mantencion.My.Resources.Resources.operations
         Me.btnGestionPerfiles.Location = New System.Drawing.Point(478, 36)
         Me.btnGestionPerfiles.Name = "btnGestionPerfiles"
         Me.btnGestionPerfiles.Size = New System.Drawing.Size(28, 24)
         Me.btnGestionPerfiles.TabIndex = 3
-        Me.btnGestionPerfiles.Text = "..."
         Me.ToolTipLimpiar.SetToolTip(Me.btnGestionPerfiles, "Gestionar Perfiles (Crear / Renombrar / Eliminar)")
         Me.btnGestionPerfiles.UseVisualStyleBackColor = True
         '
@@ -442,7 +442,7 @@ Partial Class FrmAdminUsuarios
         Me.tblContenedorPermisos.Location = New System.Drawing.Point(6, 20)
         Me.tblContenedorPermisos.Name = "tblContenedorPermisos"
         Me.tblContenedorPermisos.RowCount = 2
-        Me.tblContenedorPermisos.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32.0!))
+        Me.tblContenedorPermisos.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36.0!))
         Me.tblContenedorPermisos.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
         Me.tblContenedorPermisos.Size = New System.Drawing.Size(1006, 319)
         Me.tblContenedorPermisos.TabIndex = 0
@@ -457,7 +457,7 @@ Partial Class FrmAdminUsuarios
         Me.pnlAccionesPermisos.Location = New System.Drawing.Point(0, 0)
         Me.pnlAccionesPermisos.Margin = New System.Windows.Forms.Padding(0)
         Me.pnlAccionesPermisos.Name = "pnlAccionesPermisos"
-        Me.pnlAccionesPermisos.Size = New System.Drawing.Size(1006, 32)
+        Me.pnlAccionesPermisos.Size = New System.Drawing.Size(1006, 36)
         Me.pnlAccionesPermisos.TabIndex = 0
         '
         'lblModoUsuario
@@ -465,7 +465,7 @@ Partial Class FrmAdminUsuarios
         Me.lblModoUsuario.AutoSize = True
         Me.lblModoUsuario.Font = New System.Drawing.Font("Calibri", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblModoUsuario.ForeColor = System.Drawing.Color.FromArgb(15, 45, 68)
-        Me.lblModoUsuario.Location = New System.Drawing.Point(6, 8)
+        Me.lblModoUsuario.Location = New System.Drawing.Point(6, 10)
         Me.lblModoUsuario.Name = "lblModoUsuario"
         Me.lblModoUsuario.Size = New System.Drawing.Size(198, 14)
         Me.lblModoUsuario.TabIndex = 0
@@ -475,9 +475,11 @@ Partial Class FrmAdminUsuarios
         '
         Me.btnAplicarPlantilla.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnAplicarPlantilla.Font = New System.Drawing.Font("Calibri", 8.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnAplicarPlantilla.Location = New System.Drawing.Point(568, 3)
+        Me.btnAplicarPlantilla.Image = Global.mantencion.My.Resources.Resources.Plan_Ciclos_16x16
+        Me.btnAplicarPlantilla.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnAplicarPlantilla.Location = New System.Drawing.Point(542, 3)
         Me.btnAplicarPlantilla.Name = "btnAplicarPlantilla"
-        Me.btnAplicarPlantilla.Size = New System.Drawing.Size(176, 25)
+        Me.btnAplicarPlantilla.Size = New System.Drawing.Size(188, 29)
         Me.btnAplicarPlantilla.TabIndex = 1
         Me.btnAplicarPlantilla.Text = "Aplicar Plantilla de Perfil"
         Me.btnAplicarPlantilla.UseVisualStyleBackColor = True
@@ -486,9 +488,11 @@ Partial Class FrmAdminUsuarios
         '
         Me.btnMarcarTodosPerm.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnMarcarTodosPerm.Font = New System.Drawing.Font("Calibri", 8.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnMarcarTodosPerm.Location = New System.Drawing.Point(750, 3)
+        Me.btnMarcarTodosPerm.Image = Global.mantencion.My.Resources.Resources.add
+        Me.btnMarcarTodosPerm.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnMarcarTodosPerm.Location = New System.Drawing.Point(736, 3)
         Me.btnMarcarTodosPerm.Name = "btnMarcarTodosPerm"
-        Me.btnMarcarTodosPerm.Size = New System.Drawing.Size(116, 25)
+        Me.btnMarcarTodosPerm.Size = New System.Drawing.Size(118, 29)
         Me.btnMarcarTodosPerm.TabIndex = 2
         Me.btnMarcarTodosPerm.Text = "Marcar Todos"
         Me.btnMarcarTodosPerm.UseVisualStyleBackColor = True
@@ -497,9 +501,11 @@ Partial Class FrmAdminUsuarios
         '
         Me.btnDesmarcarTodosPerm.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnDesmarcarTodosPerm.Font = New System.Drawing.Font("Calibri", 8.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnDesmarcarTodosPerm.Location = New System.Drawing.Point(872, 3)
+        Me.btnDesmarcarTodosPerm.Image = Global.mantencion.My.Resources.Resources._16__Clear_
+        Me.btnDesmarcarTodosPerm.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnDesmarcarTodosPerm.Location = New System.Drawing.Point(860, 3)
         Me.btnDesmarcarTodosPerm.Name = "btnDesmarcarTodosPerm"
-        Me.btnDesmarcarTodosPerm.Size = New System.Drawing.Size(128, 25)
+        Me.btnDesmarcarTodosPerm.Size = New System.Drawing.Size(140, 29)
         Me.btnDesmarcarTodosPerm.TabIndex = 3
         Me.btnDesmarcarTodosPerm.Text = "Desmarcar Todos"
         Me.btnDesmarcarTodosPerm.UseVisualStyleBackColor = True

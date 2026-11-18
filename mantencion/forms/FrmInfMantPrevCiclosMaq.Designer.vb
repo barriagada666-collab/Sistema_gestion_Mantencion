@@ -277,7 +277,7 @@ Partial Class FrmInfMantPrevCiclosMaq
         Me.Name = "FrmInfMantPrevCiclosMaq"
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
-        Me.Text = "Informe Ciclos Mantencion Preventiva"
+        Me.Text = "Informe Ciclos Mantención Preventiva"
         Me.WindowState = System.Windows.Forms.FormWindowState.Normal
         CType(Me.grillaCiclosMaquinas, System.ComponentModel.ISupportInitialize).EndInit()
         Me.Panel1.ResumeLayout(False)

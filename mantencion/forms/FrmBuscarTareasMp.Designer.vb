@@ -86,9 +86,11 @@ Partial Class FrmBuscarTareasMp
         'btnAgrTareas
         '
         Me.btnAgrTareas.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnAgrTareas.Location = New System.Drawing.Point(591, 38)
+        Me.btnAgrTareas.Image = Global.mantencion.My.Resources.Resources.add
+        Me.btnAgrTareas.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnAgrTareas.Location = New System.Drawing.Point(555, 34)
         Me.btnAgrTareas.Name = "btnAgrTareas"
-        Me.btnAgrTareas.Size = New System.Drawing.Size(89, 23)
+        Me.btnAgrTareas.Size = New System.Drawing.Size(125, 26)
         Me.btnAgrTareas.TabIndex = 3
         Me.btnAgrTareas.Text = "Agregar Tareas"
         Me.btnAgrTareas.UseVisualStyleBackColor = True

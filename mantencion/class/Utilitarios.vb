@@ -1040,6 +1040,7 @@ Public Class Utilitarios
         If String.IsNullOrEmpty(txt) Then Return False
         Dim n As String = If(btn.Name, "")
         Return txt.Equals("Guardar", StringComparison.OrdinalIgnoreCase) OrElse
+               (n.Equals("btnGuardarMp", StringComparison.OrdinalIgnoreCase) AndAlso txt.Equals("Actualizar", StringComparison.OrdinalIgnoreCase)) OrElse
                txt.Equals("Ingresar", StringComparison.OrdinalIgnoreCase) OrElse
                txt.Equals("Ingresar MP", StringComparison.OrdinalIgnoreCase) OrElse
                txt.Equals("Aceptar", StringComparison.OrdinalIgnoreCase) OrElse
@@ -1081,9 +1082,26 @@ Public Class Utilitarios
         End If
     End Sub
 
+    Private Shared ReadOnly _ajustandoTextoBoton As New HashSet(Of Button)()
+
+    Private Shared Sub AlCambiarTextoBotonCorporativo(ByVal sender As Object, ByVal e As EventArgs)
+        Dim btn As Button = TryCast(sender, Button)
+        If btn Is Nothing OrElse btn.IsDisposed OrElse _ajustandoTextoBoton.Contains(btn) Then Exit Sub
+        _ajustandoTextoBoton.Add(btn)
+        Try
+            NormalizarIconoBoton(btn)
+            AplicarEstiloBotonCorporativo(btn)
+        Finally
+            _ajustandoTextoBoton.Remove(btn)
+        End Try
+    End Sub
+
     Private Shared Sub AlDisponerBotonPrimario(ByVal sender As Object, ByVal e As EventArgs)
         Dim btn As Button = TryCast(sender, Button)
-        If btn IsNot Nothing Then _imagenesOriginales.Remove(btn)
+        If btn IsNot Nothing Then
+            _imagenesOriginales.Remove(btn)
+            _ajustandoTextoBoton.Remove(btn)
+        End If
     End Sub
 
     Private Shared Sub AlCambiarHabilitacionBotonPrimario(ByVal sender As Object, ByVal e As EventArgs)
@@ -1096,6 +1114,9 @@ Public Class Utilitarios
         btn.FlatStyle = FlatStyle.Flat
         btn.FlatAppearance.BorderSize = 1
         btn.Cursor = Cursors.Hand
+        btn.AutoEllipsis = False
+        RemoveHandler btn.TextChanged, AddressOf AlCambiarTextoBotonCorporativo
+        AddHandler btn.TextChanged, AddressOf AlCambiarTextoBotonCorporativo
 
         If EsBotonPrimario(btn) Then
             If btn.Image IsNot Nothing AndAlso Not _imagenesOriginales.ContainsKey(btn) Then
@@ -1143,12 +1164,20 @@ Public Class Utilitarios
                 If btn.Text <> textoLimpio Then
                     btn.Text = textoLimpio
                 End If
-                Dim maxIcono As Integer = If(btn.Height >= 30, Math.Min(22, Math.Max(16, btn.Height - 10)), 16)
+                Dim maxIcono As Integer = If(btn.Height >= 30, Math.Min(20, Math.Max(16, btn.Height - 10)), 16)
                 btn.Image = EscalarIconoSiExcede(btn.Image, maxIcono)
+                If _imagenesOriginales.ContainsKey(btn) Then
+                    _imagenesOriginales(btn) = btn.Image
+                End If
                 btn.ImageAlign = ContentAlignment.MiddleLeft
                 btn.TextAlign = ContentAlignment.MiddleCenter
                 btn.TextImageRelation = TextImageRelation.ImageBeforeText
-                btn.Padding = New Padding(3, btn.Padding.Top, 2, btn.Padding.Bottom)
+                btn.Padding = New Padding(4, 0, 4, 0)
+                Dim tamTxt As Size = TextRenderer.MeasureText(textoLimpio.Replace("&", ""), btn.Font)
+                Dim anchoMin As Integer = btn.Image.Width + tamTxt.Width + 16
+                If btn.Width < anchoMin Then
+                    btn.Width = anchoMin
+                End If
             Else
                 Dim maxIcono As Integer = Math.Max(12, Math.Min(btn.ClientSize.Width, btn.ClientSize.Height) - 6)
                 btn.Image = EscalarIconoSiExcede(btn.Image, maxIcono)
@@ -1641,8 +1670,10 @@ Public Class Utilitarios
         If Integer.TryParse(s, Globalization.NumberStyles.Integer, Globalization.CultureInfo.CurrentCulture, resultado) Then
             Return True
         End If
+        Dim estiloDec As Globalization.NumberStyles = Globalization.NumberStyles.AllowLeadingSign Or Globalization.NumberStyles.AllowDecimalPoint
         Dim dec As Decimal
-        If Decimal.TryParse(s, Globalization.NumberStyles.Any, Globalization.CultureInfo.InvariantCulture, dec) AndAlso
+        If (Decimal.TryParse(s, estiloDec, Globalization.CultureInfo.CurrentCulture, dec) OrElse
+            Decimal.TryParse(s, estiloDec, Globalization.CultureInfo.InvariantCulture, dec)) AndAlso
            dec >= Integer.MinValue AndAlso dec <= Integer.MaxValue AndAlso dec = Math.Truncate(dec) Then
             resultado = Convert.ToInt32(dec)
             Return True

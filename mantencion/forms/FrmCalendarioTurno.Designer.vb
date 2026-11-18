@@ -346,9 +346,11 @@ Partial Class FrmCalendarioTurno
         '
         'btn_crear_fechas
         '
-        Me.btn_crear_fechas.Location = New System.Drawing.Point(248, 27)
+        Me.btn_crear_fechas.Image = Global.mantencion.My.Resources.Resources.add
+        Me.btn_crear_fechas.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btn_crear_fechas.Location = New System.Drawing.Point(248, 25)
         Me.btn_crear_fechas.Name = "btn_crear_fechas"
-        Me.btn_crear_fechas.Size = New System.Drawing.Size(90, 23)
+        Me.btn_crear_fechas.Size = New System.Drawing.Size(90, 26)
         Me.btn_crear_fechas.TabIndex = 4
         Me.btn_crear_fechas.Text = "Crear"
         Me.btn_crear_fechas.UseVisualStyleBackColor = True
