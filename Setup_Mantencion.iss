@@ -22,7 +22,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}/releases
 AppUpdatesURL={#MyAppURL}/releases
-AppComments=Plataforma CMMS / EAM de Mantención Industrial con 40 formularios integrados, filtrado por rango de fechas, exportación XML/PDF cero dependencias y diagnóstico SQL inteligente — Cambiaso Hnos. S.A.C. (Placilla de Peñuelas, Valparaíso) — Desarrollado por Boris Arriagada
+AppComments=Plataforma corporativa de Gestión de Mantención Industrial — Cambiaso Hnos. S.A.C. — Desarrollado por Boris Arriagada
 VersionInfoDescription=Instalador Autocontenido Sistema de Gestión Departamento Mantención v2026.1 LTS (.NET 8 x64 Zero-Dependency)
 VersionInfoProductName=Sistema de Gestión Departamento Mantención
 VersionInfoProductVersion=2026.1.0.0
@@ -85,9 +85,9 @@ Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 [Messages]
 spanish.BeveledLabel=Cambiaso Hnos. S.A.C. — División Mantención Industrial · v2026.1 LTS
 spanish.WelcomeLabel1=Bienvenido al Asistente de Instalación de {#MyAppName}
-spanish.WelcomeLabel2=Este asistente instalará {#MyAppName} v{#MyAppVersion} LTS (.NET 8 x64 Autocontenido, Cero Dependencias) en su equipo.%n%nIncluye 40 formularios integrados para Órdenes de Trabajo, Mantención Preventiva, Carta Gantt, KPIs, Auditoría y exportación nativa a Excel/PDF sin requerir Office ni Crystal Reports.%n%nHaga clic en Siguiente para continuar o en Cancelar para salir.
+spanish.WelcomeLabel2=Este asistente instalará {#MyAppName} v{#MyAppVersion} LTS (.NET 8 Autocontenido) en su equipo.%n%nIncluye gestión de Órdenes de Trabajo, Mantención Preventiva, Carta Gantt, control de activos, reportes y exportación integrada a Excel y PDF.%n%nHaga clic en Siguiente para continuar o en Cancelar para salir.
 spanish.FinishedHeadingLabel=Instalación Completada — {#MyAppName}
-spanish.FinishedLabel=La instalación de {#MyAppName} v{#MyAppVersion} LTS ha finalizado correctamente.%n%nSi usa otro servidor SQL o VPN distinta a SrvMagicInfo, puede configurarlo en un clic al iniciar sesión o desde Mantenedores > Configurar Servidor BD.
+spanish.FinishedLabel=La instalación de {#MyAppName} v{#MyAppVersion} LTS ha finalizado correctamente.%n%nSi requiere ajustar parámetros del servidor SQL, un usuario administrador puede configurarlos directamente dentro de la aplicación.
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"

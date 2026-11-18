@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Script automatizado para publicar o actualizar el instalador oficial en GitHub Releases.
     Sistema de Gestión Departamento Mantención - Cambiaso Hnos. S.A.C.
@@ -89,24 +89,21 @@ try {
 
 $releaseBody = @"
 ## Sistema de Gestión Departamento Mantención — v2026.1 LTS
-**Cambiaso Hnos. S.A.C. — División de Mantención Industrial**  
-📍 *Virginia Bravo Letelier 777, Placilla de Peñuelas, Valparaíso, Chile*  
-👨‍💻 *Creado por Boris Arriagada*
+**Cambiaso Hnos. S.A.C. — División de Mantención Industrial**
 
 ---
 
-### ✨ Características Principales de esta Versión
-- **40 Formularios Unificados (`Segoe UI`):** Paleta corporativa oficial (`#025E87`, `#0191B3`, `#66C9D3`, `#E5EBEB`, `#F2F6F6`, `#0F2D44`), ajuste automático a pantalla y textos sin glifos rotos en Windows/macOS.
-- **Captura Global de Errores y Configuración SQL Bajo Demanda:** Inicio de sesión limpio; si falla la conexión SQL, explica la causa en español, guarda el detalle en `%LOCALAPPDATA%\SistemaMantencion\logs\errores_yyyyMMdd.log` y ofrece abrir **Configurar Servidor BD** automáticamente.
-- **Filtro Obligatorio por Rango de Fechas (`Desde` / `Hasta`):** Selectores activos y validados en OT, Mantención Preventiva, Ciclos por Máquina, Carta Gantt, Resúmenes Estadísticos y Auditoría.
-- **Exportación Excel y PDF con Cero Dependencias:** Respaldo nativo SpreadsheetML (`.xls`) cuando Excel no está presente y generación vectorial PDF directa con `iTextSharp` (sin Crystal Reports ni Office).
-- **Multiplataforma Autocontenida (Zero-Dependency):** Windows 10/11 (`.exe` compactado `LZMA2`) y macOS Universal Nativo (`.dmg` `ULMO` / `.zip` con Apple Silicon ARM64 **sin Rosetta 2** compatible con macOS 27/28+ e Intel `x86_64`).
+### ✨ Características Principales
+- **Interfaz Corporativa Unificada:** Módulos de Órdenes de Trabajo, Mantención Preventiva, Carta Gantt, Activos, Personal, Estadísticas y Auditoría bajo diseño homogéneo.
+- **Control de Usuarios y Perfiles:** Administración de usuarios, perfiles y permisos por módulo, con ajustes de conexión restringidos a administradores.
+- **Informes y Exportación Integrada:** Generación directa de reportes Excel y PDF en orientación horizontal completa, sin requerir software adicional.
+- **Instaladores Multiplataforma Autocontenidos:** Paquetes independientes listos para ejecutar en Windows (`x64`) y macOS Universal (`ARM64` + `Intel`).
 
 ---
 
 ### ⬇️ Descarga Oficial:
 - 💾 **Windows (`x64`):** $($item.Name) ($sizeMb MB · SHA-256: `$hash`)
-- 🍏 **macOS Universal & 📦 NuGet:** disponibles en los Assets del Release y sincronizados en la carpeta `/Instalador`.
+- 🍏 **macOS Universal & 📦 NuGet:** disponibles en los Assets del Release y en `/Instalador`.
 "@
 
 if ($null -eq $release) {

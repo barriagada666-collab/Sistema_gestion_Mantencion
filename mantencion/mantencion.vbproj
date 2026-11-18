@@ -40,11 +40,11 @@
     <Authors>Boris Arriagada</Authors>
     <Company>Cambiaso Hnos S.A.C.</Company>
     <Product>Sistema de Gestión Departamento Mantención</Product>
-    <Description>Sistema CMMS de Gestión de Mantención Industrial para Cambiaso Hnos. S.A.C. (40 formularios integrados). Control de órdenes de trabajo (OT), mantención preventiva (MP), carta Gantt, activos técnicos, personal y turnos, auditoría en vivo, exportación Excel/PDF cero dependencias, captura global de errores con logs y configuración SQL bajo demanda (.NET 8 LTS Windows y macOS Universal sin Rosetta 2).</Description>
+    <Description>Sistema de Gestión Departamento Mantención para Cambiaso Hnos. S.A.C.: gestión de órdenes de trabajo (OT), mantención preventiva, programación Gantt, activos, personal, control de accesos y reportes en Excel/PDF.</Description>
     <PackageProjectUrl>https://github.com/barriagada666-collab/Sistema_gestion_Mantencion</PackageProjectUrl>
     <RepositoryUrl>https://github.com/barriagada666-collab/Sistema_gestion_Mantencion</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Versión 2026.1 LTS: soporte nativo Apple Silicon ARM64 (sin Rosetta 2, compatible macOS 27 Golden Gate y 28+), Intel x86_64 y Windows 10/11; 40 formularios auditados y endurecidos con paleta corporativa Segoe UI; gestión completa de usuarios, perfiles y 21 permisos con plantilla de perfil; indicador de servidor/host SQL conectado en vivo y menú de configuración BD restringido a perfil Administrador; exportación nativa Excel (SpreadsheetML) y PDF (iTextSharp) sin dependencias externas; instaladores autocontenidos compactos.</PackageReleaseNotes>
+    <PackageReleaseNotes>Versión 2026.1 LTS: soporte multiplataforma Windows y macOS Universal, interfaz corporativa unificada, gestión integral de usuarios y perfiles, plantillas actualizadas y exportación nativa a Excel y PDF.</PackageReleaseNotes>
     <PackageTags>mantencion;gestion;industrial;cambiaso;cmms;mantenimiento;ot;preventivo;sqlserver;net8;windows;macos</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>app_icon_rounded.png</PackageIcon>
