@@ -28,7 +28,7 @@
 
 El **Sistema de Gestión Departamento Mantención** es una plataforma CMMS / EAM de grado industrial desarrollada sobre **.NET 8 LTS**, diseñada específicamente para la administración, programación cíclica, control operativo, auditoría y análisis estadístico del mantenimiento mecánico y eléctrico en las plantas productivas de **Cambiaso Hnos. S.A.C.**
 
-Digitaliza de extremo a extremo el ciclo de vida de cada intervención técnica a través de **40 formularios unificados** bajo una identidad visual corporativa homogénea (`#025E87`, `#0191B3`, `#66C9D3`, `#0F2D44`, `#DDE7E8`, `#F2F6F6`): desde la detección de fallas imprevistas o la planificación preventiva en Carta Gantt, hasta el control de repuestos, horas de detención, dotación técnica, **filtrado obligatorio por rango de fechas (`Desde` / `Hasta`)** y exportación nativa a Excel (XML SpreadsheetML) y PDF vectorial (`iTextSharp`) sin dependencias de Office ni Crystal Reports en Windows 10/11 y macOS Universal (Apple Silicon ARM64 sin Rosetta 2 + Intel).
+Digitaliza de extremo a extremo el ciclo de vida de cada intervención técnica a través de **40 formularios unificados** y **7 plantillas `.xls` institucionales** bajo una identidad visual corporativa homogénea (`#025E87`, `#0191B3`, `#66C9D3`, `#0F2D44`, `#DDE7E8`, `#F2F6F6`): desde la detección de fallas imprevistas o la planificación preventiva en Carta Gantt y carga instantánea de jerarquías de activos, hasta el control de repuestos, horas de detención, dotación técnica, gestión completa de usuarios/perfiles (`21` permisos), **filtrado obligatorio por rango de fechas (`Desde` / `Hasta`)** y exportación nativa a Excel (XML SpreadsheetML) y PDF vectorial horizontal completo (`iTextSharp`, `Landscape FitW=1`) sin dependencias de Office ni Crystal Reports en Windows 10/11 y macOS Universal (Apple Silicon ARM64 sin Rosetta 2 + Intel).
 
 ---
 
@@ -95,12 +95,12 @@ Digitaliza de extremo a extremo el ciclo de vida de cada intervención técnica 
 ### 📊 5. Estadísticas, Informes y Exportación (Cero Dependencias)
 * **Filtro Obligatorio por Rango de Fechas (`Desde` / `Hasta`):** Todos los módulos de informes (`Informe OT`, `Mantención Preventiva`, `Ciclos por Máquina`, `Carta Gantt`, `Resúmenes Estadísticos` y `Auditoría`) mantienen siempre activos y validados (`Desde <= Hasta`) los selectores de fecha con inicialización automática del mes en curso.
 * **Tableros de Control:** Resúmenes estadísticos interactivos de OTs por técnico, por tipo de falla, por turno y por día.
-* **Exportación Dual a Excel (COM + Respaldo Nativo):** Usa plantillas institucionales `.xls` cuando Microsoft Excel está instalado, e incluye un **motor nativo XML SpreadsheetML** para exportar sin depender de Office/Excel en Windows o macOS.
-* **Exportación Autónoma a PDF (iTextSharp):** Generación vectorial directa a PDF en todos los módulos de reportes (OT, MP, Ciclos, Carta Gantt, Resúmenes Estadísticos y Auditoría), sin Crystal Reports ni software de terceros.
+* **Plantillas Excel Corporativas e Impresión Horizontal Completa:** Las **7 plantillas `.xls` oficiales (13 hojas)** (`inf_ot.xls`, `inf_auditoria.xls`, `inf_datos_tecnicos.xls`, `inf_estadistico.xls`, `inf_listado_ciclo_mp.xls`, `inf_MP.xls` e `InfGantt.xls`) y los formatos condicionales aplican íntegramente la paleta corporativa (`#025E87`, `#0191B3`, `#0F2D44`, `#DDE7E8`, `#EAF3F5`, `#0F172A`), con respaldo **XML SpreadsheetML** horizontal (`FitWidth = 1`, `FitHeight = 0`) cuando Excel COM no está instalado.
+* **Exportación Autónoma a PDF Horizontal Completo (iTextSharp + Excel COM):** Generación vectorial directa a PDF en todos los módulos (`InfOt.vb`, `Utilitarios.vb`, `OT.vb`) ajustada al **100 % del ancho de página en Horizontal (`792x612 pts`)** sin recortes laterales ni compresión de filas (`FitToPagesWide = 1`, `FitToPagesTall = False`, pesos proporcionales por columna, `SplitLate = False` / `SplitRows = True` y repetición de encabezados), probada con grandes volúmenes (`500` OTs × `15` columnas).
 
-### 🔐 6. Auditoría Integral y Seguridad
+### 🔐 6. Auditoría Integral, Usuarios y Seguridad
 * **Trazabilidad en Tiempo Real:** Registro detallado de cada operación (altas, bajas, modificaciones) con usuario, fecha, hora, equipo (PC) y tabla afectada.
-* **Matriz de Permisos:** Control de acceso granular por perfiles de usuario a cada módulo y menú del sistema.
+* **Gestión Completa de Usuarios, Perfiles y 21 Permisos (`FrmAdminUsuarios`):** Alta, edición, eliminación, asignación de perfiles personalizados y activación granular de **21 permisos** por módulo (`OT`, `MP`, `Informes`, `Mantenedores`, `Auditoría`), con menú **Configurar Servidor BD...** exclusivo para perfil **`Administrador`**.
 
 ### ⚡ 7. Asistente de Configuración SQL y Diagnóstico de Errores
 * **Configuración Bajo Demanda y desde Menú:** La pantalla **Inicio de Sesión** se mantiene limpia; si ocurre un fallo de conexión SQL, el sistema explica la causa y pregunta automáticamente si desea abrir **Configurar Servidor BD**. También puede ajustarse manualmente una vez dentro desde **Mantenedores > Configurar Servidor BD...**.
@@ -134,16 +134,18 @@ Digitaliza de extremo a extremo el ciclo de vida de cada intervención técnica 
 ### 🛠️ Para Desarrolladores y Compilación:
 * **SDK:** Microsoft .NET 8.0 SDK (`8.0.x` o superior).
 * **IDE Recomendado:** Visual Studio 2022 (con carga de trabajo *.NET Desktop Development*) o Visual Studio Code en Linux/macOS.
-* **Compilación y generación de compilados/instaladores:**
+* **Compilación y generación de compilados/instaladores (`0` advertencias, `0` errores):**
   ```bash
-  # Compilar solución (0 advertencias, 0 errores)
+  # Compilar solución en Debug y Release (0 advertencias, 0 errores)
+  dotnet build mantencion.sln -c Debug
   dotnet build mantencion.sln -c Release
 
-  # Publicar paquete autocontenido Windows x64 / macOS ARM64
-  dotnet publish mantencion/mantencion.vbproj -c Release -r win-x64 --self-contained true
+  # Publicar paquetes autocontenidos Windows x64 (130.40 MB depurado) / ARM64 (141.23 MB depurado)
+  dotnet publish mantencion/mantencion.vbproj -c Release -r win-x64 --self-contained true -o mantencion/bin/Release/net8-selfcontained-x64
+  dotnet publish mantencion/mantencion.vbproj -c Release -r win-arm64 --self-contained true -o mantencion/bin/Release/net8-selfcontained-arm64
 
   # Empaquetar NuGet (.nupkg)
-  dotnet pack mantencion/mantencion.vbproj -c Release -o nupkg
+  dotnet pack mantencion/mantencion.vbproj -c Release -o Instalador
   ```
 * **Automatizadores oficiales:**
   * Windows (Inno Setup `LZMA2` ultra): [`automatizadores de instalacion/Compilar_Instalador.ps1`](automatizadores%20de%20instalacion/Compilar_Instalador.ps1)
@@ -153,24 +155,24 @@ Digitaliza de extremo a extremo el ciclo de vida de cada intervención técnica 
 
 ## 📦 Descargas Oficiales e Instaladores (v2026.1 LTS)
 
-> **Nota:** Todos los instaladores y compilaciones son **100% autocontenidos, compactados y libres de dependencias externas (Zero-Dependency)**.
+> **Nota:** Todos los instaladores y compilaciones (**Debug**, **Release**, **`win-x64`**, **`win-arm64`** y **macOS Universal**) son **100% autocontenidos, compactados y libres de dependencias externas (Zero-Dependency)**, compilados con **`0` errores y `0` advertencias**.
 
 | Plataforma / Compilación | Formato y Descripción del Instalador | Tamaño | Enlace Directo |
 | :--- | :--- | :---: | :--- |
-| 🪟 **Windows 10 / 11** (`win-x64`) | **`.exe` (Inno Setup `LZMA2`)** — Instalador autocontenido con .NET 8 Desktop, SQL nativo, Excel XML e `iTextSharp` PDF | `41.42 MB` | [⬇️ **Descargar Instalador Windows**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) |
-| 🍏 **macOS Universal Nativo** (Apple Silicon M1–M4 sin Rosetta 2 + Intel) | **`.dmg` (`ULMO LZMA`)** — Imagen macOS con binario Universal (`arm64` + `x86_64`), motores nativos depurados e instalador en 1 clic (`Instalar_en_Mac.command`) | `294.92 MB` | [⬇️ **Descargar Imagen DMG para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) |
-| 🍏 **macOS Universal Nativo** (Apple Silicon M1–M4 sin Rosetta 2 + Intel) | **`.zip` (`-9`)** — Paquete portátil con `.app` Universal nativo, script instalador y guía HTML | `365.07 MB` | [⬇️ **Descargar Paquete ZIP para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) |
-| 📦 **GitHub Packages / NuGet** | **`.nupkg`** — Paquete compilado .NET 8 con documentación, ícono y metadatos del ensamblado | `2.18 MB` | [⬇️ **Descargar Paquete NuGet**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Sistema.Gestion.Mantencion.2026.1.0.nupkg) |
+| 🪟 **Windows 10 / 11** (`win-x64`) | **`.exe` (Inno Setup `LZMA2`)** — Instalador autocontenido con .NET 8 Desktop, SQL nativo, plantillas `.xls` corporativas, Excel XML e `iTextSharp` PDF horizontal | `41.44 MB` | [⬇️ **Descargar Instalador Windows**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) |
+| 🍏 **macOS Universal Nativo** (Apple Silicon M1–M4 sin Rosetta 2 + Intel) | **`.dmg` (`ULMO LZMA`)** — Imagen macOS con binario Universal (`arm64` + `x86_64`), motores nativos depurados e instalador en 1 clic (`Instalar_en_Mac.command`) | `289.51 MB` | [⬇️ **Descargar Imagen DMG para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) |
+| 🍏 **macOS Universal Nativo** (Apple Silicon M1–M4 sin Rosetta 2 + Intel) | **`.zip` (`-9`)** — Paquete portátil con `.app` Universal nativo, script instalador y guía HTML | `365.12 MB` | [⬇️ **Descargar Paquete ZIP para Mac**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) |
+| 📦 **GitHub Packages / NuGet** | **`.nupkg`** — Paquete compilado .NET 8 con documentación, ícono y metadatos del ensamblado | `2.21 MB` | [⬇️ **Descargar Paquete NuGet**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Sistema.Gestion.Mantencion.2026.1.0.nupkg) |
 
 <details>
 <summary>🔐 Verificación de Integridad (SHA-256 oficial en <code>/Instalador</code>)</summary>
 
 | Archivo | SHA-256 |
 | :--- | :--- |
-| `Instalador_Sistema_Mantencion_v2026.1.exe` | `D036B13466E5753068F8E6B6FE91AD724C9ACA1DFFE520E78FDBA86B45A8BE53` |
-| `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` | `5e45bf8b74e267b5a476cff4e8b84fd495f9f3be3777a9c6b12ca6e3589c0cc1` |
-| `Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip` | `7781f01eebbf38b85d2203a3ca73b542d893593991791b25716d16f8f038643c` |
-| `Sistema.Gestion.Mantencion.2026.1.0.nupkg` | `54990232cf009c0b6ca780db133cb79d3ce99e07dd9f06928110f08ebc8f4fbb` |
+| `Instalador_Sistema_Mantencion_v2026.1.exe` | `FCD9463BC1966967D2FB27E42999FAC9BBFF165DB9218FAB6030ACA3CF9AA5BA` |
+| `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` | `BBA12DCEBBAD28C702124230290C35411297E1461EBA4216287F5DAEE373B500` |
+| `Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip` | `16995E0DBCE5E31D59525FA59A32198C6CDBA90F0662F1428096B1A301612A3D` |
+| `Sistema.Gestion.Mantencion.2026.1.0.nupkg` | `2FED38C630DEDA93BC6AAC92E5B80AF76C8815D5009634403E40DEFCDDCDA125` |
 
 </details>
 
@@ -211,14 +213,13 @@ dotnet add package Sistema.Gestion.Mantencion --version 2026.1.0
 
 ## 🌟 Novedades de la Versión 2026.1 LTS
 
-* **🎨 Identidad Visual Corporativa Unificada (`Segoe UI`):** Paleta corporativa oficial (`#025E87`, `#0191B3`, `#66C9D3`, `#0F2D44`, `#DDE7E8`, `#F2F6F6`) aplicada globalmente en los 40 formularios, grillas, menús/barras, botones primarios/secundarios/destructivos y escritorio MDI renovado con logotipo institucional y título centrado.
-* **🧩 Iconografía de Botones Normalizada (`16x16`):** Depuración de fotogramas `.ico` sobredimensionados y ajuste automático por código (`NormalizarIconoBoton`) para evitar recortes o superposiciones de iconos sobre textos en formularios y buscadores.
-* **🛡️ Configuración SQL Bajo Demanda, Indicador en Vivo y Control por Perfil:** Barra de estado inferior con farol verde/rojo que indica el servidor y BD activos junto a *Sesión activa*; acceso al menú **Mantenedores > Configurar Servidor BD...** restringido exclusivamente al perfil **`Administrador`** y reinicio automático de la aplicación al guardar cambios de conexión. Ante fallos SQL, de red/VPN o permisos, explica la causa en español y registra bitácora en `%LOCALAPPDATA%\SistemaMantencion\logs\errores_yyyyMMdd.log`.
-* **📅 Filtrado Obligatorio por Rango de Fechas en Todos los Informes:** Selección `Desde` / `Hasta` siempre visible, habilitada y validada en OT, Mantención Preventiva, Ciclos por Máquina, Carta Gantt, Resúmenes Estadísticos y Auditoría.
-* **📑 Exportación Excel y PDF Sin Dependencias:** Motor nativo SpreadsheetML (`.xls`) y motor vectorial `iTextSharp` (`.pdf`) integrados en todos los informes cuando Microsoft Excel no está presente.
-* **⚡ Transiciones MDI y Consultas Optimizadas:** `DoubleBuffered`, `SuspendLayout`/`ResumeLayout`, caché de catálogos, precalentamiento de pool SQL y búsquedas `O(1)` en generación de Carta Gantt.
-* **📦 Instaladores Ultra-Compactos y Pipeline CI/CD Node 24:** Depuración automática de ensamblados WPF no utilizados, símbolos `.pdb` y satélites de idiomas extranjeros; compresión `LZMA2` (`Windows`) y `ULMO LZMA` (`macOS`), con compilación y empaquetado verificados con `0` advertencias, `0` errores y `0` annotations.
-* **🍏 Soporte Nativo Universal para macOS (Sin Rosetta 2):** Binario Mach-O Universal (`arm64` + `x86_64`) generado en runner `macos-15-intel` con entorno UTF-8 desde el launcher nativo, ejecución 100% nativa ARM64 en Apple Silicon (M1–M4) y motor Intel `x86_64` integrado.
+* **🎨 Identidad Visual Corporativa Unificada (`Segoe UI` + 7 Plantillas `.xls`):** Paleta corporativa oficial (`#025E87`, `#0191B3`, `#66C9D3`, `#0F2D44`, `#DDE7E8`, `#F2F6F6`) aplicada en los 40 formularios, menú MDI, diseñadores restantes (`FrmAdminAuditoria`, `FrmResumenes`, `Inicio`), árbol de selección de nodos (`Nodo.vb`), formatos dinámicos de informes (`Informes.vb`) y en las **7 plantillas institucionales `.xls` (`13` hojas)** incluyendo formatos condicionales de Carta Gantt.
+* **🖨️ Exportación PDF Horizontal Completa para Gran Volumen de OT (`Landscape 100 % Ancho`):** Motores PDF (`InfOt.vb` y `Utilitarios.vb` con `iTextSharp`) y Excel COM (`OT.vb`, `ConfigurarImpresionHorizontalAjustada` y las 7 plantillas `.xls`) estandarizados en orientación **Horizontal Carta (`792x612 pts`)**, ajuste proporcional de columnas al **100 % del ancho** (`FitToPagesWide = 1`), páginas verticales automáticas (`FitToPagesTall = False`), `SplitLate = False` / `SplitRows = True` y títulos repetidos por página (validado con `500` OTs × `15` columnas en `26` páginas y plantilla Excel COM).
+* **⚡ Carga Ultrarrápida de Árbol de Activos (1 Consulta) y Formularios:** `Nodo.vb` carga el árbol completo de equipos en una sola consulta SQL y ensamble en memoria (`2.780` nodos en `24 ms`, activos `1.421` nodos en `47 ms` frío / `9 ms` caché en memoria, nodos MP `1.130` en `17 ms`), con `SyncLock`, precalentamiento asíncrono post-login (`Login.vb`), caché de clave primaria en `FrmAdminNodos` y carga optimizada de los **40 formularios** (`14 ms`–`384 ms`).
+* **👥 Gestión Completa de Usuarios, Perfiles y Permisos (`FrmAdminUsuarios`, `Usuario.vb`):** CRUD integral de usuarios, administración de perfiles y matriz de **21 permisos** por módulo, más restricción del menú **Mantenedores > Configurar Servidor BD...** al perfil **`Administrador`**.
+* **🛡️ Configuración SQL Bajo Demanda e Indicador en Vivo:** Barra inferior con farol verde/rojo del servidor y base de datos activos junto a *Sesión activa*, reinicio automático al cambiar parámetros de conexión y bitácora persistente `%LOCALAPPDATA%\SistemaMantencion\logs\errores_yyyyMMdd.log`.
+* **🧩 Iconografía Normalizada (`16x16`) y Fechas Validadas:** Depuración de `.ico` sobredimensionados y validación obligatoria `Desde <= Hasta` en todos los informes.
+* **📦 Compilaciones Debug/Release e Instaladores Compactos (CI/CD Node 24):** Debug, Release, `win-x64` (`130.40 MB` depurada), `win-arm64` (`141.23 MB` depurada), `EXE` `LZMA2` (`41.44 MB`), macOS Universal nativo `DMG` (`289.51 MB`, sin Rosetta 2) y `ZIP` (`365.12 MB`) verificados con **`0` advertencias, `0` errores y `0` annotations**.
 
 ---
 
