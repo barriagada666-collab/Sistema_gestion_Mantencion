@@ -6,7 +6,7 @@
 
 # Sistema de Gestión Departamento Mantención
 ### Cambiaso Hnos. S.A.C. — División de Mantención Industrial
-**Plataforma corporativa para Órdenes de Trabajo (OT), Mantención Preventiva (MP) y Control de Activos**
+**Plataforma corporativa para Órdenes de Trabajo (OT), Mantención Preventiva (MP), Carta Gantt y Control de Activos**
 
 [![CI/CD](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/actions/workflows/build-and-package.yml/badge.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/actions/workflows/build-and-package.yml)
 [![Versión](https://img.shields.io/badge/Versi%C3%B3n-2026.1%20LTS-025E87.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases)
@@ -21,15 +21,13 @@
 
 ---
 
-## 📌 Descripción
+## 📌 Descripción del Proyecto
 
-El **Sistema de Gestión Departamento Mantención** es una plataforma de uso interno desarrollada en **.NET 8 LTS** para apoyar la planificación, ejecución, control y seguimiento del mantenimiento industrial en **Cambiaso Hnos. S.A.C.**
-
-Permite administrar órdenes de trabajo correctivas y preventivas, programas cíclicos y Carta Gantt, catálogo jerárquico de equipos, personal y turnos, reportes con exportación integrada a Excel y PDF en formato horizontal completo, y control de acceso por perfiles de usuario.
+El **Sistema de Gestión Departamento Mantención** es una plataforma corporativa de uso interno desarrollada en **.NET 8 LTS** para planificar, registrar, ejecutar y controlar las operaciones de mantenimiento industrial en **Cambiaso Hnos. S.A.C.**
 
 ---
 
-## 🖼️ Galería Visual (Carrusel de Formularios)
+## 🖼️ Capturas del Sistema
 
 <p align="center">
   <img src="docs/screenshots/carrusel_mockups.gif" alt="Vista general de módulos del Sistema de Gestión Mantención v2026.1 LTS" width="880" />
@@ -67,13 +65,13 @@ Permite administrar órdenes de trabajo correctivas y preventivas, programas cí
 
 ---
 
-## ⚙️ Módulos Principales
+## ⚙️ Características Principales
 
-- **Órdenes de Trabajo (OT):** Emisión, clasificación de fallas, dotación, tiempos de detención, repuestos y cierre operativo.
-- **Mantención Preventiva y Carta Gantt:** Pautas por frecuencia, tareas por equipo, planificación cíclica y cronograma visual.
-- **Activos, Personal y Turnos:** Jerarquía de equipos con fichas técnicas, administración de personal y calendario de turnos.
-- **Informes y Exportación:** Consultas filtradas por fechas (`Desde` / `Hasta`), indicadores KPI y exportación a **Excel** y **PDF en formato horizontal completo** sin dependencias externas.
-- **Seguridad y Auditoría:** Gestión integral de usuarios, perfiles, permisos por módulo, registro de eventos y configuración SQL reservada a administradores.
+- **Órdenes de Trabajo (OT):** Creación, edición, asignación técnica, tiempos de detención, control de insumos y cierre.
+- **Mantención Preventiva y Carta Gantt:** Pautas periódicas, programación cíclica masiva y Carta Gantt interactiva con búsqueda directa por **N° Mantención (`N° MP`)**, **ID de Ciclo**, máquina o estado, escalado temporal y panel de detalle de tareas.
+- **Activos, Personal y Turnos:** Catálogo jerárquico de plantas, secciones y equipos con fichas técnicas, personal y calendario de turnos.
+- **Informes y Exportación Integrada:** Reportes filtrables por rango de fechas, tablero estadístico de indicadores y exportación a **Excel** y **PDF horizontal completo** sin dependencias externas.
+- **Seguridad y Auditoría:** Control granular de permisos por perfil, bitácora de auditoría, indicador de conexión activa y configuración de servidor reservada a usuarios administradores.
 
 ---
 
@@ -84,35 +82,64 @@ Permite administrar órdenes de trabajo correctivas y preventivas, programas cí
 | Plataforma | Instalador | Tamaño | Descarga |
 | :--- | :--- | :---: | :--- |
 | 🪟 **Windows 10 / 11** (`x64`) | Instalador estándar (`.exe`) | `41.45 MB` | [⬇️ **Descargar Windows (.exe)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) |
-| 🍏 **macOS Universal** (`ARM64` + `Intel`) | Imagen de disco (`.dmg`) | `290.12 MB` | [⬇️ **Descargar macOS (.dmg)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) |
-| 🍏 **macOS Universal** (`ARM64` + `Intel`) | Archivo comprimido (`.zip`) | `365.12 MB` | [⬇️ **Descargar macOS (.zip)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) |
-| 📦 **NuGet** | Paquete de distribución (`.nupkg`) | `2.20 MB` | [⬇️ **Descargar Paquete (.nupkg)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Sistema.Gestion.Mantencion.2026.1.0.nupkg) |
+| 🍏 **macOS Universal** (`ARM64` + `Intel`) | Imagen de disco (`.dmg`) | `290.00 MB` | [⬇️ **Descargar macOS (.dmg)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) |
+| 🍏 **macOS Universal** (`ARM64` + `Intel`) | Archivo comprimido (`.zip`) | `365.14 MB` | [⬇️ **Descargar macOS (.zip)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) |
+| 📦 **NuGet** | Paquete de distribución (`.nupkg`) | `2.22 MB` | [⬇️ **Descargar Paquete (.nupkg)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Sistema.Gestion.Mantencion.2026.1.0.nupkg) |
 
 <details>
 <summary>🔐 Verificación de Integridad (SHA-256)</summary>
 
 | Archivo | SHA-256 |
 | :--- | :--- |
-| `Instalador_Sistema_Mantencion_v2026.1.exe` | `F856D9E236539125D6124FD6F48E67153D085498560FC2FEBF1CCBBB8D3A1D32` |
-| `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` | `2E3E7E9322CFA2E7F972933ABE09F94DE8A8B3B532DE238133676DB3C99BF147` |
-| `Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip` | `A2CBF067E04026FA54C29156860E08EEC69523D2315232812D1673A53E52CDF2` |
-| `Sistema.Gestion.Mantencion.2026.1.0.nupkg` | `A7F9EF55C9DE1B0FCEF1A45AD07EAD8D14E54568F3244A174E1F8820A7EED11A` |
+| `Instalador_Sistema_Mantencion_v2026.1.exe` | `C273923B442F7ACF76F3CC46170624B548686AFBA5926168C061C15D60D69A87` |
+| `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` | `C2027044424269F2DB8056D32B11CD876CDF1AB63C097248C2B668A217CB4A69` |
+| `Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip` | `D61F56C3DEB65D391A1D82F612B476D625C02F24ECF7040271F18A232CA43456` |
+| `Sistema.Gestion.Mantencion.2026.1.0.nupkg` | `14D43503E3082EC42181C9138BBC490DFB55BFF38C2D066F3A3AE25B0E709602` |
 
 </details>
 
 ---
 
-## 🚀 Instalación y Requisitos
+## 💻 Requisitos e Instalación
 
-- **Windows:** Ejecute `Instalador_Sistema_Mantencion_v2026.1.exe` y siga el asistente.
+### Requisitos
+- **Windows:** Windows 10 u 11 de 64 bits (`x64` o compatible).
+- **macOS:** macOS con procesador Apple Silicon (`ARM64`) o `Intel` (`x86_64`).
+- **Red:** Acceso a la red corporativa para conectarse al servidor SQL de la organización.
+
+### Instalación
+- **Windows:** Descargue y ejecute `Instalador_Sistema_Mantencion_v2026.1.exe` y siga el asistente en español. Para actualizar sobre una instalación existente, simplemente ejecute el instalador nuevo.
 - **macOS:** Monte `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` (o descomprima el `.zip`) y ejecute `Instalar_en_Mac.command`.
-- **Conectividad:** Requiere acceso a la red corporativa para comunicarse con Microsoft SQL Server. La configuración de servidor se gestiona dentro de la aplicación únicamente con perfil administrador.
+
+---
+
+## 🛠️ Configuración, Uso y Compilación
+
+### Uso Básico y Configuración
+1. Inicie sesión con sus credenciales corporativas habilitadas.
+2. Navegue por los módulos desde la barra superior (**Órdenes de Trabajo**, **Mant. Preventiva**, **Informes**, **Mantenedores**, **Control de Eventos**).
+3. En **Carta Gantt**, utilice los filtros superiores por **N° MP**, **ID Ciclo**, búsqueda de texto o **Estado**, y seleccione una fila para inspeccionar su detalle de tareas inferior.
+4. La barra inferior muestra el estado actual de conexión SQL; los usuarios con perfil **Administrador** pueden ajustar parámetros desde **Mantenedores → Configurar Servidor BD...**.
+
+### Compilación desde Código Fuente (Entorno de Desarrollo)
+- **Requisitos de compilación:** .NET 8 SDK y (para empaquetar en Windows) Inno Setup 6.
+- **Compilar solución:** `dotnet build mantencion.sln -c Release`
+- **Generar paquete e instalador Windows:** ejecute el script automatizado en la carpeta de automatizadores de instalación o utilice el flujo CI/CD integrado en GitHub Actions.
+
+---
+
+## 🏷️ Versionado e Historial de Cambios
+
+El proyecto sigue el esquema corporativo `YYYY.M LTS` (`v2026.1 LTS`).  
+Consulte el detalle completo de mejoras, correcciones y estabilizaciones en [CHANGELOG.md](CHANGELOG.md) y la documentación de paquetes en [Instalador/README.md](Instalador/README.md).
 
 ---
 
 <div align="center">
 
+## 👷 Créditos
+
 **Cambiaso Hnos. S.A.C. — División de Mantención Industrial**  
-Desarrollado por **Boris Arriagada**
+Desarrollado y mantenido por **Boris Arriagada**
 
 </div>
