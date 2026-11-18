@@ -291,7 +291,19 @@ jobs:
             zip -9 -r -y "../Instalador/$ZIP_NAME" "Sistema de Gestion Mantencion.app" "Instalar_en_Mac.command" "Iniciar_con_Whisky.command" "LEAME_MAC.html"
           )
 
-          hdiutil create -volname "Sistema Mantencion" -srcfolder "dist-mac" -ov -format ULMO "Instalador/$DMG_NAME"
+          # Reintento ante bloqueo transitorio de Spotlight / diskimages-helper en runners macOS
+          for intento in 1 2 3; do
+            rm -f "Instalador/$DMG_NAME"
+            if hdiutil create -volname "Sistema Mantencion" -srcfolder "dist-mac" -ov -format ULMO "Instalador/$DMG_NAME"; then
+              break
+            fi
+            if [[ "$intento" -eq 3 ]]; then
+              echo "[ERROR] hdiutil create fallo tras 3 intentos."
+              exit 1
+            fi
+            echo "[AVISO] hdiutil reporto Resource busy (intento $intento/3); reintentando en 10s..."
+            sleep 10
+          done
 
           cd Instalador
           shasum -a 256 "$DMG_NAME" > checksums_mac_sha256.txt
