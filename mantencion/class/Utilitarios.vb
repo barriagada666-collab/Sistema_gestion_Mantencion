@@ -378,13 +378,23 @@ Public Class Utilitarios
     ''' Exporta el contenido visible de un DataGridView directamente a un archivo PDF utilizando iTextSharp.
     ''' Solución 100% nativa con ajuste completo a ancho horizontal en hoja Carta/Letter Landscape.
     ''' </summary>
+    Private Shared Function ObtenerColumnasVisiblesOrdenadas(ByVal grilla As DataGridView) As List(Of DataGridViewColumn)
+        Dim colsVis As New List(Of DataGridViewColumn)()
+        If grilla Is Nothing Then Return colsVis
+        For Each col As DataGridViewColumn In grilla.Columns
+            If col.Visible Then colsVis.Add(col)
+        Next
+        colsVis.Sort(Function(a, b) a.DisplayIndex.CompareTo(b.DisplayIndex))
+        Return colsVis
+    End Function
+
+    ''' <summary>
+    ''' Exporta cualquier DataGridView directamente a un archivo PDF corporativo usando iTextSharp, sin dependencias externas.
+    ''' </summary>
     Public Shared Function ExportarGrillaAPdf(ByVal grilla As DataGridView, ByVal rutaArchivo As String, ByVal titulo As String, Optional ByVal subtitulo As String = "") As Boolean
         If grilla Is Nothing OrElse grilla.Columns.Count = 0 OrElse String.IsNullOrEmpty(rutaArchivo) Then Return False
 
-        Dim columnasVisibles As New List(Of DataGridViewColumn)()
-        For Each col As DataGridViewColumn In grilla.Columns
-            If col.Visible Then columnasVisibles.Add(col)
-        Next
+        Dim columnasVisibles As List(Of DataGridViewColumn) = ObtenerColumnasVisiblesOrdenadas(grilla)
         If columnasVisibles.Count = 0 Then Return False
 
         Try
@@ -525,10 +535,7 @@ Public Class Utilitarios
                         Dim grilla As DataGridView = sec.Value
                         If grilla Is Nothing OrElse grilla.Columns.Count = 0 Then Continue For
 
-                        Dim colsVis As New List(Of DataGridViewColumn)()
-                        For Each col As DataGridViewColumn In grilla.Columns
-                            If col.Visible Then colsVis.Add(col)
-                        Next
+                        Dim colsVis As List(Of DataGridViewColumn) = ObtenerColumnasVisiblesOrdenadas(grilla)
                         If colsVis.Count = 0 Then Continue For
 
                         Dim colCount As Integer = colsVis.Count
@@ -651,10 +658,7 @@ Public Class Utilitarios
                 Dim g As DataGridView = hoja.Value
                 If g Is Nothing OrElse g.Columns.Count = 0 Then Continue For
 
-                Dim colsVis As New List(Of DataGridViewColumn)()
-                For Each col As DataGridViewColumn In g.Columns
-                    If col.Visible Then colsVis.Add(col)
-                Next
+                Dim colsVis As List(Of DataGridViewColumn) = ObtenerColumnasVisiblesOrdenadas(g)
                 If colsVis.Count = 0 Then Continue For
 
                 Dim nombreHoja As String = If(String.IsNullOrWhiteSpace(hoja.Key), "Hoja" & idxHoja, hoja.Key)
@@ -1108,6 +1112,17 @@ Public Class Utilitarios
         AplicarColoresEstadoBotonPrimario(TryCast(sender, Button))
     End Sub
 
+    ''' <summary>
+    ''' Aplica fuente, alineación de icono y estilo corporativo a un botón individual (útil en diálogos con cabecera propia).
+    ''' </summary>
+    Public Shared Sub AplicarEstiloBoton(ByVal btn As Button)
+        If btn Is Nothing OrElse btn.IsDisposed Then Exit Sub
+        UnificarFuenteCorporativa(btn)
+        NormalizarIconoBoton(btn)
+        AplicarEstiloBotonCorporativo(btn)
+        NormalizarIconoBoton(btn)
+    End Sub
+
     Private Shared Sub AplicarEstiloBotonCorporativo(ByVal btn As Button)
         If btn Is Nothing OrElse btn.IsDisposed Then Exit Sub
         btn.UseVisualStyleBackColor = False
@@ -1174,9 +1189,13 @@ Public Class Utilitarios
                 btn.TextImageRelation = TextImageRelation.ImageBeforeText
                 btn.Padding = New Padding(4, 0, 4, 0)
                 Dim tamTxt As Size = TextRenderer.MeasureText(textoLimpio.Replace("&", ""), btn.Font)
-                Dim anchoMin As Integer = btn.Image.Width + tamTxt.Width + 16
+                Dim pref As Size = btn.GetPreferredSize(Size.Empty)
+                Dim anchoMin As Integer = Math.Max(btn.Image.Width + tamTxt.Width + 16, pref.Width)
                 If btn.Width < anchoMin Then
                     btn.Width = anchoMin
+                End If
+                If btn.Height < pref.Height AndAlso pref.Height <= 36 Then
+                    btn.Height = pref.Height
                 End If
             Else
                 Dim maxIcono As Integer = Math.Max(12, Math.Min(btn.ClientSize.Width, btn.ClientSize.Height) - 6)
@@ -1337,9 +1356,7 @@ Public Class Utilitarios
 
             ElseIf TypeOf ctrl Is Button Then
                 Dim btn As Button = DirectCast(ctrl, Button)
-                UnificarFuenteCorporativa(btn)
-                NormalizarIconoBoton(btn)
-                AplicarEstiloBotonCorporativo(btn)
+                AplicarEstiloBoton(btn)
 
             ElseIf TypeOf ctrl Is CheckBox Then
                 Dim chk As CheckBox = DirectCast(ctrl, CheckBox)

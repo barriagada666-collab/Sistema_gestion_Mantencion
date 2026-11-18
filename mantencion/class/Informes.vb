@@ -1,156 +1,98 @@
 Imports System.Data.SqlClient
 Imports Excel = Microsoft.Office.Interop.Excel
 Public Class Informes
-    Public Sub CrgInfGanttCiclosMaq()
-        Dim fila As Integer = 0
-        Dim fecha_inicio As DateTime
-        Dim fecha_fin As DateTime
-        Dim fecha As DateTime
-        Dim fecha_ini As DateTime
-        Dim fecha_end As DateTime
+    Public Shared Function ConvertirTablaARegistrosGantt(ByVal dt As DataTable) As List(Of FrmCartaGantt.RegistroCicloGantt)
+        Dim lista As New List(Of FrmCartaGantt.RegistroCicloGantt)()
+        If dt Is Nothing OrElse dt.Rows.Count = 0 Then Return lista
 
+        For Each r As DataRow In dt.Rows
+            Dim reg As New FrmCartaGantt.RegistroCicloGantt()
+            reg.IdMant = Utilitarios.SafeInt(r("id_mant"), 0)
+            reg.IdCiclo = Utilitarios.SafeInt(r("id_ciclo"), 0)
+            reg.IdNodo = Utilitarios.SafeInt(r("id_nodo"), 0)
+            reg.Seccion = Convert.ToString(r("seccion")).Trim()
+            reg.ItemMaquina = Convert.ToString(r("item_maquina")).Trim()
+            reg.TipoMp = Convert.ToString(r("tipo_mp")).Trim()
+            reg.Estado = Convert.ToString(r("estado_ciclo")).Trim()
+            reg.Observacion = Convert.ToString(r("obs_ciclo")).Trim()
+            reg.Duracion = Utilitarios.SafeDouble(r("duracion"), 0.0)
+
+            Dim fIni As DateTime = Utilitarios.ObtenerFechaSegura(r("fecha_inicio")).Date
+            Dim hIni As DateTime
+            If Not IsDBNull(r("hora_inicio")) AndAlso DateTime.TryParse(Convert.ToString(r("hora_inicio")), hIni) Then
+                fIni = fIni.Add(hIni.TimeOfDay)
+            End If
+            Dim fFin As DateTime = Utilitarios.ObtenerFechaSegura(r("fecha_termino"), fIni).Date
+            Dim hFin As DateTime
+            If Not IsDBNull(r("hora_termino")) AndAlso DateTime.TryParse(Convert.ToString(r("hora_termino")), hFin) Then
+                fFin = fFin.Add(hFin.TimeOfDay)
+            End If
+            reg.FechaInicio = fIni
+            reg.FechaTermino = If(fFin < fIni.Date, fIni, fFin)
+            lista.Add(reg)
+        Next
+        Return lista
+    End Function
+
+    Public Sub CrgInfGanttCiclosMaq()
         With FrmInfMantPrev
             If .grillaDetalleCicloMp.RowCount = 0 Then Return
 
-            FrmCartaGantt.grillaInfoGantt.Rows.Clear()
-            FrmCartaGantt.grillaGraficoGantt.Rows.Clear()
-            FrmCartaGantt.grillaGraficoGantt.Columns.Clear()
+            Dim idMantSel As Integer = If(.grillaInfMant.CurrentRow IsNot Nothing, Utilitarios.SafeInt(.grillaInfMant.CurrentRow.Cells(0).Value, 0), 0)
+            Dim tipoSel As String = If(.grillaInfMant.CurrentRow IsNot Nothing AndAlso .grillaInfMant.Columns.Count > 5, Convert.ToString(.grillaInfMant.CurrentRow.Cells(5).Value).Trim(), String.Empty)
+            Dim idNodoSel As Integer = Math.Max(1, Utilitarios.SafeInt(.id_nodo_select, 1))
+            Dim seccionSel As String = If(.Arbol2.SelectedNode IsNot Nothing AndAlso .Arbol2.SelectedNode.Parent IsNot Nothing, .Arbol2.SelectedNode.Parent.Text, String.Empty)
 
+            Dim lista As New List(Of FrmCartaGantt.RegistroCicloGantt)(.grillaDetalleCicloMp.RowCount)
             For i = 0 To .grillaDetalleCicloMp.RowCount - 1
-                FrmCartaGantt.grillaInfoGantt.Rows.Add()
-                FrmCartaGantt.grillaInfoGantt.Rows(fila).Cells(0).Value = .grillaDetalleCicloMp.Rows(i).Cells(0).Value
-                FrmCartaGantt.grillaInfoGantt.Rows(fila).Cells(1).Value = .nombre_nodo_select
-                FrmCartaGantt.grillaInfoGantt.Rows(fila).Cells(2).Value = .grillaDetalleCicloMp.Rows(i).Cells(4).Value
-                FrmCartaGantt.grillaInfoGantt.Rows(fila).Cells(3).Value = .grillaDetalleCicloMp.Rows(i).Cells(1).Value
-                FrmCartaGantt.grillaInfoGantt.Rows(fila).Cells(4).Value = .grillaDetalleCicloMp.Rows(i).Cells(2).Value
-                FrmCartaGantt.grillaInfoGantt.Rows(fila).Cells(5).Value = .grillaDetalleCicloMp.Rows(i).Cells(3).Value
-                fila = fila + 1
+                Dim rowG As DataGridViewRow = .grillaDetalleCicloMp.Rows(i)
+                If rowG.IsNewRow Then Continue For
+                Dim reg As New FrmCartaGantt.RegistroCicloGantt()
+                reg.IdMant = idMantSel
+                reg.IdCiclo = Utilitarios.SafeInt(rowG.Cells(0).Value, 0)
+                reg.IdNodo = idNodoSel
+                reg.Seccion = seccionSel
+                reg.ItemMaquina = .nombre_nodo_select
+                reg.TipoMp = tipoSel
+                reg.FechaInicio = Utilitarios.ObtenerFechaSegura(rowG.Cells(1).Value)
+                reg.FechaTermino = Utilitarios.ObtenerFechaSegura(rowG.Cells(2).Value, reg.FechaInicio)
+                reg.Duracion = Utilitarios.SafeDouble(rowG.Cells(3).Value, 0.0)
+                reg.Observacion = Convert.ToString(rowG.Cells(4).Value).Trim()
+                reg.Estado = If(rowG.Cells.Count > 5, Convert.ToString(rowG.Cells(5).Value).Trim(), String.Empty)
+                lista.Add(reg)
             Next
-
-            fecha_inicio = DateTime.MaxValue
-            fecha_fin = DateTime.MinValue
-            For i = 0 To .grillaDetalleCicloMp.RowCount - 1
-                Dim f1 As DateTime, f2 As DateTime
-                If DateTime.TryParse(Convert.ToString(.grillaDetalleCicloMp.Rows(i).Cells(1).Value), f1) Then
-                    If f1.Date < fecha_inicio Then fecha_inicio = f1.Date
-                End If
-                If DateTime.TryParse(Convert.ToString(.grillaDetalleCicloMp.Rows(i).Cells(2).Value), f2) Then
-                    If f2.Date > fecha_fin Then fecha_fin = f2.Date
-                End If
-            Next
-            If fecha_inicio = DateTime.MaxValue OrElse fecha_fin = DateTime.MinValue OrElse fecha_inicio > fecha_fin Then
-                fecha_inicio = Now.Date
-                fecha_fin = Now.Date
-            End If
-
-            Dim colPorFecha As New Dictionary(Of DateTime, Integer)()
-            fecha = fecha_inicio
-            While fecha <= fecha_fin
-                Dim colKey As String = fecha.ToString("yyyyMMdd")
-                Dim colIdx As Integer = FrmCartaGantt.grillaGraficoGantt.Columns.Add(colKey, fecha.ToString("dd-MM-yy"))
-                FrmCartaGantt.grillaGraficoGantt.Columns(colIdx).Width = 55
-                colPorFecha(fecha.Date) = colIdx
-                fecha = fecha.AddDays(1)
-            End While
-
-            Dim colorMant As Color = Utilitarios.ColorGanttBarra
-            For i = 0 To FrmCartaGantt.grillaInfoGantt.RowCount - 1
-                FrmCartaGantt.grillaGraficoGantt.Rows.Add()
-                If DateTime.TryParse(Convert.ToString(FrmCartaGantt.grillaInfoGantt.Rows(i).Cells(3).Value), fecha_ini) AndAlso
-                   DateTime.TryParse(Convert.ToString(FrmCartaGantt.grillaInfoGantt.Rows(i).Cells(4).Value), fecha_end) Then
-                    Dim d As DateTime = fecha_ini.Date
-                    Dim dFin As DateTime = fecha_end.Date
-                    While d <= dFin
-                        Dim j As Integer
-                        If colPorFecha.TryGetValue(d, j) Then
-                            FrmCartaGantt.grillaGraficoGantt.Rows(i).Cells(j).Style.BackColor = colorMant
-                            FrmCartaGantt.grillaGraficoGantt.Rows(i).Cells(j).Style.ForeColor = Color.White
-                        End If
-                        d = d.AddDays(1)
-                    End While
-                End If
-            Next
+            FrmCartaGantt.EstablecerDatosGantt(lista, idNodoSel)
         End With
     End Sub
 
     Public Sub CrgInfGanttCiclosVariasMaq()
-        Dim fila As Integer = 0
-        Dim fecha_inicio As DateTime
-        Dim fecha_fin As DateTime
-        Dim fecha As DateTime
-        Dim fecha_ini As DateTime
-        Dim fecha_end As DateTime
-
         With FrmInfMantPrevCiclosMaq
-            If .grillaCiclosMaquinas.RowCount = 0 Then Return
+            Dim idPadre As Integer = Math.Max(1, Utilitarios.SafeInt(.id_nodo_mp_select, 1))
+            Dim mpSvc As New MantPreventiva()
+            Dim dt As DataTable = mpSvc.CrgDatosGanttDetallado(idPadre, .fecha_ini_inf_mp.Value, .fecha_fin_inf_mp.Value, .cmbTipoMpGantt.Text)
 
-            FrmCartaGantt.grillaInfoGantt.Rows.Clear()
-            FrmCartaGantt.grillaGraficoGantt.Rows.Clear()
-            FrmCartaGantt.grillaGraficoGantt.Columns.Clear()
-
-            For i = 0 To .grillaCiclosMaquinas.RowCount - 1
-                FrmCartaGantt.grillaInfoGantt.Rows.Add()
-                FrmCartaGantt.grillaInfoGantt.Rows(fila).Cells(0).Value = .grillaCiclosMaquinas.Rows(i).Cells(0).Value
-                FrmCartaGantt.grillaInfoGantt.Rows(fila).Cells(1).Value = .grillaCiclosMaquinas.Rows(i).Cells(2).Value
-                FrmCartaGantt.grillaInfoGantt.Rows(fila).Cells(2).Value = .grillaCiclosMaquinas.Rows(i).Cells(3).Value
-                FrmCartaGantt.grillaInfoGantt.Rows(fila).Cells(3).Value = .grillaCiclosMaquinas.Rows(i).Cells(4).Value
-                FrmCartaGantt.grillaInfoGantt.Rows(fila).Cells(4).Value = .grillaCiclosMaquinas.Rows(i).Cells(5).Value
-                FrmCartaGantt.grillaInfoGantt.Rows(fila).Cells(5).Value = .grillaCiclosMaquinas.Rows(i).Cells(6).Value
-                fila = fila + 1
-            Next
-
-            fecha_inicio = DateTime.MaxValue
-            fecha_fin = DateTime.MinValue
-            For i = 0 To .grillaCiclosMaquinas.RowCount - 1
-                Dim f1 As DateTime, f2 As DateTime
-                If DateTime.TryParse(Convert.ToString(.grillaCiclosMaquinas.Rows(i).Cells(4).Value), f1) Then
-                    If f1.Date < fecha_inicio Then fecha_inicio = f1.Date
-                End If
-                If DateTime.TryParse(Convert.ToString(.grillaCiclosMaquinas.Rows(i).Cells(5).Value), f2) Then
-                    If f2.Date > fecha_fin Then fecha_fin = f2.Date
-                End If
-            Next
-            If fecha_inicio = DateTime.MaxValue OrElse fecha_fin = DateTime.MinValue OrElse fecha_inicio > fecha_fin Then
-                fecha_inicio = Now.Date
-                fecha_fin = Now.Date
+            If dt IsNot Nothing AndAlso dt.Rows.Count > 0 Then
+                FrmCartaGantt.EstablecerDatosGantt(ConvertirTablaARegistrosGantt(dt), idPadre)
+                Return
             End If
 
-            Dim colPorFecha As New Dictionary(Of DateTime, Integer)()
-            Dim colsFds As New List(Of Integer)()
-            fecha = fecha_inicio
-            While fecha <= fecha_fin
-                Dim colKey As String = fecha.ToString("yyyyMMdd")
-                Dim colIdx As Integer = FrmCartaGantt.grillaGraficoGantt.Columns.Add(colKey, fecha.ToString("dd-MM-yy"))
-                FrmCartaGantt.grillaGraficoGantt.Columns(colIdx).Width = 55
-                colPorFecha(fecha.Date) = colIdx
-                If fecha.DayOfWeek = DayOfWeek.Saturday OrElse fecha.DayOfWeek = DayOfWeek.Sunday Then
-                    colsFds.Add(colIdx)
-                End If
-                fecha = fecha.AddDays(1)
-            End While
-
-            Dim colorMant As Color = Utilitarios.ColorGanttBarra
-            Dim colorFds As Color = Utilitarios.ColorFondoSoloLectura
-            For i = 0 To FrmCartaGantt.grillaInfoGantt.RowCount - 1
-                FrmCartaGantt.grillaGraficoGantt.Rows.Add()
-                For Each jFds As Integer In colsFds
-                    FrmCartaGantt.grillaGraficoGantt.Rows(i).Cells(jFds).Style.BackColor = colorFds
-                    FrmCartaGantt.grillaGraficoGantt.Rows(i).Cells(jFds).Style.ForeColor = Utilitarios.ColorTextoPrincipal
-                Next
-                If DateTime.TryParse(Convert.ToString(FrmCartaGantt.grillaInfoGantt.Rows(i).Cells(3).Value), fecha_ini) AndAlso
-                   DateTime.TryParse(Convert.ToString(FrmCartaGantt.grillaInfoGantt.Rows(i).Cells(4).Value), fecha_end) Then
-                    Dim d As DateTime = fecha_ini.Date
-                    Dim dFin As DateTime = fecha_end.Date
-                    While d <= dFin
-                        Dim j As Integer
-                        If colPorFecha.TryGetValue(d, j) Then
-                            FrmCartaGantt.grillaGraficoGantt.Rows(i).Cells(j).Style.BackColor = colorMant
-                            FrmCartaGantt.grillaGraficoGantt.Rows(i).Cells(j).Style.ForeColor = Color.White
-                        End If
-                        d = d.AddDays(1)
-                    End While
-                End If
+            If .grillaCiclosMaquinas.RowCount = 0 Then Return
+            Dim lista As New List(Of FrmCartaGantt.RegistroCicloGantt)(.grillaCiclosMaquinas.RowCount)
+            For i = 0 To .grillaCiclosMaquinas.RowCount - 1
+                Dim rowG As DataGridViewRow = .grillaCiclosMaquinas.Rows(i)
+                If rowG.IsNewRow Then Continue For
+                Dim reg As New FrmCartaGantt.RegistroCicloGantt()
+                reg.IdCiclo = Utilitarios.SafeInt(rowG.Cells(0).Value, 0)
+                reg.Seccion = Convert.ToString(rowG.Cells(1).Value).Trim()
+                reg.ItemMaquina = Convert.ToString(rowG.Cells(2).Value).Trim()
+                reg.Observacion = Convert.ToString(rowG.Cells(3).Value).Trim()
+                reg.FechaInicio = Utilitarios.ObtenerFechaSegura(rowG.Cells(4).Value)
+                reg.FechaTermino = Utilitarios.ObtenerFechaSegura(rowG.Cells(5).Value, reg.FechaInicio)
+                reg.Duracion = Utilitarios.SafeDouble(rowG.Cells(6).Value, 0.0)
+                reg.TipoMp = .cmbTipoMpGantt.Text
+                lista.Add(reg)
             Next
+            FrmCartaGantt.EstablecerDatosGantt(lista, idPadre)
         End With
     End Sub
 
@@ -186,7 +128,7 @@ Public Class Informes
             '---------------------------------------------------------------------------------------
 
             Dim filaexcel As Integer = 12
-            Dim colIniIdx As Integer = If(IsDate(grilla_ciclos_mp.Rows(0).Cells(2).Value), 2, 3)
+            Dim colIniIdx As Integer = If(grilla_ciclos_mp.Columns.Contains("fecha_inicio"), grilla_ciclos_mp.Columns("fecha_inicio").Index, If(IsDate(grilla_ciclos_mp.Rows(0).Cells(2).Value), 2, 3))
             Dim colFinIdx As Integer = colIniIdx + 1
 
             Dim rango As Excel.Range
@@ -259,7 +201,7 @@ Public Class Informes
             worksheet_2.Cells(7, 10) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(5).Value ' tipo de mantencion
             '---------------------------------------------------------------------------------------
             Dim filaexcel As Integer = 11
-            Dim colIniIdx As Integer = If(IsDate(grilla_ciclos_mp.Rows(0).Cells(2).Value), 2, 3)
+            Dim colIniIdx As Integer = If(grilla_ciclos_mp.Columns.Contains("fecha_inicio"), grilla_ciclos_mp.Columns("fecha_inicio").Index, If(IsDate(grilla_ciclos_mp.Rows(0).Cells(2).Value), 2, 3))
             Dim colFinIdx As Integer = colIniIdx + 1
 
             Dim rango As Excel.Range
@@ -380,7 +322,7 @@ Public Class Informes
             '---------------------------------------------------------------------------------------
 
             Dim filaexcel As Integer = 12
-            Dim colIniIdx As Integer = If(IsDate(grilla_ciclos_mp.Rows(0).Cells(2).Value), 2, 3)
+            Dim colIniIdx As Integer = If(grilla_ciclos_mp.Columns.Contains("fecha_inicio"), grilla_ciclos_mp.Columns("fecha_inicio").Index, If(IsDate(grilla_ciclos_mp.Rows(0).Cells(2).Value), 2, 3))
             Dim colFinIdx As Integer = colIniIdx + 1
 
             Dim rango As Excel.Range

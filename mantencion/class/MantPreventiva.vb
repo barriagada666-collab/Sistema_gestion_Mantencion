@@ -2234,4 +2234,68 @@ Public Class MantPreventiva
         End Try
         Return hrs_trans
     End Function
+
+    ''' <summary>
+    ''' Carga el detalle enriquecido de ciclos de mantención preventiva para Carta Gantt
+    ''' (incluye N° Mantención, ID Ciclo, nodo, sección, máquina, tipo, estado, fechas y horas),
+    ''' permitiendo filtrar por nodo padre, rango de fechas, tipo, N° Mantención e ID Ciclo.
+    ''' </summary>
+    Public Function CrgDatosGanttDetallado(ByVal idPadre As Integer,
+                                           ByVal fechaInicio As DateTime,
+                                           ByVal fechaFin As DateTime,
+                                           ByVal tipoMp As String,
+                                           Optional ByVal idMantFiltro As Integer = 0,
+                                           Optional ByVal idCicloFiltro As Integer = 0,
+                                           Optional ByVal ignorarFechasPorId As Boolean = False) As DataTable
+        Dim dt As New DataTable("GanttDetallado")
+        Dim conexion As New Conexion
+        Dim cnx As New SqlConnection
+        Try
+            conexion.Conectar(cnx)
+            Dim sql As String =
+                "WITH NODOS AS (" &
+                "  SELECT n.nodo_padre, n.idnodo, n.desc_nodo FROM nodo n WHERE n.idnodo = @nodo_padre " &
+                "  UNION ALL " &
+                "  SELECT n.nodo_padre, n.idnodo, n.desc_nodo FROM nodo n INNER JOIN NODOS nds ON n.nodo_padre = nds.idnodo" &
+                ") " &
+                "SELECT mp.idmant AS id_mant, " &
+                "       cmp.idciclo AS id_ciclo, " &
+                "       mp.idnodo AS id_nodo, " &
+                "       ISNULL((SELECT TOP 1 p.desc_nodo FROM nodo p WHERE p.idnodo = nds.nodo_padre), '') AS seccion, " &
+                "       ISNULL(nds.desc_nodo, '') AS item_maquina, " &
+                "       ISNULL(mp.tipo_mantencion, '') AS tipo_mp, " &
+                "       ISNULL(cmp.estado_ciclo, '') AS estado_ciclo, " &
+                "       ISNULL(cmp.obs_ciclo, '') AS obs_ciclo, " &
+                "       cmp.fecha_inicio, " &
+                "       cmp.hora_inicio, " &
+                "       cmp.fecha_termino, " &
+                "       cmp.hora_termino, " &
+                "       ISNULL(cmp.duracion, 0) AS duracion " &
+                "FROM NODOS nds " &
+                "INNER JOIN mant_preventiva mp ON nds.idnodo = mp.idnodo " &
+                "INNER JOIN ciclo_mp cmp ON mp.idmant = cmp.idmant " &
+                "WHERE (@id_mant <= 0 OR mp.idmant = @id_mant) " &
+                "  AND (@id_ciclo <= 0 OR cmp.idciclo = @id_ciclo) " &
+                "  AND (@ignorar_fechas = 1 OR (cmp.fecha_inicio BETWEEN @fecha_inicio_ciclo AND @fecha_fin_ciclo)) " &
+                "  AND (@tipo_mantencion = '' OR @tipo_mantencion = 'Todos' OR mp.tipo_mantencion = @tipo_mantencion) " &
+                "ORDER BY cmp.fecha_inicio, mp.idmant, cmp.idciclo"
+
+            Using da As New SqlDataAdapter(sql, cnx)
+                da.SelectCommand.CommandTimeout = 30
+                da.SelectCommand.Parameters.AddWithValue("@nodo_padre", Math.Max(1, idPadre))
+                da.SelectCommand.Parameters.AddWithValue("@id_mant", Math.Max(0, idMantFiltro))
+                da.SelectCommand.Parameters.AddWithValue("@id_ciclo", Math.Max(0, idCicloFiltro))
+                da.SelectCommand.Parameters.AddWithValue("@ignorar_fechas", If(ignorarFechasPorId AndAlso (idMantFiltro > 0 OrElse idCicloFiltro > 0), 1, 0))
+                Utilitarios.AgregarParametroFecha(da.SelectCommand, "@fecha_inicio_ciclo", Utilitarios.SafeSqlDateStart(fechaInicio))
+                Utilitarios.AgregarParametroFecha(da.SelectCommand, "@fecha_fin_ciclo", Utilitarios.SafeSqlDateEnd(fechaFin))
+                da.SelectCommand.Parameters.AddWithValue("@tipo_mantencion", If(tipoMp, String.Empty).Trim())
+                da.Fill(dt)
+            End Using
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Cargar Datos Detallados Carta Gantt")
+        Finally
+            conexion.Desconectar(cnx)
+        End Try
+        Return dt
+    End Function
 End Class
