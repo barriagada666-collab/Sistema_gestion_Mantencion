@@ -4,10 +4,11 @@ Todas las actualizaciones relevantes de **Sistema de Gestión Departamento Mante
 
 ---
 
-## [2026.1 LTS] — 2026-11-18
+## [2026.1 LTS] — 2026-11-19
 
 ### Novedades y Mejoras Funcionales
 - **Carta Gantt renovada y con búsqueda directa:** Búsqueda instantánea y consulta por **N° de Mantención (`N° MP`)**, **ID de Ciclo**, máquina, sección, observación o estado, con selector de escala temporal (`Compacta`, `Normal`, `Detallada`), leyenda semántica de estados, desplazamiento vertical sincronizado y panel inferior desplegable con el detalle completo de tareas por ciclo.
+- **Informe de Mantenciones Preventivas optimizado:** Filtrado inmediato por **Tipo de Mantención**, **Todos** o **Mostrar Solo Tareas** al seleccionar equipo u opción sin restricciones de fecha indebidas, carga automática de ciclos asociados al seleccionar cada plan y controles de fecha mostrados únicamente cuando corresponde.
 - **Gestión integral de usuarios, perfiles y permisos:** Soporte completo para creación, edición y eliminación de perfiles personalizados, asignación granular de permisos por módulo y acceso al menú de configuración SQL restringido al perfil Administrador.
 - **Estado de conexión visible e intuitivo:** Indicador luminoso de estado de servidor activo en la barra principal y en la ventana de configuración de base de datos, con reinicio controlado tras aplicar cambios de conexión.
 - **Identidad visual unificada:** Nueva pantalla de arranque corporativa, cabecera institucional en inicio de sesión, paleta unificada de alto contraste y normalización de iconos y botones en los 40 formularios del sistema.

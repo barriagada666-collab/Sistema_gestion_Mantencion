@@ -4,10 +4,10 @@ Binarios de distribución **100% autocontenidos (Zero-Dependency)** para **Windo
 
 | Archivo | Plataforma | Formato | Tamaño | SHA-256 |
 | :--- | :--- | :---: | :---: | :--- |
-| `Instalador_Sistema_Mantencion_v2026.1.exe` | **Windows 10 / 11** (`x64`) | `.exe` | `41.45 MB` | `C273923B442F7ACF76F3CC46170624B548686AFBA5926168C061C15D60D69A87` |
-| `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` | **macOS Universal** (`ARM64` + `Intel`) | `.dmg` | `290.00 MB` | `C2027044424269F2DB8056D32B11CD876CDF1AB63C097248C2B668A217CB4A69` |
-| `Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip` | **macOS Universal** (`ARM64` + `Intel`) | `.zip` | `365.14 MB` | `D61F56C3DEB65D391A1D82F612B476D625C02F24ECF7040271F18A232CA43456` |
-| `Sistema.Gestion.Mantencion.2026.1.0.nupkg` | **NuGet / GitHub Packages** | `.nupkg` | `2.22 MB` | `14D43503E3082EC42181C9138BBC490DFB55BFF38C2D066F3A3AE25B0E709602` |
+| `Instalador_Sistema_Mantencion_v2026.1.exe` | **Windows 10 / 11** (`x64`) | `.exe` | `41.45 MB` | `3A958F02D4E57F40ED055EE4C75CD51FBE65EBFDEEBCE04B40F7ED62026350B8` |
+| `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` | **macOS Universal** (`ARM64` + `Intel`) | `.dmg` | `295.50 MB` | `7E27482E58B29885CD7FD99BD4C745A9A257AD21F6B22630AFE3BC80C27EA0B3` |
+| `Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip` | **macOS Universal** (`ARM64` + `Intel`) | `.zip` | `365.14 MB` | `AC36630A918B6312094D7396EB6A5184295C7D8643D044791CDB3570FAFC9813` |
+| `Sistema.Gestion.Mantencion.2026.1.0.nupkg` | **NuGet / GitHub Packages** | `.nupkg` | `2.22 MB` | `D5F3C7CB85D705C4F51AD94E8E6E626B12F464183BDCA6927E4E7C3B6E769577` |
 
 ## 🚀 Uso Rápido
 - **Windows:** Ejecute `Instalador_Sistema_Mantencion_v2026.1.exe`. No requiere software adicional previo.
