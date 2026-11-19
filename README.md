@@ -68,9 +68,9 @@ El **Sistema de Gestión Departamento Mantención** es una plataforma corporativ
 ## ⚙️ Características Principales
 
 - **Órdenes de Trabajo (OT):** Creación, edición, asignación técnica, tiempos de detención, control de insumos y cierre.
-- **Mantención Preventiva y Carta Gantt:** Pautas periódicas, programación cíclica masiva y Carta Gantt interactiva con búsqueda directa por **N° Mantención (`N° MP`)**, **ID de Ciclo**, máquina o estado, escalado temporal y panel de detalle de tareas.
+- **Mantención Preventiva y Carta Gantt:** Pautas periódicas, programación cíclica masiva, selección por casillas de uno o múltiples ciclos, consulta por **N° Mantención (`N° MP`)**, **ID de Ciclo**, máquina, estado o fecha de inicio, ordenamiento por plan más reciente y vista multi-año con detalle de tareas.
 - **Activos, Personal y Turnos:** Catálogo jerárquico de plantas, secciones y equipos con fichas técnicas, personal y calendario de turnos.
-- **Informes y Exportación Integrada:** Reportes filtrables por rango de fechas, tablero estadístico de indicadores y exportación a **Excel** y **PDF horizontal completo** sin dependencias externas.
+- **Informes y Exportación Integrada:** Reportes individuales y multi-máquina filtrables (incluyendo tareas realizadas y pendientes) con exportación coherente en **Excel** y **PDF horizontal completo** para tablas y calendario Gantt, sin dependencias externas.
 - **Seguridad y Auditoría:** Control granular de permisos por perfil, bitácora de auditoría, indicador de conexión activa y configuración de servidor reservada a usuarios administradores.
 
 ---
@@ -81,9 +81,9 @@ El **Sistema de Gestión Departamento Mantención** es una plataforma corporativ
 
 | Plataforma | Instalador | Tamaño | Descarga |
 | :--- | :--- | :---: | :--- |
-| 🪟 **Windows 10 / 11** (`x64`) | Instalador estándar (`.exe`) | `41.45 MB` | [⬇️ **Descargar Windows (.exe)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) |
-| 🍏 **macOS Universal** (`ARM64` + `Intel`) | Imagen de disco (`.dmg`) | `295.50 MB` | [⬇️ **Descargar macOS (.dmg)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) |
-| 🍏 **macOS Universal** (`ARM64` + `Intel`) | Archivo comprimido (`.zip`) | `365.14 MB` | [⬇️ **Descargar macOS (.zip)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) |
+| 🪟 **Windows 10 / 11** (`x64`) | Instalador estándar (`.exe`) | `41.46 MB` | [⬇️ **Descargar Windows (.exe)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1.exe) |
+| 🍏 **macOS Universal** (`ARM64` + `Intel`) | Imagen de disco (`.dmg`) | `292.16 MB` | [⬇️ **Descargar macOS (.dmg)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg) |
+| 🍏 **macOS Universal** (`ARM64` + `Intel`) | Archivo comprimido (`.zip`) | `365.16 MB` | [⬇️ **Descargar macOS (.zip)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip) |
 | 📦 **NuGet** | Paquete de distribución (`.nupkg`) | `2.22 MB` | [⬇️ **Descargar Paquete (.nupkg)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.1/Sistema.Gestion.Mantencion.2026.1.0.nupkg) |
 
 <details>
@@ -91,10 +91,10 @@ El **Sistema de Gestión Departamento Mantención** es una plataforma corporativ
 
 | Archivo | SHA-256 |
 | :--- | :--- |
-| `Instalador_Sistema_Mantencion_v2026.1.exe` | `3A958F02D4E57F40ED055EE4C75CD51FBE65EBFDEEBCE04B40F7ED62026350B8` |
-| `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` | `7E27482E58B29885CD7FD99BD4C745A9A257AD21F6B22630AFE3BC80C27EA0B3` |
-| `Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip` | `AC36630A918B6312094D7396EB6A5184295C7D8643D044791CDB3570FAFC9813` |
-| `Sistema.Gestion.Mantencion.2026.1.0.nupkg` | `D5F3C7CB85D705C4F51AD94E8E6E626B12F464183BDCA6927E4E7C3B6E769577` |
+| `Instalador_Sistema_Mantencion_v2026.1.exe` | `1CC45C64CFD756AD1A24AD2DE8F020CF700F5A775C44838FDEDAB99F53821D7B` |
+| `Instalador_Sistema_Mantencion_v2026.1_macOS.dmg` | `A8AC9539E1D691309AC684E1726E7B81AEAA6C2DC084127F36D08CDDFD5DDB7F` |
+| `Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip` | `47AFEFB05272C881CAB5F81FEAC70CD457F12569A1980AEC808CDF372544F13B` |
+| `Sistema.Gestion.Mantencion.2026.1.0.nupkg` | `7E96562C1294E002D7B89D5AD8E2EFDFA0168AE58D113BE49E5416576C4CDAD0` |
 
 </details>
 
@@ -118,7 +118,7 @@ El **Sistema de Gestión Departamento Mantención** es una plataforma corporativ
 ### Uso Básico y Configuración
 1. Inicie sesión con sus credenciales corporativas habilitadas.
 2. Navegue por los módulos desde la barra superior (**Órdenes de Trabajo**, **Mant. Preventiva**, **Informes**, **Mantenedores**, **Control de Eventos**).
-3. En **Carta Gantt**, utilice los filtros superiores por **N° MP**, **ID Ciclo**, búsqueda de texto o **Estado**, y seleccione una fila para inspeccionar su detalle de tareas inferior.
+3. En informes preventivos y **Carta Gantt**, seleccione el equipo y marque uno o varios ciclos mediante casillas para enfocar o exportar exactamente la selección deseada; también puede buscar por **N° MP**, **ID Ciclo**, texto o **Estado**.
 4. La barra inferior muestra el estado actual de conexión SQL; los usuarios con perfil **Administrador** pueden ajustar parámetros desde **Mantenedores → Configurar Servidor BD...**.
 
 ### Compilación desde Código Fuente (Entorno de Desarrollo)
