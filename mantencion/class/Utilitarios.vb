@@ -96,31 +96,43 @@ Public Class Utilitarios
         If String.IsNullOrWhiteSpace(nombrePlantilla) Then Return String.Empty
 
         Dim soloNombre As String = Path.GetFileName(nombrePlantilla)
+        Dim asmLoc As String = GetType(Utilitarios).Assembly.Location
+        Dim asmDir As String = If(String.IsNullOrEmpty(asmLoc), AppContext.BaseDirectory, Path.GetDirectoryName(asmLoc))
         Dim baseDir As String = AppDomain.CurrentDomain.BaseDirectory
         Dim appDir As String = Application.StartupPath
+        Dim curDir As String = Environment.CurrentDirectory
 
         Dim candidatos As String() = {
+            Path.Combine(asmDir, "plantillas", soloNombre),
             Path.Combine(baseDir, "plantillas", soloNombre),
             Path.Combine(appDir, "plantillas", soloNombre),
+            Path.Combine(curDir, "plantillas", soloNombre),
+            Path.Combine(curDir, "mantencion", "plantillas", soloNombre),
+            Path.Combine(asmDir, soloNombre),
             Path.Combine(baseDir, soloNombre),
             Path.Combine(appDir, soloNombre),
+            Path.Combine(asmDir, "..\..\plantillas", soloNombre),
             Path.Combine(baseDir, "..\..\plantillas", soloNombre)
         }
 
         For Each ruta In candidatos
-            If File.Exists(ruta) Then Return Path.GetFullPath(ruta)
+            If Not String.IsNullOrEmpty(ruta) AndAlso File.Exists(ruta) Then Return Path.GetFullPath(ruta)
         Next
 
         ' Respaldo insensible a mayúsculas/minúsculas para sistemas de archivos case-sensitive (macOS/Wine/Linux)
         Dim carpetas As String() = {
+            Path.Combine(asmDir, "plantillas"),
             Path.Combine(baseDir, "plantillas"),
             Path.Combine(appDir, "plantillas"),
+            Path.Combine(curDir, "plantillas"),
+            Path.Combine(curDir, "mantencion", "plantillas"),
+            asmDir,
             baseDir,
             appDir
         }
         For Each carpeta In carpetas
             Try
-                If Directory.Exists(carpeta) Then
+                If Not String.IsNullOrEmpty(carpeta) AndAlso Directory.Exists(carpeta) Then
                     For Each archivo As String In Directory.GetFiles(carpeta, "*.xls")
                         If String.Equals(Path.GetFileName(archivo), soloNombre, StringComparison.OrdinalIgnoreCase) Then
                             Return Path.GetFullPath(archivo)
@@ -170,6 +182,32 @@ Public Class Utilitarios
         Else
             Return excelApp.Workbooks.Add()
         End If
+    End Function
+
+    ''' <summary>
+    ''' Convierte un libro abierto desde plantilla .xls a un libro .xlsx en memoria para superar el límite de 256 columnas (p. ej. Carta Gantt extensa).
+    ''' </summary>
+    Public Shared Function ConvertirLibroAXlsxTempParaAmpliarColumnas(ByVal excelApp As Excel.Application, ByVal workbook As Excel.Workbook) As Excel.Workbook
+        If excelApp Is Nothing OrElse workbook Is Nothing Then Return workbook
+        Dim tmpXlsx As String = Path.Combine(Path.GetTempPath(), "sardu_gantt_" & Guid.NewGuid().ToString("N") & ".xlsx")
+        Try
+            If Not workbook.Excel8CompatibilityMode Then Return workbook
+            workbook.SaveAs(Filename:=tmpXlsx, FileFormat:=Excel.XlFileFormat.xlOpenXMLWorkbook)
+            workbook.Close(SaveChanges:=False)
+            Runtime.InteropServices.Marshal.ReleaseComObject(workbook)
+            Dim wbNuevo As Excel.Workbook = excelApp.Workbooks.Add(tmpXlsx)
+            Try
+                If File.Exists(tmpXlsx) Then File.Delete(tmpXlsx)
+            Catch
+            End Try
+            Return wbNuevo
+        Catch
+            Try
+                If File.Exists(tmpXlsx) Then File.Delete(tmpXlsx)
+            Catch
+            End Try
+            Return workbook
+        End Try
     End Function
 
     ''' <summary>
@@ -239,7 +277,7 @@ Public Class Utilitarios
     ''' Exporta y guarda un libro de Excel directamente a un archivo PDF en Windows 10 y 11.
     ''' Muestra el cuadro de diálogo Guardar como, genera el PDF nativamente (o mediante Microsoft Print to PDF) y ofrece abrirlo.
     ''' </summary>
-    Public Shared Sub ImprimirLibroAPdfWindows(ByVal excelApp As Excel.Application, ByVal workbook As Excel.Workbook, Optional ByVal rutaArchivoDestino As String = "", Optional ByVal prefijoNombre As String = "Informe_Mantencion")
+    Public Shared Sub ImprimirLibroAPdfWindows(ByVal excelApp As Excel.Application, ByVal workbook As Excel.Workbook, Optional ByVal rutaArchivoDestino As String = "", Optional ByVal prefijoNombre As String = "Informe_Mantencion", Optional ByVal respetarFitExistente As Boolean = False, Optional ByVal silencioso As Boolean = False)
         If workbook Is Nothing Then Exit Sub
 
         Dim rutaPdf As String = rutaArchivoDestino
@@ -262,7 +300,7 @@ Public Class Utilitarios
 
         Dim exportadoOk As Boolean = False
 
-        ConfigurarImpresionHorizontalAjustada(workbook)
+        ConfigurarImpresionHorizontalAjustada(workbook, respetarFitExistente)
 
         ' 1. Exportación directa nativa a PDF de alta velocidad (Excel.XlFixedFormatType.xlTypePDF = 0)
         Try
@@ -293,7 +331,7 @@ Public Class Utilitarios
         End If
 
         If exportadoOk AndAlso File.Exists(rutaPdf) Then
-            If MessageBox.Show("Archivo PDF guardado exitosamente en:" & Environment.NewLine & rutaPdf & Environment.NewLine & Environment.NewLine & "¿Desea abrir el documento PDF ahora?", "Exportación PDF Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
+            If Not silencioso AndAlso MessageBox.Show("Archivo PDF guardado exitosamente en:" & Environment.NewLine & rutaPdf & Environment.NewLine & Environment.NewLine & "¿Desea abrir el documento PDF ahora?", "Exportación PDF Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
                 AbrirDocumento(rutaPdf)
             End If
         End If
@@ -320,9 +358,17 @@ Public Class Utilitarios
     ''' Fuerza orientación horizontal y ajuste automático al 100% del ancho de página (1 página de ancho x N páginas de alto)
     ''' en todas las hojas visibles de un libro Excel para evitar cortes horizontales al exportar PDF con muchos registros.
     ''' </summary>
-    Public Shared Sub ConfigurarImpresionHorizontalAjustada(ByVal workbook As Excel.Workbook)
+    Public Shared Sub ConfigurarImpresionHorizontalAjustada(ByVal workbook As Excel.Workbook, Optional ByVal respetarFitExistente As Boolean = False)
         If workbook Is Nothing Then Exit Sub
+        Dim excelApp As Excel.Application = Nothing
         Try
+            excelApp = TryCast(workbook.Application, Excel.Application)
+            If excelApp IsNot Nothing Then
+                Try
+                    excelApp.PrintCommunication = False
+                Catch
+                End Try
+            End If
             For Each sh As Object In workbook.Worksheets
                 Dim ws As Excel.Worksheet = TryCast(sh, Excel.Worksheet)
                 If ws Is Nothing Then Continue For
@@ -331,9 +377,11 @@ Public Class Utilitarios
                         Dim ps As Excel.PageSetup = ws.PageSetup
                         ps.Orientation = Excel.XlPageOrientation.xlLandscape
                         ps.PaperSize = Excel.XlPaperSize.xlPaperLetter
-                        ps.Zoom = False
-                        ps.FitToPagesWide = 1
-                        ps.FitToPagesTall = False
+                        If Not respetarFitExistente Then
+                            ps.Zoom = False
+                            ps.FitToPagesWide = 1
+                            ps.FitToPagesTall = False
+                        End If
                         ps.CenterHorizontally = True
                         ps.LeftMargin = 14
                         ps.RightMargin = 14
@@ -346,6 +394,13 @@ Public Class Utilitarios
                 End Try
             Next
         Catch
+        Finally
+            If excelApp IsNot Nothing Then
+                Try
+                    excelApp.PrintCommunication = True
+                Catch
+                End Try
+            End If
         End Try
     End Sub
 
@@ -382,7 +437,7 @@ Public Class Utilitarios
         Dim colsVis As New List(Of DataGridViewColumn)()
         If grilla Is Nothing Then Return colsVis
         For Each col As DataGridViewColumn In grilla.Columns
-            If col.Visible Then colsVis.Add(col)
+            If col.Visible AndAlso Not String.Equals(col.Name, "colSelGantt", StringComparison.OrdinalIgnoreCase) Then colsVis.Add(col)
         Next
         colsVis.Sort(Function(a, b) a.DisplayIndex.CompareTo(b.DisplayIndex))
         Return colsVis
@@ -1808,5 +1863,144 @@ Public Class Utilitarios
         Dim v As Object = fila.Cells(indiceCol).Value
         If v Is Nothing OrElse IsDBNull(v) Then Return String.Empty
         Return v.ToString().Trim()
+    End Function
+
+    Private Shared ReadOnly _grillasConSelectorGantt As New HashSet(Of Integer)()
+
+    ''' <summary>
+    ''' Agrega o sincroniza la columna checkbox "colSelGantt" (mostrada primero por DisplayIndex = 0 sin alterar los índices 0..N de las columnas existentes)
+    ''' y habilita clic directo en celda y clic en encabezado "Sel." para marcar/desmarcar ciclos.
+    ''' </summary>
+    Public Shared Sub AsegurarColumnaSeleccionGantt(ByVal dgv As DataGridView)
+        If dgv Is Nothing OrElse dgv.IsDisposed Then Exit Sub
+
+        Dim colSel As DataGridViewCheckBoxColumn
+        If Not dgv.Columns.Contains("colSelGantt") Then
+            colSel = New DataGridViewCheckBoxColumn With {
+                .Name = "colSelGantt",
+                .HeaderText = "Sel.",
+                .Width = 40,
+                .MinimumWidth = 36,
+                .AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
+                .SortMode = DataGridViewColumnSortMode.NotSortable,
+                .FillWeight = 20.0F,
+                .ReadOnly = True,
+                .ThreeState = False,
+                .ToolTipText = "Marque uno o varios ciclos para Carta Gantt (clic en 'Sel.' marca/desmarca todos)"
+            }
+            colSel.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+            dgv.Columns.Add(colSel)
+        Else
+            colSel = TryCast(dgv.Columns("colSelGantt"), DataGridViewCheckBoxColumn)
+        End If
+
+        If colSel IsNot Nothing Then
+            colSel.DisplayIndex = 0
+            colSel.Width = 40
+            colSel.ReadOnly = True
+            For Each r As DataGridViewRow In dgv.Rows
+                If r.IsNewRow Then Continue For
+                Dim curVal As Object = r.Cells(colSel.Index).Value
+                If curVal Is Nothing OrElse IsDBNull(curVal) Then
+                    r.Cells(colSel.Index).Value = False
+                End If
+            Next
+        End If
+
+        Dim keyHash As Integer = Runtime.CompilerServices.RuntimeHelpers.GetHashCode(dgv)
+        If Not _grillasConSelectorGantt.Contains(keyHash) Then
+            _grillasConSelectorGantt.Add(keyHash)
+            AddHandler dgv.CellClick, Sub(sender, e)
+                                          If e.RowIndex < 0 OrElse e.ColumnIndex < 0 Then Exit Sub
+                                          Dim g As DataGridView = DirectCast(sender, DataGridView)
+                                          If g.Columns(e.ColumnIndex).Name <> "colSelGantt" Then Exit Sub
+                                          Dim r As DataGridViewRow = g.Rows(e.RowIndex)
+                                          If r.IsNewRow Then Exit Sub
+                                          Dim actual As Boolean = False
+                                          Dim v As Object = r.Cells(e.ColumnIndex).Value
+                                          If v IsNot Nothing AndAlso Not IsDBNull(v) Then Boolean.TryParse(v.ToString(), actual)
+                                          r.Cells(e.ColumnIndex).Value = Not actual
+                                          g.InvalidateCell(e.ColumnIndex, e.RowIndex)
+                                      End Sub
+            AddHandler dgv.ColumnHeaderMouseClick, Sub(sender, e)
+                                                       If e.ColumnIndex < 0 Then Exit Sub
+                                                       Dim g As DataGridView = DirectCast(sender, DataGridView)
+                                                       If g.Columns(e.ColumnIndex).Name <> "colSelGantt" OrElse g.RowCount = 0 Then Exit Sub
+                                                       Dim haySinMarcar As Boolean = False
+                                                       For Each r As DataGridViewRow In g.Rows
+                                                           If r.IsNewRow Then Continue For
+                                                           Dim marc As Boolean = False
+                                                           Dim v As Object = r.Cells(e.ColumnIndex).Value
+                                                           If v IsNot Nothing AndAlso Not IsDBNull(v) Then Boolean.TryParse(v.ToString(), marc)
+                                                           If Not marc Then
+                                                               haySinMarcar = True
+                                                               Exit For
+                                                           End If
+                                                       Next
+                                                       For Each r As DataGridViewRow In g.Rows
+                                                           If Not r.IsNewRow Then r.Cells(e.ColumnIndex).Value = haySinMarcar
+                                                       Next
+                                                       g.Refresh()
+                                                   End Sub
+            AddHandler dgv.DataError, Sub(sender, e)
+                                          e.ThrowException = False
+                                      End Sub
+            AddHandler dgv.Disposed, Sub(sender, e)
+                                         _grillasConSelectorGantt.Remove(Runtime.CompilerServices.RuntimeHelpers.GetHashCode(sender))
+                                     End Sub
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' Elimina la columna checkbox "colSelGantt" al limpiar una grilla para no dejar encabezados huérfanos sin datos.
+    ''' </summary>
+    Public Shared Sub QuitarColumnaSeleccionGantt(ByVal dgv As DataGridView)
+        If dgv Is Nothing OrElse dgv.IsDisposed Then Exit Sub
+        If dgv.Columns.Contains("colSelGantt") Then
+            dgv.Columns.Remove("colSelGantt")
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' Devuelve únicamente las filas con la casilla "colSelGantt" marcada en verdadero.
+    ''' </summary>
+    Public Shared Function ObtenerFilasMarcadas(ByVal dgv As DataGridView) As List(Of DataGridViewRow)
+        Dim lista As New List(Of DataGridViewRow)()
+        If dgv Is Nothing OrElse Not dgv.Columns.Contains("colSelGantt") Then Return lista
+        Dim idxSel As Integer = dgv.Columns("colSelGantt").Index
+        For Each r As DataGridViewRow In dgv.Rows
+            If r.IsNewRow Then Continue For
+            Dim v As Object = r.Cells(idxSel).Value
+            Dim marc As Boolean = False
+            If v IsNot Nothing AndAlso Not IsDBNull(v) Then Boolean.TryParse(v.ToString(), marc)
+            If marc Then lista.Add(r)
+        Next
+        Return lista
+    End Function
+
+    ''' <summary>
+    ''' Devuelve las filas marcadas con checkbox; si ninguna está marcada y "soloFilaActualSiNoHayMarcadas" es True,
+    ''' devuelve las filas seleccionadas o la fila actual; de lo contrario devuelve todas las filas.
+    ''' </summary>
+    Public Shared Function ObtenerFilasMarcadasOSeleccionadas(ByVal dgv As DataGridView, ByVal soloFilaActualSiNoHayMarcadas As Boolean) As List(Of DataGridViewRow)
+        Dim lista As List(Of DataGridViewRow) = ObtenerFilasMarcadas(dgv)
+        If lista.Count > 0 OrElse dgv Is Nothing OrElse dgv.RowCount = 0 Then Return lista
+
+        If soloFilaActualSiNoHayMarcadas Then
+            If dgv.SelectedRows.Count > 0 Then
+                For Each r As DataGridViewRow In dgv.Rows
+                    If Not r.IsNewRow AndAlso r.Selected Then lista.Add(r)
+                Next
+            ElseIf dgv.CurrentRow IsNot Nothing AndAlso Not dgv.CurrentRow.IsNewRow Then
+                lista.Add(dgv.CurrentRow)
+            End If
+        End If
+
+        If lista.Count = 0 Then
+            For Each r As DataGridViewRow In dgv.Rows
+                If Not r.IsNewRow Then lista.Add(r)
+            Next
+        End If
+        Return lista
     End Function
 End Class

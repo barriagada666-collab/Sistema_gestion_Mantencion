@@ -1128,30 +1128,46 @@ Public Class MantPreventiva
         End With
     End Function
 
-    Public Sub InfMpTodos(ByVal id_nodo As String, ByRef fecha_inicio As DateTime, ByRef fecha_fin As DateTime, ByRef tipo_mp As String, ByVal opcion As Integer, ByRef DST As DataSet)
+    Private Sub EjecutarConsultaInfMp(ByVal id_nodo As String, ByVal fecha_inicio As DateTime, ByVal fecha_fin As DateTime, ByVal tipo_mp As String, ByVal opcion As Integer, ByRef DST As DataSet)
         Dim cnx As New SqlConnection
         Dim conexion As New Conexion
 
         Try
             conexion.Conectar(cnx)
-            If tipo_mp = "" Then
-                tipo_mp = "Todos"
+            Dim idNodoInt As Integer = Math.Max(1, Utilitarios.SafeInt(id_nodo, 1))
+            Dim tipoLimpio As String = If(String.IsNullOrWhiteSpace(tipo_mp), "Todos", tipo_mp.Trim())
+            Dim filtroExtra As String = String.Empty
+
+            If opcion = 1 Then
+                filtroExtra = " AND (EXISTS (SELECT 1 FROM ciclo_mp cmp WHERE cmp.idmant = mp.idmant AND cmp.fecha_inicio BETWEEN @fecha_ini AND @fecha_fin) " &
+                              " OR (mp.fecha_creacion BETWEEN @fecha_ini AND @fecha_fin AND NOT EXISTS (SELECT 1 FROM ciclo_mp cmp0 WHERE cmp0.idmant = mp.idmant))) "
+            ElseIf opcion = 2 AndAlso Not String.Equals(tipoLimpio, "Todos", StringComparison.OrdinalIgnoreCase) Then
+                filtroExtra = " AND mp.tipo_mantencion = @tipo_mp "
             End If
-            Using DA As New SqlDataAdapter("INF_MP", cnx)
-                DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_nodo", Utilitarios.SafeInt(id_nodo, 1))
+
+            Dim sql As String = "SELECT mp.idmant AS 'ID MP', mp.frecuencia AS 'Frecuencia(Hrs)', mp.tiempo_aviso AS 'Tiempo Aviso(Hrs)', " &
+                                "mp.estado AS 'Estado', CONVERT(varchar(15), mp.fecha_creacion, 105) + ' ' + CONVERT(varchar(15), mp.fecha_creacion, 108) AS 'Fecha Creación', " &
+                                "mp.tipo_mantencion AS 'Tipo' " &
+                                "FROM mant_preventiva mp " &
+                                "WHERE mp.idnodo = @id_nodo " & filtroExtra &
+                                "ORDER BY mp.fecha_creacion DESC, mp.idmant DESC"
+
+            Using DA As New SqlDataAdapter(sql, cnx)
+                DA.SelectCommand.Parameters.AddWithValue("@id_nodo", idNodoInt)
                 Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_ini", Utilitarios.SafeSqlDateStart(fecha_inicio))
                 Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin", Utilitarios.SafeSqlDateEnd(fecha_fin))
-                DA.SelectCommand.Parameters.AddWithValue("@tipo_mp", If(String.IsNullOrWhiteSpace(tipo_mp), "Todos", tipo_mp.Trim()))
-                DA.SelectCommand.Parameters.AddWithValue("@opcion", opcion)
-
+                DA.SelectCommand.Parameters.AddWithValue("@tipo_mp", tipoLimpio)
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
-            RegistroErrores.MostrarYRegistrar(ex, "Informe MP Todos")
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Mantención Preventiva")
         Finally
             conexion.Desconectar(cnx)
         End Try
+    End Sub
+
+    Public Sub InfMpTodos(ByVal id_nodo As String, ByRef fecha_inicio As DateTime, ByRef fecha_fin As DateTime, ByRef tipo_mp As String, ByVal opcion As Integer, ByRef DST As DataSet)
+        EjecutarConsultaInfMp(id_nodo, fecha_inicio, fecha_fin, tipo_mp, 3, DST)
     End Sub
 
     Public Sub InfCicloMp(ByVal id_mp As String, ByRef DST As DataSet)
@@ -1160,10 +1176,18 @@ Public Class MantPreventiva
 
         Try
             conexion.Conectar(cnx)
-            Using DA As New SqlDataAdapter("INF_CICLO_MP", cnx)
-                DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                Dim idMpInt As Integer = 0
-                If Not Utilitarios.TrySafeInt(id_mp, idMpInt) Then Exit Sub
+            Dim idMpInt As Integer = 0
+            If Not Utilitarios.TrySafeInt(id_mp, idMpInt) Then Exit Sub
+
+            Const sql As String = "SELECT idciclo AS 'ID Ciclo', " &
+                                  "CONVERT(varchar(10), fecha_inicio, 105) + ' ' + CONVERT(varchar(10), hora_inicio, 108) AS 'Fecha / Hora Inicio', " &
+                                  "CONVERT(varchar(10), fecha_termino, 105) + ' ' + CONVERT(varchar(10), hora_termino, 108) AS 'Fecha / Hora Termino', " &
+                                  "duracion AS 'Duración(Hrs)', obs_ciclo AS 'Observación', estado_ciclo AS 'Estado' " &
+                                  "FROM ciclo_mp " &
+                                  "WHERE idmant = @id_mp " &
+                                  "ORDER BY fecha_inicio DESC, idciclo DESC"
+
+            Using DA As New SqlDataAdapter(sql, cnx)
                 DA.SelectCommand.Parameters.AddWithValue("@id_mp", idMpInt)
                 DA.Fill(DST)
             End Using
@@ -1173,6 +1197,64 @@ Public Class MantPreventiva
             conexion.Desconectar(cnx)
         End Try
     End Sub
+
+    Public Sub InfCicloMpPorRango(ByVal id_mp As String, ByVal fecha_ini As DateTime, ByVal fecha_fin As DateTime, ByRef DST As DataSet)
+        Dim cnx As New SqlConnection
+        Dim conexion As New Conexion
+
+        Try
+            conexion.Conectar(cnx)
+            Dim idMpInt As Integer = 0
+            If Not Utilitarios.TrySafeInt(id_mp, idMpInt) Then Exit Sub
+
+            Const sql As String = "SELECT idciclo AS 'ID Ciclo', " &
+                                  "CONVERT(varchar(10), fecha_inicio, 105) + ' ' + CONVERT(varchar(10), hora_inicio, 108) AS 'Fecha / Hora Inicio', " &
+                                  "CONVERT(varchar(10), fecha_termino, 105) + ' ' + CONVERT(varchar(10), hora_termino, 108) AS 'Fecha / Hora Termino', " &
+                                  "duracion AS 'Duración(Hrs)', obs_ciclo AS 'Observación', estado_ciclo AS 'Estado' " &
+                                  "FROM ciclo_mp " &
+                                  "WHERE idmant = @id_mp " &
+                                  "AND fecha_inicio BETWEEN @fecha_ini AND @fecha_fin " &
+                                  "ORDER BY fecha_inicio DESC, idciclo DESC"
+
+            Using DA As New SqlDataAdapter(sql, cnx)
+                DA.SelectCommand.Parameters.AddWithValue("@id_mp", idMpInt)
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_ini", Utilitarios.SafeSqlDateStart(fecha_ini))
+                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin", Utilitarios.SafeSqlDateEnd(fecha_fin))
+                DA.Fill(DST)
+            End Using
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Informe Ciclo MP Por Rango")
+        Finally
+            conexion.Desconectar(cnx)
+        End Try
+    End Sub
+
+    Public Function ObtenerCabeceraMp(ByVal id_mp As Integer) As DataRow
+        If id_mp <= 0 Then Return Nothing
+        Dim cnx As New SqlConnection
+        Dim conexion As New Conexion
+        Try
+            conexion.Conectar(cnx)
+            Const sql As String = "SELECT mp.idmant, mp.idnodo, ISNULL(n.desc_nodo, '') AS desc_nodo, " &
+                                  "mp.frecuencia, mp.tiempo_aviso, mp.estado, " &
+                                  "CONVERT(varchar(15), mp.fecha_creacion, 105) + ' ' + CONVERT(varchar(15), mp.fecha_creacion, 108) AS fecha_creacion, " &
+                                  "mp.tipo_mantencion " &
+                                  "FROM mant_preventiva mp " &
+                                  "LEFT JOIN nodo n ON n.idnodo = mp.idnodo " &
+                                  "WHERE mp.idmant = @id_mp"
+            Using DA As New SqlDataAdapter(sql, cnx)
+                DA.SelectCommand.Parameters.AddWithValue("@id_mp", id_mp)
+                Dim dt As New DataTable()
+                DA.Fill(dt)
+                If dt.Rows.Count > 0 Then Return dt.Rows(0)
+            End Using
+        Catch ex As Exception
+            RegistroErrores.RegistrarError(ex, "Obtener Cabecera MP")
+        Finally
+            conexion.Desconectar(cnx)
+        End Try
+        Return Nothing
+    End Function
 
     Public Sub InfTareasCicloMp(ByVal id_mp As String, ByVal id_ciclo As String, ByVal nodo_padre As String, ByRef DST As DataSet)
         Dim cnx As New SqlConnection
@@ -1200,55 +1282,11 @@ Public Class MantPreventiva
     End Sub
 
     Public Sub InfMpFechas(ByVal id_nodo As String, ByVal fecha_inicio As DateTime, ByVal fecha_fin As DateTime, ByVal tipo_mp As String, ByVal opcion As Integer, ByRef DST As DataSet)
-        Dim cnx As New SqlConnection
-        Dim conexion As New Conexion
-
-        Try
-            conexion.Conectar(cnx)
-            If tipo_mp = "" Then
-                tipo_mp = "Todos"
-            End If
-            Using DA As New SqlDataAdapter("INF_MP", cnx)
-                DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_nodo", Utilitarios.SafeInt(id_nodo, 1))
-                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_ini", Utilitarios.SafeSqlDateStart(fecha_inicio))
-                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin", Utilitarios.SafeSqlDateEnd(fecha_fin))
-                DA.SelectCommand.Parameters.AddWithValue("@tipo_mp", If(String.IsNullOrWhiteSpace(tipo_mp), "Todos", tipo_mp.Trim()))
-                DA.SelectCommand.Parameters.AddWithValue("@opcion", opcion)
-
-                DA.Fill(DST)
-            End Using
-        Catch ex As Exception
-            RegistroErrores.MostrarYRegistrar(ex, "Informe MP Fechas")
-        Finally
-            conexion.Desconectar(cnx)
-        End Try
+        EjecutarConsultaInfMp(id_nodo, fecha_inicio, fecha_fin, tipo_mp, 1, DST)
     End Sub
 
     Public Sub InfMpTipoMp(ByVal id_nodo As String, ByVal fecha_inicio As DateTime, ByVal fecha_fin As DateTime, ByVal tipo_mp As String, ByVal opcion As Integer, ByRef DST As DataSet)
-        Dim cnx As New SqlConnection
-        Dim conexion As New Conexion
-
-        Try
-            conexion.Conectar(cnx)
-            If tipo_mp = "" Then
-                tipo_mp = "Todos"
-            End If
-            Using DA As New SqlDataAdapter("INF_MP", cnx)
-                DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@id_nodo", Utilitarios.SafeInt(id_nodo, 1))
-                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_ini", Utilitarios.SafeSqlDateStart(fecha_inicio))
-                Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin", Utilitarios.SafeSqlDateEnd(fecha_fin))
-                DA.SelectCommand.Parameters.AddWithValue("@tipo_mp", If(String.IsNullOrWhiteSpace(tipo_mp), "Todos", tipo_mp.Trim()))
-                DA.SelectCommand.Parameters.AddWithValue("@opcion", opcion)
-
-                DA.Fill(DST)
-            End Using
-        Catch ex As Exception
-            RegistroErrores.MostrarYRegistrar(ex, "Informe MP Tipo MP")
-        Finally
-            conexion.Desconectar(cnx)
-        End Try
+        EjecutarConsultaInfMp(id_nodo, fecha_inicio, fecha_fin, tipo_mp, 2, DST)
     End Sub
 
     Public Sub InfSoloTareasMp(ByVal opcion As String, ByVal id_nodo As String, ByRef DST As DataSet)
@@ -1257,10 +1295,44 @@ Public Class MantPreventiva
 
         Try
             conexion.Conectar(cnx)
-            Using DA As New SqlDataAdapter("CRG_SOLO_TAREAS_INF_MP", cnx)
-                DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@opcion", Utilitarios.SafeInt(opcion, 0))
-                DA.SelectCommand.Parameters.AddWithValue("@id_nodo", Utilitarios.SafeInt(id_nodo, 1))
+            Dim opcInt As Integer = Utilitarios.SafeInt(opcion, 0)
+            Dim nodoInt As Integer = Math.Max(1, Utilitarios.SafeInt(id_nodo, 1))
+
+            Dim sql As String
+            If opcInt = 1 Then
+                sql = "WITH NODOS AS ( " &
+                      "    SELECT n.nodo_padre, n.idnodo FROM nodo n WHERE n.idnodo = @id_nodo " &
+                      "    UNION ALL " &
+                      "    SELECT n.nodo_padre, n.idnodo FROM nodo n INNER JOIN NODOS nds ON n.nodo_padre = nds.idnodo " &
+                      ") " &
+                      "SELECT cmpt.idmant AS [ID MP], cmpt.idciclo AS [ID Ciclo], cmpt.idtarea AS [ID Tarea], " &
+                      "       tn.desc_tarea AS [Descripcion Tarea], CAST(cmpt.tiempo_tarea AS varchar(30)) AS [Tiempo Tarea], cmpt.obs_tarea AS [Observacion Tarea] " &
+                      "FROM NODOS nds " &
+                      "INNER JOIN ciclomp_tareas cmpt ON cmpt.id_nodo = nds.idnodo " &
+                      "INNER JOIN tareas_nodo tn ON cmpt.idtarea = tn.idtarea " &
+                      "UNION ALL " &
+                      "SELECT h.id_mant AS [ID MP], h.id_ciclo AS [ID Ciclo], h.id_tarea AS [ID Tarea], " &
+                      "       h.desc_tarea AS [Descripcion Tarea], CAST(h.duracion AS varchar(30)) AS [Tiempo Tarea], h.obs_tarea AS [Observacion Tarea] " &
+                      "FROM NODOS nds " &
+                      "INNER JOIN ciclo_mp_tareas_historico h ON h.id_nodo = nds.idnodo " &
+                      "WHERE NOT EXISTS (SELECT 1 FROM ciclomp_tareas c2 WHERE c2.idmant = h.id_mant AND c2.idciclo = h.id_ciclo AND c2.idtarea = h.id_tarea AND c2.id_nodo = h.id_nodo) " &
+                      "ORDER BY [ID MP] DESC, [ID Ciclo] DESC, [ID Tarea] ASC"
+            Else
+                sql = "WITH NODOS AS ( " &
+                      "    SELECT n.nodo_padre, n.idnodo FROM nodo n WHERE n.idnodo = @id_nodo " &
+                      "    UNION ALL " &
+                      "    SELECT n.nodo_padre, n.idnodo FROM nodo n INNER JOIN NODOS nds ON n.nodo_padre = nds.idnodo " &
+                      ") " &
+                      "SELECT cmptp.idmant AS [ID MP], cmptp.idciclo AS [ID Ciclo], cmptp.idtarea AS [ID Tarea], " &
+                      "       tn.desc_tarea AS [Descripcion Tarea], cmptp.obs_tarea AS [Observacion Tarea] " &
+                      "FROM NODOS nds " &
+                      "INNER JOIN ciclo_mp_tareas_pendientes cmptp ON cmptp.id_nodo = nds.idnodo " &
+                      "INNER JOIN tareas_nodo tn ON cmptp.idtarea = tn.idtarea " &
+                      "ORDER BY [ID MP] DESC, [ID Ciclo] DESC, [ID Tarea] ASC"
+            End If
+
+            Using DA As New SqlDataAdapter(sql, cnx)
+                DA.SelectCommand.Parameters.AddWithValue("@id_nodo", nodoInt)
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
@@ -1343,12 +1415,38 @@ Public Class MantPreventiva
 
         Try
             conexion.Conectar(cnx)
-            Using DA As New SqlDataAdapter("INF_CICLOS_MP_MAQUINAS", cnx)
-                DA.SelectCommand.CommandType = CommandType.StoredProcedure
-                DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", Math.Max(1, Utilitarios.SafeInt(id_padre, 1)))
+            Dim idPadreInt As Integer = Math.Max(1, Utilitarios.SafeInt(id_padre, 1))
+            Dim tipoLimpio As String = If(tipo_mantencion, String.Empty).Trim()
+
+            Const sql As String =
+                "WITH NODOS AS (" &
+                "  SELECT n.nodo_padre, n.idnodo, n.desc_nodo FROM nodo n WHERE n.idnodo = @nodo_padre " &
+                "  UNION ALL " &
+                "  SELECT n.nodo_padre, n.idnodo, n.desc_nodo FROM nodo n INNER JOIN NODOS nds ON n.nodo_padre = nds.idnodo" &
+                ") " &
+                "SELECT cmp.idciclo AS 'ID Ciclo', " &
+                "       ISNULL((SELECT TOP 1 p.desc_nodo FROM nodo p WHERE p.idnodo = nds.nodo_padre), '') AS 'Sección', " &
+                "       nds.desc_nodo AS 'Item / Máquina', " &
+                "       cmp.obs_ciclo AS 'Observación', " &
+                "       CONVERT(varchar(10), cmp.fecha_inicio, 105) AS 'Fecha Inicio', " &
+                "       CONVERT(varchar(10), cmp.fecha_termino, 105) AS 'Fecha Termino', " &
+                "       cmp.duracion AS 'Duración(Hrs)', " &
+                "       mp.idmant AS 'ID MP', " &
+                "       ISNULL(cmp.estado_ciclo, '') AS 'Estado', " &
+                "       ISNULL(mp.tipo_mantencion, '') AS 'Tipo', " &
+                "       CONVERT(varchar(10), mp.fecha_creacion, 105) AS 'Fecha Creación' " &
+                "FROM NODOS nds " &
+                "INNER JOIN mant_preventiva mp ON nds.idnodo = mp.idnodo " &
+                "INNER JOIN ciclo_mp cmp ON mp.idmant = cmp.idmant " &
+                "WHERE cmp.fecha_inicio BETWEEN @fecha_inicio_ciclo AND @fecha_fin_ciclo " &
+                "  AND (@tipo_mantencion = '' OR @tipo_mantencion = 'Todos' OR mp.tipo_mantencion = @tipo_mantencion) " &
+                "ORDER BY mp.fecha_creacion DESC, mp.idmant DESC, cmp.fecha_inicio DESC, cmp.idciclo DESC"
+
+            Using DA As New SqlDataAdapter(sql, cnx)
+                DA.SelectCommand.Parameters.AddWithValue("@nodo_padre", idPadreInt)
                 Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_inicio_ciclo", Utilitarios.SafeSqlDateStart(fecha_inicio))
                 Utilitarios.AgregarParametroFecha(DA.SelectCommand, "@fecha_fin_ciclo", Utilitarios.SafeSqlDateEnd(fecha_fin))
-                DA.SelectCommand.Parameters.AddWithValue("@tipo_mantencion", If(tipo_mantencion, String.Empty))
+                DA.SelectCommand.Parameters.AddWithValue("@tipo_mantencion", tipoLimpio)
                 DA.Fill(DST)
             End Using
         Catch ex As Exception
@@ -1529,268 +1627,125 @@ Public Class MantPreventiva
         End Try
     End Sub
 
-    Public Sub expInfMpExcelSoloRealizadas(ByVal grilla_tareas_realizadas As DataGridView, ByVal item As String)
+    Private Sub ExportarSoloTareasInfMp(ByVal grilla As DataGridView, ByVal item As String, ByVal soloRealizadas As Boolean, ByVal esPdf As Boolean)
+        Dim etiquetaTipo As String = If(soloRealizadas, "tareas realizadas", "tareas pendientes")
+        If grilla Is Nothing OrElse grilla.RowCount = 0 Then
+            MsgBox(String.Format("No hay {0} para exportar.", etiquetaTipo), MsgBoxStyle.Exclamation, "Validación")
+            Exit Sub
+        End If
+
+        Dim prefijo As String = If(soloRealizadas, "Informe_MP_Realizadas_", "Informe_MP_Pendientes_") & item
+        Dim tituloDoc As String = "INFORME DE MANTENCIÓN PREVENTIVA - TAREAS " & If(soloRealizadas, "REALIZADAS", "PENDIENTES")
+        Dim subtitulo As String = "Ítem / Máquina: " & item
+        Dim rutaPdf As String = String.Empty
+        If esPdf Then
+            rutaPdf = Utilitarios.SolicitarRutaGuardadoPdf(prefijo)
+            If String.IsNullOrEmpty(rutaPdf) Then Exit Sub
+        End If
+
         Dim excelApp As Excel.Application = Nothing
         Dim workbook As Excel.Workbook = Nothing
-        Dim worksheet_1 As Excel.Worksheet
-        Dim worksheet_2 As Excel.Worksheet
-        Dim worksheet_3 As Excel.Worksheet
-        Dim worksheet_4 As Excel.Worksheet
-        Dim worksheet_5 As Excel.Worksheet
-        Dim filaexcel As Integer = 11
-        Dim rango As Excel.Range
+        Dim wsTarget As Excel.Worksheet = Nothing
 
         Try
             excelApp = New Excel.Application
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
             workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "inf_MP.xls")
-            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
-            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
-            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
-            worksheet_4 = CType(workbook.Sheets(4), Excel.Worksheet)
-            worksheet_5 = CType(workbook.Sheets(5), Excel.Worksheet)
-            worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_4.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_5.Visible = Excel.XlSheetVisibility.xlSheetVisible
-            worksheet_5.Activate()
 
-            worksheet_5.Cells(6, 3) = item
-
-            For i = 0 To grilla_tareas_realizadas.RowCount - 1
-                worksheet_5.Cells(filaexcel, 1) = grilla_tareas_realizadas.Rows(i).Cells(0).Value
-                worksheet_5.Cells(filaexcel, 2) = grilla_tareas_realizadas.Rows(i).Cells(1).Value
-                worksheet_5.Cells(filaexcel, 3) = grilla_tareas_realizadas.Rows(i).Cells(2).Value
-                worksheet_5.Cells(filaexcel, 4) = grilla_tareas_realizadas.Rows(i).Cells(3).Value
-                worksheet_5.Cells(filaexcel, 8) = grilla_tareas_realizadas.Rows(i).Cells(4).Value
-                worksheet_5.Cells(filaexcel, 9) = grilla_tareas_realizadas.Rows(i).Cells(5).Value
-                rango = worksheet_5.Range("D" & filaexcel & ":G" & filaexcel)
-                rango.MergeCells = True
-                rango = worksheet_5.Range("I" & filaexcel & ":L" & filaexcel)
-                rango.MergeCells = True
-                filaexcel = filaexcel + 1
+            For idx As Integer = 1 To workbook.Sheets.Count
+                Dim ws As Excel.Worksheet = CType(workbook.Sheets(idx), Excel.Worksheet)
+                Dim esDestino As Boolean = (soloRealizadas AndAlso idx = 5) OrElse ((Not soloRealizadas) AndAlso idx = 4)
+                ws.Visible = If(esDestino, Excel.XlSheetVisibility.xlSheetVisible, Excel.XlSheetVisibility.xlSheetHidden)
+                If esDestino Then wsTarget = ws
             Next
 
-            If filaexcel > 11 Then
-                rango = worksheet_5.Range("A11:L" & filaexcel - 1)
-                rango.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
+            wsTarget.Activate()
+            wsTarget.Cells(6, 3) = item
+            If soloRealizadas Then
+                wsTarget.Cells(9, 1) = "Tareas Realizadas"
             End If
-            worksheet_5.Activate()
+
+            Dim totalFilas As Integer = grilla.RowCount
+            Dim filaInicio As Integer = 11
+            Dim filaFin As Integer = filaInicio + totalFilas - 1
+            Dim arrBase(totalFilas - 1, 3) As Object
+            Dim arrExtra(totalFilas - 1, If(soloRealizadas, 1, 0)) As Object
+
+            For i As Integer = 0 To totalFilas - 1
+                arrBase(i, 0) = grilla.Rows(i).Cells(0).Value
+                arrBase(i, 1) = grilla.Rows(i).Cells(1).Value
+                arrBase(i, 2) = grilla.Rows(i).Cells(2).Value
+                arrBase(i, 3) = grilla.Rows(i).Cells(3).Value
+                If soloRealizadas Then
+                    arrExtra(i, 0) = grilla.Rows(i).Cells(4).Value
+                    arrExtra(i, 1) = If(grilla.ColumnCount > 5, grilla.Rows(i).Cells(5).Value, "")
+                Else
+                    arrExtra(i, 0) = If(grilla.ColumnCount > 4, grilla.Rows(i).Cells(4).Value, "")
+                End If
+            Next
+
+            wsTarget.Range("A" & filaInicio & ":D" & filaFin).Value2 = arrBase
+            Dim colExtraFin As String = If(soloRealizadas, "I", "H")
+            wsTarget.Range("H" & filaInicio & ":" & colExtraFin & filaFin).Value2 = arrExtra
+
+            Dim colUltima As String = If(soloRealizadas, "L", "K")
+            For f As Integer = filaInicio To filaFin
+                wsTarget.Range("D" & f & ":G" & f).MergeCells = True
+                If soloRealizadas Then
+                    wsTarget.Range("I" & f & ":L" & f).MergeCells = True
+                Else
+                    wsTarget.Range("H" & f & ":K" & f).MergeCells = True
+                End If
+            Next
+
+            Dim rangoTabla As Excel.Range = wsTarget.Range("A11:" & colUltima & filaFin)
+            rangoTabla.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
+            wsTarget.PageSetup.PrintArea = "$A$1:$" & colUltima & "$" & filaFin.ToString()
+
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Excel")
-            excelApp.Visible = True
+            If esPdf Then
+                Utilitarios.ImprimirLibroAPdfWindows(excelApp, workbook, rutaPdf, prefijo)
+            Else
+                wsTarget.Activate()
+                MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Excel")
+                excelApp.Visible = True
+            End If
         Catch ex As Exception
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            If grilla_tareas_realizadas IsNot Nothing AndAlso grilla_tareas_realizadas.RowCount > 0 AndAlso
-               (Utilitarios.ExportarGrillaAExcelNativo(grilla_tareas_realizadas, "Informe_MP_Realizadas_" & item, "MANTENCIÓN PREVENTIVA - TAREAS REALIZADAS", "Ítem / Máquina: " & item) OrElse Utilitarios.UltimaExportacionCancelada) Then
-                Exit Sub
-            End If
-            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe MP Excel Solo Realizadas")
+            If Not esPdf Then Utilitarios.CerrarExcelEnError(excelApp, workbook)
+            Try
+                If esPdf Then
+                    If Utilitarios.ExportarGrillaAPdf(grilla, rutaPdf, tituloDoc, subtitulo) Then
+                        If MessageBox.Show("Archivo PDF generado exitosamente mediante motor nativo en:" & Environment.NewLine & rutaPdf & Environment.NewLine & Environment.NewLine & "¿Desea abrir el documento PDF ahora?", "Exportación PDF Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
+                            Utilitarios.AbrirDocumento(rutaPdf)
+                        End If
+                        Exit Sub
+                    End If
+                Else
+                    If Utilitarios.ExportarGrillaAExcelNativo(grilla, prefijo, tituloDoc, subtitulo) OrElse Utilitarios.UltimaExportacionCancelada Then
+                        Exit Sub
+                    End If
+                End If
+            Catch
+            End Try
+            RegistroErrores.MostrarYRegistrar(ex, If(esPdf, "Exportar Tareas MP a PDF", "Exportar Tareas MP a Excel"))
         Finally
+            If esPdf Then Utilitarios.LiberarExcel(workbook, excelApp)
             Utilitarios.OptimizarMemoria()
         End Try
+    End Sub
+
+    Public Sub expInfMpExcelSoloRealizadas(ByVal grilla_tareas_realizadas As DataGridView, ByVal item As String)
+        ExportarSoloTareasInfMp(grilla_tareas_realizadas, item, True, False)
     End Sub
 
     Public Sub expInfMpExcelSoloPend(ByVal grilla_tareas_pend As DataGridView, ByVal item As String)
-        Dim excelApp As Excel.Application = Nothing
-        Dim workbook As Excel.Workbook = Nothing
-        Dim worksheet_1 As Excel.Worksheet
-        Dim worksheet_2 As Excel.Worksheet
-        Dim worksheet_3 As Excel.Worksheet
-        Dim worksheet_4 As Excel.Worksheet
-        Dim worksheet_5 As Excel.Worksheet
-        Dim filaexcel As Integer = 11
-        Dim rango As Excel.Range
-
-        Try
-            excelApp = New Excel.Application
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
-            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "inf_MP.xls")
-            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
-            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
-            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
-            worksheet_4 = CType(workbook.Sheets(4), Excel.Worksheet)
-            worksheet_5 = CType(workbook.Sheets(5), Excel.Worksheet)
-            worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_4.Visible = Excel.XlSheetVisibility.xlSheetVisible
-            worksheet_5.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_4.Activate()
-
-            worksheet_4.Cells(6, 3) = item
-
-            For i = 0 To grilla_tareas_pend.RowCount - 1
-                worksheet_4.Cells(filaexcel, 1) = grilla_tareas_pend.Rows(i).Cells(0).Value
-                worksheet_4.Cells(filaexcel, 2) = grilla_tareas_pend.Rows(i).Cells(1).Value
-                worksheet_4.Cells(filaexcel, 3) = grilla_tareas_pend.Rows(i).Cells(2).Value
-                worksheet_4.Cells(filaexcel, 4) = grilla_tareas_pend.Rows(i).Cells(3).Value
-                worksheet_4.Cells(filaexcel, 8) = grilla_tareas_pend.Rows(i).Cells(4).Value
-                rango = worksheet_4.Range("D" & filaexcel & ":G" & filaexcel)
-                rango.MergeCells = True
-                rango = worksheet_4.Range("H" & filaexcel & ":K" & filaexcel)
-                rango.MergeCells = True
-                filaexcel = filaexcel + 1
-            Next
-
-            If filaexcel > 11 Then
-                rango = worksheet_4.Range("A11:K" & filaexcel - 1)
-                rango.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
-            End If
-            worksheet_4.Activate()
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Excel")
-            excelApp.Visible = True
-        Catch ex As Exception
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            If grilla_tareas_pend IsNot Nothing AndAlso grilla_tareas_pend.RowCount > 0 AndAlso
-               (Utilitarios.ExportarGrillaAExcelNativo(grilla_tareas_pend, "Informe_MP_Pendientes_" & item, "MANTENCIÓN PREVENTIVA - TAREAS PENDIENTES", "Ítem / Máquina: " & item) OrElse Utilitarios.UltimaExportacionCancelada) Then
-                Exit Sub
-            End If
-            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe MP Excel Solo Pendientes")
-        Finally
-            Utilitarios.OptimizarMemoria()
-        End Try
+        ExportarSoloTareasInfMp(grilla_tareas_pend, item, False, False)
     End Sub
 
     Public Sub expInfGanttTodo(ByVal grilla_info_mp As DataGridView, ByVal grilla_ciclos_mp As DataGridView, ByVal grilla_grafico As DataGridView, ByVal item As String)
-        Dim excelApp As Excel.Application = Nothing
-        Dim workbook As Excel.Workbook = Nothing
-        Dim worksheet_1 As Excel.Worksheet
-        Dim worksheet_2 As Excel.Worksheet
-        Dim num_mant As Integer = 0
-        Dim fecha_inicio As DateTime
-        Dim fecha_fin As DateTime
-        Dim fecha As DateTime
-        Dim fecha_ini As DateTime
-        Dim cont_celda_pintada As Integer = 0
-        Dim cont_fila As Integer = 0
-        Dim cont_col As Integer = 0
-
-        If grilla_info_mp Is Nothing OrElse grilla_info_mp.CurrentRow Is Nothing OrElse grilla_ciclos_mp Is Nothing OrElse grilla_ciclos_mp.RowCount = 0 OrElse grilla_grafico Is Nothing Then Return
-
-        Try
-            excelApp = New Excel.Application
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
-            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "infGantt.xls")
-            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
-            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
-            worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetVisible
-            worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetVisible
-
-            '---------------------- impresion información base mantencion preventiva----------------
-            worksheet_1.Cells(6, 3) = item 'nombre item o maquina
-            worksheet_1.Cells(7, 3) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(0).Value ' id mantencion
-            worksheet_1.Cells(6, 6) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(1).Value & " Hrs" ' frecuencia mp
-            worksheet_1.Cells(7, 6) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(2).Value & " Hrs" ' tiempo aviso previo
-            worksheet_1.Cells(6, 12) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(3).Value ' estado
-            worksheet_1.Cells(6, 9) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(4).Value ' fecha creacion
-            worksheet_1.Cells(7, 9) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(5).Value ' tipo de mantencion
-            '---------------------------------------------------------------------------------------
-
-            Dim filaexcel As Integer = 12
-            Dim colIniIdx As Integer = If(IsDate(grilla_ciclos_mp.Rows(0).Cells(2).Value), 2, 3)
-            Dim colFinIdx As Integer = colIniIdx + 1
-
-            Dim rango As Excel.Range
-            '------------- llenado de tareas realizadas --------------------------------------------
-            For i = 0 To grilla_ciclos_mp.RowCount - 1
-                worksheet_1.Cells(filaexcel, 1) = grilla_ciclos_mp.Rows(i).Cells(0).Value
-                worksheet_1.Cells(filaexcel, 2) = grilla_ciclos_mp.Rows(i).Cells(1).Value
-                worksheet_1.Cells(filaexcel, 5) = grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value
-                worksheet_1.Cells(filaexcel, 6) = grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value
-                worksheet_1.Cells(filaexcel, 7) = grilla_ciclos_mp.Rows(i).Cells(colFinIdx + 1).Value
-                rango = worksheet_1.Range("B" & filaexcel & ":D" & filaexcel)
-                rango.MergeCells = True
-                filaexcel = filaexcel + 1
-            Next
-            '--------------------------------------------------------------------------------------
-
-            '---------------------- impresion información base mantencion preventiva----------------
-            worksheet_2.Cells(6, 3) = item 'nombre item o maquina
-            worksheet_2.Cells(7, 3) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(0).Value ' id mantencion
-            worksheet_2.Cells(6, 7) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(1).Value & " Hrs" ' frecuencia mp
-            worksheet_2.Cells(7, 7) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(2).Value & " Hrs" ' tiempo aviso previo
-            worksheet_2.Cells(6, 14) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(3).Value ' estado
-            worksheet_2.Cells(6, 10) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(4).Value ' fecha creacion
-            worksheet_2.Cells(7, 10) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(5).Value ' tipo de mantencion
-            '---------------------------------------------------------------------------------------
-
-            filaexcel = 11
-
-            '------------- llenado de tareas realizadas --------------------------------------------
-            For i = 0 To grilla_ciclos_mp.RowCount - 1
-                worksheet_2.Cells(filaexcel, 1) = grilla_ciclos_mp.Rows(i).Cells(0).Value
-                worksheet_2.Cells(filaexcel, 2) = grilla_ciclos_mp.Rows(i).Cells(1).Value
-                rango = worksheet_2.Range("B" & filaexcel & ":D" & filaexcel)
-                rango.MergeCells = True
-                filaexcel = filaexcel + 1
-            Next
-            '---------------------------------------------------------------------------------------
-
-            fecha_inicio = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(0).Cells(colIniIdx).Value).Date
-            fecha_fin = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(0).Cells(colFinIdx).Value).Date
-            For i = 1 To grilla_ciclos_mp.RowCount - 1
-                If IsDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value) Then
-                    Dim fI As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
-                    If fI < fecha_inicio Then fecha_inicio = fI
-                End If
-                If IsDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value) Then
-                    Dim fF As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date
-                    If fF > fecha_fin Then fecha_fin = fF
-                End If
-            Next
-            fecha = fecha_inicio
-
-            Dim col_excel As Integer = 5
-
-            While fecha <= fecha_fin
-                worksheet_2.Cells(10, col_excel) = fecha
-                fecha = DateAdd(DateInterval.Day, 1, fecha)
-                col_excel = col_excel + 1
-            End While
-
-            cont_col = 5
-            cont_fila = 11
-
-            For i = 0 To grilla_ciclos_mp.RowCount - 1
-                If Not IsDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value) OrElse Not IsDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value) Then
-                    cont_fila = cont_fila + 1
-                    Continue For
-                End If
-                fecha_ini = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
-                Dim fechaFinRow As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value, fecha_ini).Date
-                num_mant = Math.Max(1, CInt(DateDiff(DateInterval.Day, fecha_ini, fechaFinRow) + 1))
-
-                For j = 0 To grilla_grafico.Columns.Count - 1
-                    If fecha_ini.ToString("yyyyMMdd") = grilla_grafico.Columns(j).Name OrElse fecha_ini.ToString("dd-MM-yy") = grilla_grafico.Columns(j).Name Then
-                        worksheet_2.Cells(cont_fila, cont_col) = 1
-                        cont_celda_pintada = cont_celda_pintada + 1
-                        If cont_celda_pintada < num_mant Then
-                            fecha_ini = DateAdd(DateInterval.Day, 1, fecha_ini)
-                        End If
-                    End If
-                    cont_col = cont_col + 1
-                Next
-                cont_celda_pintada = 0
-                cont_fila = cont_fila + 1
-                cont_col = 5
-            Next
-
-            worksheet_1.Activate()
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Excel")
-            excelApp.Visible = True
-        Catch ex As Exception
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Gantt Todo")
-        Finally
-            Utilitarios.OptimizarMemoria()
-        End Try
+        Dim inf As New Informes()
+        inf.expInfGanttTodo(grilla_info_mp, grilla_ciclos_mp, grilla_grafico, item)
     End Sub
 
     Public Sub exportarInfMpPDF(ByRef grilla_mp As DataGridView, ByRef grilla_ciclo As DataGridView, ByRef grilla_tareas_r As DataGridView, ByVal grilla_personal As DataGridView, ByVal grilla_tareas_pend As DataGridView, ByVal grilla_insumos As DataGridView, ByVal item As String)
@@ -1967,154 +1922,11 @@ Public Class MantPreventiva
     End Sub
 
     Public Sub expInfMpPDFSoloRealizadas(ByVal grilla_tareas_realizadas As DataGridView, ByVal item As String)
-        If grilla_tareas_realizadas Is Nothing OrElse grilla_tareas_realizadas.RowCount = 0 Then
-            MsgBox("No hay tareas realizadas para exportar a PDF.", MsgBoxStyle.Exclamation, "Validación")
-            Exit Sub
-        End If
-
-        Dim rutaPdf As String = Utilitarios.SolicitarRutaGuardadoPdf("Informe_MP_Realizadas_" & item)
-        If String.IsNullOrEmpty(rutaPdf) Then Exit Sub
-
-        Dim excelApp As Excel.Application = Nothing
-        Dim workbook As Excel.Workbook = Nothing
-        Dim worksheet_1 As Excel.Worksheet
-        Dim worksheet_2 As Excel.Worksheet
-        Dim worksheet_3 As Excel.Worksheet
-        Dim worksheet_4 As Excel.Worksheet
-        Dim worksheet_5 As Excel.Worksheet
-        Dim filaexcel As Integer = 11
-        Dim rango As Excel.Range
-
-        Try
-            excelApp = New Excel.Application
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
-            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "inf_MP.xls")
-            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
-            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
-            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
-            worksheet_4 = CType(workbook.Sheets(4), Excel.Worksheet)
-            worksheet_5 = CType(workbook.Sheets(5), Excel.Worksheet)
-            worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_4.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_5.Visible = Excel.XlSheetVisibility.xlSheetVisible
-            worksheet_5.Activate()
-
-            worksheet_5.Cells(6, 3) = item
-
-            For i = 0 To grilla_tareas_realizadas.RowCount - 1
-                worksheet_5.Cells(filaexcel, 1) = grilla_tareas_realizadas.Rows(i).Cells(0).Value
-                worksheet_5.Cells(filaexcel, 2) = grilla_tareas_realizadas.Rows(i).Cells(1).Value
-                worksheet_5.Cells(filaexcel, 3) = grilla_tareas_realizadas.Rows(i).Cells(2).Value
-                worksheet_5.Cells(filaexcel, 4) = grilla_tareas_realizadas.Rows(i).Cells(3).Value
-                worksheet_5.Cells(filaexcel, 8) = grilla_tareas_realizadas.Rows(i).Cells(4).Value
-                worksheet_5.Cells(filaexcel, 9) = grilla_tareas_realizadas.Rows(i).Cells(5).Value
-                rango = worksheet_5.Range("D" & filaexcel & ":G" & filaexcel)
-                rango.MergeCells = True
-                rango = worksheet_5.Range("I" & filaexcel & ":L" & filaexcel)
-                rango.MergeCells = True
-                filaexcel = filaexcel + 1
-            Next
-
-            If filaexcel > 11 Then
-                rango = worksheet_5.Range("A11:L" & filaexcel - 1)
-                rango.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
-            End If
-
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            Utilitarios.ImprimirLibroAPdfWindows(excelApp, workbook, rutaPdf, "Informe_MP_Realizadas_" & item)
-        Catch ex As Exception
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            ' Respaldo 100% nativo con iTextSharp si Excel no está disponible o falla
-            Try
-                If Utilitarios.ExportarGrillaAPdf(grilla_tareas_realizadas, rutaPdf, "INFORME DE MANTENCIÓN PREVENTIVA - TAREAS REALIZADAS", "Ítem / Máquina: " & item) Then
-                    If MessageBox.Show("Archivo PDF generado exitosamente mediante motor nativo en:" & Environment.NewLine & rutaPdf & Environment.NewLine & Environment.NewLine & "¿Desea abrir el documento PDF ahora?", "Exportación PDF Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
-                        Utilitarios.AbrirDocumento(rutaPdf)
-                    End If
-                    Exit Sub
-                End If
-            Catch
-            End Try
-            RegistroErrores.MostrarYRegistrar(ex, "Exportar Tareas Realizadas MP a PDF")
-        Finally
-            Utilitarios.LiberarExcel(workbook, excelApp)
-        End Try
+        ExportarSoloTareasInfMp(grilla_tareas_realizadas, item, True, True)
     End Sub
 
     Public Sub expInfMpPDFSoloPend(ByVal grilla_tareas_pend As DataGridView, ByVal item As String)
-        If grilla_tareas_pend Is Nothing OrElse grilla_tareas_pend.RowCount = 0 Then
-            MsgBox("No hay tareas pendientes para exportar a PDF.", MsgBoxStyle.Exclamation, "Validación")
-            Exit Sub
-        End If
-
-        Dim rutaPdf As String = Utilitarios.SolicitarRutaGuardadoPdf("Informe_MP_Pendientes_" & item)
-        If String.IsNullOrEmpty(rutaPdf) Then Exit Sub
-
-        Dim excelApp As Excel.Application = Nothing
-        Dim workbook As Excel.Workbook = Nothing
-        Dim worksheet_1 As Excel.Worksheet
-        Dim worksheet_2 As Excel.Worksheet
-        Dim worksheet_3 As Excel.Worksheet
-        Dim worksheet_4 As Excel.Worksheet
-        Dim worksheet_5 As Excel.Worksheet
-        Dim filaexcel As Integer = 11
-        Dim rango As Excel.Range
-
-        Try
-            excelApp = New Excel.Application
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
-            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "inf_MP.xls")
-            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
-            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
-            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
-            worksheet_4 = CType(workbook.Sheets(4), Excel.Worksheet)
-            worksheet_5 = CType(workbook.Sheets(5), Excel.Worksheet)
-            worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_4.Visible = Excel.XlSheetVisibility.xlSheetVisible
-            worksheet_5.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_4.Activate()
-
-            worksheet_4.Cells(6, 3) = item
-
-            For i = 0 To grilla_tareas_pend.RowCount - 1
-                worksheet_4.Cells(filaexcel, 1) = grilla_tareas_pend.Rows(i).Cells(0).Value
-                worksheet_4.Cells(filaexcel, 2) = grilla_tareas_pend.Rows(i).Cells(1).Value
-                worksheet_4.Cells(filaexcel, 3) = grilla_tareas_pend.Rows(i).Cells(2).Value
-                worksheet_4.Cells(filaexcel, 4) = grilla_tareas_pend.Rows(i).Cells(3).Value
-                worksheet_4.Cells(filaexcel, 8) = grilla_tareas_pend.Rows(i).Cells(4).Value
-                rango = worksheet_4.Range("D" & filaexcel & ":G" & filaexcel)
-                rango.MergeCells = True
-                rango = worksheet_4.Range("H" & filaexcel & ":K" & filaexcel)
-                rango.MergeCells = True
-                filaexcel = filaexcel + 1
-            Next
-
-            If filaexcel > 11 Then
-                rango = worksheet_4.Range("A11:K" & filaexcel - 1)
-                rango.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
-            End If
-
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            Utilitarios.ImprimirLibroAPdfWindows(excelApp, workbook, rutaPdf, "Informe_MP_Pendientes_" & item)
-        Catch ex As Exception
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            ' Respaldo 100% nativo con iTextSharp si Excel no está disponible o falla
-            Try
-                If Utilitarios.ExportarGrillaAPdf(grilla_tareas_pend, rutaPdf, "INFORME DE MANTENCIÓN PREVENTIVA - TAREAS PENDIENTES", "Ítem / Máquina: " & item) Then
-                    If MessageBox.Show("Archivo PDF generado exitosamente mediante motor nativo en:" & Environment.NewLine & rutaPdf & Environment.NewLine & Environment.NewLine & "¿Desea abrir el documento PDF ahora?", "Exportación PDF Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
-                        Utilitarios.AbrirDocumento(rutaPdf)
-                    End If
-                    Exit Sub
-                End If
-            Catch
-            End Try
-            RegistroErrores.MostrarYRegistrar(ex, "Exportar Tareas Pendientes MP a PDF")
-        Finally
-            Utilitarios.LiberarExcel(workbook, excelApp)
-        End Try
+        ExportarSoloTareasInfMp(grilla_tareas_pend, item, False, True)
     End Sub
 
     Public Function ValidarMP() As String
@@ -2278,7 +2090,7 @@ Public Class MantPreventiva
                 "  AND (@id_ciclo <= 0 OR cmp.idciclo = @id_ciclo) " &
                 "  AND (@ignorar_fechas = 1 OR (cmp.fecha_inicio BETWEEN @fecha_inicio_ciclo AND @fecha_fin_ciclo)) " &
                 "  AND (@tipo_mantencion = '' OR @tipo_mantencion = 'Todos' OR mp.tipo_mantencion = @tipo_mantencion) " &
-                "ORDER BY cmp.fecha_inicio, mp.idmant, cmp.idciclo"
+                "ORDER BY mp.fecha_creacion DESC, mp.idmant DESC, cmp.fecha_inicio DESC, cmp.idciclo DESC"
 
             Using da As New SqlDataAdapter(sql, cnx)
                 da.SelectCommand.CommandTimeout = 30

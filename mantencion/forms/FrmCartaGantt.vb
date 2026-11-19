@@ -43,6 +43,7 @@ Public Class FrmCartaGantt
             Utilitarios.AplicarTemaModerno(Me)
             AplicarEstilosLeyendaYDetalle()
             ConfigurarOrdenColumnasInfo()
+            Utilitarios.AsegurarColumnaSeleccionGantt(grillaInfoGantt)
 
             _cargandoControles = True
             cmbZoomGantt.Items.Clear()
@@ -58,37 +59,11 @@ Public Class FrmCartaGantt
             _cargandoControles = False
 
             If form = "FrmInfMantPrev" Then
-                _idNodoContexto = Math.Max(1, Utilitarios.SafeInt(FrmInfMantPrev.id_nodo_select, 1))
-                _fechaBaseDesde = FrmInfMantPrev.f_ini_inf_mp.Value.Date
-                _fechaBaseHasta = FrmInfMantPrev.f_fin_inf_mp.Value.Date
-                lblDesdeGantt.Text = _fechaBaseDesde.ToString("dd-MM-yyyy")
-                lblHastaGantt.Text = _fechaBaseHasta.ToString("dd-MM-yyyy")
-                If Not String.IsNullOrEmpty(item_gantt) Then
-                    _ultimoTituloBase = "Carta Gantt - " & item_gantt
-                End If
-                lblTituloGantt.Text = _ultimoTituloBase
-                informes.CrgInfGanttCiclosMaq()
+                RecargarDesdeOrigen()
             ElseIf form = "FrmInfMantPrevCiclosMaq" Then
-                _idNodoContexto = Math.Max(1, Utilitarios.SafeInt(FrmInfMantPrevCiclosMaq.id_nodo_mp_select, 1))
-                _fechaBaseDesde = FrmInfMantPrevCiclosMaq.fecha_ini_inf_mp.Value.Date
-                _fechaBaseHasta = FrmInfMantPrevCiclosMaq.fecha_fin_inf_mp.Value.Date
-                lblDesdeGantt.Text = _fechaBaseDesde.ToString("dd-MM-yyyy")
-                lblHastaGantt.Text = _fechaBaseHasta.ToString("dd-MM-yyyy")
-                If FrmInfMantPrevCiclosMaq.Arbol7.SelectedNode IsNot Nothing Then
-                    _ultimoTituloBase = "Carta Gantt - " & FrmInfMantPrevCiclosMaq.Arbol7.SelectedNode.Text
-                ElseIf Not String.IsNullOrEmpty(item_gantt) Then
-                    _ultimoTituloBase = "Carta Gantt - " & item_gantt
-                End If
-                lblTituloGantt.Text = _ultimoTituloBase
-                informes.CrgInfGanttCiclosVariasMaq()
+                RecargarDesdeOrigen()
             Else
-                _idNodoContexto = 1
-                _fechaBaseDesde = New DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)
-                _fechaBaseHasta = DateTime.Today
-                lblDesdeGantt.Text = _fechaBaseDesde.ToString("dd-MM-yyyy")
-                lblHastaGantt.Text = _fechaBaseHasta.ToString("dd-MM-yyyy")
-                lblTituloGantt.Text = _ultimoTituloBase
-                LimpiarDetalleInferior()
+                RecargarDesdeOrigen()
             End If
 
             AjustarProporcionSplitters()
@@ -101,6 +76,43 @@ Public Class FrmCartaGantt
             Me.ResumeLayout(True)
             Utilitarios.OptimizarMemoria()
         End Try
+    End Sub
+
+    Public Sub RecargarDesdeOrigen()
+        Dim informes As New Informes()
+        If form = "FrmInfMantPrev" Then
+            _idNodoContexto = Math.Max(1, Utilitarios.SafeInt(FrmInfMantPrev.id_nodo_select, 1))
+            _fechaBaseDesde = FrmInfMantPrev.f_ini_inf_mp.Value.Date
+            _fechaBaseHasta = FrmInfMantPrev.f_fin_inf_mp.Value.Date
+            lblDesdeGantt.Text = _fechaBaseDesde.ToString("dd-MM-yyyy")
+            lblHastaGantt.Text = _fechaBaseHasta.ToString("dd-MM-yyyy")
+            _ultimoTituloBase = If(Not String.IsNullOrEmpty(item_gantt), "Carta Gantt - " & item_gantt, "Carta Gantt - Mantención Preventiva")
+            lblTituloGantt.Text = _ultimoTituloBase
+            informes.CrgInfGanttCiclosMaq()
+        ElseIf form = "FrmInfMantPrevCiclosMaq" Then
+            _idNodoContexto = Math.Max(1, Utilitarios.SafeInt(FrmInfMantPrevCiclosMaq.id_nodo_mp_select, 1))
+            _fechaBaseDesde = FrmInfMantPrevCiclosMaq.fecha_ini_inf_mp.Value.Date
+            _fechaBaseHasta = FrmInfMantPrevCiclosMaq.fecha_fin_inf_mp.Value.Date
+            lblDesdeGantt.Text = _fechaBaseDesde.ToString("dd-MM-yyyy")
+            lblHastaGantt.Text = _fechaBaseHasta.ToString("dd-MM-yyyy")
+            If FrmInfMantPrevCiclosMaq.Arbol7.SelectedNode IsNot Nothing Then
+                _ultimoTituloBase = "Carta Gantt - " & FrmInfMantPrevCiclosMaq.Arbol7.SelectedNode.Text
+            ElseIf Not String.IsNullOrEmpty(item_gantt) Then
+                _ultimoTituloBase = "Carta Gantt - " & item_gantt
+            Else
+                _ultimoTituloBase = "Carta Gantt - Varias Máquinas"
+            End If
+            lblTituloGantt.Text = _ultimoTituloBase
+            informes.CrgInfGanttCiclosVariasMaq()
+        Else
+            _idNodoContexto = 1
+            _fechaBaseDesde = New DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)
+            _fechaBaseHasta = DateTime.Today
+            lblDesdeGantt.Text = _fechaBaseDesde.ToString("dd-MM-yyyy")
+            lblHastaGantt.Text = _fechaBaseHasta.ToString("dd-MM-yyyy")
+            lblTituloGantt.Text = _ultimoTituloBase
+            LimpiarDetalleInferior()
+        End If
     End Sub
 
     Private Sub FrmCartaGantt_Shown(ByVal sender As Object, ByVal e As EventArgs) Handles MyBase.Shown
@@ -287,9 +299,10 @@ Public Class FrmCartaGantt
                 fechaFin = _fechaBaseHasta
             End If
 
-            ' Resguarda rangos extremos para no saturar columnas de DataGridView (máx. 400 días)
-            If DateDiff(DateInterval.Day, fechaIni, fechaFin) > 400 Then
-                fechaFin = fechaIni.AddDays(400)
+            ' Resguarda rangos extremos para no saturar columnas de DataGridView (máx. 1100 días, priorizando los más recientes)
+            Const maxDiasGantt As Integer = 1100
+            If DateDiff(DateInterval.Day, fechaIni, fechaFin) > maxDiasGantt Then
+                fechaIni = fechaFin.AddDays(-maxDiasGantt)
             End If
 
             lblDesdeGantt.Text = fechaIni.ToString("dd-MM-yyyy")
@@ -298,39 +311,65 @@ Public Class FrmCartaGantt
                                                  lista.Count, _todosLosCiclos.Count, maquinasUnicas.Count, hrsTotales, pendCount, termCount)
 
             Dim colPorFecha As New Dictionary(Of DateTime, Integer)()
-            Dim colsFds As New HashSet(Of Integer)()
+            Dim colsFds As New List(Of Integer)()
             Dim idxColHoy As Integer = -1
             Dim hoy As DateTime = DateTime.Today
             Dim diaCursor As DateTime = fechaIni
             Dim esCulture As New Globalization.CultureInfo("es-CL")
+            Dim totalDiasCols As Integer = CInt(DateDiff(DateInterval.Day, fechaIni, fechaFin)) + 1
+            Dim colsGantt As New List(Of DataGridViewColumn)(Math.Max(1, totalDiasCols))
+            Dim fntCeldaGantt As New Font("Segoe UI", 8.0F, FontStyle.Bold)
+            Dim fntEstado As New Font("Segoe UI", 8.5F, FontStyle.Bold)
 
             While diaCursor <= fechaFin
                 Dim diaSem As String = ObtenerAbrevDia(diaCursor.DayOfWeek)
                 Dim tituloCol As String = diaSem & Environment.NewLine & diaCursor.ToString("dd/MM/yy", esCulture)
                 Dim colKey As String = diaCursor.ToString("yyyyMMdd")
-                Dim colIdx As Integer = grillaGraficoGantt.Columns.Add(colKey, tituloCol)
-                Dim colG As DataGridViewColumn = grillaGraficoGantt.Columns(colIdx)
-                colG.Width = _escalaDiaPx
-                colG.SortMode = DataGridViewColumnSortMode.NotSortable
+                Dim colIdx As Integer = colsGantt.Count
+                Dim colG As New DataGridViewTextBoxColumn With {
+                    .Name = colKey,
+                    .HeaderText = tituloCol,
+                    .FillWeight = 1.0F,
+                    .MinimumWidth = 10,
+                    .AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
+                    .Width = _escalaDiaPx,
+                    .SortMode = DataGridViewColumnSortMode.NotSortable
+                }
                 colG.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-                colG.DefaultCellStyle.Font = New Font("Segoe UI", 8.0F, FontStyle.Bold)
+                colG.DefaultCellStyle.Font = fntCeldaGantt
 
+                colsGantt.Add(colG)
                 colPorFecha(diaCursor.Date) = colIdx
                 If diaCursor.DayOfWeek = DayOfWeek.Saturday OrElse diaCursor.DayOfWeek = DayOfWeek.Sunday Then
                     colsFds.Add(colIdx)
-                    colG.HeaderCell.Style.BackColor = Color.FromArgb(15, 45, 68)
                 ElseIf diaCursor.Date = hoy Then
                     idxColHoy = colIdx
-                    colG.HeaderCell.Style.BackColor = Utilitarios.ColorSecundario
                 End If
                 diaCursor = diaCursor.AddDays(1)
             End While
+
+            grillaGraficoGantt.Columns.AddRange(colsGantt.ToArray())
 
             Dim colorFds As Color = Utilitarios.ColorFondoSoloLectura
             Dim colorHoyFondo As Color = Color.FromArgb(254, 249, 195)
             Dim colorPendiente As Color = Utilitarios.ColorPrimario
             Dim colorTerminado As Color = Color.FromArgb(21, 128, 61)
             Dim colorVencido As Color = Utilitarios.ColorGanttBarra
+            Dim colorFdsSel As Color = Color.FromArgb(160, 197, 207)
+
+            For Each jFds As Integer In colsFds
+                Dim cFds As DataGridViewColumn = grillaGraficoGantt.Columns(jFds)
+                cFds.HeaderCell.Style.BackColor = Color.FromArgb(15, 45, 68)
+                cFds.DefaultCellStyle.BackColor = colorFds
+                cFds.DefaultCellStyle.SelectionBackColor = colorFdsSel
+            Next
+            If idxColHoy >= 0 AndAlso Not colsFds.Contains(idxColHoy) Then
+                Dim cHoy As DataGridViewColumn = grillaGraficoGantt.Columns(idxColHoy)
+                cHoy.HeaderCell.Style.BackColor = Utilitarios.ColorSecundario
+                cHoy.DefaultCellStyle.BackColor = colorHoyFondo
+            ElseIf idxColHoy >= 0 Then
+                grillaGraficoGantt.Columns(idxColHoy).HeaderCell.Style.BackColor = Utilitarios.ColorSecundario
+            End If
 
             For i As Integer = 0 To lista.Count - 1
                 Dim reg As RegistroCicloGantt = lista(i)
@@ -349,12 +388,15 @@ Public Class FrmCartaGantt
                 rowInfo.Cells(8).Value = reg.Estado
                 rowInfo.Cells(9).Value = reg.TipoMp
                 rowInfo.Cells(10).Value = reg.IdNodo
+                If grillaInfoGantt.Columns.Contains("colSelGantt") Then
+                    rowInfo.Cells("colSelGantt").Value = False
+                End If
 
                 Dim esTerm As Boolean = String.Equals(reg.Estado, "Terminado", StringComparison.OrdinalIgnoreCase)
                 Dim esVencido As Boolean = (Not esTerm) AndAlso (reg.FechaTermino.Date < hoy)
                 Dim colorBarra As Color = If(esTerm, colorTerminado, If(esVencido, colorVencido, colorPendiente))
 
-                rowInfo.Cells(8).Style.Font = New Font("Segoe UI", 8.5F, FontStyle.Bold)
+                rowInfo.Cells(8).Style.Font = fntEstado
                 If esTerm Then
                     rowInfo.Cells(8).Style.ForeColor = colorTerminado
                 ElseIf esVencido Then
@@ -374,36 +416,31 @@ Public Class FrmCartaGantt
                 Dim rowGraf As DataGridViewRow = grillaGraficoGantt.Rows(rGrafIdx)
                 rowGraf.Height = 28
 
-                For Each jFds As Integer In colsFds
-                    rowGraf.Cells(jFds).Style.BackColor = colorFds
-                    rowGraf.Cells(jFds).Style.SelectionBackColor = Color.FromArgb(160, 197, 207)
-                Next
-                If idxColHoy >= 0 AndAlso Not colsFds.Contains(idxColHoy) Then
-                    rowGraf.Cells(idxColHoy).Style.BackColor = colorHoyFondo
-                End If
-
                 Dim dStart As DateTime = Utilitarios.SafeSqlDateTime(reg.FechaInicio).Date
                 Dim dEnd As DateTime = Utilitarios.SafeSqlDateTime(reg.FechaTermino).Date
                 If dEnd < dStart Then dEnd = dStart
 
-                Dim etiquetado As Boolean = False
-                Dim dCur As DateTime = dStart
-                While dCur <= dEnd
-                    Dim jBar As Integer
-                    If colPorFecha.TryGetValue(dCur, jBar) Then
-                        Dim celBar As DataGridViewCell = rowGraf.Cells(jBar)
-                        celBar.Style.BackColor = colorBarra
-                        celBar.Style.ForeColor = Color.White
-                        celBar.Style.SelectionBackColor = colorBarra
-                        celBar.Style.SelectionForeColor = Color.White
-                        celBar.ToolTipText = tipTexto
-                        If Not etiquetado Then
-                            celBar.Value = If(reg.Duracion > 0, String.Format("{0:N0}h", reg.Duracion), "#" & reg.IdCiclo.ToString())
-                            etiquetado = True
+                If dEnd >= fechaIni AndAlso dStart <= fechaFin Then
+                    Dim dCur As DateTime = If(dStart < fechaIni, fechaIni, dStart)
+                    Dim dLim As DateTime = If(dEnd > fechaFin, fechaFin, dEnd)
+                    Dim etiquetado As Boolean = False
+                    While dCur <= dLim
+                        Dim jBar As Integer
+                        If colPorFecha.TryGetValue(dCur, jBar) Then
+                            Dim celBar As DataGridViewCell = rowGraf.Cells(jBar)
+                            celBar.Style.BackColor = colorBarra
+                            celBar.Style.ForeColor = Color.White
+                            celBar.Style.SelectionBackColor = colorBarra
+                            celBar.Style.SelectionForeColor = Color.White
+                            celBar.ToolTipText = tipTexto
+                            If Not etiquetado Then
+                                celBar.Value = If(reg.Duracion > 0, String.Format("{0:N0}h", reg.Duracion), "#" & reg.IdCiclo.ToString())
+                                etiquetado = True
+                            End If
                         End If
-                    End If
-                    dCur = dCur.AddDays(1)
-                End While
+                        dCur = dCur.AddDays(1)
+                    End While
+                End If
             Next
 
             AjustarAnchosInfoGantt()
@@ -458,6 +495,11 @@ Public Class FrmCartaGantt
         }
         For Each col As DataGridViewColumn In grillaInfoGantt.Columns
             If Not col.Visible Then Continue For
+            If String.Equals(col.Name, "colSelGantt", StringComparison.OrdinalIgnoreCase) Then
+                col.Width = 40
+                col.DisplayIndex = 0
+                Continue For
+            End If
             Dim wPref As Integer = col.GetPreferredWidth(DataGridViewAutoSizeColumnMode.DisplayedCells, True)
             Dim wHdr As Integer = col.GetPreferredWidth(DataGridViewAutoSizeColumnMode.ColumnHeader, True)
             Dim wMin As Integer = If(limitesMin.ContainsKey(col.Name), limitesMin(col.Name), 70)
@@ -622,9 +664,14 @@ Public Class FrmCartaGantt
             Case 2 : _escalaDiaPx = 82
             Case Else : _escalaDiaPx = 56
         End Select
-        For Each col As DataGridViewColumn In grillaGraficoGantt.Columns
-            col.Width = _escalaDiaPx
-        Next
+        grillaGraficoGantt.SuspendLayout()
+        Try
+            For Each col As DataGridViewColumn In grillaGraficoGantt.Columns
+                col.Width = _escalaDiaPx
+            Next
+        Finally
+            grillaGraficoGantt.ResumeLayout(False)
+        End Try
     End Sub
 
     Private Sub Filtros_KeyDown(ByVal sender As Object, ByVal e As KeyEventArgs) Handles txtBuscarNumMp.KeyDown, txtBuscarIdCiclo.KeyDown, txtBuscarGantt.KeyDown
@@ -654,9 +701,6 @@ Public Class FrmCartaGantt
             Try
                 Dim mpSvc As New MantPreventiva()
                 Dim dtBd As DataTable = mpSvc.CrgDatosGanttDetallado(_idNodoContexto, _fechaBaseDesde, _fechaBaseHasta, String.Empty, idM, idC, True)
-                If (dtBd Is Nothing OrElse dtBd.Rows.Count = 0) AndAlso _idNodoContexto > 1 Then
-                    dtBd = mpSvc.CrgDatosGanttDetallado(1, _fechaBaseDesde, _fechaBaseHasta, String.Empty, idM, idC, True)
-                End If
 
                 If dtBd IsNot Nothing AndAlso dtBd.Rows.Count > 0 Then
                     Dim nuevos As List(Of RegistroCicloGantt) = Informes.ConvertirTablaARegistrosGantt(dtBd)
@@ -701,43 +745,75 @@ Public Class FrmCartaGantt
         btnToggleDetalle.Text = If(mostrar, "Ocultar Detalle", "Ver Detalle")
     End Sub
 
+    Private Sub btnFiltrarMarcados_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnFiltrarMarcados.Click
+        Dim marcados As List(Of DataGridViewRow) = Utilitarios.ObtenerFilasMarcadas(grillaInfoGantt)
+        If marcados.Count = 0 Then
+            MessageBox.Show(Me, "Marque uno o más ciclos en la columna 'Sel.' (por ejemplo: 8, 7, 6, 5) para filtrar o exportar únicamente esos ciclos.", "Selección de Ciclos", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Exit Sub
+        End If
+
+        Dim filtrados As New List(Of RegistroCicloGantt)(marcados.Count)
+        For Each r As DataGridViewRow In marcados
+            If r.Index >= 0 AndAlso r.Index < _registrosVisibles.Count Then
+                filtrados.Add(_registrosVisibles(r.Index))
+            End If
+        Next
+        If filtrados.Count > 0 Then
+            RenderizarGrillas(filtrados)
+        End If
+    End Sub
+
+    Public Function ObtenerRegistrosVisiblesParaExportar() As List(Of RegistroCicloGantt)
+        Dim marcados As List(Of DataGridViewRow) = Utilitarios.ObtenerFilasMarcadas(grillaInfoGantt)
+        If marcados.Count > 0 Then
+            Dim listaSel As New List(Of RegistroCicloGantt)(marcados.Count)
+            For Each r As DataGridViewRow In marcados
+                If r.Index >= 0 AndAlso r.Index < _registrosVisibles.Count Then
+                    listaSel.Add(_registrosVisibles(r.Index))
+                End If
+            Next
+            If listaSel.Count > 0 Then Return listaSel
+        End If
+        If _registrosVisibles IsNot Nothing AndAlso _registrosVisibles.Count > 0 Then
+            Return New List(Of RegistroCicloGantt)(_registrosVisibles)
+        End If
+        Return New List(Of RegistroCicloGantt)()
+    End Function
+
     Private Sub btnExpPdf_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnExpPdf.Click
-        If grillaInfoGantt.RowCount = 0 Then
-            MsgBox("Debe buscar los ciclos antes de exportar a PDF", MsgBoxStyle.Exclamation, "Validación")
+        Dim registros As List(Of RegistroCicloGantt) = ObtenerRegistrosVisiblesParaExportar()
+        If registros.Count = 0 OrElse grillaInfoGantt.RowCount = 0 Then
+            MsgBox("Debe buscar los ciclos antes de exportar a PDF.", MsgBoxStyle.Exclamation, "Validación")
             Exit Sub
         End If
 
         Dim sufijo As String = If(String.IsNullOrWhiteSpace(item_gantt), "Gantt", item_gantt)
-        Dim rutaPdf As String = Utilitarios.SolicitarRutaGuardadoPdf("Carta_Gantt_" & sufijo)
+        Dim rutaPdf As String = Utilitarios.SolicitarRutaGuardadoPdf("Informe_Gantt_" & sufijo)
         If String.IsNullOrEmpty(rutaPdf) Then Exit Sub
 
-        Dim subtitulo As String = String.Format("Ítem: {0}   |   Desde: {1}   |   Hasta: {2}   |   {3}",
-                                                If(String.IsNullOrWhiteSpace(item_gantt), "General", item_gantt),
-                                                lblDesdeGantt.Text, lblHastaGantt.Text, lblResumenGantt.Text)
-        If Utilitarios.ExportarGrillaAPdf(grillaInfoGantt, rutaPdf, "INFORME CARTA GANTT - MANTENCIÓN PREVENTIVA", subtitulo) Then
-            If MessageBox.Show("Archivo PDF generado exitosamente en:" & Environment.NewLine & rutaPdf & Environment.NewLine & Environment.NewLine & "¿Desea abrir el documento PDF ahora?", "Exportación PDF Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
-                Utilitarios.AbrirDocumento(rutaPdf)
-            End If
-        Else
-            MsgBox("No fue posible generar el archivo PDF.", MsgBoxStyle.Critical, "Exportar PDF")
-        End If
+        Try
+            Dim informes As New Informes()
+            Dim infoMp As DataGridView = If(form = "FrmInfMantPrev", FrmInfMantPrev.grillaInfMant, Nothing)
+            informes.ExportarCartaGanttPdf(registros, infoMp, item_gantt, lblDesdeGantt.Text, lblHastaGantt.Text, rutaPdf, False)
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Carta Gantt (Exportar PDF)", True, Me)
+        End Try
     End Sub
 
     Private Sub btnExpExcel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnExpExcel.Click
-        Dim informes As New Informes()
-        If grillaInfoGantt.RowCount > 0 AndAlso grillaGraficoGantt.RowCount > 0 Then
-            Try
-                If form = "FrmInfMantPrev" Then
-                    informes.expInfGraficoGantt(FrmInfMantPrev.grillaInfMant, grillaInfoGantt, grillaGraficoGantt, item_gantt)
-                Else
-                    informes.expInfGraficoGanttVariasMaq(grillaInfoGantt, grillaGraficoGantt, item_gantt, lblDesdeGantt.Text, lblHastaGantt.Text)
-                End If
-            Catch ex As Exception
-                RegistroErrores.MostrarYRegistrar(ex, "Carta Gantt (Exportar Excel)", True, Me)
-            End Try
-        Else
-            MsgBox("Debe buscar los ciclos antes de exportar a Excel", MsgBoxStyle.Exclamation, "Validación")
+        Dim registros As List(Of RegistroCicloGantt) = ObtenerRegistrosVisiblesParaExportar()
+        If registros.Count = 0 OrElse grillaInfoGantt.RowCount = 0 OrElse grillaGraficoGantt.RowCount = 0 Then
+            MsgBox("Debe buscar los ciclos antes de exportar a Excel.", MsgBoxStyle.Exclamation, "Validación")
+            Exit Sub
         End If
+
+        Try
+            Dim informes As New Informes()
+            Dim infoMp As DataGridView = If(form = "FrmInfMantPrev", FrmInfMantPrev.grillaInfMant, Nothing)
+            informes.ExportarCartaGanttExcel(registros, infoMp, item_gantt, lblDesdeGantt.Text, lblHastaGantt.Text, False)
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Carta Gantt (Exportar Excel)", True, Me)
+        End Try
     End Sub
 
     Private Sub btnSalirGantt_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSalirGantt.Click

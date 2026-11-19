@@ -47,6 +47,7 @@ Partial Class FrmInfMantPrevCiclosMaq
         Me.ToolTip4 = New System.Windows.Forms.ToolTip(Me.components)
         Me.cmbTipoMpGantt = New System.Windows.Forms.ComboBox
         Me.Label5 = New System.Windows.Forms.Label
+        Me.chkSoloCicloGantt = New System.Windows.Forms.CheckBox
         CType(Me.grillaCiclosMaquinas, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel1.SuspendLayout()
         Me.Panel2.SuspendLayout()
@@ -260,6 +261,19 @@ Partial Class FrmInfMantPrevCiclosMaq
         Me.Label5.TabIndex = 8
         Me.Label5.Text = "Tipo de mantención"
         '
+        'chkSoloCicloGantt
+        '
+        Me.chkSoloCicloGantt.AutoSize = True
+        Me.chkSoloCicloGantt.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.chkSoloCicloGantt.Font = New System.Drawing.Font("Calibri", 9.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkSoloCicloGantt.Location = New System.Drawing.Point(658, 38)
+        Me.chkSoloCicloGantt.Name = "chkSoloCicloGantt"
+        Me.chkSoloCicloGantt.Size = New System.Drawing.Size(128, 19)
+        Me.chkSoloCicloGantt.TabIndex = 14
+        Me.chkSoloCicloGantt.Text = "Solo ciclo selecc."
+        Me.ToolTip2.SetToolTip(Me.chkSoloCicloGantt, "Genera la Carta Gantt solo para el/los ciclo(s) seleccionado(s) en la grilla")
+        Me.chkSoloCicloGantt.UseVisualStyleBackColor = True
+        '
         'FrmInfMantPrevCiclosMaq
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -267,6 +281,7 @@ Partial Class FrmInfMantPrevCiclosMaq
         Me.BackColor = System.Drawing.Color.FromArgb(229, 235, 235)
         Me.ClientSize = New System.Drawing.Size(1020, 661)
         Me.ControlBox = False
+        Me.Controls.Add(Me.chkSoloCicloGantt)
         Me.Controls.Add(Me.Label4)
         Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.Panel2)
@@ -309,4 +324,5 @@ Partial Class FrmInfMantPrevCiclosMaq
     Friend WithEvents ToolTip4 As System.Windows.Forms.ToolTip
     Friend WithEvents cmbTipoMpGantt As System.Windows.Forms.ComboBox
     Friend WithEvents Label5 As System.Windows.Forms.Label
+    Friend WithEvents chkSoloCicloGantt As System.Windows.Forms.CheckBox
 End Class

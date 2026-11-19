@@ -32,6 +32,7 @@ Partial Class FrmCartaGantt
         Me.Label3 = New System.Windows.Forms.Label()
         Me.lblHastaGantt = New System.Windows.Forms.Label()
         Me.lblResumenGantt = New System.Windows.Forms.Label()
+        Me.btnFiltrarMarcados = New System.Windows.Forms.Button()
         Me.btnExpPdf = New System.Windows.Forms.Button()
         Me.btnExpExcel = New System.Windows.Forms.Button()
         Me.btnSalirGantt = New System.Windows.Forms.Button()
@@ -107,6 +108,7 @@ Partial Class FrmCartaGantt
         Me.pnlCardHeaderGantt.Controls.Add(Me.btnSalirGantt)
         Me.pnlCardHeaderGantt.Controls.Add(Me.btnExpExcel)
         Me.pnlCardHeaderGantt.Controls.Add(Me.btnExpPdf)
+        Me.pnlCardHeaderGantt.Controls.Add(Me.btnFiltrarMarcados)
         Me.pnlCardHeaderGantt.Controls.Add(Me.lblResumenGantt)
         Me.pnlCardHeaderGantt.Controls.Add(Me.lblHastaGantt)
         Me.pnlCardHeaderGantt.Controls.Add(Me.Label3)
@@ -168,6 +170,18 @@ Partial Class FrmCartaGantt
         Me.lblResumenGantt.Size = New System.Drawing.Size(180, 15)
         Me.lblResumenGantt.TabIndex = 5
         Me.lblResumenGantt.Text = "0 ciclos cargados"
+
+        Me.btnFiltrarMarcados.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnFiltrarMarcados.Image = Global.mantencion.My.Resources.Resources.checklist
+        Me.btnFiltrarMarcados.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnFiltrarMarcados.Location = New System.Drawing.Point(786, 13)
+        Me.btnFiltrarMarcados.Name = "btnFiltrarMarcados"
+        Me.btnFiltrarMarcados.Size = New System.Drawing.Size(126, 30)
+        Me.btnFiltrarMarcados.TabIndex = 5
+        Me.btnFiltrarMarcados.Text = "Solo Marcados"
+        Me.btnFiltrarMarcados.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.ToolTip1.SetToolTip(Me.btnFiltrarMarcados, "Mostrar en la Carta Gantt únicamente los ciclos marcados con casilla en 'Sel.'")
+        Me.btnFiltrarMarcados.UseVisualStyleBackColor = True
 
         Me.btnExpPdf.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnExpPdf.Image = Global.mantencion.My.Resources.Resources.icono_pdf
@@ -658,6 +672,7 @@ Partial Class FrmCartaGantt
     Friend WithEvents Label3 As System.Windows.Forms.Label
     Friend WithEvents lblHastaGantt As System.Windows.Forms.Label
     Friend WithEvents lblResumenGantt As System.Windows.Forms.Label
+    Friend WithEvents btnFiltrarMarcados As System.Windows.Forms.Button
     Friend WithEvents btnExpPdf As System.Windows.Forms.Button
     Friend WithEvents btnExpExcel As System.Windows.Forms.Button
     Friend WithEvents btnSalirGantt As System.Windows.Forms.Button

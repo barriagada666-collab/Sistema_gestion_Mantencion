@@ -7,6 +7,7 @@ Public Class FrmInfMantPrev
     Private _cargandoFiltros As Boolean = False
     Private _buscando As Boolean = False
     Private _ultimoIdMpCargado As String = ""
+    Friend WithEvents chkSoloCicloGantt As CheckBox
 
     Private Sub FrmInfMantPrev_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Me.DoubleBuffered = True
@@ -17,6 +18,20 @@ Public Class FrmInfMantPrev
         Dim nodoRaiz As New TreeNode
 
         Try
+            If chkSoloCicloGantt Is Nothing Then
+                chkSoloCicloGantt = New CheckBox() With {
+                    .Name = "chkSoloCicloGantt",
+                    .Text = "Solo ciclo selecc.",
+                    .AutoSize = True,
+                    .Font = New Font("Calibri", 9.25!, FontStyle.Bold),
+                    .Location = New Point(Math.Max(480, GrpFiltroInf.ClientSize.Width - 265), 84),
+                    .Anchor = AnchorStyles.Top Or AnchorStyles.Right,
+                    .Cursor = Cursors.Hand
+                }
+                GrpFiltroInf.Controls.Add(chkSoloCicloGantt)
+                ToolTip2.SetToolTip(chkSoloCicloGantt, "Si está marcado, la Carta Gantt se genera únicamente para el ciclo seleccionado")
+            End If
+
             Arbol2.BeginUpdate()
             nodoRaiz.Name = "1"
             nodoRaiz.Text = "Cambiaso Hnos S.A."
@@ -56,6 +71,9 @@ Public Class FrmInfMantPrev
 
         Dim mostrarTareas As Boolean = opcfiltroTareas.Checked
         GrpFiltroTareas.Visible = mostrarTareas
+        If chkSoloCicloGantt IsNot Nothing Then
+            chkSoloCicloGantt.Visible = Not mostrarTareas
+        End If
         If mostrarTareas AndAlso Not OpcTareasOk.Checked AndAlso Not OpcTareasPend.Checked Then
             OpcTareasOk.Checked = True
         End If
@@ -68,13 +86,26 @@ Public Class FrmInfMantPrev
         Arbol2.SelectedNode.BackColor = Utilitarios.ColorSeleccion
         nombre_nodo_select = Arbol2.SelectedNode.Text
 
-        If Not _cargandoFiltros AndAlso (opcTipoMp.Checked OrElse opcTodos.Checked) Then
+        If Not _cargandoFiltros AndAlso Not String.IsNullOrEmpty(id_nodo_select) Then
             EjecutarBusqueda(False)
         End If
     End Sub
 
     Private Sub opcFechas_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles opcFechas.CheckedChanged
-        If opcFechas.Checked Then ActualizarVisibilidadFiltros()
+        If opcFechas.Checked Then
+            ActualizarVisibilidadFiltros()
+            If Not _cargandoFiltros AndAlso Not String.IsNullOrEmpty(id_nodo_select) Then
+                EjecutarBusqueda(False)
+            End If
+        End If
+    End Sub
+
+    Private Sub FechasFiltro_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles f_ini_inf_mp.ValueChanged, f_fin_inf_mp.ValueChanged
+        If Not _cargandoFiltros AndAlso opcFechas.Checked AndAlso Not String.IsNullOrEmpty(id_nodo_select) Then
+            If f_ini_inf_mp.Value.Date <= f_fin_inf_mp.Value.Date Then
+                EjecutarBusqueda(False)
+            End If
+        End If
     End Sub
 
     Private Sub opcTodos_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles opcTodos.CheckedChanged
@@ -128,6 +159,7 @@ Public Class FrmInfMantPrev
         _ultimoIdMpCargado = ""
         grillaInfMant.DataSource = Nothing
         grillaDetalleCicloMp.DataSource = Nothing
+        Utilitarios.QuitarColumnaSeleccionGantt(grillaDetalleCicloMp)
         LimpiarDetalleCiclo()
         btnGantt.Enabled = False
     End Sub
@@ -168,13 +200,24 @@ Public Class FrmInfMantPrev
         Dim DST As New DataSet
         grillaDetalleCicloMp.SuspendLayout()
         Try
-            mant_prev.InfCicloMp(idMpStr, DST)
+            If opcFechas.Checked Then
+                mant_prev.InfCicloMpPorRango(idMpStr, f_ini_inf_mp.Value, f_fin_inf_mp.Value, DST)
+                If DST.Tables.Count = 0 OrElse DST.Tables(0).Rows.Count = 0 Then
+                    DST.Clear()
+                    DST.Tables.Clear()
+                    mant_prev.InfCicloMp(idMpStr, DST)
+                End If
+            Else
+                mant_prev.InfCicloMp(idMpStr, DST)
+            End If
             If DST.Tables.Count > 0 Then
                 grillaDetalleCicloMp.DataSource = DST.Tables(0)
                 formato_grid.grillasMp(grillaDetalleCicloMp)
                 Utilitarios.AjustarColumnasGrilla(grillaDetalleCicloMp)
+                Utilitarios.AsegurarColumnaSeleccionGantt(grillaDetalleCicloMp)
             Else
                 grillaDetalleCicloMp.DataSource = Nothing
+                Utilitarios.QuitarColumnaSeleccionGantt(grillaDetalleCicloMp)
             End If
             btnGantt.Enabled = (grillaDetalleCicloMp.RowCount > 0)
         Finally
@@ -280,6 +323,7 @@ Public Class FrmInfMantPrev
         Dim DST5 As New DataSet
         Try
             If e.RowIndex < 0 OrElse grillaDetalleCicloMp.Rows(e.RowIndex).IsNewRow Then Exit Sub
+            If e.ColumnIndex >= 0 AndAlso grillaDetalleCicloMp.Columns(e.ColumnIndex).Name = "colSelGantt" Then Exit Sub
             Dim filaMp As DataGridViewRow = If(grillaInfMant.CurrentRow, If(grillaInfMant.SelectedRows.Count > 0, grillaInfMant.SelectedRows(0), Nothing))
             If filaMp Is Nothing Then Exit Sub
             Dim idMpObj As Object = filaMp.Cells(0).Value
@@ -367,7 +411,12 @@ Public Class FrmInfMantPrev
         Else
             FrmCartaGantt.form = Me.Name
             FrmCartaGantt.item_gantt = nombre_nodo_select
-            FrmCartaGantt.Show()
+            If FrmCartaGantt.Visible Then
+                FrmCartaGantt.RecargarDesdeOrigen()
+                FrmCartaGantt.BringToFront()
+            Else
+                FrmCartaGantt.Show()
+            End If
         End If
     End Sub
 

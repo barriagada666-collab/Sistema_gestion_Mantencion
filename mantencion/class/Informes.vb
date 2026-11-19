@@ -43,10 +43,11 @@ Public Class Informes
             Dim idNodoSel As Integer = Math.Max(1, Utilitarios.SafeInt(.id_nodo_select, 1))
             Dim seccionSel As String = If(.Arbol2.SelectedNode IsNot Nothing AndAlso .Arbol2.SelectedNode.Parent IsNot Nothing, .Arbol2.SelectedNode.Parent.Text, String.Empty)
 
-            Dim lista As New List(Of FrmCartaGantt.RegistroCicloGantt)(.grillaDetalleCicloMp.RowCount)
-            For i = 0 To .grillaDetalleCicloMp.RowCount - 1
-                Dim rowG As DataGridViewRow = .grillaDetalleCicloMp.Rows(i)
-                If rowG.IsNewRow Then Continue For
+            Dim soloSel As Boolean = (.chkSoloCicloGantt IsNot Nothing AndAlso .chkSoloCicloGantt.Checked)
+            Dim filasOrigen As List(Of DataGridViewRow) = Utilitarios.ObtenerFilasMarcadasOSeleccionadas(.grillaDetalleCicloMp, soloSel)
+
+            Dim lista As New List(Of FrmCartaGantt.RegistroCicloGantt)(filasOrigen.Count)
+            For Each rowG As DataGridViewRow In filasOrigen
                 Dim reg As New FrmCartaGantt.RegistroCicloGantt()
                 reg.IdMant = idMantSel
                 reg.IdCiclo = Utilitarios.SafeInt(rowG.Cells(0).Value, 0)
@@ -68,18 +69,46 @@ Public Class Informes
     Public Sub CrgInfGanttCiclosVariasMaq()
         With FrmInfMantPrevCiclosMaq
             Dim idPadre As Integer = Math.Max(1, Utilitarios.SafeInt(.id_nodo_mp_select, 1))
+            Dim soloSel As Boolean = (.chkSoloCicloGantt IsNot Nothing AndAlso .chkSoloCicloGantt.Checked)
+
+            Dim filasSel As List(Of DataGridViewRow) = Utilitarios.ObtenerFilasMarcadas(.grillaCiclosMaquinas)
+            If filasSel.Count = 0 AndAlso soloSel AndAlso .grillaCiclosMaquinas.RowCount > 0 Then
+                filasSel = Utilitarios.ObtenerFilasMarcadasOSeleccionadas(.grillaCiclosMaquinas, True)
+            End If
+
+            Dim filtrarSeleccion As Boolean = (filasSel.Count > 0)
+            Dim filtrosSel As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+            For Each rowG As DataGridViewRow In filasSel
+                Dim idCicSel As Integer = Utilitarios.SafeInt(rowG.Cells(0).Value, 0)
+                Dim idMpSel As Integer = If(rowG.Cells.Count > 7, Utilitarios.SafeInt(rowG.Cells(7).Value, 0), 0)
+                Dim maqSel As String = Convert.ToString(rowG.Cells(2).Value).Trim()
+                filtrosSel.Add(String.Format("{0}|{1}|{2}", idMpSel, idCicSel, maqSel))
+            Next
+
             Dim mpSvc As New MantPreventiva()
             Dim dt As DataTable = mpSvc.CrgDatosGanttDetallado(idPadre, .fecha_ini_inf_mp.Value, .fecha_fin_inf_mp.Value, .cmbTipoMpGantt.Text)
 
             If dt IsNot Nothing AndAlso dt.Rows.Count > 0 Then
-                FrmCartaGantt.EstablecerDatosGantt(ConvertirTablaARegistrosGantt(dt), idPadre)
+                Dim listaDet As List(Of FrmCartaGantt.RegistroCicloGantt) = ConvertirTablaARegistrosGantt(dt)
+                If filtrarSeleccion AndAlso filtrosSel.Count > 0 Then
+                    Dim listaFiltrada As New List(Of FrmCartaGantt.RegistroCicloGantt)()
+                    For Each reg In listaDet
+                        Dim keyExact As String = String.Format("{0}|{1}|{2}", reg.IdMant, reg.IdCiclo, reg.ItemMaquina)
+                        Dim keySinMp As String = String.Format("0|{0}|{1}", reg.IdCiclo, reg.ItemMaquina)
+                        If filtrosSel.Contains(keyExact) OrElse filtrosSel.Contains(keySinMp) Then
+                            listaFiltrada.Add(reg)
+                        End If
+                    Next
+                    If listaFiltrada.Count > 0 Then listaDet = listaFiltrada
+                End If
+                FrmCartaGantt.EstablecerDatosGantt(listaDet, idPadre)
                 Return
             End If
 
             If .grillaCiclosMaquinas.RowCount = 0 Then Return
-            Dim lista As New List(Of FrmCartaGantt.RegistroCicloGantt)(.grillaCiclosMaquinas.RowCount)
-            For i = 0 To .grillaCiclosMaquinas.RowCount - 1
-                Dim rowG As DataGridViewRow = .grillaCiclosMaquinas.Rows(i)
+            Dim filasFallback As List(Of DataGridViewRow) = If(filtrarSeleccion, filasSel, Utilitarios.ObtenerFilasMarcadasOSeleccionadas(.grillaCiclosMaquinas, soloSel))
+            Dim lista As New List(Of FrmCartaGantt.RegistroCicloGantt)(filasFallback.Count)
+            For Each rowG As DataGridViewRow In filasFallback
                 If rowG.IsNewRow Then Continue For
                 Dim reg As New FrmCartaGantt.RegistroCicloGantt()
                 reg.IdCiclo = Utilitarios.SafeInt(rowG.Cells(0).Value, 0)
@@ -89,470 +118,660 @@ Public Class Informes
                 reg.FechaInicio = Utilitarios.ObtenerFechaSegura(rowG.Cells(4).Value)
                 reg.FechaTermino = Utilitarios.ObtenerFechaSegura(rowG.Cells(5).Value, reg.FechaInicio)
                 reg.Duracion = Utilitarios.SafeDouble(rowG.Cells(6).Value, 0.0)
-                reg.TipoMp = .cmbTipoMpGantt.Text
+                reg.IdMant = If(rowG.Cells.Count > 7, Utilitarios.SafeInt(rowG.Cells(7).Value, 0), 0)
+                reg.Estado = If(rowG.Cells.Count > 8, Convert.ToString(rowG.Cells(8).Value).Trim(), String.Empty)
+                reg.TipoMp = If(rowG.Cells.Count > 9, Convert.ToString(rowG.Cells(9).Value).Trim(), .cmbTipoMpGantt.Text)
                 lista.Add(reg)
             Next
             FrmCartaGantt.EstablecerDatosGantt(lista, idPadre)
         End With
     End Sub
 
-    Public Sub expInfGantt(ByVal grilla_info_mp As DataGridView, ByVal grilla_ciclos_mp As DataGridView, ByVal grilla_grafico As DataGridView, ByVal item As String)
+    Private Shared Function ObtenerLetraColumnaExcel(ByVal colNum As Integer) As String
+        Dim dividend As Integer = Math.Max(1, colNum)
+        Dim colName As String = String.Empty
+        While dividend > 0
+            Dim modulo As Integer = (dividend - 1) Mod 26
+            colName = ChrW(65 + modulo) & colName
+            dividend = CInt((dividend - modulo) \ 26)
+        End While
+        Return colName
+    End Function
+
+    Private Shared Function ColorOleDesdeEstado(ByVal estado As String, ByVal fechaTermino As DateTime) As Integer
+        If String.Equals(If(estado, "").Trim(), "Terminado", StringComparison.OrdinalIgnoreCase) Then
+            Return System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.FromArgb(21, 128, 61))
+        ElseIf fechaTermino.Date < DateTime.Today Then
+            Return System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.FromArgb(220, 38, 38))
+        Else
+            Return System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.FromArgb(2, 94, 135))
+        End If
+    End Function
+
+    Private Shared Function ConvertirGrillasARegistrosGantt(ByVal grilla_ciclos_mp As DataGridView, ByVal info_mp As DataGridView, ByVal itemDefecto As String) As List(Of FrmCartaGantt.RegistroCicloGantt)
+        Dim lista As New List(Of FrmCartaGantt.RegistroCicloGantt)()
+        If grilla_ciclos_mp Is Nothing OrElse grilla_ciclos_mp.RowCount = 0 Then Return lista
+
+        Dim cols As DataGridViewColumnCollection = grilla_ciclos_mp.Columns
+        Dim idMantCab As Integer = If(info_mp IsNot Nothing AndAlso info_mp.CurrentRow IsNot Nothing, Utilitarios.SafeInt(info_mp.CurrentRow.Cells(0).Value, 0), 0)
+        Dim tipoCab As String = If(info_mp IsNot Nothing AndAlso info_mp.CurrentRow IsNot Nothing AndAlso info_mp.Columns.Count > 5, Convert.ToString(info_mp.CurrentRow.Cells(5).Value).Trim(), String.Empty)
+
+        Dim idxIdCiclo As Integer = If(cols.Contains("id_ciclo"), cols("id_ciclo").Index, 0)
+        Dim idxItem As Integer = If(cols.Contains("item"), cols("item").Index, If(cols.Count > 1, 1, -1))
+        Dim idxObs As Integer = If(cols.Contains("obs_ciclo"), cols("obs_ciclo").Index, If(cols.Count > 2, 2, -1))
+        Dim idxFIni As Integer = If(cols.Contains("fecha_inicio"), cols("fecha_inicio").Index, If(cols.Count > 3, 3, 1))
+        Dim idxFFin As Integer = If(cols.Contains("fecha_termino"), cols("fecha_termino").Index, Math.Min(cols.Count - 1, idxFIni + 1))
+        Dim idxDur As Integer = If(cols.Contains("duracion"), cols("duracion").Index, If(cols.Count > 5, 5, -1))
+        Dim idxIdMant As Integer = If(cols.Contains("colIdMant"), cols("colIdMant").Index, -1)
+        Dim idxSec As Integer = If(cols.Contains("colSeccion"), cols("colSeccion").Index, -1)
+        Dim idxEst As Integer = If(cols.Contains("colEstado"), cols("colEstado").Index, -1)
+        Dim idxTipo As Integer = If(cols.Contains("colTipoMp"), cols("colTipoMp").Index, -1)
+
+        For Each rowG As DataGridViewRow In grilla_ciclos_mp.Rows
+            If rowG.IsNewRow Then Continue For
+            Dim reg As New FrmCartaGantt.RegistroCicloGantt()
+            reg.IdCiclo = Utilitarios.SafeInt(rowG.Cells(idxIdCiclo).Value, 0)
+            reg.IdMant = If(idxIdMant >= 0, Utilitarios.SafeInt(rowG.Cells(idxIdMant).Value, idMantCab), idMantCab)
+            reg.Seccion = If(idxSec >= 0, Convert.ToString(rowG.Cells(idxSec).Value).Trim(), String.Empty)
+            reg.ItemMaquina = If(idxItem >= 0 AndAlso Not IsDate(rowG.Cells(idxItem).Value), Convert.ToString(rowG.Cells(idxItem).Value).Trim(), itemDefecto)
+            If String.IsNullOrWhiteSpace(reg.ItemMaquina) Then reg.ItemMaquina = itemDefecto
+            reg.Observacion = If(idxObs >= 0, Convert.ToString(rowG.Cells(idxObs).Value).Trim(), String.Empty)
+            reg.FechaInicio = Utilitarios.ObtenerFechaSegura(rowG.Cells(idxFIni).Value)
+            reg.FechaTermino = Utilitarios.ObtenerFechaSegura(rowG.Cells(idxFFin).Value, reg.FechaInicio)
+            If reg.FechaTermino < reg.FechaInicio Then reg.FechaTermino = reg.FechaInicio
+            reg.Duracion = If(idxDur >= 0, Utilitarios.SafeDouble(rowG.Cells(idxDur).Value, 0.0), 0.0)
+            reg.Estado = If(idxEst >= 0, Convert.ToString(rowG.Cells(idxEst).Value).Trim(), String.Empty)
+            reg.TipoMp = If(idxTipo >= 0, Convert.ToString(rowG.Cells(idxTipo).Value).Trim(), tipoCab)
+            lista.Add(reg)
+        Next
+        Return lista
+    End Function
+
+    Private Shared Sub ResolverCabeceraMpParaGantt(ByVal registros As List(Of FrmCartaGantt.RegistroCicloGantt),
+                                                  ByVal grilla_info_mp As DataGridView,
+                                                  ByVal itemTitulo As String,
+                                                  ByRef idMantUnico As Integer,
+                                                  ByRef esModoUnaMp As Boolean,
+                                                  ByRef itemNombre As String,
+                                                  ByRef idMpTexto As String,
+                                                  ByRef frecuenciaTexto As String,
+                                                  ByRef tiempoAvisoTexto As String,
+                                                  ByRef fechaCreacionTexto As String,
+                                                  ByRef tipoTexto As String,
+                                                  ByRef estadoTexto As String)
+        Dim mpsDistintos As New HashSet(Of Integer)()
+        Dim maquinasDistintas As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+        For Each r In registros
+            If r.IdMant > 0 Then mpsDistintos.Add(r.IdMant)
+            If Not String.IsNullOrWhiteSpace(r.ItemMaquina) Then maquinasDistintas.Add(r.ItemMaquina.Trim())
+        Next
+
+        idMantUnico = If(mpsDistintos.Count = 1, mpsDistintos.First(), 0)
+        esModoUnaMp = (idMantUnico > 0 AndAlso maquinasDistintas.Count <= 1)
+
+        If esModoUnaMp Then
+            Dim filaGrilla As DataGridViewRow = Nothing
+            If grilla_info_mp IsNot Nothing AndAlso grilla_info_mp.CurrentRow IsNot Nothing Then
+                Dim idGrilla As Integer = Utilitarios.SafeInt(grilla_info_mp.CurrentRow.Cells(0).Value, 0)
+                If idGrilla = idMantUnico Then filaGrilla = grilla_info_mp.CurrentRow
+            End If
+
+            If filaGrilla IsNot Nothing Then
+                itemNombre = If(String.IsNullOrWhiteSpace(itemTitulo), If(maquinasDistintas.Count > 0, maquinasDistintas.First(), "Máquina"), itemTitulo)
+                idMpTexto = Convert.ToString(filaGrilla.Cells(0).Value).Trim()
+                frecuenciaTexto = Convert.ToString(filaGrilla.Cells(1).Value).Trim() & " Hrs"
+                tiempoAvisoTexto = Convert.ToString(filaGrilla.Cells(2).Value).Trim() & " Hrs"
+                estadoTexto = Convert.ToString(filaGrilla.Cells(3).Value).Trim()
+                fechaCreacionTexto = Utilitarios.ObtenerFechaSegura(filaGrilla.Cells(4).Value).ToString("dd-MM-yyyy")
+                tipoTexto = Convert.ToString(filaGrilla.Cells(5).Value).Trim()
+            Else
+                Dim mpSvc As New MantPreventiva()
+                Dim dr As DataRow = mpSvc.ObtenerCabeceraMp(idMantUnico)
+                If dr IsNot Nothing Then
+                    itemNombre = Convert.ToString(dr("desc_nodo")).Trim()
+                    If String.IsNullOrWhiteSpace(itemNombre) Then itemNombre = itemTitulo
+                    idMpTexto = Convert.ToString(dr("idmant")).Trim()
+                    frecuenciaTexto = Convert.ToString(dr("frecuencia")).Trim() & " Hrs"
+                    tiempoAvisoTexto = Convert.ToString(dr("tiempo_aviso")).Trim() & " Hrs"
+                    estadoTexto = Convert.ToString(dr("estado")).Trim()
+                    fechaCreacionTexto = Utilitarios.ObtenerFechaSegura(dr("fecha_creacion")).ToString("dd-MM-yyyy")
+                    tipoTexto = Convert.ToString(dr("tipo_mantencion")).Trim()
+                Else
+                    itemNombre = If(String.IsNullOrWhiteSpace(itemTitulo), If(maquinasDistintas.Count > 0, maquinasDistintas.First(), "-"), itemTitulo)
+                    idMpTexto = idMantUnico.ToString()
+                    frecuenciaTexto = "-"
+                    tiempoAvisoTexto = "-"
+                    estadoTexto = "-"
+                    fechaCreacionTexto = "-"
+                    tipoTexto = If(String.IsNullOrWhiteSpace(registros(0).TipoMp), "-", registros(0).TipoMp)
+                End If
+            End If
+        Else
+            Dim hrsTot As Double = 0
+            For Each r In registros
+                hrsTot += r.Duracion
+            Next
+            itemNombre = If(String.IsNullOrWhiteSpace(itemTitulo), "Varios Equipos", itemTitulo)
+            idMpTexto = If(mpsDistintos.Count > 0, String.Format("Varios ({0} MPs)", mpsDistintos.Count), "General")
+            frecuenciaTexto = String.Format("{0} ciclos", registros.Count)
+            tiempoAvisoTexto = String.Format("{0:N1} Hrs", hrsTot)
+            estadoTexto = If(maquinasDistintas.Count = 1, "1 equipo", String.Format("{0} equipos", maquinasDistintas.Count))
+            fechaCreacionTexto = DateTime.Today.ToString("dd-MM-yyyy")
+            tipoTexto = "Consolidado"
+        End If
+    End Sub
+
+    Private Shared Function ConstruirTablaGanttPlana(ByVal registros As List(Of FrmCartaGantt.RegistroCicloGantt)) As DataTable
+        Dim dt As New DataTable("InformeGantt")
+        dt.Columns.Add("N° MP")
+        dt.Columns.Add("ID Ciclo")
+        dt.Columns.Add("Sección")
+        dt.Columns.Add("Item / Máquina")
+        dt.Columns.Add("Estado")
+        dt.Columns.Add("Observación Ciclo")
+        dt.Columns.Add("Fecha Inicio")
+        dt.Columns.Add("Fecha Término")
+        dt.Columns.Add("Duración (Hrs)")
+        dt.Columns.Add("Tipo")
+
+        For Each reg In registros
+            dt.Rows.Add(
+                If(reg.IdMant > 0, reg.IdMant.ToString(), "-"),
+                reg.IdCiclo.ToString(),
+                reg.Seccion,
+                reg.ItemMaquina,
+                reg.Estado,
+                reg.Observacion,
+                reg.FechaInicio.ToString("dd-MM-yyyy HH:mm"),
+                reg.FechaTermino.ToString("dd-MM-yyyy HH:mm"),
+                reg.Duracion.ToString("N1"),
+                reg.TipoMp)
+        Next
+        Return dt
+    End Function
+
+    Private Shared Sub PintarCalendarioGanttEnHoja(ByVal ws As Excel.Worksheet,
+                                                    ByVal registros As List(Of FrmCartaGantt.RegistroCicloGantt),
+                                                    ByVal fechaMin As DateTime,
+                                                    ByVal totalDias As Integer,
+                                                    ByVal colIniCal As Integer,
+                                                    ByVal filaIni As Integer,
+                                                    ByVal filaFin As Integer,
+                                                    ByVal colorFinSemana As Integer,
+                                                    ByVal colorBlanco As Integer)
+        Dim colIniLetra As String = ObtenerLetraColumnaExcel(colIniCal)
+        Dim colFinLetra As String = ObtenerLetraColumnaExcel(colIniCal + totalDias - 1)
+        ws.Range(colIniLetra & filaIni & ":" & colFinLetra & filaFin).NumberFormat = "@"
+
+        ' Sombreado de fines de semana agrupando Sábado+Domingo contiguos en una sola llamada COM por semana
+        Dim dIdx As Integer = 0
+        While dIdx < totalDias
+            Dim dtDia As DateTime = fechaMin.AddDays(dIdx)
+            If dtDia.DayOfWeek = DayOfWeek.Saturday Then
+                Dim dEndIdx As Integer = If(dIdx + 1 < totalDias AndAlso fechaMin.AddDays(dIdx + 1).DayOfWeek = DayOfWeek.Sunday, dIdx + 1, dIdx)
+                Dim cIniL As String = ObtenerLetraColumnaExcel(colIniCal + dIdx)
+                Dim cFinL As String = ObtenerLetraColumnaExcel(colIniCal + dEndIdx)
+                ws.Range(cIniL & filaIni.ToString() & ":" & cFinL & filaFin.ToString()).Interior.Color = colorFinSemana
+                dIdx = dEndIdx + 1
+            ElseIf dtDia.DayOfWeek = DayOfWeek.Sunday Then
+                Dim colL As String = ObtenerLetraColumnaExcel(colIniCal + dIdx)
+                ws.Range(colL & filaIni.ToString() & ":" & colL & filaFin.ToString()).Interior.Color = colorFinSemana
+                dIdx += 1
+            Else
+                dIdx += 1
+            End If
+        End While
+
+        Dim fechaMaxCal As DateTime = fechaMin.AddDays(totalDias - 1)
+        For i As Integer = 0 To registros.Count - 1
+            Dim reg As FrmCartaGantt.RegistroCicloGantt = registros(i)
+            Dim rEx As Integer = filaIni + i
+            Dim dIniRow As DateTime = reg.FechaInicio.Date
+            Dim dFinRow As DateTime = If(reg.FechaTermino.Date < dIniRow, dIniRow, reg.FechaTermino.Date)
+            If dFinRow < fechaMin OrElse dIniRow > fechaMaxCal Then Continue For
+
+            Dim offsetIni As Integer = Math.Max(0, Math.Min(totalDias - 1, CInt((dIniRow - fechaMin).TotalDays)))
+            Dim offsetFin As Integer = Math.Max(offsetIni, Math.Min(totalDias - 1, CInt((dFinRow - fechaMin).TotalDays)))
+
+            Dim cStartL As String = ObtenerLetraColumnaExcel(colIniCal + offsetIni)
+            Dim cEndL As String = ObtenerLetraColumnaExcel(colIniCal + offsetFin)
+            ws.Range(cStartL & rEx & ":" & cEndL & rEx).Interior.Color = ColorOleDesdeEstado(reg.Estado, reg.FechaTermino)
+
+            Dim cellIni As Excel.Range = CType(ws.Cells(rEx, colIniCal + offsetIni), Excel.Range)
+            cellIni.Value = If(reg.Duracion > 0, String.Format("{0:N0}h", reg.Duracion), "#" & reg.IdCiclo.ToString())
+            cellIni.Font.Color = colorBlanco
+            cellIni.Font.Bold = True
+            cellIni.Font.Size = 7.5
+            cellIni.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter
+        Next
+    End Sub
+
+    Public Sub ExportarCartaGanttExcel(ByVal registros As List(Of FrmCartaGantt.RegistroCicloGantt),
+                                        ByVal grilla_info_mp As DataGridView,
+                                        ByVal itemTitulo As String,
+                                        ByVal fechaDesdeTexto As String,
+                                        ByVal fechaHastaTexto As String,
+                                        Optional ByVal forzarModoVariasMaq As Boolean = False,
+                                        Optional ByVal silencioso As Boolean = False)
+        ExportarInfGanttInterno(registros, grilla_info_mp, itemTitulo, fechaDesdeTexto, fechaHastaTexto, False, String.Empty, forzarModoVariasMaq, silencioso)
+    End Sub
+
+    Public Sub ExportarCartaGanttPdf(ByVal registros As List(Of FrmCartaGantt.RegistroCicloGantt),
+                                      ByVal grilla_info_mp As DataGridView,
+                                      ByVal itemTitulo As String,
+                                      ByVal fechaDesdeTexto As String,
+                                      ByVal fechaHastaTexto As String,
+                                      ByVal rutaPdf As String,
+                                      Optional ByVal forzarModoVariasMaq As Boolean = False,
+                                      Optional ByVal silencioso As Boolean = False)
+        If String.IsNullOrWhiteSpace(rutaPdf) Then Exit Sub
+        ExportarInfGanttInterno(registros, grilla_info_mp, itemTitulo, fechaDesdeTexto, fechaHastaTexto, True, rutaPdf, forzarModoVariasMaq, silencioso)
+    End Sub
+
+    Private Sub ExportarInfGanttInterno(ByVal registros As List(Of FrmCartaGantt.RegistroCicloGantt),
+                                         ByVal grilla_info_mp As DataGridView,
+                                         ByVal itemTitulo As String,
+                                         ByVal fechaDesdeTexto As String,
+                                         ByVal fechaHastaTexto As String,
+                                         ByVal esPdf As Boolean,
+                                         ByVal rutaPdf As String,
+                                         ByVal forzarModoVariasMaq As Boolean,
+                                         ByVal silencioso As Boolean)
+        If registros Is Nothing OrElse registros.Count = 0 Then
+            MsgBox("No hay ciclos visibles en la Carta Gantt para exportar.", MsgBoxStyle.Exclamation, "Validación")
+            Exit Sub
+        End If
+
+        Dim idMantUnico As Integer = 0
+        Dim esModoUnaMp As Boolean = False
+        Dim itemNombre As String = String.Empty
+        Dim idMpTexto As String = String.Empty
+        Dim freqTexto As String = String.Empty
+        Dim avisoTexto As String = String.Empty
+        Dim fechaCreaTexto As String = String.Empty
+        Dim tipoTexto As String = String.Empty
+        Dim estadoTexto As String = String.Empty
+
+        ResolverCabeceraMpParaGantt(registros, grilla_info_mp, itemTitulo, idMantUnico, esModoUnaMp, itemNombre, idMpTexto, freqTexto, avisoTexto, fechaCreaTexto, tipoTexto, estadoTexto)
+        If forzarModoVariasMaq Then esModoUnaMp = False
+
+        Dim fechaMin As DateTime = DateTime.MaxValue
+        Dim fechaMax As DateTime = DateTime.MinValue
+        For Each reg In registros
+            Dim dIni As DateTime = reg.FechaInicio.Date
+            Dim dFin As DateTime = If(reg.FechaTermino.Date < dIni, dIni, reg.FechaTermino.Date)
+            If dIni < fechaMin Then fechaMin = dIni
+            If dFin > fechaMax Then fechaMax = dFin
+        Next
+        If fechaMin = DateTime.MaxValue OrElse fechaMax = DateTime.MinValue OrElse fechaMin > fechaMax Then
+            fechaMin = DateTime.Today
+            fechaMax = DateTime.Today
+        End If
+
+        Dim totalDias As Integer = CInt((fechaMax - fechaMin).TotalDays) + 1
+        Const maxDiasCalendario As Integer = 1100
+        If totalDias > maxDiasCalendario Then
+            fechaMin = fechaMax.AddDays(-(maxDiasCalendario - 1))
+            totalDias = maxDiasCalendario
+        End If
+
+        Dim fDesdeFinal As String = If(String.IsNullOrWhiteSpace(fechaDesdeTexto), fechaMin.ToString("dd-MM-yyyy"), fechaDesdeTexto)
+        Dim fHastaFinal As String = If(String.IsNullOrWhiteSpace(fechaHastaTexto), fechaMax.ToString("dd-MM-yyyy"), fechaHastaTexto)
+
         Dim excelApp As Excel.Application = Nothing
         Dim workbook As Excel.Workbook = Nothing
-        Dim worksheet_1 As Excel.Worksheet
-        Dim worksheet_2 As Excel.Worksheet
-        Dim worksheet_3 As Excel.Worksheet
-        Dim num_mant As Integer = 0
-
-        If grilla_ciclos_mp Is Nothing OrElse grilla_ciclos_mp.RowCount = 0 OrElse grilla_info_mp Is Nothing OrElse grilla_info_mp.CurrentRow Is Nothing OrElse grilla_grafico Is Nothing Then Return
 
         Try
             excelApp = New Excel.Application
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
-            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "infGantt.xls")
-            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
-            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
-            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
-            worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetVisible
-            worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
+            Try
+                excelApp.PrintCommunication = False
+            Catch
+            End Try
+            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "InfGantt.xls")
+            workbook = Utilitarios.ConvertirLibroAXlsxTempParaAmpliarColumnas(excelApp, workbook)
 
-            '---------------------- impresion información base mantencion preventiva----------------
-            worksheet_1.Cells(6, 3) = item 'nombre item o maquina
-            worksheet_1.Cells(7, 3) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(0).Value ' id mantencion
-            worksheet_1.Cells(6, 6) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(1).Value & " Hrs" ' frecuencia mp
-            worksheet_1.Cells(7, 6) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(2).Value & " Hrs" ' tiempo aviso previo
-            worksheet_1.Cells(6, 12) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(3).Value ' estado
-            worksheet_1.Cells(6, 9) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(4).Value ' fecha creacion
-            worksheet_1.Cells(7, 9) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(5).Value ' tipo de mantencion
-            '---------------------------------------------------------------------------------------
+            Dim ws1 As Excel.Worksheet = CType(workbook.Sheets(1), Excel.Worksheet) ' Informe Gantt
+            Dim ws2 As Excel.Worksheet = CType(workbook.Sheets(2), Excel.Worksheet) ' Calendario
+            Dim ws3 As Excel.Worksheet = CType(workbook.Sheets(3), Excel.Worksheet) ' Calendario Varias Maquinas
 
-            Dim filaexcel As Integer = 12
-            Dim colIniIdx As Integer = If(grilla_ciclos_mp.Columns.Contains("fecha_inicio"), grilla_ciclos_mp.Columns("fecha_inicio").Index, If(IsDate(grilla_ciclos_mp.Rows(0).Cells(2).Value), 2, 3))
-            Dim colFinIdx As Integer = colIniIdx + 1
+            ws1.Visible = Excel.XlSheetVisibility.xlSheetVisible
+            ws2.Visible = If(esModoUnaMp, Excel.XlSheetVisibility.xlSheetVisible, Excel.XlSheetVisibility.xlSheetHidden)
+            ws3.Visible = If(esModoUnaMp, Excel.XlSheetVisibility.xlSheetHidden, Excel.XlSheetVisibility.xlSheetVisible)
 
-            Dim rango As Excel.Range
-            '------------- llenado de tareas realizadas --------------------------------------------
-            For i = 0 To grilla_ciclos_mp.RowCount - 1
-                worksheet_1.Cells(filaexcel, 1) = grilla_ciclos_mp.Rows(i).Cells(0).Value
-                worksheet_1.Cells(filaexcel, 2) = grilla_ciclos_mp.Rows(i).Cells(1).Value
-                worksheet_1.Cells(filaexcel, 5) = grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value
-                worksheet_1.Cells(filaexcel, 6) = grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value
-                worksheet_1.Cells(filaexcel, 7) = grilla_ciclos_mp.Rows(i).Cells(colFinIdx + 1).Value
-                rango = worksheet_1.Range("B" & filaexcel & ":D" & filaexcel)
-                rango.MergeCells = True
-                filaexcel = filaexcel + 1
+            ' ==================================================================================
+            ' HOJA 1: "Informe Gantt" (Siempre poblada con cabecera y tabla completa de ciclos)
+            ' ==================================================================================
+            ws1.Cells(6, 3) = itemNombre
+            ws1.Cells(7, 3) = idMpTexto
+            ws1.Cells(6, 6) = freqTexto
+            ws1.Cells(7, 6) = avisoTexto
+            ws1.Cells(6, 9) = fechaCreaTexto
+            ws1.Cells(7, 9) = tipoTexto
+            ws1.Cells(6, 12) = estadoTexto
+
+            Try
+                ws1.Range("H12:BZ220").FormatConditions.Delete()
+            Catch
+            End Try
+
+            Try
+                ws1.Range("G10:G11").Copy()
+                ws1.Range("H10:H11").PasteSpecial(Excel.XlPasteType.xlPasteFormats)
+                ws1.Range("I10:I11").PasteSpecial(Excel.XlPasteType.xlPasteFormats)
+                excelApp.CutCopyMode = False
+                ws1.Range("H10:H11").MergeCells = True
+                ws1.Range("I10:I11").MergeCells = True
+            Catch
+            End Try
+            ws1.Cells(10, 8) = "Estado"
+            ws1.Cells(10, 9) = If(esModoUnaMp, "Tipo", "N° MP / Item")
+
+            Dim fila1Ini As Integer = 12
+            Dim fila1Fin As Integer = fila1Ini + registros.Count - 1
+            ws1.Range("E" & fila1Ini.ToString() & ":F" & fila1Fin.ToString()).NumberFormat = "@"
+            For i As Integer = 0 To registros.Count - 1
+                Dim reg As FrmCartaGantt.RegistroCicloGantt = registros(i)
+                Dim rEx As Integer = fila1Ini + i
+                ws1.Cells(rEx, 1) = reg.IdCiclo
+                Dim descTexto As String = If(esModoUnaMp, reg.Observacion, String.Format("[{0}] {1}", reg.ItemMaquina, reg.Observacion).Trim())
+                ws1.Cells(rEx, 2) = descTexto
+                ws1.Cells(rEx, 5) = reg.FechaInicio.ToString("dd-MM-yyyy HH:mm")
+                ws1.Cells(rEx, 6) = reg.FechaTermino.ToString("dd-MM-yyyy HH:mm")
+                ws1.Cells(rEx, 7) = reg.Duracion
+                ws1.Cells(rEx, 8) = If(String.IsNullOrWhiteSpace(reg.Estado), "-", reg.Estado)
+                ws1.Cells(rEx, 9) = If(esModoUnaMp, reg.TipoMp, String.Format("MP #{0} - {1}", reg.IdMant, reg.Seccion).Trim())
+
+                Dim rMerge As Excel.Range = ws1.Range("B" & rEx & ":D" & rEx)
+                rMerge.MergeCells = True
+                ws1.Rows(rEx).RowHeight = 20
+
+                Dim cEst As Excel.Range = CType(ws1.Cells(rEx, 8), Excel.Range)
+                cEst.Font.Bold = True
+                cEst.Font.Color = ColorOleDesdeEstado(reg.Estado, reg.FechaTermino)
             Next
-            '--------------------------------------------------------------------------------------
-            worksheet_1.Activate()
+
+            Dim rngTabla1 As Excel.Range = ws1.Range("A10:I" & fila1Fin)
+            rngTabla1.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
+            rngTabla1.Borders.Weight = Excel.XlBorderWeight.xlThin
+            ws1.Range("I6:J6").NumberFormat = "@"
+            ws1.Columns("E").ColumnWidth = 14
+            ws1.Columns("F").ColumnWidth = 14
+            ws1.Columns("G").ColumnWidth = 12
+            ws1.Columns("H").ColumnWidth = 17
+            ws1.Columns("I").ColumnWidth = 24
+            ws1.Columns("J").ColumnWidth = 13
+            ws1.Columns("K").ColumnWidth = 10
+            ws1.Columns("L").ColumnWidth = 14
+            ws1.PageSetup.PrintArea = "$A$1:$M$" & fila1Fin.ToString()
+            ws1.PageSetup.Orientation = Excel.XlPageOrientation.xlLandscape
+            ws1.PageSetup.PaperSize = Excel.XlPaperSize.xlPaperLetter
+            ws1.PageSetup.Zoom = False
+            ws1.PageSetup.FitToPagesWide = 1
+            ws1.PageSetup.FitToPagesTall = False
+
+            ' Matriz de fechas para calendario (1 día por columna)
+            Dim arrFechas(0, totalDias - 1) As Object
+            For d As Integer = 0 To totalDias - 1
+                arrFechas(0, d) = fechaMin.AddDays(d).ToOADate()
+            Next
+            Dim colorFinSemana As Integer = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.FromArgb(232, 238, 242))
+            Dim colorHeaderAzul As Integer = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.FromArgb(2, 94, 135))
+            Dim colorBlanco As Integer = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.White)
+
+            ' ==================================================================================
+            ' HOJA 2 ("Calendario") o HOJA 3 ("Calendario Varias Maquinas")
+            ' ==================================================================================
+            If esModoUnaMp Then
+                Dim colIniCal As Integer = 5
+                Dim colFinCal As Integer = colIniCal + totalDias - 1
+                Dim letraFinCal As String = ObtenerLetraColumnaExcel(colFinCal)
+                Dim fila2Ini As Integer = 11
+                Dim fila2Fin As Integer = fila2Ini + registros.Count - 1
+
+                Try
+                    ws2.Range("E10:" & letraFinCal & (fila2Fin + 30).ToString()).FormatConditions.Delete()
+                Catch
+                End Try
+
+                Dim rngHdrFechas As Excel.Range = ws2.Range("E10:" & letraFinCal & "10")
+                rngHdrFechas.Value2 = arrFechas
+                rngHdrFechas.NumberFormat = "dd-mm-yy"
+                rngHdrFechas.Orientation = 90
+                rngHdrFechas.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter
+                rngHdrFechas.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter
+                rngHdrFechas.Interior.Color = colorHeaderAzul
+                rngHdrFechas.Font.Color = colorBlanco
+                rngHdrFechas.Font.Bold = True
+                rngHdrFechas.Font.Size = 8
+                rngHdrFechas.ColumnWidth = 3.6
+                ws2.Rows(10).RowHeight = 52
+
+                ws2.Columns("A").ColumnWidth = 8
+                ws2.Columns("B").ColumnWidth = 15
+                ws2.Columns("C").ColumnWidth = 15
+                ws2.Columns("D").ColumnWidth = 18
+
+                ' Reordenar bloque superior de metadatos evitando recortes ("#######" / "cuencia :") sobre columnas angostas de 3.6
+                ws2.Range("A5:D5").MergeCells = True
+                ws2.Range("A6:B6").MergeCells = True
+                ws2.Range("C6:D6").MergeCells = True
+                ws2.Range("A7:B7").MergeCells = True
+                ws2.Range("C7:D7").MergeCells = True
+                ws2.Range("C6:D7").NumberFormat = "@"
+                ws2.Cells(6, 3) = itemNombre
+                ws2.Cells(7, 3) = idMpTexto
+
+                ws2.Range("E6:AA7").UnMerge()
+                ws2.Range("E6:AA7").ClearContents()
+                ws2.Range("E6:AA7").WrapText = False
+                Dim colorEtiquetaHdr As Integer = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.FromArgb(15, 45, 68))
+                Dim colorTextoHdr As Integer = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.FromArgb(30, 41, 59))
+                Dim bloquesHdr As String(,) = {
+                    {"E6:H6", "Frecuencia :", "I6:K6", freqTexto},
+                    {"L6:P6", "Fecha Creación :", "Q6:T6", fechaCreaTexto},
+                    {"U6:W6", "Estado :", "X6:AA6", estadoTexto},
+                    {"E7:H7", "Tiempo Aviso :", "I7:K7", avisoTexto},
+                    {"L7:P7", "Tipo :", "Q7:AA7", tipoTexto}
+                }
+                For b As Integer = 0 To bloquesHdr.GetLength(0) - 1
+                    Dim rLbl As Excel.Range = ws2.Range(bloquesHdr(b, 0))
+                    rLbl.Merge()
+                    rLbl.Value = bloquesHdr(b, 1)
+                    rLbl.Font.Bold = True
+                    rLbl.Font.Size = 9
+                    rLbl.Font.Color = colorEtiquetaHdr
+                    rLbl.HorizontalAlignment = Excel.XlHAlign.xlHAlignRight
+                    rLbl.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter
+
+                    Dim rVal As Excel.Range = ws2.Range(bloquesHdr(b, 2))
+                    rVal.Merge()
+                    rVal.NumberFormat = "@"
+                    rVal.Value = bloquesHdr(b, 3)
+                    rVal.Font.Bold = False
+                    rVal.Font.Size = 9
+                    rVal.Font.Color = colorTextoHdr
+                    rVal.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft
+                    rVal.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter
+                Next
+                Dim rngMeta2 As Excel.Range = ws2.Range("A6:AA7")
+                rngMeta2.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
+                rngMeta2.Borders.Weight = Excel.XlBorderWeight.xlThin
+
+                For i As Integer = 0 To registros.Count - 1
+                    Dim reg As FrmCartaGantt.RegistroCicloGantt = registros(i)
+                    Dim rEx As Integer = fila2Ini + i
+                    ws2.Cells(rEx, 1) = reg.IdCiclo
+                    ws2.Cells(rEx, 2) = reg.Observacion
+                    ws2.Range("B" & rEx & ":D" & rEx).MergeCells = True
+                    ws2.Rows(rEx).RowHeight = 20
+                Next
+
+                ' Sombreado de fines de semana y barras Gantt horizontales con color semántico por estado
+                PintarCalendarioGanttEnHoja(ws2, registros, fechaMin, totalDias, colIniCal, fila2Ini, fila2Fin, colorFinSemana, colorBlanco)
+
+                Dim rngGrid2 As Excel.Range = ws2.Range("A9:" & letraFinCal & fila2Fin.ToString())
+                rngGrid2.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
+                rngGrid2.Borders.Weight = Excel.XlBorderWeight.xlThin
+                Dim letraPrint2 As String = ObtenerLetraColumnaExcel(Math.Max(colFinCal, 27))
+                ws2.PageSetup.PrintArea = "$A$1:$" & letraPrint2 & "$" & fila2Fin.ToString()
+                ws2.PageSetup.PrintTitleColumns = "$A:$D"
+                ws2.PageSetup.PrintTitleRows = "$1:$10"
+                ws2.PageSetup.Orientation = Excel.XlPageOrientation.xlLandscape
+                ws2.PageSetup.PaperSize = Excel.XlPaperSize.xlPaperLetter
+                ws2.PageSetup.Zoom = False
+                ws2.PageSetup.FitToPagesWide = Math.Max(1, Math.Min(20, CInt(Math.Ceiling(Math.Max(totalDias, 24) / 42.0))))
+                ws2.PageSetup.FitToPagesTall = False
+            Else
+                ws3.Cells(1, 4) = "Calendario Gantt Mantención Preventiva - " & itemNombre
+                ws3.Range("C5:D6").NumberFormat = "@"
+                ws3.Cells(5, 3) = fDesdeFinal
+                ws3.Cells(6, 3) = fHastaFinal
+                ws3.Columns("A").ColumnWidth = 9
+                ws3.Columns("B").ColumnWidth = 26
+                ws3.Columns("C").ColumnWidth = 16
+                ws3.Columns("D").ColumnWidth = 16
+                ws3.Columns("E").ColumnWidth = 18
+
+                Dim colIniCal3 As Integer = 6
+                Dim colFinCal3 As Integer = colIniCal3 + totalDias - 1
+                Dim letraFinCal3 As String = ObtenerLetraColumnaExcel(colFinCal3)
+                Dim fila3Ini As Integer = 10
+                Dim fila3Fin As Integer = fila3Ini + registros.Count - 1
+
+                Try
+                    ws3.Range("F4:" & letraFinCal3 & (fila3Fin + 30).ToString()).FormatConditions.Delete()
+                Catch
+                End Try
+
+                ' Unificar y dar formato uniforme a encabezados verticales de fecha F4:F9.. en bloque COM
+                Dim primerHdr3 As Excel.Range = ws3.Range("F4:F9")
+                If IsDBNull(primerHdr3.MergeCells) OrElse Not CBool(primerHdr3.MergeCells) Then
+                    primerHdr3.Merge()
+                End If
+                If totalDias > 1 Then
+                    primerHdr3.Copy()
+                    ws3.Range("F4:" & letraFinCal3 & "9").PasteSpecial(Excel.XlPasteType.xlPasteFormats)
+                    excelApp.CutCopyMode = False
+                End If
+                ws3.Range("F4:" & letraFinCal3 & "4").Value2 = arrFechas
+                Dim rngHdr3 As Excel.Range = ws3.Range("F4:" & letraFinCal3 & "9")
+                rngHdr3.NumberFormat = "dd-mm-yy"
+                rngHdr3.Orientation = 90
+                rngHdr3.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter
+                rngHdr3.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter
+                rngHdr3.Interior.Color = colorHeaderAzul
+                rngHdr3.Font.Color = colorBlanco
+                rngHdr3.Font.Bold = True
+                rngHdr3.Font.Size = 8
+                rngHdr3.ColumnWidth = 3.6
+
+                For i As Integer = 0 To registros.Count - 1
+                    Dim reg As FrmCartaGantt.RegistroCicloGantt = registros(i)
+                    Dim rEx As Integer = fila3Ini + i
+                    ws3.Cells(rEx, 1) = reg.IdCiclo
+                    ws3.Cells(rEx, 2) = reg.ItemMaquina
+                    ws3.Cells(rEx, 3) = If(reg.IdMant > 0, String.Format("MP #{0} · {1}", reg.IdMant, reg.Observacion).Trim(), reg.Observacion)
+                    ws3.Range("C" & rEx & ":E" & rEx).MergeCells = True
+                    ws3.Rows(rEx).RowHeight = 20
+                Next
+
+                PintarCalendarioGanttEnHoja(ws3, registros, fechaMin, totalDias, colIniCal3, fila3Ini, fila3Fin, colorFinSemana, colorBlanco)
+
+                Dim rngGrid3 As Excel.Range = ws3.Range("A8:" & letraFinCal3 & fila3Fin.ToString())
+                rngGrid3.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
+                rngGrid3.Borders.Weight = Excel.XlBorderWeight.xlThin
+                ws3.PageSetup.PrintArea = "$A$1:$" & letraFinCal3 & "$" & fila3Fin.ToString()
+                ws3.PageSetup.PrintTitleColumns = "$A:$E"
+                ws3.PageSetup.PrintTitleRows = "$1:$9"
+                ws3.PageSetup.Orientation = Excel.XlPageOrientation.xlLandscape
+                ws3.PageSetup.PaperSize = Excel.XlPaperSize.xlPaperLetter
+                ws3.PageSetup.Zoom = False
+                ws3.PageSetup.FitToPagesWide = Math.Max(1, Math.Min(20, CInt(Math.Ceiling(totalDias / 42.0))))
+                ws3.PageSetup.FitToPagesTall = False
+            End If
+
+            ws1.Activate()
+            Try
+                excelApp.PrintCommunication = True
+            Catch
+            End Try
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Excel")
-            excelApp.Visible = True
+            If esPdf Then
+                Utilitarios.ImprimirLibroAPdfWindows(excelApp, workbook, rutaPdf, "Carta_Gantt_" & itemNombre, True, silencioso)
+            Else
+                If Not silencioso Then
+                    MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Carta Gantt")
+                End If
+                excelApp.Visible = True
+            End If
         Catch ex As Exception
             Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            Dim hojas As New List(Of KeyValuePair(Of String, DataGridView))()
-            If grilla_info_mp IsNot Nothing AndAlso grilla_info_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Mantención", grilla_info_mp))
-            If grilla_ciclos_mp IsNot Nothing AndAlso grilla_ciclos_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Ciclos Gantt", grilla_ciclos_mp))
-            If hojas.Count > 0 AndAlso (Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_Gantt_" & item, "INFORME CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) OrElse Utilitarios.UltimaExportacionCancelada) Then
-                Exit Sub
-            End If
-            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Gantt")
+            If Not esPdf Then Utilitarios.CerrarExcelEnError(excelApp, workbook)
+            RegistroErrores.RegistrarError(ex, If(esPdf, "Exportar Carta Gantt PDF (Fallback Nativo)", "Exportar Carta Gantt Excel (Fallback Nativo)"))
+            Try
+                Dim dtPlana As DataTable = ConstruirTablaGanttPlana(registros)
+                Dim dtCab As New DataTable("ResumenGantt")
+                dtCab.Columns.Add("Concepto")
+                dtCab.Columns.Add("Valor")
+                dtCab.Rows.Add("Máquina / Ámbito", itemNombre)
+                dtCab.Rows.Add("ID Mantención", idMpTexto)
+                dtCab.Rows.Add("Frecuencia / Ciclos", freqTexto)
+                dtCab.Rows.Add("Tiempo Aviso / Horas", avisoTexto)
+                dtCab.Rows.Add("Período", fDesdeFinal & " al " & fHastaFinal)
+                dtCab.Rows.Add("Tipo / Estado", tipoTexto & " · " & estadoTexto)
+
+                If esPdf Then
+                    Dim dgvCab As New DataGridView() : dgvCab.DataSource = dtCab : dgvCab.BindingContext = New BindingContext()
+                    Dim dgvCic As New DataGridView() : dgvCic.DataSource = dtPlana : dgvCic.BindingContext = New BindingContext()
+                    Dim secciones As New List(Of KeyValuePair(Of String, DataGridView)) From {
+                        New KeyValuePair(Of String, DataGridView)("Información Mantención Preventiva", dgvCab),
+                        New KeyValuePair(Of String, DataGridView)("Detalle de Ciclos Gantt", dgvCic)
+                    }
+                    If Utilitarios.ExportarGrillasAPdfNativo(secciones, rutaPdf, "INFORME CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem: " & itemNombre & " | Período: " & fDesdeFinal & " al " & fHastaFinal) Then
+                        If Not silencioso AndAlso MessageBox.Show("Archivo PDF generado exitosamente mediante motor nativo en:" & Environment.NewLine & rutaPdf & Environment.NewLine & Environment.NewLine & "¿Desea abrir el documento PDF ahora?", "Exportación PDF Exitosa", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
+                            Utilitarios.AbrirDocumento(rutaPdf)
+                        End If
+                        Exit Sub
+                    End If
+                Else
+                    Dim dgvCab As New DataGridView() : dgvCab.DataSource = dtCab : dgvCab.BindingContext = New BindingContext()
+                    Dim dgvCic As New DataGridView() : dgvCic.DataSource = dtPlana : dgvCic.BindingContext = New BindingContext()
+                    Dim hojas As New List(Of KeyValuePair(Of String, DataGridView)) From {
+                        New KeyValuePair(Of String, DataGridView)("Información Gantt", dgvCab),
+                        New KeyValuePair(Of String, DataGridView)("Informe Gantt", dgvCic)
+                    }
+                    If Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_Gantt_" & itemNombre, "INFORME CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem: " & itemNombre & " | Período: " & fDesdeFinal & " al " & fHastaFinal) OrElse Utilitarios.UltimaExportacionCancelada Then
+                        Exit Sub
+                    End If
+                End If
+            Catch
+            End Try
+            RegistroErrores.MostrarYRegistrar(ex, If(esPdf, "Exportar Carta Gantt a PDF", "Exportar Carta Gantt a Excel"))
         Finally
+            If esPdf Then Utilitarios.LiberarExcel(workbook, excelApp)
             Utilitarios.OptimizarMemoria()
         End Try
+    End Sub
+
+    Public Sub expInfGantt(ByVal grilla_info_mp As DataGridView, ByVal grilla_ciclos_mp As DataGridView, ByVal grilla_grafico As DataGridView, ByVal item As String)
+        Dim lista As List(Of FrmCartaGantt.RegistroCicloGantt) = ConvertirGrillasARegistrosGantt(grilla_ciclos_mp, grilla_info_mp, item)
+        ExportarInfGanttInterno(lista, grilla_info_mp, item, String.Empty, String.Empty, False, String.Empty, False, False)
     End Sub
 
     Public Sub expInfGraficoGantt(ByVal grilla_info_mp As DataGridView, ByVal grilla_ciclos_mp As DataGridView, ByVal grilla_grafico As DataGridView, ByVal item As String)
-        Dim excelApp As Excel.Application = Nothing
-        Dim workbook As Excel.Workbook = Nothing
-        Dim worksheet_1 As Excel.Worksheet
-        Dim worksheet_2 As Excel.Worksheet
-        Dim worksheet_3 As Excel.Worksheet
-        Dim fecha_inicio As DateTime
-        Dim fecha_fin As DateTime
-        Dim fecha As DateTime
-        Dim fecha_ini As DateTime
-        Dim num_mant As Integer = 0
-        Dim cont_celda_pintada As Integer = 0
-        Dim cont_fila As Integer = 0
-        Dim cont_col As Integer = 0
-
-        If grilla_ciclos_mp Is Nothing OrElse grilla_ciclos_mp.RowCount = 0 OrElse grilla_info_mp Is Nothing OrElse grilla_info_mp.CurrentRow Is Nothing OrElse grilla_grafico Is Nothing Then Return
-
-        Try
-            excelApp = New Excel.Application
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
-            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "infGantt.xls")
-            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
-            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
-            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
-            worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetVisible
-            worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
-
-            '---------------------- impresion información base mantencion preventiva----------------
-            worksheet_2.Cells(6, 3) = item 'nombre item o maquina
-            worksheet_2.Cells(7, 3) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(0).Value ' id mantencion
-            worksheet_2.Cells(6, 7) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(1).Value & " Hrs" ' frecuencia mp
-            worksheet_2.Cells(7, 7) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(2).Value & " Hrs" ' tiempo aviso previo
-            worksheet_2.Cells(6, 14) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(3).Value ' estado
-            worksheet_2.Cells(6, 10) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(4).Value ' fecha creacion
-            worksheet_2.Cells(7, 10) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(5).Value ' tipo de mantencion
-            '---------------------------------------------------------------------------------------
-            Dim filaexcel As Integer = 11
-            Dim colIniIdx As Integer = If(grilla_ciclos_mp.Columns.Contains("fecha_inicio"), grilla_ciclos_mp.Columns("fecha_inicio").Index, If(IsDate(grilla_ciclos_mp.Rows(0).Cells(2).Value), 2, 3))
-            Dim colFinIdx As Integer = colIniIdx + 1
-
-            Dim rango As Excel.Range
-            '------------- llenado de tareas realizadas --------------------------------------------
-            For i = 0 To grilla_ciclos_mp.RowCount - 1
-                worksheet_2.Cells(filaexcel, 1) = grilla_ciclos_mp.Rows(i).Cells(0).Value
-                worksheet_2.Cells(filaexcel, 2) = grilla_ciclos_mp.Rows(i).Cells(1).Value
-                rango = worksheet_2.Range("B" & filaexcel & ":D" & filaexcel)
-                rango.MergeCells = True
-                filaexcel = filaexcel + 1
-            Next
-            '---------------------------------------------------------------------------------------
-
-            fecha_inicio = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(0).Cells(colIniIdx).Value).Date
-            fecha_fin = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(0).Cells(colFinIdx).Value).Date
-            For i = 1 To grilla_ciclos_mp.RowCount - 1
-                If IsDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value) Then
-                    Dim fI As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
-                    If fI < fecha_inicio Then fecha_inicio = fI
-                End If
-                If IsDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value) Then
-                    Dim fF As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date
-                    If fF > fecha_fin Then fecha_fin = fF
-                End If
-            Next
-            fecha = fecha_inicio
-
-            Dim col_excel As Integer = 5
-
-            While fecha <= fecha_fin
-                worksheet_2.Cells(10, col_excel) = fecha
-                fecha = DateAdd(DateInterval.Day, 1, fecha)
-                col_excel = col_excel + 1
-            End While
-
-            cont_col = 5
-            cont_fila = 11
-
-            For i = 0 To grilla_ciclos_mp.RowCount - 1
-                If Not IsDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value) OrElse Not IsDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value) Then
-                    cont_fila = cont_fila + 1
-                    Continue For
-                End If
-                fecha_ini = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
-                Dim fechaFinRow As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value, fecha_ini).Date
-                num_mant = Math.Max(1, CInt(DateDiff(DateInterval.Day, fecha_ini, fechaFinRow) + 1))
-
-                For j = 0 To grilla_grafico.Columns.Count - 1
-                    If fecha_ini.ToString("yyyyMMdd") = grilla_grafico.Columns(j).Name OrElse fecha_ini.ToString("dd-MM-yy") = grilla_grafico.Columns(j).Name Then
-                        worksheet_2.Cells(cont_fila, cont_col) = 1
-                        cont_celda_pintada = cont_celda_pintada + 1
-                        If cont_celda_pintada < num_mant Then
-                            fecha_ini = DateAdd(DateInterval.Day, 1, fecha_ini)
-                        End If
-                    End If
-                    cont_col = cont_col + 1
-                Next
-                cont_celda_pintada = 0
-                cont_fila = cont_fila + 1
-                cont_col = 5
-            Next
-
-            worksheet_2.Activate()
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Carta Gantt")
-            excelApp.Visible = True
-        Catch ex As Exception
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            Dim hojas As New List(Of KeyValuePair(Of String, DataGridView))()
-            If grilla_info_mp IsNot Nothing AndAlso grilla_info_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Mantención", grilla_info_mp))
-            If grilla_ciclos_mp IsNot Nothing AndAlso grilla_ciclos_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Ciclos Gantt", grilla_ciclos_mp))
-            If hojas.Count > 0 AndAlso (Utilitarios.ExportarGrillasAExcelNativo(hojas, "Grafico_Gantt_" & item, "GRÁFICO CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem / Máquina: " & item) OrElse Utilitarios.UltimaExportacionCancelada) Then
-                Exit Sub
-            End If
-            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Gráfico Gantt")
-        Finally
-            Utilitarios.OptimizarMemoria()
-        End Try
+        Dim lista As List(Of FrmCartaGantt.RegistroCicloGantt) = ConvertirGrillasARegistrosGantt(grilla_ciclos_mp, grilla_info_mp, item)
+        ExportarInfGanttInterno(lista, grilla_info_mp, item, String.Empty, String.Empty, False, String.Empty, False, False)
     End Sub
 
     Public Sub expInfGanttTodo(ByVal grilla_info_mp As DataGridView, ByVal grilla_ciclos_mp As DataGridView, ByVal grilla_grafico As DataGridView, ByVal item As String)
-        Dim excelApp As Excel.Application = Nothing
-        Dim workbook As Excel.Workbook = Nothing
-        Dim worksheet_1 As Excel.Worksheet
-        Dim worksheet_2 As Excel.Worksheet
-        Dim worksheet_3 As Excel.Worksheet
-        Dim num_mant As Integer = 0
-        Dim fecha_inicio As DateTime
-        Dim fecha_fin As DateTime
-        Dim fecha As DateTime
-        Dim fecha_ini As DateTime
-        Dim cont_celda_pintada As Integer = 0
-        Dim cont_fila As Integer = 0
-        Dim cont_col As Integer = 0
-
-        If grilla_ciclos_mp Is Nothing OrElse grilla_ciclos_mp.RowCount = 0 OrElse grilla_info_mp Is Nothing OrElse grilla_info_mp.CurrentRow Is Nothing OrElse grilla_grafico Is Nothing Then Return
-
-        Try
-            excelApp = New Excel.Application
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
-            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "infGantt.xls")
-            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
-            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
-            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
-            worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetVisible
-            worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetVisible
-            worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetHidden
-
-            '---------------------- impresion información base mantencion preventiva----------------
-            worksheet_1.Cells(6, 3) = item 'nombre item o maquina
-            worksheet_1.Cells(7, 3) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(0).Value ' id mantencion
-            worksheet_1.Cells(6, 6) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(1).Value & " Hrs" ' frecuencia mp
-            worksheet_1.Cells(7, 6) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(2).Value & " Hrs" ' tiempo aviso previo
-            worksheet_1.Cells(6, 12) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(3).Value ' estado
-            worksheet_1.Cells(6, 9) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(4).Value ' fecha creacion
-            worksheet_1.Cells(7, 9) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(5).Value ' tipo de mantencion
-            '---------------------------------------------------------------------------------------
-
-            Dim filaexcel As Integer = 12
-            Dim colIniIdx As Integer = If(grilla_ciclos_mp.Columns.Contains("fecha_inicio"), grilla_ciclos_mp.Columns("fecha_inicio").Index, If(IsDate(grilla_ciclos_mp.Rows(0).Cells(2).Value), 2, 3))
-            Dim colFinIdx As Integer = colIniIdx + 1
-
-            Dim rango As Excel.Range
-            '------------- llenado de tareas realizadas --------------------------------------------
-            For i = 0 To grilla_ciclos_mp.RowCount - 1
-                worksheet_1.Cells(filaexcel, 1) = grilla_ciclos_mp.Rows(i).Cells(0).Value
-                worksheet_1.Cells(filaexcel, 2) = grilla_ciclos_mp.Rows(i).Cells(1).Value
-                worksheet_1.Cells(filaexcel, 5) = grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value
-                worksheet_1.Cells(filaexcel, 6) = grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value
-                worksheet_1.Cells(filaexcel, 7) = grilla_ciclos_mp.Rows(i).Cells(colFinIdx + 1).Value
-                rango = worksheet_1.Range("B" & filaexcel & ":D" & filaexcel)
-                rango.MergeCells = True
-                filaexcel = filaexcel + 1
-            Next
-            '--------------------------------------------------------------------------------------
-
-            '---------------------- impresion información base mantencion preventiva----------------
-            worksheet_2.Cells(6, 3) = item 'nombre item o maquina
-            worksheet_2.Cells(7, 3) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(0).Value ' id mantencion
-            worksheet_2.Cells(6, 7) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(1).Value & " Hrs" ' frecuencia mp
-            worksheet_2.Cells(7, 7) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(2).Value & " Hrs" ' tiempo aviso previo
-            worksheet_2.Cells(6, 14) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(3).Value ' estado
-            worksheet_2.Cells(6, 10) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(4).Value ' fecha creacion
-            worksheet_2.Cells(7, 10) = grilla_info_mp.Rows(grilla_info_mp.CurrentRow.Index).Cells(5).Value ' tipo de mantencion
-            '---------------------------------------------------------------------------------------
-
-            filaexcel = 11
-
-            '------------- llenado de tareas realizadas --------------------------------------------
-            For i = 0 To grilla_ciclos_mp.RowCount - 1
-                worksheet_2.Cells(filaexcel, 1) = grilla_ciclos_mp.Rows(i).Cells(0).Value
-                worksheet_2.Cells(filaexcel, 2) = grilla_ciclos_mp.Rows(i).Cells(1).Value
-                rango = worksheet_2.Range("B" & filaexcel & ":D" & filaexcel)
-                rango.MergeCells = True
-                filaexcel = filaexcel + 1
-            Next
-            '---------------------------------------------------------------------------------------
-
-            fecha_inicio = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(0).Cells(colIniIdx).Value).Date
-            fecha_fin = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(0).Cells(colFinIdx).Value).Date
-            For i = 1 To grilla_ciclos_mp.RowCount - 1
-                If IsDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value) Then
-                    Dim fI As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
-                    If fI < fecha_inicio Then fecha_inicio = fI
-                End If
-                If IsDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value) Then
-                    Dim fF As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value).Date
-                    If fF > fecha_fin Then fecha_fin = fF
-                End If
-            Next
-            fecha = fecha_inicio
-
-            Dim col_excel As Integer = 5
-
-            While fecha <= fecha_fin
-                worksheet_2.Cells(10, col_excel) = fecha
-                fecha = DateAdd(DateInterval.Day, 1, fecha)
-                col_excel = col_excel + 1
-            End While
-
-            cont_col = 5
-            cont_fila = 11
-
-            For i = 0 To grilla_ciclos_mp.RowCount - 1
-                If Not IsDate(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value) OrElse Not IsDate(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value) Then
-                    cont_fila = cont_fila + 1
-                    Continue For
-                End If
-                fecha_ini = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colIniIdx).Value).Date
-                Dim fechaFinRow As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(colFinIdx).Value, fecha_ini).Date
-                num_mant = Math.Max(1, CInt(DateDiff(DateInterval.Day, fecha_ini, fechaFinRow) + 1))
-
-                For j = 0 To grilla_grafico.Columns.Count - 1
-                    Dim colDate As DateTime
-                    If Not DateTime.TryParseExact(grilla_grafico.Columns(j).Name, "yyyyMMdd", Globalization.CultureInfo.InvariantCulture, Globalization.DateTimeStyles.None, colDate) Then
-                        DateTime.TryParse(grilla_grafico.Columns(j).Name, colDate)
-                    End If
-
-                    If fecha_ini.Date = colDate.Date Then
-                        worksheet_2.Cells(cont_fila, cont_col) = 1
-                        cont_celda_pintada = cont_celda_pintada + 1
-                        If cont_celda_pintada < num_mant Then
-                            fecha_ini = DateAdd(DateInterval.Day, 1, fecha_ini)
-                        End If
-                    ElseIf colDate.DayOfWeek = DayOfWeek.Saturday OrElse colDate.DayOfWeek = DayOfWeek.Sunday Then
-                        worksheet_2.Cells(cont_fila, cont_col) = 2
-                    End If
-                    cont_col = cont_col + 1
-                Next
-                cont_celda_pintada = 0
-                cont_fila = cont_fila + 1
-                cont_col = 5
-            Next
-            worksheet_1.Activate()
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Excel")
-            excelApp.Visible = True
-        Catch ex As Exception
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            Dim hojas As New List(Of KeyValuePair(Of String, DataGridView))()
-            If grilla_info_mp IsNot Nothing AndAlso grilla_info_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Mantención", grilla_info_mp))
-            If grilla_ciclos_mp IsNot Nothing AndAlso grilla_ciclos_mp.RowCount > 0 Then hojas.Add(New KeyValuePair(Of String, DataGridView)("Ciclos Gantt", grilla_ciclos_mp))
-            If hojas.Count > 0 AndAlso (Utilitarios.ExportarGrillasAExcelNativo(hojas, "Informe_Gantt_Completo_" & item, "INFORME COMPLETO CARTA GANTT", "Ítem / Máquina: " & item) OrElse Utilitarios.UltimaExportacionCancelada) Then
-                Exit Sub
-            End If
-            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Gantt Todo")
-        Finally
-            Utilitarios.OptimizarMemoria()
-        End Try
+        Dim lista As List(Of FrmCartaGantt.RegistroCicloGantt) = ConvertirGrillasARegistrosGantt(grilla_ciclos_mp, grilla_info_mp, item)
+        ExportarInfGanttInterno(lista, grilla_info_mp, item, String.Empty, String.Empty, False, String.Empty, False, False)
     End Sub
 
     Public Sub expInfGraficoGanttVariasMaq(ByVal grilla_ciclos_mp As DataGridView, ByVal grilla_grafico As DataGridView, ByVal item_gantt As String, ByVal fecha_desde As String, ByVal fecha_hasta As String)
-        Dim excelApp As Excel.Application = Nothing
-        Dim workbook As Excel.Workbook = Nothing
-        Dim worksheet_1 As Excel.Worksheet
-        Dim worksheet_2 As Excel.Worksheet
-        Dim worksheet_3 As Excel.Worksheet
-        Dim fecha_inicio As DateTime
-        Dim fecha_fin As DateTime
-        Dim fecha As DateTime
-        Dim fecha_ini As DateTime
-        Dim num_mant As Integer = 0
-        Dim cont_celda_pintada As Integer = 0
-        Dim cont_fila As Integer = 0
-        Dim cont_col As Integer = 0
-
-        If grilla_ciclos_mp Is Nothing OrElse grilla_ciclos_mp.RowCount = 0 OrElse grilla_grafico Is Nothing Then Return
-
-        Try
-            excelApp = New Excel.Application
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, True)
-            workbook = Utilitarios.CrearLibroDesdePlantilla(excelApp, "infGantt.xls")
-            worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
-            worksheet_2 = CType(workbook.Sheets(2), Excel.Worksheet)
-            worksheet_3 = CType(workbook.Sheets(3), Excel.Worksheet)
-            worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_2.Visible = Excel.XlSheetVisibility.xlSheetHidden
-            worksheet_3.Visible = Excel.XlSheetVisibility.xlSheetVisible
-
-            Dim filaexcel As Integer = 10
-
-            worksheet_3.Cells(1, 4) = "Calendario gantt mantención preventiva " & item_gantt
-            worksheet_3.Cells(5, 3).NumberFormat = "@"
-            worksheet_3.Cells(6, 3).NumberFormat = "@"
-            worksheet_3.Cells(5, 3) = fecha_desde
-            worksheet_3.Cells(6, 3) = fecha_hasta
-            Dim rango As Excel.Range
-            '------------- llenado de tareas realizadas --------------------------------------------
-            For i = 0 To grilla_ciclos_mp.RowCount - 1
-                worksheet_3.Cells(filaexcel, 1) = grilla_ciclos_mp.Rows(i).Cells(0).Value
-                worksheet_3.Cells(filaexcel, 2) = grilla_ciclos_mp.Rows(i).Cells(1).Value
-                worksheet_3.Cells(filaexcel, 3) = grilla_ciclos_mp.Rows(i).Cells(2).Value
-                rango = worksheet_3.Range("C" & filaexcel & ":E" & filaexcel)
-                rango.MergeCells = True
-                filaexcel = filaexcel + 1
-            Next
-            '---------------------------------------------------------------------------------------
-
-            fecha_inicio = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(0).Cells(3).Value).Date
-            fecha_fin = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(0).Cells(4).Value).Date
-            For i = 1 To grilla_ciclos_mp.RowCount - 1
-                If IsDate(grilla_ciclos_mp.Rows(i).Cells(3).Value) Then
-                    Dim fI As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(3).Value).Date
-                    If fI < fecha_inicio Then fecha_inicio = fI
-                End If
-                If IsDate(grilla_ciclos_mp.Rows(i).Cells(4).Value) Then
-                    Dim fF As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(4).Value).Date
-                    If fF > fecha_fin Then fecha_fin = fF
-                End If
-            Next
-            fecha = fecha_inicio
-
-            Dim col_excel As Integer = 6
-
-            While fecha <= fecha_fin
-                worksheet_3.Cells(4, col_excel) = fecha
-                fecha = DateAdd(DateInterval.Day, 1, fecha)
-                col_excel = col_excel + 1
-            End While
-
-            cont_col = 6
-            cont_fila = 10
-
-            For i = 0 To grilla_ciclos_mp.RowCount - 1
-                If Not IsDate(grilla_ciclos_mp.Rows(i).Cells(3).Value) OrElse Not IsDate(grilla_ciclos_mp.Rows(i).Cells(4).Value) Then
-                    cont_fila = cont_fila + 1
-                    Continue For
-                End If
-                fecha_ini = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(3).Value).Date
-                Dim fechaFinRow As DateTime = Utilitarios.ObtenerFechaSegura(grilla_ciclos_mp.Rows(i).Cells(4).Value, fecha_ini).Date
-                num_mant = Math.Max(1, CInt(DateDiff(DateInterval.Day, fecha_ini, fechaFinRow) + 1))
-
-                For j = 0 To grilla_grafico.Columns.Count - 1
-                    Dim colDate As DateTime
-                    If Not DateTime.TryParseExact(grilla_grafico.Columns(j).Name, "yyyyMMdd", Globalization.CultureInfo.InvariantCulture, Globalization.DateTimeStyles.None, colDate) Then
-                        DateTime.TryParse(grilla_grafico.Columns(j).Name, colDate)
-                    End If
-
-                    If fecha_ini.Date = colDate.Date Then
-                        worksheet_3.Cells(cont_fila, cont_col) = 1
-                        cont_celda_pintada = cont_celda_pintada + 1
-                        If cont_celda_pintada < num_mant Then
-                            fecha_ini = DateAdd(DateInterval.Day, 1, fecha_ini)
-                        End If
-                    ElseIf colDate.DayOfWeek = DayOfWeek.Saturday OrElse colDate.DayOfWeek = DayOfWeek.Sunday Then
-                        worksheet_3.Cells(cont_fila, cont_col) = 2
-                    End If
-                    cont_col = cont_col + 1
-                Next
-                cont_celda_pintada = 0
-                cont_fila = cont_fila + 1
-                cont_col = 6
-            Next
-
-            worksheet_3.Activate()
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            MsgBox("Archivo Exportado Exitosamente", MsgBoxStyle.Information, "Exportar Carta Gantt")
-            excelApp.Visible = True
-        Catch ex As Exception
-            Utilitarios.ConfigurarModoRapidoExcel(excelApp, False)
-            Utilitarios.CerrarExcelEnError(excelApp, workbook)
-            If grilla_ciclos_mp IsNot Nothing AndAlso grilla_ciclos_mp.RowCount > 0 AndAlso
-               (Utilitarios.ExportarGrillaAExcelNativo(grilla_ciclos_mp, "Carta_Gantt_" & item_gantt, "CALENDARIO CARTA GANTT - MANTENCIÓN PREVENTIVA", "Ítem: " & item_gantt & " | Período: " & fecha_desde & " al " & fecha_hasta) OrElse Utilitarios.UltimaExportacionCancelada) Then
-                Exit Sub
-            End If
-            RegistroErrores.MostrarYRegistrar(ex, "Exportar Informe Gráfico Gantt Varias Máquinas")
-        Finally
-            Utilitarios.OptimizarMemoria()
-        End Try
+        Dim lista As List(Of FrmCartaGantt.RegistroCicloGantt) = ConvertirGrillasARegistrosGantt(grilla_ciclos_mp, Nothing, item_gantt)
+        ExportarInfGanttInterno(lista, Nothing, item_gantt, fecha_desde, fecha_hasta, False, String.Empty, True, False)
     End Sub
 
     Public Sub expInfAuditoria(ByVal grilla_auditoria As DataGridView,
