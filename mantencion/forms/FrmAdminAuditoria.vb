@@ -252,6 +252,7 @@ Public Class FrmAdminAuditoria
     Private Sub btnLimpiarFiltros_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnLimpiarFiltros.Click
         _cargandoFiltros = True
         Try
+            Utilitarios.InicializarRangoPorDefecto(fecha_ini_aud, fecha_fin_aud)
             cboFiltroSesion.SelectedIndex = 0
             cboFiltroOperacion.SelectedIndex = 0
             cboFiltroPc.SelectedIndex = 0

@@ -210,6 +210,7 @@ Public Class FrmInfMantPrev
             Else
                 mant_prev.InfCicloMp(idMpStr, DST)
             End If
+            Utilitarios.QuitarColumnaSeleccionGantt(grillaDetalleCicloMp)
             If DST.Tables.Count > 0 Then
                 grillaDetalleCicloMp.DataSource = DST.Tables(0)
                 formato_grid.grillasMp(grillaDetalleCicloMp)
@@ -217,7 +218,6 @@ Public Class FrmInfMantPrev
                 Utilitarios.AsegurarColumnaSeleccionGantt(grillaDetalleCicloMp)
             Else
                 grillaDetalleCicloMp.DataSource = Nothing
-                Utilitarios.QuitarColumnaSeleccionGantt(grillaDetalleCicloMp)
             End If
             btnGantt.Enabled = (grillaDetalleCicloMp.RowCount > 0)
         Finally
@@ -464,5 +464,6 @@ Public Class FrmInfMantPrev
     Private Sub btn_Limpiar_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_Limpiar.Click
         LimpiarGrillasResultados()
         nombre_nodo_select = ""
+        Utilitarios.InicializarRangoPorDefecto(f_ini_inf_mp, f_fin_inf_mp)
     End Sub
 End Class

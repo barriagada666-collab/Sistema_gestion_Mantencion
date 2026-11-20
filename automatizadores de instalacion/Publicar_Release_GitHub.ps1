@@ -7,8 +7,8 @@
 [CmdletBinding()]
 param(
     [string]$Token = $env:GITHUB_TOKEN,
-    [string]$TagName = "v2026.1",
-    [string]$ReleaseName = "Sistema de Gestión Mantención v2026.1 LTS",
+    [string]$TagName,
+    [string]$ReleaseName,
     [string]$Repo = "barriagada666-collab/Sistema_gestion_Mantencion"
 )
 
@@ -22,6 +22,11 @@ if (-not (Test-Path (Join-Path $rootDir "mantencion\mantencion.vbproj"))) {
         $rootDir = $parent
     }
 }
+
+$versionFile = Join-Path $rootDir "VERSION.txt"
+$appVersion = if (Test-Path $versionFile) { (Get-Content -Path $versionFile -Raw).Trim().TrimStart('v', 'V') } else { "2026.2.0" }
+if ([string]::IsNullOrWhiteSpace($TagName)) { $TagName = "v$appVersion" }
+if ([string]::IsNullOrWhiteSpace($ReleaseName)) { $ReleaseName = "Sistema de Gestión Mantención $TagName LTS" }
 
 # Si no se pasó por parámetro o variable de entorno, buscar en archivo local no versionado .github_token
 if ([string]::IsNullOrWhiteSpace($Token)) {
@@ -44,7 +49,7 @@ Write-Host "  Versión Tag: $TagName" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host ""
 
-$installerPath = Join-Path $rootDir "Instalador\Instalador_Sistema_Mantencion_v2026.1.exe"
+$installerPath = Join-Path $rootDir "Instalador\Instalador_Sistema_Mantencion_$TagName.exe"
 if (-not (Test-Path $installerPath)) {
     Write-Host "[INFO] El instalador no existe localmente. Compilándolo primero..." -ForegroundColor Yellow
     $compilerScript = Join-Path $scriptDir "Compilar_Instalador.ps1"
@@ -88,7 +93,7 @@ try {
 }
 
 $releaseBody = @"
-## Sistema de Gestión Departamento Mantención — v2026.1 LTS
+## Sistema de Gestión Departamento Mantención — $TagName LTS
 **Cambiaso Hnos. S.A.C. — División de Mantención Industrial**
 
 ---

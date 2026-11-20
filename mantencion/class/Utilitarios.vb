@@ -147,13 +147,30 @@ Public Class Utilitarios
     End Function
 
     ''' <summary>
-    ''' Inicializa un par de DateTimePicker al rango por defecto del mes en curso (día 1 hasta hoy).
+    ''' Inicializa un par de DateTimePicker al rango por defecto del sistema: ayer (hoy - 1 día) hasta hoy.
+    ''' </summary>
+    Public Shared Sub InicializarRangoPorDefecto(ByVal dtpDesde As DateTimePicker, ByVal dtpHasta As DateTimePicker)
+        Dim hoy As DateTime = DateTime.Today
+        Dim ayer As DateTime = hoy.AddDays(-1)
+        If dtpHasta IsNot Nothing Then
+            Dim fFin As DateTime = hoy
+            If fFin < dtpHasta.MinDate Then fFin = dtpHasta.MinDate
+            If fFin > dtpHasta.MaxDate Then fFin = dtpHasta.MaxDate
+            dtpHasta.Value = fFin
+        End If
+        If dtpDesde IsNot Nothing Then
+            Dim fIni As DateTime = ayer
+            If fIni < dtpDesde.MinDate Then fIni = dtpDesde.MinDate
+            If fIni > dtpDesde.MaxDate Then fIni = dtpDesde.MaxDate
+            dtpDesde.Value = fIni
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' Alias compatible que inicializa un par de DateTimePicker en [Hoy - 1 día .. Hoy].
     ''' </summary>
     Public Shared Sub InicializarRangoMesActual(ByVal dtpDesde As DateTimePicker, ByVal dtpHasta As DateTimePicker)
-        Dim hoy As DateTime = DateTime.Today
-        Dim inicioMes As New DateTime(hoy.Year, hoy.Month, 1)
-        If dtpDesde IsNot Nothing Then dtpDesde.Value = inicioMes
-        If dtpHasta IsNot Nothing Then dtpHasta.Value = hoy
+        InicializarRangoPorDefecto(dtpDesde, dtpHasta)
     End Sub
 
     ''' <summary>
@@ -1874,6 +1891,10 @@ Public Class Utilitarios
     Public Shared Sub AsegurarColumnaSeleccionGantt(ByVal dgv As DataGridView)
         If dgv Is Nothing OrElse dgv.IsDisposed Then Exit Sub
 
+        If dgv.Columns.Contains("colSelGantt") AndAlso dgv.Columns("colSelGantt").Index < dgv.Columns.Count - 1 Then
+            dgv.Columns.Remove("colSelGantt")
+        End If
+
         Dim colSel As DataGridViewCheckBoxColumn
         If Not dgv.Columns.Contains("colSelGantt") Then
             colSel = New DataGridViewCheckBoxColumn With {
@@ -2002,5 +2023,135 @@ Public Class Utilitarios
             Next
         End If
         Return lista
+    End Function
+
+    Public Structure InformacionInstalacion
+        Public Version As String
+        Public VersionArchivo As String
+        Public FechaHoraInstalacion As String
+        Public OrigenRegistro As String
+        Public RutaInstalacion As String
+    End Structure
+
+    Private Shared Function LeerValorRegistro(ByVal root As RegistryKey, ByVal subKeyPath As String, ByVal valueName As String) As String
+        If root Is Nothing OrElse String.IsNullOrWhiteSpace(subKeyPath) Then Return String.Empty
+        Try
+            Using k As RegistryKey = root.OpenSubKey(subKeyPath, False)
+                If k IsNot Nothing Then
+                    Dim v As Object = k.GetValue(valueName)
+                    If v IsNot Nothing Then
+                        Dim s As String = v.ToString().Trim()
+                        If Not String.IsNullOrWhiteSpace(s) Then Return s
+                    End If
+                End If
+            End Using
+        Catch
+        End Try
+        Return String.Empty
+    End Function
+
+    Private Shared Function LeerValorRegistroMultiVista(ByVal hive As RegistryHive, ByVal subKeyPath As String, ByVal valueName As String) As String
+        For Each vista As RegistryView In New RegistryView() {RegistryView.Registry64, RegistryView.Registry32, RegistryView.Default}
+            Try
+                Using baseKey As RegistryKey = RegistryKey.OpenBaseKey(hive, vista)
+                    Dim val As String = LeerValorRegistro(baseKey, subKeyPath, valueName)
+                    If Not String.IsNullOrWhiteSpace(val) Then Return val
+                End Using
+            Catch
+            End Try
+        Next
+        Return String.Empty
+    End Function
+
+    ''' <summary>
+    ''' Devuelve la versión semántica de la aplicación definida centralizadamente en VERSION.txt.
+    ''' </summary>
+    Public Shared Function ObtenerVersionAplicacion() As String
+        Try
+            Dim asm As Assembly = Assembly.GetExecutingAssembly()
+            Dim infoAttr = asm.GetCustomAttribute(Of AssemblyInformationalVersionAttribute)()
+            If infoAttr IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(infoAttr.InformationalVersion) Then
+                Dim verTxt As String = infoAttr.InformationalVersion.Split("+"c)(0).Trim()
+                If Not String.IsNullOrWhiteSpace(verTxt) Then Return verTxt
+            End If
+
+            Dim v As Version = asm.GetName().Version
+            If v IsNot Nothing Then
+                Return String.Format("{0}.{1}.{2}", v.Major, v.Minor, Math.Max(0, v.Build))
+            End If
+        Catch
+        End Try
+        Return "2026.2.0"
+    End Function
+
+    ''' <summary>
+    ''' Devuelve versión, compilación, ruta y día/hora exacta de instalación (desde Registro Windows o marca temporal del ejecutable).
+    ''' </summary>
+    Public Shared Function ObtenerInformacionInstalacion() As InformacionInstalacion
+        Dim info As New InformacionInstalacion()
+        info.Version = ObtenerVersionAplicacion()
+        Try
+            Dim v As Version = Assembly.GetExecutingAssembly().GetName().Version
+            info.VersionArchivo = If(v IsNot Nothing, v.ToString(), info.Version & ".0")
+        Catch
+            info.VersionArchivo = info.Version & ".0"
+        End Try
+
+        Dim rutaExe As String = String.Empty
+        Try
+            rutaExe = Environment.ProcessPath
+        Catch
+        End Try
+        If String.IsNullOrWhiteSpace(rutaExe) Then
+            Try
+                rutaExe = Application.ExecutablePath
+            Catch
+            End Try
+        End If
+        Dim rutaAsmDir As String = String.Empty
+        Try
+            Dim loc As String = Assembly.GetExecutingAssembly().Location
+            If Not String.IsNullOrWhiteSpace(loc) Then rutaAsmDir = Path.GetDirectoryName(loc)
+        Catch
+        End Try
+        info.RutaInstalacion = If(Not String.IsNullOrWhiteSpace(rutaAsmDir), rutaAsmDir, Application.StartupPath)
+
+        Const subKeyApp As String = "Software\Cambiaso\SistemaMantencion"
+        Const subKeyUninst As String = "Software\Microsoft\Windows\CurrentVersion\Uninstall\{81543D95-46BE-4730-8A08-A163B21205D7}_is1"
+
+        Dim fechaReg As String = LeerValorRegistroMultiVista(RegistryHive.CurrentUser, subKeyApp, "InstallDate")
+        If String.IsNullOrWhiteSpace(fechaReg) Then
+            fechaReg = LeerValorRegistroMultiVista(RegistryHive.LocalMachine, subKeyApp, "InstallDate")
+        End If
+        If Not String.IsNullOrWhiteSpace(fechaReg) Then
+            info.FechaHoraInstalacion = fechaReg
+            info.OrigenRegistro = "Registro de instalación Windows"
+            Dim rutaReg As String = LeerValorRegistroMultiVista(RegistryHive.CurrentUser, subKeyApp, "InstallDir")
+            If String.IsNullOrWhiteSpace(rutaReg) Then
+                rutaReg = LeerValorRegistroMultiVista(RegistryHive.LocalMachine, subKeyApp, "InstallDir")
+            End If
+            If Not String.IsNullOrWhiteSpace(rutaReg) Then info.RutaInstalacion = rutaReg
+            Return info
+        End If
+
+        Dim fechaUninst As String = LeerValorRegistroMultiVista(RegistryHive.CurrentUser, subKeyUninst, "InstallDate")
+        If String.IsNullOrWhiteSpace(fechaUninst) Then
+            fechaUninst = LeerValorRegistroMultiVista(RegistryHive.LocalMachine, subKeyUninst, "InstallDate")
+        End If
+        Dim dtFile As DateTime = DateTime.Now
+        If Not String.IsNullOrWhiteSpace(rutaExe) AndAlso File.Exists(rutaExe) Then
+            dtFile = File.GetLastWriteTime(rutaExe)
+        End If
+
+        Dim dtParsed As DateTime
+        If Not String.IsNullOrWhiteSpace(fechaUninst) AndAlso DateTime.TryParseExact(fechaUninst, "yyyyMMdd", Globalization.CultureInfo.InvariantCulture, Globalization.DateTimeStyles.None, dtParsed) Then
+            info.FechaHoraInstalacion = New DateTime(dtParsed.Year, dtParsed.Month, dtParsed.Day, dtFile.Hour, dtFile.Minute, dtFile.Second).ToString("dd-MM-yyyy HH:mm:ss")
+            info.OrigenRegistro = "Registro de instalador del sistema"
+            Return info
+        End If
+
+        info.FechaHoraInstalacion = dtFile.ToString("dd-MM-yyyy HH:mm:ss")
+        info.OrigenRegistro = "Marca temporal de compilación / ejecutable"
+        Return info
     End Function
 End Class

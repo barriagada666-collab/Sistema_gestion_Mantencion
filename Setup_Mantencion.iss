@@ -6,7 +6,15 @@
 
 #define MyAppName "Sistema de Gestión Departamento Mantención"
 #define MyAppShortName "Sistema de Mantención"
-#define MyAppVersion "2026.1"
+#if FileExists("version.iss")
+  #include "version.iss"
+#endif
+#ifndef MyAppVersion
+  #define MyAppVersion "2026.2.0"
+#endif
+#ifndef MyAppFileVersion
+  #define MyAppFileVersion "2026.2.0.0"
+#endif
 #define MyAppPublisher "Cambiaso Hnos. S.A.C. — División de Mantención Industrial"
 #define MyAppURL "https://github.com/barriagada666-collab/Sistema_gestion_Mantencion"
 #define MyAppExeName "Sistema de Gestion Mantencion.exe"
@@ -23,12 +31,12 @@ AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}/releases
 AppUpdatesURL={#MyAppURL}/releases
 AppComments=Plataforma corporativa de Gestión de Mantención Industrial — Cambiaso Hnos. S.A.C. — Desarrollado por Boris Arriagada
-VersionInfoDescription=Instalador Autocontenido Sistema de Gestión Departamento Mantención v2026.1 LTS (.NET 8 x64 Zero-Dependency)
+VersionInfoDescription=Instalador Autocontenido Sistema de Gestión Departamento Mantención v{#MyAppVersion} LTS (.NET 8 x64 Zero-Dependency)
 VersionInfoProductName=Sistema de Gestión Departamento Mantención
-VersionInfoProductVersion=2026.1.0.0
+VersionInfoProductVersion={#MyAppFileVersion}
 VersionInfoCompany=Cambiaso Hnos. S.A.C. — División de Mantención Industrial
 VersionInfoCopyright=Copyright (C) 2026 Cambiaso Hnos. S.A.C. — Desarrollado por Boris Arriagada
-VersionInfoVersion=2026.1.0.0
+VersionInfoVersion={#MyAppFileVersion}
 
 ; Arquitectura de 64 bits (x64 nativo / ARM64 compatible)
 ArchitecturesAllowed=x64compatible
@@ -66,7 +74,7 @@ LZMANumBlockThreads=4
 
 ; Directorio y nombre de salida del instalador
 OutputDir=Instalador
-OutputBaseFilename=Instalador_Sistema_Mantencion_v2026.1
+OutputBaseFilename=Instalador_Sistema_Mantencion_v{#MyAppVersion}
 
 ; Permisos de ejecución (permite instalar en C:\Temp sin exigir privilegios de administrador)
 PrivilegesRequired=lowest
@@ -83,7 +91,7 @@ CloseApplications=yes
 Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 
 [Messages]
-spanish.BeveledLabel=Cambiaso Hnos. S.A.C. — División Mantención Industrial · v2026.1 LTS
+spanish.BeveledLabel=Cambiaso Hnos. S.A.C. — División Mantención Industrial · v{#MyAppVersion} LTS
 spanish.WelcomeLabel1=Bienvenido al Asistente de Instalación de {#MyAppName}
 spanish.WelcomeLabel2=Este asistente instalará {#MyAppName} v{#MyAppVersion} LTS (.NET 8 Autocontenido) en su equipo.%n%nIncluye gestión de Órdenes de Trabajo, Mantención Preventiva, Carta Gantt, control de activos, reportes y exportación integrada a Excel y PDF.%n%nHaga clic en Siguiente para continuar o en Cancelar para salir.
 spanish.FinishedHeadingLabel=Instalación Completada — {#MyAppName}
@@ -111,6 +119,12 @@ Name: "{group}\Desinstalar {#MyAppName}"; Filename: "{uninstallexe}"
 ; Acceso directo en el Escritorio
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\app_icon.ico"; Tasks: desktopicon
 
+[Registry]
+; Registra versión, fecha/hora exacta de instalación y ruta para mostrar en "Acerca de"
+Root: HKA; Subkey: "Software\Cambiaso\SistemaMantencion"; ValueType: string; ValueName: "Version"; ValueData: "{#MyAppVersion}"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Cambiaso\SistemaMantencion"; ValueType: string; ValueName: "InstallDate"; ValueData: "{code:GetInstallDateTime}"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Cambiaso\SistemaMantencion"; ValueType: string; ValueName: "InstallDir"; ValueData: "{app}"; Flags: uninsdeletekey
+
 [UninstallDelete]
 Type: files; Name: "{app}\error_runtime.log"
 
@@ -119,6 +133,11 @@ Type: files; Name: "{app}\error_runtime.log"
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [Code]
+function GetInstallDateTime(Param: String): String;
+begin
+  Result := GetDateTimeString('dd/mm/yyyy hh:nn:ss', '-', ':');
+end;
+
 // Verificación del sistema previa a la instalación
 function InitializeSetup(): Boolean;
 begin

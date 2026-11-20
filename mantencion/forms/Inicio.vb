@@ -6,8 +6,8 @@ Public NotInheritable Class Inicio
 
         lbl1.Text = "Sistema de Gestión"
         lblSubtitulo.Text = "Departamento Mantención"
-        Version.Text = "Versión 2026.1 LTS"
-        Copyright.Text = "Copyright © Cambiaso Hnos. S.A.C. 2026"
+        Version.Text = "Versión " & Utilitarios.ObtenerVersionAplicacion() & " LTS"
+        Copyright.Text = "Copyright © Cambiaso Hnos. S.A.C. " & Math.Max(2026, DateTime.Today.Year).ToString()
 
         Utilitarios.HabilitarDobleBuffer(pnlDerecho)
         Utilitarios.HabilitarDobleBuffer(pnlProgresoFondo)

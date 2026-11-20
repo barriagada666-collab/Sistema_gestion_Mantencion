@@ -12,6 +12,8 @@ Public Class FrmCalendarioTurno
 
         Try
             Utilitarios.AplicarTemaModerno(Me)
+            Utilitarios.InicializarRangoPorDefecto(fecha_desde_cal, fecha_hasta_cal)
+            Utilitarios.InicializarRangoPorDefecto(fecha_desde, fecha_hasta)
             grpTurnosPersonal.Enabled = False
             grpOperaciones.Enabled = False
             OT.autocompletar_personal(txtPersonalTurno)
@@ -68,10 +70,8 @@ Public Class FrmCalendarioTurno
 
             grpTurnosPersonal.Enabled = False
             grpOperaciones.Enabled = False
-            fecha_desde_cal.Value = Now
-            fecha_hasta_cal.Value = Now
-            fecha_desde.Value = Now
-            fecha_hasta.Value = Now
+            Utilitarios.InicializarRangoPorDefecto(fecha_desde_cal, fecha_hasta_cal)
+            Utilitarios.InicializarRangoPorDefecto(fecha_desde, fecha_hasta)
         Catch ex As Exception
             RegistroErrores.MostrarYRegistrar(ex, "Calendario de Turnos (Limpiar)", True, Me)
         End Try

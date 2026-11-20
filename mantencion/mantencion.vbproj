@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -18,8 +18,19 @@
     <OptionStrict>Off</OptionStrict>
     <OptionInfer>On</OptionInfer>
 
-    <!-- La información del ensamblado se mantiene en My Project\AssemblyInfo.vb -->
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- La versión se lee centralizadamente desde ..\VERSION.txt (fallback estático 2026.2.0) -->
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <_AppVersionRaw Condition="Exists('$(MSBuildProjectDirectory)\..\VERSION.txt')">$([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)\..\VERSION.txt').Trim())</_AppVersionRaw>
+    <Version Condition="'$(_AppVersionRaw)' != ''">$(_AppVersionRaw)</Version>
+    <Version Condition="'$(Version)' == ''">2026.2.0</Version>
+    <_AppVersionBase>$(Version.Split('-')[0])</_AppVersionBase>
+    <AssemblyVersion Condition="'$(_AppVersionBase.Split(&quot;.&quot;).Length)' == '3'">$(_AppVersionBase).0</AssemblyVersion>
+    <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">$(_AppVersionBase)</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+    <InformationalVersion>$(Version)</InformationalVersion>
+    <AssemblyTitle>Sistema de Gestión Departamento Mantención</AssemblyTitle>
+    <Copyright>Copyright © 2026 Cambiaso Hnos. S.A.C. — Desarrollado por Boris Arriagada</Copyright>
 
     <!-- Habilita la deserialización segura de BinaryFormatter para recursos ResX heredados en .NET 8 -->
     <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
@@ -36,15 +47,14 @@
 
     <!-- Metadatos de GitHub Packages / NuGet -->
     <PackageId>Sistema.Gestion.Mantencion</PackageId>
-    <Version>2026.1.0</Version>
     <Authors>Boris Arriagada</Authors>
-    <Company>Cambiaso Hnos S.A.C.</Company>
+    <Company>Cambiaso Hnos. S.A.C. — División de Mantención Industrial</Company>
     <Product>Sistema de Gestión Departamento Mantención</Product>
-    <Description>Sistema de Gestión Departamento Mantención para Cambiaso Hnos. S.A.C.: gestión de órdenes de trabajo (OT), mantención preventiva, programación Gantt, activos, personal, control de accesos y reportes en Excel/PDF.</Description>
+    <Description>Plataforma corporativa de Gestión de Mantención Industrial — Cambiaso Hnos. S.A.C.: gestión de órdenes de trabajo (OT), mantención preventiva, programación Gantt, activos, personal, control de accesos y reportes en Excel/PDF.</Description>
     <PackageProjectUrl>https://github.com/barriagada666-collab/Sistema_gestion_Mantencion</PackageProjectUrl>
     <RepositoryUrl>https://github.com/barriagada666-collab/Sistema_gestion_Mantencion</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Versión 2026.1 LTS: soporte multiplataforma Windows y macOS Universal, interfaz corporativa unificada, gestión integral de usuarios y perfiles, plantillas actualizadas y exportación nativa a Excel y PDF.</PackageReleaseNotes>
+    <PackageReleaseNotes>Versión 2026.2.0 LTS: control de versionado centralizado, menú Acerca de con fecha y hora de instalación, indicador de versión en barra inferior, rangos por defecto [Hoy - 1 día .. Hoy], barras Carta Gantt en color puro y mejoras de exportación.</PackageReleaseNotes>
     <PackageTags>mantencion;gestion;industrial;cambiaso;cmms;mantenimiento;ot;preventivo;sqlserver;net8;windows;macos</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>app_icon_rounded.png</PackageIcon>

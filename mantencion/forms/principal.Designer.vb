@@ -53,6 +53,7 @@ Partial Class principal
         Me.ToolStripSeparatorMantenedor = New System.Windows.Forms.ToolStripSeparator
         Me.ConfigurarServidorToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.VerRegistroErroresToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
+        Me.AcercaDeToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.SalirToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.CerrarSesiónToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.SalirToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem
@@ -62,6 +63,9 @@ Partial Class principal
         Me.lblUsuario = New System.Windows.Forms.ToolStripStatusLabel
         Me.sepEstadoServidor = New System.Windows.Forms.ToolStripSeparator
         Me.lblServidorEstado = New System.Windows.Forms.ToolStripStatusLabel
+        Me.lblEspacioEstado = New System.Windows.Forms.ToolStripStatusLabel
+        Me.sepVersionEstado = New System.Windows.Forms.ToolStripSeparator
+        Me.lblVersionEstado = New System.Windows.Forms.ToolStripStatusLabel
         Me.MenuStrip.SuspendLayout()
         Me.StatusStrip.SuspendLayout()
         Me.SuspendLayout()
@@ -70,7 +74,7 @@ Partial Class principal
         '
         Me.MenuStrip.BackColor = System.Drawing.Color.FromArgb(15, 45, 68)
         Me.MenuStrip.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.MenuStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OrdenesDeTrabajoToolStripMenuItem, Me.MantPreventivaToolStripMenuItem, Me.InformesToolStripMenuItem, Me.MantenedorToolStripMenuItem, Me.AuditoriaToolStripMenuItem, Me.SalirToolStripMenuItem})
+        Me.MenuStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OrdenesDeTrabajoToolStripMenuItem, Me.MantPreventivaToolStripMenuItem, Me.InformesToolStripMenuItem, Me.MantenedorToolStripMenuItem, Me.AuditoriaToolStripMenuItem, Me.AcercaDeToolStripMenuItem, Me.SalirToolStripMenuItem})
         Me.MenuStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow
         Me.MenuStrip.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip.Name = "MenuStrip"
@@ -269,6 +273,12 @@ Partial Class principal
         Me.AuditoriaDeOperacionesToolStripMenuItem.Size = New System.Drawing.Size(250, 22)
         Me.AuditoriaDeOperacionesToolStripMenuItem.Text = "Auditoría de Operaciones"
         '
+        'AcercaDeToolStripMenuItem
+        '
+        Me.AcercaDeToolStripMenuItem.Name = "AcercaDeToolStripMenuItem"
+        Me.AcercaDeToolStripMenuItem.Size = New System.Drawing.Size(86, 22)
+        Me.AcercaDeToolStripMenuItem.Text = "Acerca de"
+        '
         'SalirToolStripMenuItem
         '
         Me.SalirToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CerrarSesiónToolStripMenuItem, Me.SalirToolStripMenuItem1})
@@ -294,7 +304,7 @@ Partial Class principal
         'StatusStrip
         '
         Me.StatusStrip.BackColor = System.Drawing.Color.FromArgb(2, 94, 135)
-        Me.StatusStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.lblStatusStrip, Me.StatusLabel2, Me.lblUsuario, Me.sepEstadoServidor, Me.lblServidorEstado})
+        Me.StatusStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.lblStatusStrip, Me.StatusLabel2, Me.lblUsuario, Me.sepEstadoServidor, Me.lblServidorEstado, Me.lblEspacioEstado, Me.sepVersionEstado, Me.lblVersionEstado})
         Me.StatusStrip.Location = New System.Drawing.Point(0, 463)
         Me.StatusStrip.Name = "StatusStrip"
         Me.StatusStrip.Size = New System.Drawing.Size(1027, 23)
@@ -342,6 +352,29 @@ Partial Class principal
         Me.lblServidorEstado.Size = New System.Drawing.Size(280, 18)
         Me.lblServidorEstado.Text = "Conectado a Servidor: SrvMagicInfo - BD: mantencion"
         Me.lblServidorEstado.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        '
+        'lblEspacioEstado
+        '
+        Me.lblEspacioEstado.Name = "lblEspacioEstado"
+        Me.lblEspacioEstado.Size = New System.Drawing.Size(0, 18)
+        Me.lblEspacioEstado.Spring = True
+        Me.lblEspacioEstado.Text = ""
+        '
+        'sepVersionEstado
+        '
+        Me.sepVersionEstado.Name = "sepVersionEstado"
+        Me.sepVersionEstado.Size = New System.Drawing.Size(6, 23)
+        '
+        'lblVersionEstado
+        '
+        Me.lblVersionEstado.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblVersionEstado.ForeColor = System.Drawing.Color.White
+        Me.lblVersionEstado.Name = "lblVersionEstado"
+        Me.lblVersionEstado.Padding = New System.Windows.Forms.Padding(6, 0, 10, 0)
+        Me.lblVersionEstado.Size = New System.Drawing.Size(78, 18)
+        Me.lblVersionEstado.Text = "v2026.2.0"
+        Me.lblVersionEstado.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.lblVersionEstado.ToolTipText = "Versión instalada del sistema (clic para ver Acerca de)"
         '
         'principal
         '
@@ -404,5 +437,9 @@ Partial Class principal
     Friend WithEvents VerRegistroErroresToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents sepEstadoServidor As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents lblServidorEstado As System.Windows.Forms.ToolStripStatusLabel
+    Friend WithEvents AcercaDeToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents lblEspacioEstado As System.Windows.Forms.ToolStripStatusLabel
+    Friend WithEvents sepVersionEstado As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents lblVersionEstado As System.Windows.Forms.ToolStripStatusLabel
 
 End Class

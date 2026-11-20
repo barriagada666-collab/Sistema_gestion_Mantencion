@@ -34,6 +34,17 @@ Public Class Informes
         Return lista
     End Function
 
+    Private Shared Function ObtenerCeldaDato(ByVal rowG As DataGridViewRow, ByVal indiceDato As Integer) As Object
+        If rowG Is Nothing OrElse rowG.DataGridView Is Nothing OrElse indiceDato < 0 Then Return Nothing
+        Dim posDato As Integer = 0
+        For Each col As DataGridViewColumn In rowG.DataGridView.Columns
+            If String.Equals(col.Name, "colSelGantt", StringComparison.OrdinalIgnoreCase) Then Continue For
+            If posDato = indiceDato Then Return rowG.Cells(col.Index).Value
+            posDato += 1
+        Next
+        Return Nothing
+    End Function
+
     Public Sub CrgInfGanttCiclosMaq()
         With FrmInfMantPrev
             If .grillaDetalleCicloMp.RowCount = 0 Then Return
@@ -50,16 +61,16 @@ Public Class Informes
             For Each rowG As DataGridViewRow In filasOrigen
                 Dim reg As New FrmCartaGantt.RegistroCicloGantt()
                 reg.IdMant = idMantSel
-                reg.IdCiclo = Utilitarios.SafeInt(rowG.Cells(0).Value, 0)
+                reg.IdCiclo = Utilitarios.SafeInt(ObtenerCeldaDato(rowG, 0), 0)
                 reg.IdNodo = idNodoSel
                 reg.Seccion = seccionSel
                 reg.ItemMaquina = .nombre_nodo_select
                 reg.TipoMp = tipoSel
-                reg.FechaInicio = Utilitarios.ObtenerFechaSegura(rowG.Cells(1).Value)
-                reg.FechaTermino = Utilitarios.ObtenerFechaSegura(rowG.Cells(2).Value, reg.FechaInicio)
-                reg.Duracion = Utilitarios.SafeDouble(rowG.Cells(3).Value, 0.0)
-                reg.Observacion = Convert.ToString(rowG.Cells(4).Value).Trim()
-                reg.Estado = If(rowG.Cells.Count > 5, Convert.ToString(rowG.Cells(5).Value).Trim(), String.Empty)
+                reg.FechaInicio = Utilitarios.ObtenerFechaSegura(ObtenerCeldaDato(rowG, 1))
+                reg.FechaTermino = Utilitarios.ObtenerFechaSegura(ObtenerCeldaDato(rowG, 2), reg.FechaInicio)
+                reg.Duracion = Utilitarios.SafeDouble(ObtenerCeldaDato(rowG, 3), 0.0)
+                reg.Observacion = Convert.ToString(ObtenerCeldaDato(rowG, 4)).Trim()
+                reg.Estado = Convert.ToString(ObtenerCeldaDato(rowG, 5)).Trim()
                 lista.Add(reg)
             Next
             FrmCartaGantt.EstablecerDatosGantt(lista, idNodoSel)
@@ -79,9 +90,9 @@ Public Class Informes
             Dim filtrarSeleccion As Boolean = (filasSel.Count > 0)
             Dim filtrosSel As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
             For Each rowG As DataGridViewRow In filasSel
-                Dim idCicSel As Integer = Utilitarios.SafeInt(rowG.Cells(0).Value, 0)
-                Dim idMpSel As Integer = If(rowG.Cells.Count > 7, Utilitarios.SafeInt(rowG.Cells(7).Value, 0), 0)
-                Dim maqSel As String = Convert.ToString(rowG.Cells(2).Value).Trim()
+                Dim idCicSel As Integer = Utilitarios.SafeInt(ObtenerCeldaDato(rowG, 0), 0)
+                Dim idMpSel As Integer = Utilitarios.SafeInt(ObtenerCeldaDato(rowG, 7), 0)
+                Dim maqSel As String = Convert.ToString(ObtenerCeldaDato(rowG, 2)).Trim()
                 filtrosSel.Add(String.Format("{0}|{1}|{2}", idMpSel, idCicSel, maqSel))
             Next
 
@@ -111,16 +122,17 @@ Public Class Informes
             For Each rowG As DataGridViewRow In filasFallback
                 If rowG.IsNewRow Then Continue For
                 Dim reg As New FrmCartaGantt.RegistroCicloGantt()
-                reg.IdCiclo = Utilitarios.SafeInt(rowG.Cells(0).Value, 0)
-                reg.Seccion = Convert.ToString(rowG.Cells(1).Value).Trim()
-                reg.ItemMaquina = Convert.ToString(rowG.Cells(2).Value).Trim()
-                reg.Observacion = Convert.ToString(rowG.Cells(3).Value).Trim()
-                reg.FechaInicio = Utilitarios.ObtenerFechaSegura(rowG.Cells(4).Value)
-                reg.FechaTermino = Utilitarios.ObtenerFechaSegura(rowG.Cells(5).Value, reg.FechaInicio)
-                reg.Duracion = Utilitarios.SafeDouble(rowG.Cells(6).Value, 0.0)
-                reg.IdMant = If(rowG.Cells.Count > 7, Utilitarios.SafeInt(rowG.Cells(7).Value, 0), 0)
-                reg.Estado = If(rowG.Cells.Count > 8, Convert.ToString(rowG.Cells(8).Value).Trim(), String.Empty)
-                reg.TipoMp = If(rowG.Cells.Count > 9, Convert.ToString(rowG.Cells(9).Value).Trim(), .cmbTipoMpGantt.Text)
+                reg.IdCiclo = Utilitarios.SafeInt(ObtenerCeldaDato(rowG, 0), 0)
+                reg.Seccion = Convert.ToString(ObtenerCeldaDato(rowG, 1)).Trim()
+                reg.ItemMaquina = Convert.ToString(ObtenerCeldaDato(rowG, 2)).Trim()
+                reg.Observacion = Convert.ToString(ObtenerCeldaDato(rowG, 3)).Trim()
+                reg.FechaInicio = Utilitarios.ObtenerFechaSegura(ObtenerCeldaDato(rowG, 4))
+                reg.FechaTermino = Utilitarios.ObtenerFechaSegura(ObtenerCeldaDato(rowG, 5), reg.FechaInicio)
+                reg.Duracion = Utilitarios.SafeDouble(ObtenerCeldaDato(rowG, 6), 0.0)
+                reg.IdMant = Utilitarios.SafeInt(ObtenerCeldaDato(rowG, 7), 0)
+                reg.Estado = Convert.ToString(ObtenerCeldaDato(rowG, 8)).Trim()
+                Dim tipoFila As String = Convert.ToString(ObtenerCeldaDato(rowG, 9)).Trim()
+                reg.TipoMp = If(Not String.IsNullOrEmpty(tipoFila), tipoFila, .cmbTipoMpGantt.Text)
                 lista.Add(reg)
             Next
             FrmCartaGantt.EstablecerDatosGantt(lista, idPadre)
@@ -336,13 +348,6 @@ Public Class Informes
             Dim cStartL As String = ObtenerLetraColumnaExcel(colIniCal + offsetIni)
             Dim cEndL As String = ObtenerLetraColumnaExcel(colIniCal + offsetFin)
             ws.Range(cStartL & rEx & ":" & cEndL & rEx).Interior.Color = ColorOleDesdeEstado(reg.Estado, reg.FechaTermino)
-
-            Dim cellIni As Excel.Range = CType(ws.Cells(rEx, colIniCal + offsetIni), Excel.Range)
-            cellIni.Value = If(reg.Duracion > 0, String.Format("{0:N0}h", reg.Duracion), "#" & reg.IdCiclo.ToString())
-            cellIni.Font.Color = colorBlanco
-            cellIni.Font.Bold = True
-            cellIni.Font.Size = 7.5
-            cellIni.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter
         Next
     End Sub
 
@@ -548,9 +553,9 @@ Public Class Informes
                 ws2.Rows(10).RowHeight = 52
 
                 ws2.Columns("A").ColumnWidth = 8
-                ws2.Columns("B").ColumnWidth = 15
-                ws2.Columns("C").ColumnWidth = 15
-                ws2.Columns("D").ColumnWidth = 18
+                ws2.Columns("B").ColumnWidth = 18
+                ws2.Columns("C").ColumnWidth = 18
+                ws2.Columns("D").ColumnWidth = 22
 
                 ' Reordenar bloque superior de metadatos evitando recortes ("#######" / "cuencia :") sobre columnas angostas de 3.6
                 ws2.Range("A5:D5").MergeCells = True
@@ -569,10 +574,10 @@ Public Class Informes
                 Dim colorTextoHdr As Integer = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.FromArgb(30, 41, 59))
                 Dim bloquesHdr As String(,) = {
                     {"E6:H6", "Frecuencia :", "I6:K6", freqTexto},
-                    {"L6:P6", "Fecha Creación :", "Q6:T6", fechaCreaTexto},
-                    {"U6:W6", "Estado :", "X6:AA6", estadoTexto},
+                    {"L6:Q6", "Fecha Creación :", "R6:U6", fechaCreaTexto},
+                    {"V6:X6", "Estado :", "Y6:AA6", estadoTexto},
                     {"E7:H7", "Tiempo Aviso :", "I7:K7", avisoTexto},
-                    {"L7:P7", "Tipo :", "Q7:AA7", tipoTexto}
+                    {"L7:Q7", "Tipo :", "R7:AA7", tipoTexto}
                 }
                 For b As Integer = 0 To bloquesHdr.GetLength(0) - 1
                     Dim rLbl As Excel.Range = ws2.Range(bloquesHdr(b, 0))

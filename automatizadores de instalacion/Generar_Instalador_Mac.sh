@@ -14,8 +14,16 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
+if [[ -f "$ROOT_DIR/VERSION.txt" ]]; then
+    APP_VERSION="$(tr -d '\r\n vV' < "$ROOT_DIR/VERSION.txt")"
+else
+    APP_VERSION="2026.2.0"
+fi
+APP_TAG="v${APP_VERSION}"
+
 echo "=========================================================="
 echo "  GENERADOR DE INSTALADOR MACOS UNIVERSAL NATIVO"
+echo "  Versión: $APP_TAG LTS"
 echo "  (Apple Silicon ARM64 sin Rosetta + Intel x86_64)"
 echo "  Sistema de Gestión Departamento Mantención"
 echo "  Cambiaso Hnos. S.A.C."
@@ -89,11 +97,11 @@ cat << 'EOF' > "$APP_BUNDLE/Contents/Info.plist"
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>2026.1</string>
+    <string>$APP_VERSION</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleVersion</key>
-    <string>2026.1.0</string>
+    <string>$APP_VERSION</string>
     <key>LSArchitecturePriority</key>
     <array>
         <string>arm64</string>
@@ -675,7 +683,7 @@ cat << 'EOF' > "$DIST_MAC/LEAME_MAC.html"
   <div class="card">
     <span class="badge">Aplicación Universal (Apple Silicon &amp; Intel)</span>
     <span class="badge badge-native">Ejecución Nativa macOS</span>
-    <h1>Sistema de Gestión Departamento Mantención v2026.1 LTS</h1>
+    <h1>Sistema de Gestión Departamento Mantención $APP_TAG LTS</h1>
     <p>Plataforma corporativa de gestión de mantención industrial de Cambiaso Hnos. S.A.C. para equipos Mac.</p>
 
     <div class="step">
@@ -703,7 +711,7 @@ EOF
 
 # Comprimir paquete Universal ZIP con máxima compresión (-9)
 mkdir -p "$ROOT_DIR/Instalador"
-ZIP_OUTPUT="$ROOT_DIR/Instalador/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip"
+ZIP_OUTPUT="$ROOT_DIR/Instalador/Instalador_Sistema_Mantencion_${APP_TAG}_macOS_Universal.zip"
 rm -f "$ZIP_OUTPUT"
 
 if [[ "${SKIP_ARCHIVE:-0}" == "1" ]]; then

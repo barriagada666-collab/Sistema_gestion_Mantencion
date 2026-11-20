@@ -80,6 +80,7 @@ Public Class FrmInfMantPrevCiclosMaq
         grillaCiclosMaquinas.SuspendLayout()
         Try
             mant_prev.InfCiclosMaquinasMp(id_nodo_mp_select, fecha_ini_inf_mp.Value, fecha_fin_inf_mp.Value, cmbTipoMpGantt.Text, DS_CICLOS)
+            Utilitarios.QuitarColumnaSeleccionGantt(grillaCiclosMaquinas)
             If DS_CICLOS.Tables.Count > 0 AndAlso DS_CICLOS.Tables(0).Rows.Count > 0 Then
                 grillaCiclosMaquinas.DataSource = DS_CICLOS.Tables(0)
                 formato_grid.grillasMp(grillaCiclosMaquinas)
@@ -87,7 +88,6 @@ Public Class FrmInfMantPrevCiclosMaq
                 Utilitarios.AsegurarColumnaSeleccionGantt(grillaCiclosMaquinas)
             Else
                 grillaCiclosMaquinas.DataSource = Nothing
-                Utilitarios.QuitarColumnaSeleccionGantt(grillaCiclosMaquinas)
                 If mostrarValidaciones Then
                     MsgBox("No se encontraron ciclos para el período seleccionado.", MsgBoxStyle.Information, "Validación")
                 End If

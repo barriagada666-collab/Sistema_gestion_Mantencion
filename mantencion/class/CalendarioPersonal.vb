@@ -46,8 +46,7 @@ Public Class CalendarioPersonal
     Public Sub limpiarProgramacionTurno()
         With FrmCalendarioTurno
             .txtPersonalTurno.ResetText()
-            .fecha_desde.Value = Now
-            .fecha_hasta.Value = Now
+            Utilitarios.InicializarRangoPorDefecto(.fecha_desde, .fecha_hasta)
             If .cmbTurno.Items.Count > 0 Then
                 .cmbTurno.SelectedIndex = 0
             End If

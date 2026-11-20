@@ -106,7 +106,7 @@ Public Class FrmCartaGantt
             informes.CrgInfGanttCiclosVariasMaq()
         Else
             _idNodoContexto = 1
-            _fechaBaseDesde = New DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)
+            _fechaBaseDesde = DateTime.Today.AddDays(-1)
             _fechaBaseHasta = DateTime.Today
             lblDesdeGantt.Text = _fechaBaseDesde.ToString("dd-MM-yyyy")
             lblHastaGantt.Text = _fechaBaseHasta.ToString("dd-MM-yyyy")
@@ -423,7 +423,6 @@ Public Class FrmCartaGantt
                 If dEnd >= fechaIni AndAlso dStart <= fechaFin Then
                     Dim dCur As DateTime = If(dStart < fechaIni, fechaIni, dStart)
                     Dim dLim As DateTime = If(dEnd > fechaFin, fechaFin, dEnd)
-                    Dim etiquetado As Boolean = False
                     While dCur <= dLim
                         Dim jBar As Integer
                         If colPorFecha.TryGetValue(dCur, jBar) Then
@@ -433,10 +432,7 @@ Public Class FrmCartaGantt
                             celBar.Style.SelectionBackColor = colorBarra
                             celBar.Style.SelectionForeColor = Color.White
                             celBar.ToolTipText = tipTexto
-                            If Not etiquetado Then
-                                celBar.Value = If(reg.Duracion > 0, String.Format("{0:N0}h", reg.Duracion), "#" & reg.IdCiclo.ToString())
-                                etiquetado = True
-                            End If
+                            celBar.Value = String.Empty
                         End If
                         dCur = dCur.AddDays(1)
                     End While

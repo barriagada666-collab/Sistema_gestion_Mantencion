@@ -5,7 +5,11 @@
 #>
 
 [CmdletBinding()]
-param()
+param(
+    [string]$NuevaVersion,
+    [switch]$IncrementarPatch,
+    [switch]$IncrementarMinor
+)
 
 $ErrorActionPreference = "Stop"
 $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { (Get-Location).Path }
@@ -17,8 +21,24 @@ if (-not (Test-Path (Join-Path $rootDir "mantencion\mantencion.vbproj"))) {
     }
 }
 
+# Sincronizar / resolver versión centralizada desde VERSION.txt
+$syncScript = Join-Path $scriptDir "Actualizar_Version.ps1"
+if (Test-Path $syncScript) {
+    $syncParams = @{}
+    if (-not [string]::IsNullOrWhiteSpace($NuevaVersion)) { $syncParams["NuevaVersion"] = $NuevaVersion }
+    if ($IncrementarPatch) { $syncParams["IncrementarPatch"] = $true }
+    if ($IncrementarMinor) { $syncParams["IncrementarMinor"] = $true }
+    & $syncScript @syncParams | Out-Null
+}
+
+$versionFile = Join-Path $rootDir "VERSION.txt"
+$appVersion = if (Test-Path $versionFile) { (Get-Content -Path $versionFile -Raw).Trim().TrimStart('v', 'V') } else { "2026.2.0" }
+$fileVersion = "$appVersion.0"
+$tagVersion = "v$appVersion"
+
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host "  COMPILADOR DE INSTALADOR - SISTEMA DE GESTION MANTENCION" -ForegroundColor Cyan
+Write-Host "  Versión: $tagVersion LTS ($fileVersion)" -ForegroundColor Green
 Write-Host "  Microsoft .NET 8 (x64 Autocontenido - Zero Dependency)  " -ForegroundColor Cyan
 Write-Host "  Cambiaso Hnos. S.A.C." -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
@@ -37,7 +57,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 foreach ($cfg in @("Debug", "Release")) {
-    & dotnet build $slnPath -c $cfg --no-restore --nologo -v m
+    & dotnet build $slnPath -c $cfg --no-restore --no-incremental --nologo -v m
     if ($LASTEXITCODE -ne 0) {
         Write-Host "[ERROR] La compilacion ($cfg) fallo con codigo $LASTEXITCODE." -ForegroundColor Red
         exit $LASTEXITCODE
@@ -131,7 +151,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # 4. Verificacion final y checksums SHA-256
-$outputExe = Join-Path $rootDir "Instalador\Instalador_Sistema_Mantencion_v2026.1.exe"
+$outputExe = Join-Path $rootDir "Instalador\Instalador_Sistema_Mantencion_$tagVersion.exe"
 if (Test-Path $outputExe) {
     $item = Get-Item $outputExe
     $hash = (Get-FileHash $outputExe -Algorithm SHA256).Hash
@@ -140,6 +160,7 @@ if (Test-Path $outputExe) {
     $checksumsPath = Join-Path $rootDir "Instalador\checksums_sha256.txt"
     $info = @"
 Archivo: $($item.Name)
+Versión: $appVersion
 Tamaño: $sizeMb MB ($($item.Length) bytes)
 Fecha Generación: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
 Plataforma: Microsoft .NET 8 LTS (Windows x64 - Autocontenido)
@@ -150,6 +171,7 @@ Hash: $hash
 
     Write-Host ""
     Write-Host "[4/4] Instalador y paquete NuGet generados exitosamente!" -ForegroundColor Green
+    Write-Host "       Versión : $tagVersion ($fileVersion)" -ForegroundColor White
     Write-Host "       Archivo : $($item.FullName)" -ForegroundColor White
     Write-Host "       Tamano  : $sizeMb MB ($($item.Length) bytes)" -ForegroundColor White
     Write-Host "       SHA256  : $hash" -ForegroundColor Yellow

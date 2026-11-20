@@ -134,7 +134,25 @@ Public Class principal
         Utilitarios.RegistrarTemaGlobal()
         Utilitarios.AplicarTemaModerno(Me)
         ActualizarIndicadorServidor()
+        ActualizarIndicadorVersion()
         ActualizarPermisosMenuAdministrador()
+    End Sub
+
+    Public Sub ActualizarIndicadorVersion()
+        If lblVersionEstado Is Nothing Then Exit Sub
+        Dim info = Utilitarios.ObtenerInformacionInstalacion()
+        lblVersionEstado.Text = "v" & info.Version
+        lblVersionEstado.ToolTipText = String.Format("Versión {0} LTS · Instalado: {1} (clic para ver Acerca de)", info.Version, info.FechaHoraInstalacion)
+    End Sub
+
+    Private Sub AbrirAcercaDe()
+        Try
+            Using frm As New FrmAcercaDe()
+                frm.ShowDialog(Me)
+            End Using
+        Catch ex As Exception
+            RegistroErrores.MostrarYRegistrar(ex, "Acerca de", True, Me, False)
+        End Try
     End Sub
 
     Public Sub ActualizarPermisosMenuAdministrador()
@@ -352,5 +370,13 @@ Public Class principal
 
     Private Sub VerRegistroErroresToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VerRegistroErroresToolStripMenuItem.Click
         RegistroErrores.AbrirCarpetaLogs()
+    End Sub
+
+    Private Sub AcercaDeToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AcercaDeToolStripMenuItem.Click
+        AbrirAcercaDe()
+    End Sub
+
+    Private Sub lblVersionEstado_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lblVersionEstado.Click
+        AbrirAcercaDe()
     End Sub
 End Class

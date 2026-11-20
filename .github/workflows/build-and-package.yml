@@ -22,8 +22,35 @@ permissions:
   packages: write
 
 jobs:
+  resolve-version:
+    name: Resolver Versión desde VERSION.txt
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+      tag: ${{ steps.ver.outputs.tag }}
+    steps:
+      - name: Descargar VERSION.txt
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: |
+            VERSION.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Leer Versión Centralizada
+        id: ver
+        run: |
+          APP_VER=$(tr -d '\r\n ' < VERSION.txt)
+          if [ -z "$APP_VER" ]; then
+            echo "::error::VERSION.txt está vacío"
+            exit 1
+          fi
+          echo "version=$APP_VER" >> "$GITHUB_OUTPUT"
+          echo "tag=v$APP_VER" >> "$GITHUB_OUTPUT"
+          echo "Versión resuelta: $APP_VER (Tag: v$APP_VER)"
+
   build-and-package:
     name: Build, Publicación Autocontenida e Instalador
+    needs: resolve-version
     runs-on: windows-latest
 
     steps:
@@ -86,12 +113,20 @@ jobs:
 
       - name: 8. Compilar Instalador con Inno Setup
         run: |
+          $appVer = "${{ needs.resolve-version.outputs.version }}"
+          @"
+          ; Sincronizado automáticamente desde VERSION.txt en CI
+          #define MyAppVersion "$appVer"
+          #define MyAppFileVersion "$appVer.0"
+          #define MyAppTagVersion "v$appVer"
+          "@ | Set-Content -Path "version.iss" -Encoding UTF8
           iscc Setup_Mantencion.iss
 
       - name: 9. Validar y Calcular Hash SHA256 del Instalador
         id: verify
         run: |
-          $installer = "Instalador\Instalador_Sistema_Mantencion_v2026.1.exe"
+          $appVer = "${{ needs.resolve-version.outputs.version }}"
+          $installer = "Instalador\Instalador_Sistema_Mantencion_v$appVer.exe"
           if (-not (Test-Path $installer)) {
               Write-Error "El instalador no fue generado en la ruta esperada: $installer"
               exit 1
@@ -110,6 +145,7 @@ jobs:
           # Guardar información en archivo de texto para los artefactos
           $info = @"
           Archivo: $($item.Name)
+          Versión: $appVer
           Tamaño: $sizeMb MB ($($item.Length) bytes)
           Fecha Generación: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
           Plataforma: Microsoft .NET 8 LTS (Windows x64 - Autocontenido)
@@ -127,9 +163,9 @@ jobs:
       - name: 11. Publicar Artefacto - Instalador Oficial y Paquete NuGet
         uses: actions/upload-artifact@v7
         with:
-          name: Instalador-Sistema-Mantencion-v2026.1
+          name: Instalador-Sistema-Mantencion-v${{ needs.resolve-version.outputs.version }}
           path: |
-            Instalador/Instalador_Sistema_Mantencion_v2026.1.exe
+            Instalador/Instalador_Sistema_Mantencion_v${{ needs.resolve-version.outputs.version }}.exe
             Instalador/checksums_sha256.txt
             nupkg/*.nupkg
           if-no-files-found: warn
@@ -139,18 +175,19 @@ jobs:
         uses: softprops/action-gh-release@v3
         if: github.ref == 'refs/heads/main'
         with:
-          tag_name: v2026.1
-          name: Sistema de Gestión Mantención v2026.1 LTS
+          tag_name: ${{ needs.resolve-version.outputs.tag }}
+          name: Sistema de Gestión Mantención ${{ needs.resolve-version.outputs.tag }} LTS
           draft: false
           prerelease: false
           files: |
-            Instalador/Instalador_Sistema_Mantencion_v2026.1.exe
+            Instalador/Instalador_Sistema_Mantencion_v${{ needs.resolve-version.outputs.version }}.exe
             Instalador/checksums_sha256.txt
             nupkg/*.nupkg
           token: ${{ secrets.GITHUB_TOKEN }}
 
   build-mac-installer:
     name: Build e Instalador macOS Universal (DMG)
+    needs: resolve-version
     runs-on: macos-15-intel
 
     steps:
@@ -283,8 +320,9 @@ jobs:
       - name: 8. Comprimir DMG (ULMO LZMA) y ZIP (-9) + Checksums SHA256
         run: |
           mkdir -p Instalador
-          DMG_NAME="Instalador_Sistema_Mantencion_v2026.1_macOS.dmg"
-          ZIP_NAME="Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip"
+          APP_VER="${{ needs.resolve-version.outputs.version }}"
+          DMG_NAME="Instalador_Sistema_Mantencion_v${APP_VER}_macOS.dmg"
+          ZIP_NAME="Instalador_Sistema_Mantencion_v${APP_VER}_macOS_Universal.zip"
 
           (
             cd dist-mac
@@ -315,10 +353,10 @@ jobs:
       - name: 9. Publicar Artefacto - Instalador macOS (DMG y ZIP)
         uses: actions/upload-artifact@v7
         with:
-          name: Instalador-Sistema-Mantencion-v2026.1-macOS
+          name: Instalador-Sistema-Mantencion-v${{ needs.resolve-version.outputs.version }}-macOS
           path: |
-            Instalador/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg
-            Instalador/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip
+            Instalador/Instalador_Sistema_Mantencion_v${{ needs.resolve-version.outputs.version }}_macOS.dmg
+            Instalador/Instalador_Sistema_Mantencion_v${{ needs.resolve-version.outputs.version }}_macOS_Universal.zip
             Instalador/checksums_mac_sha256.txt
           if-no-files-found: error
           retention-days: 30
@@ -327,19 +365,19 @@ jobs:
         uses: softprops/action-gh-release@v3
         if: github.ref == 'refs/heads/main'
         with:
-          tag_name: v2026.1
-          name: Sistema de Gestión Mantención v2026.1 LTS
+          tag_name: ${{ needs.resolve-version.outputs.tag }}
+          name: Sistema de Gestión Mantención ${{ needs.resolve-version.outputs.tag }} LTS
           draft: false
           prerelease: false
           files: |
-            Instalador/Instalador_Sistema_Mantencion_v2026.1_macOS.dmg
-            Instalador/Instalador_Sistema_Mantencion_v2026.1_macOS_Universal.zip
+            Instalador/Instalador_Sistema_Mantencion_v${{ needs.resolve-version.outputs.version }}_macOS.dmg
+            Instalador/Instalador_Sistema_Mantencion_v${{ needs.resolve-version.outputs.version }}_macOS_Universal.zip
             Instalador/checksums_mac_sha256.txt
           token: ${{ secrets.GITHUB_TOKEN }}
 
   sync-installers-to-repo:
     name: Sincronizar Instaladores Oficiales en Carpeta /Instalador
-    needs: [build-and-package, build-mac-installer]
+    needs: [resolve-version, build-and-package, build-mac-installer]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
 
@@ -353,26 +391,28 @@ jobs:
       - name: Descargar Artefactos Windows y NuGet
         uses: actions/download-artifact@v8
         with:
-          name: Instalador-Sistema-Mantencion-v2026.1
+          name: Instalador-Sistema-Mantencion-v${{ needs.resolve-version.outputs.version }}
           path: temp-win
 
       - name: Descargar Artefactos macOS
         uses: actions/download-artifact@v8
         with:
-          name: Instalador-Sistema-Mantencion-v2026.1-macOS
+          name: Instalador-Sistema-Mantencion-v${{ needs.resolve-version.outputs.version }}-macOS
           path: temp-mac
 
       - name: Copiar Archivos a /Instalador
         run: |
           mkdir -p Instalador
+          rm -f Instalador/Instalador_Sistema_Mantencion_*.exe Instalador/Instalador_Sistema_Mantencion_*.dmg Instalador/Instalador_Sistema_Mantencion_*.zip Instalador/Sistema.Gestion.Mantencion.*.nupkg
           cp -fv temp-win/Instalador/* Instalador/ 2>/dev/null || cp -fv temp-win/* Instalador/ 2>/dev/null || true
           cp -fv temp-mac/Instalador/* Instalador/ 2>/dev/null || cp -fv temp-mac/* Instalador/ 2>/dev/null || true
           if [ -d "temp-win/nupkg" ]; then cp -fv temp-win/nupkg/*.nupkg Instalador/ 2>/dev/null || true; fi
           rm -rf temp-win temp-mac
           ls -la Instalador/
 
-      - name: Commit, Push a main y Actualizar Tag v2026.1 (Source code)
+      - name: Commit, Push a main y Actualizar Tag ${{ needs.resolve-version.outputs.tag }}
         run: |
+          TAG_NAME="${{ needs.resolve-version.outputs.tag }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git lfs install
@@ -380,10 +420,10 @@ jobs:
           if git diff --staged --quiet; then
             echo "No hay cambios pendientes en Instalador/."
           else
-            git commit -m "chore(release): actualizar instaladores en /Instalador [skip ci]"
+            git commit -m "chore(release): actualizar instaladores $TAG_NAME en /Instalador [skip ci]"
             git push origin main
           fi
-          git tag -f v2026.1 HEAD
-          git push origin v2026.1 --force
+          git tag -f "$TAG_NAME" HEAD
+          git push origin "$TAG_NAME" --force
 
 
