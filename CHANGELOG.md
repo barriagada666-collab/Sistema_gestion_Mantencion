@@ -1,6 +1,20 @@
 # Historial de Cambios (Changelog)
 
-Todas las actualizaciones relevantes de **Sistema de Gestión Departamento Mantención** se documentan en este archivo bajo versionado anual corporativo (`YYYY.M` LTS).
+Todas las actualizaciones relevantes de **Sistema de Gestión Departamento Mantención** se documentan en este archivo bajo versionado corporativo (`YYYY.M.P` LTS).
+
+---
+
+## [2026.2.0 LTS] — 2026-11-20
+
+### Versionado, Identificación e Interfaz Principal
+- **Control centralizado de versiones (`v2026.2.0 LTS`):** Fuente única de verdad para ensamblado, compilación `.NET`, paquete NuGet, asistente e instalador Windows, paquete macOS Universal y flujo CI/CD en GitHub Actions, con utilidad dedicada para incrementar versiones de compilación sin ediciones manuales dispersas.
+- **Nueva opción `Acerca de` en el menú principal:** Ventana modal corporativa accesible para todos los perfiles de usuario que muestra la versión instalada, la compilación/arquitectura en ejecución, la ruta instalada y el **día y hora exacta de instalación** registrados automáticamente por el instalador.
+- **Indicador de versión en esquina inferior derecha:** La barra inferior muestra de forma permanente la versión activa (`v2026.2.0`), permitiendo abrir **Acerca de** directamente al hacer clic.
+
+### Mejoras Funcionales y Visuales
+- **Rangos de fecha por defecto `[Ayer .. Hoy]`:** Todos los selectores de período en informes de OT, resúmenes, informes preventivos (individual y varias máquinas), auditoría de eventos y calendario de turnos se inicializan por defecto un día antes de hoy como fecha de inicio y el día de hoy como fecha de término, manteniendo dicho rango al limpiar filtros.
+- **Barras de Carta Gantt y exportación en color sólido puro:** Se eliminó el texto superpuesto de horas/identificadores sobre las barras coloreadas tanto en la grilla interactiva de Carta Gantt como en la exportación horizontal a Excel y PDF, manteniendo los colores semánticos, información emergente y columnas de detalle sin recorte de cabeceras.
+- **Estabilidad de selección múltiple en recargas sucesivas:** Preservación consistente de índices de columnas al recargar búsquedas en grillas con columna de selección por casillas.
 
 ---
 
