@@ -4,6 +4,20 @@ Todas las actualizaciones relevantes de **Sistema de Gestión Departamento Mante
 
 ---
 
+## [2026.2.1 LTS] — 2026-11-23
+
+### Auditoría, Seguridad, Limpieza y Estabilidad
+- **Limpieza de código y control estricto de advertencias:** Eliminación de clase no utilizada sin referencias y depuración de supresiones de compilación para exponer cualquier advertencia real futura, manteniendo **0 errores y 0 advertencias** en **Debug** y **Release**.
+- **Coherencia total de caché en caliente:** Invalidación automática de cachés de nodos, personal y jerarquía estadística tanto al cambiar de servidor de datos como al cerrar sesión.
+- **Refuerzo de autorización (Defensa en Profundidad):** Validación adicional de perfil Administrador al guardar cambios de conexión y sincronización visual inmediata de permisos en la gestión de personal.
+- **Normalización ortográfica de interfaz:** Corrección de tildes y consistencia tipográfica en títulos de formularios, pestañas y mensajes de validación.
+
+### Documentación Completa
+- Incorporación de documentación profesional separada por audiencia: [Arquitectura Técnica](docs/ARQUITECTURA_TECNICA.md), [Manual Funcional](docs/MANUAL_FUNCIONAL.md), [Guía de Compilación](docs/GUIA_COMPILACION.md) y [Guía de Despliegue](docs/GUIA_DESPLIEGUE.md).
+- Renovación integral del `README.md` y adición de la captura institucional `41_FrmAcercaDe.png`.
+
+---
+
 ## [2026.2.0 LTS] — 2026-11-20
 
 ### Versionado, Identificación e Interfaz Principal

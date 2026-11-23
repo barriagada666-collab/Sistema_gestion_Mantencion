@@ -9,12 +9,12 @@
 **Plataforma corporativa para Órdenes de Trabajo (OT), Mantención Preventiva (MP), Carta Gantt y Control de Activos**
 
 [![CI/CD](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/actions/workflows/build-and-package.yml/badge.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/actions/workflows/build-and-package.yml)
-[![Versión](https://img.shields.io/badge/Versi%C3%B3n-2026.2.0%20LTS-025E87.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/tag/v2026.2.0)
-[![Plataformas](https://img.shields.io/badge/Plataformas-Windows%2010%2F11%20%7C%20macOS%20Universal-0191B3.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/tag/v2026.2.0)
+[![Versión](https://img.shields.io/badge/Versi%C3%B3n-2026.2.1%20LTS-025E87.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/tag/v2026.2.1)
+[![Plataformas](https://img.shields.io/badge/Plataformas-Windows%2010%2F11%20%7C%20macOS%20Universal-0191B3.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/tag/v2026.2.1)
 
 <p align="center">
-  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.0/Instalador_Sistema_Mantencion_v2026.2.0.exe"><img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_WINDOWS-v2026.2.0_LTS-025E87?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar Windows" /></a>&nbsp;
-  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.0/Instalador_Sistema_Mantencion_v2026.2.0_macOS.dmg"><img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_MAC_(DMG)-v2026.2.0_Universal-0191B3?style=for-the-badge&logo=apple&logoColor=white" alt="Descargar Mac DMG" /></a>
+  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.1/Instalador_Sistema_Mantencion_v2026.2.1.exe"><img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_WINDOWS-v2026.2.1_LTS-025E87?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar Windows" /></a>&nbsp;
+  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.1/Instalador_Sistema_Mantencion_v2026.2.1_macOS.dmg"><img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_MAC_(DMG)-v2026.2.1_Universal-0191B3?style=for-the-badge&logo=apple&logoColor=white" alt="Descargar Mac DMG" /></a>
 </p>
 
 </div>
@@ -23,18 +23,28 @@
 
 ## 📌 Descripción del Proyecto
 
-El **Sistema de Gestión Departamento Mantención** es una plataforma corporativa de uso interno desarrollada en **.NET 8 LTS** para planificar, registrar, ejecutar y controlar las operaciones de mantenimiento industrial en **Cambiaso Hnos. S.A.C.**
+El **Sistema de Gestión Departamento Mantención** es una plataforma corporativa de escritorio desarrollada sobre **Microsoft .NET 8 LTS** para planificar, registrar, ejecutar y controlar las operaciones de mantenimiento correctivo y preventivo de activos industriales en **Cambiaso Hnos. S.A.C.**
+
+---
+
+## ⚙️ Características Principales
+
+- **Órdenes de Trabajo (OT):** Creación, edición, asignación técnica, tiempos de detención, control de insumos/repuestos, OT externas y cierre/anulación controlada por permisos.
+- **Mantención Preventiva y Carta Gantt:** Pautas periódicas, programación cíclica masiva, selección por casillas de uno o múltiples ciclos (`Solo Marcados`), búsqueda por **N° Mantención (`N° MP`)**, **ID de Ciclo**, máquina, estado o fecha de inicio, ordenamiento por plan más reciente, vista multi-año con barras en color sólido puro y panel inferior de tareas.
+- **Activos, Personal y Turnos:** Catálogo jerárquico de plantas, secciones y equipos con carga acelerada en un único recorrido, fichas técnicas por máquina, gestión de dotación y calendario de turnos.
+- **Informes y Exportación Integrada:** Selectores inicializados por defecto al rango **ayer – hoy**, reportes individuales y multi-máquina (incluyendo tareas realizadas y pendientes) y exportación coherente a **Excel** y **PDF horizontal completo** sin dependencias externas.
+- **Seguridad, Trazabilidad y Versionado:** Control granular de **21 permisos** por perfil, bitácora de auditoría operativa, configuración de conectividad restringida a administradores, menú **Acerca de** con fecha/hora exacta de instalación, indicador permanente de versión en la esquina inferior derecha y versionado centralizado desde `VERSION.txt`.
 
 ---
 
 ## 🖼️ Capturas del Sistema
 
 <p align="center">
-  <img src="docs/screenshots/carrusel_mockups.gif" alt="Vista general de módulos del Sistema de Gestión Mantención v2026.2.0 LTS" width="880" />
+  <img src="docs/screenshots/carrusel_mockups.gif" alt="Vista general de módulos del Sistema de Gestión Mantención v2026.2.1 LTS" width="880" />
 </p>
 
 <details>
-<summary>📸 <strong>Ver las 40 capturas individuales</strong></summary>
+<summary>📸 <strong>Ver las 41 capturas individuales (incluyendo Acerca de)</strong></summary>
 
 <br/>
 
@@ -60,41 +70,32 @@ El **Sistema de Gestión Departamento Mantención** es una plataforma corporativ
 | **35.** Selector de Tareas Preventivas<br/>[<img src="docs/screenshots/35_FrmBuscarTareasMp.png" width="400" alt="35"/>](docs/screenshots/35_FrmBuscarTareasMp.png) | **36.** Selector de Personal<br/>[<img src="docs/screenshots/36_FrmBuscarPersonal.png" width="400" alt="36"/>](docs/screenshots/36_FrmBuscarPersonal.png) |
 | **37.** Búsqueda de Insumos y Repuestos<br/>[<img src="docs/screenshots/37_FrmBuscarInsumo.png" width="400" alt="37"/>](docs/screenshots/37_FrmBuscarInsumo.png) | **38.** Selector de Datos Técnicos<br/>[<img src="docs/screenshots/38_FrmBuscarDatosTecnicos.png" width="400" alt="38"/>](docs/screenshots/38_FrmBuscarDatosTecnicos.png) |
 | **39.** Selector de Plantas<br/>[<img src="docs/screenshots/39_FrmBuscarPlanta.png" width="400" alt="39"/>](docs/screenshots/39_FrmBuscarPlanta.png) | **40.** Selector de Secciones<br/>[<img src="docs/screenshots/40_FrmBuscarSeccion.png" width="400" alt="40"/>](docs/screenshots/40_FrmBuscarSeccion.png) |
+| **41.** Acerca de (Versión y Fecha de Instalación)<br/>[<img src="docs/screenshots/41_FrmAcercaDe.png" width="400" alt="41"/>](docs/screenshots/41_FrmAcercaDe.png) | — |
 
 </details>
 
 ---
 
-## ⚙️ Características Principales
-
-- **Órdenes de Trabajo (OT):** Creación, edición, asignación técnica, tiempos de detención, control de insumos y cierre.
-- **Mantención Preventiva y Carta Gantt:** Pautas periódicas, programación cíclica masiva, selección por casillas de uno o múltiples ciclos (`Solo Marcados`), consulta por **N° Mantención (`N° MP`)**, **ID de Ciclo**, máquina, estado o fecha de inicio, ordenamiento por plan más reciente, vista multi-año con barras de color limpio y panel inferior de tareas.
-- **Activos, Personal y Turnos:** Catálogo jerárquico de plantas, secciones y equipos con fichas técnicas, personal y calendario de turnos.
-- **Informes y Exportación Integrada:** Consultas inicializadas por defecto al rango **ayer – hoy**, reportes individuales y multi-máquina filtrables (incluyendo tareas realizadas y pendientes) con exportación coherente en **Excel** y **PDF horizontal completo** para tablas y calendario Gantt, sin dependencias externas.
-- **Seguridad, Trazabilidad y Versionado:** Control granular de permisos por perfil, bitácora de auditoría, indicador de conexión activa, **menú `Acerca de`** con versión y fecha/hora de instalación, e indicador de versión activa en la esquina inferior derecha.
-
----
-
-## 📦 Descargas Oficiales (v2026.2.0 LTS)
+## 📦 Descargas Oficiales (v2026.2.1 LTS)
 
 > **Autocontenido (Zero-Dependency):** No requiere instalar previamente .NET Runtime, Crystal Reports ni Microsoft Office.
 
 | Plataforma | Instalador | Tamaño | Descarga |
 | :--- | :--- | :---: | :--- |
-| 🪟 **Windows 10 / 11** (`x64`) | Instalador estándar (`.exe`) | `41.47 MB` | [⬇️ **Descargar Windows (.exe)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.0/Instalador_Sistema_Mantencion_v2026.2.0.exe) |
-| 🍏 **macOS Universal** (`ARM64` + `Intel`) | Imagen de disco (`.dmg`) | `289.59 MB` | [⬇️ **Descargar macOS (.dmg)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.0/Instalador_Sistema_Mantencion_v2026.2.0_macOS.dmg) |
-| 🍏 **macOS Universal** (`ARM64` + `Intel`) | Archivo comprimido (`.zip`) | `365.17 MB` | [⬇️ **Descargar macOS (.zip)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.0/Instalador_Sistema_Mantencion_v2026.2.0_macOS_Universal.zip) |
-| 📦 **NuGet** | Paquete de distribución (`.nupkg`) | `2.23 MB` | [⬇️ **Descargar Paquete (.nupkg)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.0/Sistema.Gestion.Mantencion.2026.2.0.nupkg) |
+| 🪟 **Windows 10 / 11** (`x64`) | Instalador estándar (`.exe`) | `41.46 MB` | [⬇️ **Descargar Windows (.exe)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.1/Instalador_Sistema_Mantencion_v2026.2.1.exe) |
+| 🍏 **macOS Universal** (`ARM64` + `Intel`) | Imagen de disco (`.dmg`) | `293.26 MB` | [⬇️ **Descargar macOS (.dmg)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.1/Instalador_Sistema_Mantencion_v2026.2.1_macOS.dmg) |
+| 🍏 **macOS Universal** (`ARM64` + `Intel`) | Archivo comprimido (`.zip`) | `365.17 MB` | [⬇️ **Descargar macOS (.zip)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.1/Instalador_Sistema_Mantencion_v2026.2.1_macOS_Universal.zip) |
+| 📦 **NuGet** | Paquete de distribución (`.nupkg`) | `2.23 MB` | [⬇️ **Descargar Paquete (.nupkg)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.1/Sistema.Gestion.Mantencion.2026.2.1.nupkg) |
 
 <details>
 <summary>🔐 Verificación de Integridad (SHA-256)</summary>
 
 | Archivo | SHA-256 |
 | :--- | :--- |
-| `Instalador_Sistema_Mantencion_v2026.2.0.exe` | `C51528AA1B54738D147D2459655D35DD909BB6F44453A96442615E0BE716A123` |
-| `Instalador_Sistema_Mantencion_v2026.2.0_macOS.dmg` | `A43155D0E0CFD6D494A3CD4F1A1EFC35EE00FC20D9069B64F3D05A507B21221A` |
-| `Instalador_Sistema_Mantencion_v2026.2.0_macOS_Universal.zip` | `2301CB93270821F4C251B29495177E46C798B7AC05D0AD32DEC9FBDBB94617C` |
-| `Sistema.Gestion.Mantencion.2026.2.0.nupkg` | `D176E40ED19C3A2517C4E702DCAC52B009425207F008C039E5A74F5456955938` |
+| `Instalador_Sistema_Mantencion_v2026.2.1.exe` | `3460AC839E227C024B9D939512760EA272664B0979E8BCAF8E641225FE79ED2C` |
+| `Instalador_Sistema_Mantencion_v2026.2.1_macOS.dmg` | `F25D07531681577FD67B42472A7D5E76029ECD563F44497B9CAE300E29513064` |
+| `Instalador_Sistema_Mantencion_v2026.2.1_macOS_Universal.zip` | `042890420F56C3875FC968B3F3899797A910B90B2B8144B5F9BE066FF8B0E9CF` |
+| `Sistema.Gestion.Mantencion.2026.2.1.nupkg` | `2BB42980D0110FF95E2F442BFA691426C09DCBE7273D0E627857B3E2A3EB2CE7` |
 
 </details>
 
@@ -104,36 +105,39 @@ El **Sistema de Gestión Departamento Mantención** es una plataforma corporativ
 
 ### Requisitos
 - **Windows:** Windows 10 u 11 de 64 bits (`x64` o compatible).
-- **macOS:** macOS con procesador Apple Silicon (`ARM64`) o `Intel` (`x86_64`).
+- **macOS:** macOS 11+ con procesador Apple Silicon (`ARM64`) o `Intel` (`x86_64`).
 - **Red:** Acceso a la red corporativa para conectarse al servidor de datos de la organización.
 
 ### Instalación
-- **Windows:** Descargue y ejecute `Instalador_Sistema_Mantencion_v2026.2.0.exe` y siga el asistente en español. Para actualizar sobre una instalación existente, simplemente ejecute el nuevo instalador.
-- **macOS:** Monte `Instalador_Sistema_Mantencion_v2026.2.0_macOS.dmg` (o descomprima el `.zip`) y ejecute `Instalar_en_Mac.command`.
+- **Windows:** Descargue y ejecute `Instalador_Sistema_Mantencion_v2026.2.1.exe` y siga el asistente en español (soporta instalación silenciosa `/VERYSILENT /SUPPRESSMSGBOXES /NORESTART` y actualización directa conservando la configuración del usuario).
+- **macOS:** Monte `Instalador_Sistema_Mantencion_v2026.2.1_macOS.dmg` (o descomprima el `.zip`) y ejecute `Instalar_en_Mac.command`.
 
 ---
 
-## 🛠️ Configuración, Uso y Compilación
+## 🛠️ Configuración y Uso
 
-### Uso Básico y Configuración
 1. Inicie sesión con sus credenciales corporativas habilitadas.
 2. Navegue por los módulos desde la barra superior (**Órdenes de Trabajo**, **Mant. Preventiva**, **Informes**, **Mantenedores**, **Control de Eventos**, **Acerca de**).
-3. En los filtros de informes, auditoría y turnos, las fechas se inicializan automáticamente entre el **día anterior y la fecha actual**.
-4. En **Carta Gantt**, seleccione el equipo y marque uno o varios ciclos para enfocar o exportar la selección deseada; también puede buscar por **N° MP**, **ID Ciclo**, texto o **Estado**.
-5. La barra inferior muestra el estado de conexión activo a la izquierda y la versión instalada en la esquina inferior derecha (haciendo clic también abre **Acerca de** con la fecha y hora exacta de instalación). Los usuarios con perfil **Administrador** pueden ajustar la conexión desde **Mantenedores**.
+3. En los filtros por fecha de informes, auditoría y turnos, las fechas se inicializan automáticamente entre **ayer y hoy**.
+4. En **Carta Gantt**, marque uno o varios ciclos mediante casillas para enfocar o exportar exactamente su selección, o busque por **N° MP**, **ID Ciclo**, texto o **Estado**.
+5. La barra inferior muestra el estado de conexión a la izquierda y la versión activa en la esquina inferior derecha (`v2026.2.1`, clic para abrir **Acerca de** con la fecha y hora exacta de instalación). Los usuarios **Administrador** pueden ajustar la conectividad desde **Mantenedores**.
 
-### Compilación y Control de Versiones (Entorno de Desarrollo)
-- **Requisitos:** .NET 8 SDK y (para empaquetar en Windows) Inno Setup 6.
-- **Control centralizado de versión:** Defina o incremente la versión en `VERSION.txt` o utilice el script de actualización de versión en la carpeta de automatizadores para sincronizar automáticamente solución, instaladores, paquete NuGet y flujo CI/CD.
-- **Compilar solución:** `dotnet build -c Release`
-- **Generar paquete e instalador Windows:** ejecute el script de compilación e instalador en la carpeta de automatizadores o publique los cambios para disparar la compilación automática en GitHub Actions.
+---
+
+## 📚 Documentación Completa
+
+- 🏗️ [Documentación Técnica y Arquitectura](docs/ARQUITECTURA_TECNICA.md)
+- 📘 [Manual Funcional del Usuario](docs/MANUAL_FUNCIONAL.md)
+- 🛠️ [Guía de Compilación, Versionado y Pruebas](docs/GUIA_COMPILACION.md)
+- 🚀 [Guía de Despliegue e Instalación](docs/GUIA_DESPLIEGUE.md)
+- 📦 [Paquetes e Instaladores Oficiales](Instalador/README.md)
 
 ---
 
 ## 🏷️ Versionado e Historial de Cambios
 
-El proyecto sigue el esquema corporativo `YYYY.M.P LTS` (`v2026.2.0 LTS`).  
-Consulte el detalle completo de mejoras, correcciones y estabilizaciones en [CHANGELOG.md](CHANGELOG.md) y la documentación de paquetes en [Instalador/README.md](Instalador/README.md).
+El proyecto sigue el esquema corporativo `YYYY.M.P LTS` (`v2026.2.1 LTS`), gestionado de forma centralizada desde `VERSION.txt`.  
+Consulte el historial completo de versiones, mejoras y correcciones en [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
