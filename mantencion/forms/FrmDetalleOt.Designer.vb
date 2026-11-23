@@ -580,7 +580,7 @@ Partial Class FrmDetalleOt
         Me.TabOtExterna.Name = "TabOtExterna"
         Me.TabOtExterna.Size = New System.Drawing.Size(669, 147)
         Me.TabOtExterna.TabIndex = 2
-        Me.TabOtExterna.Text = "Ordenes Externas"
+        Me.TabOtExterna.Text = "Órdenes Externas"
         Me.TabOtExterna.UseVisualStyleBackColor = True
         '
         'GrillaOtExternasDetalle
@@ -623,7 +623,7 @@ Partial Class FrmDetalleOt
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(99, 15)
         Me.Label2.TabIndex = 4
-        Me.Label2.Text = "Item / Maquina :"
+        Me.Label2.Text = "Ítem / Máquina :"
         '
         'lblItem
         '

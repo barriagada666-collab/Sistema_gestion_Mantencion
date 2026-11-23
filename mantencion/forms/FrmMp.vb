@@ -295,7 +295,7 @@ Public Class FrmMp
 
         Try
             If id_nodo_select = "" Then
-                MsgBox("No se ha seleccionado ningun item!!!", MsgBoxStyle.Exclamation, "Validación")
+                MsgBox("No se ha seleccionado ningún ítem.", MsgBoxStyle.Exclamation, "Validación")
             Else
                 id_nodo_padre = id_nodo_select
                 mant_preventiva.CrgNodosHijosMp(id_nodo_padre, DST_NODOS_HIJOS)
@@ -796,7 +796,7 @@ Public Class FrmMp
 
     Private Sub btn_agr_tareas_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btn_agr_tareas.Click
         If id_nodo_select = "" Then
-            MsgBox("Debe seleccionar un item para buscar las tareas", MsgBoxStyle.Exclamation, "Validación")
+            MsgBox("Debe seleccionar un ítem para buscar las tareas.", MsgBoxStyle.Exclamation, "Validación")
             Exit Sub
         Else
             FrmBuscarTareasMp.nodo_padre = id_nodo_select

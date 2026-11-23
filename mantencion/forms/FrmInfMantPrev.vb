@@ -230,7 +230,7 @@ Public Class FrmInfMantPrev
 
         If String.IsNullOrEmpty(id_nodo_select) Then
             If mostrarValidaciones Then
-                MsgBox("Debe seleccionar un item del árbol antes de buscar", MsgBoxStyle.Exclamation, "Validación")
+                MsgBox("Debe seleccionar un ítem del árbol antes de buscar.", MsgBoxStyle.Exclamation, "Validación")
             End If
             Exit Sub
         End If
@@ -398,7 +398,7 @@ Public Class FrmInfMantPrev
             End If
         Else
             If nombre_nodo_select = "" Or grillaInfMant.RowCount = 0 Or grillaDetalleCicloMp.RowCount = 0 Then
-                MsgBox("Debe seleccionar un nodo y buscar la MP antes de exportar a excel", MsgBoxStyle.Critical, "Validación")
+                MsgBox("Debe seleccionar un nodo y buscar la MP antes de exportar a Excel.", MsgBoxStyle.Critical, "Validación")
             Else
                 MP.exportarInfMpExcel(grillaInfMant, grillaDetalleCicloMp, grillaTareasInfMp, grillaPersonalInfMp, grillaTareasPendInfMp, grillaInsumosInfMp, nombre_nodo_select)
             End If

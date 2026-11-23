@@ -1083,7 +1083,7 @@ Partial Class frm_OT
         Me.Opacity = 1.0R
         Me.ShowIcon = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.Manual
-        Me.Text = "Gestión Ordenes de Trabajo"
+        Me.Text = "Gestión Órdenes de Trabajo"
         Me.WindowState = System.Windows.Forms.FormWindowState.Normal
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()

@@ -333,7 +333,7 @@ Partial Class FrmDatosTecnicosNodo
         Me.Controls.Add(Me.arbol9)
         Me.Name = "FrmDatosTecnicosNodo"
         Me.ShowIcon = False
-        Me.Text = "Gestión Datos Técnicos Item / Máquina"
+        Me.Text = "Gestión Datos Técnicos Ítem / Máquina"
         Me.WindowState = System.Windows.Forms.FormWindowState.Normal
         CType(Me.grillaDatosTecnicosNodo, System.ComponentModel.ISupportInitialize).EndInit()
         Me.Panel2.ResumeLayout(False)

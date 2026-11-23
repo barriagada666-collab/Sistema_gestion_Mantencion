@@ -220,7 +220,7 @@ Partial Class FrmCalendarioTurno
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(190, 15)
         Me.Label3.TabIndex = 3
-        Me.Label3.Text = "Programacion de Turnos Personal"
+        Me.Label3.Text = "Programación de Turnos Personal"
         '
         'grpOperaciones
         '

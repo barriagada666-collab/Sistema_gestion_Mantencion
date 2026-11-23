@@ -423,6 +423,11 @@ Public Class FrmConfiguracionServidor
     End Sub
 
     Private Sub btnGuardar_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnGuardar.Click
+        If Usuario.UsuarioAutenticado AndAlso Not Usuario.EsAdministrador Then
+            MessageBox.Show(Me, "Solo los usuarios con perfil Administrador pueden modificar la configuración del servidor.", "Acceso restringido", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+
         If String.IsNullOrWhiteSpace(txtServidor.Text) Then
             MessageBox.Show("Debe especificar el Servidor / Host de SQL Server.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             txtServidor.Focus()

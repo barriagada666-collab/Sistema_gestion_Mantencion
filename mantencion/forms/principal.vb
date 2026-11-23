@@ -327,6 +327,7 @@ Public Class principal
         Usuario.LimpiarSesion()
         OT.InvalidarCachePersonal()
         Nodo.InvalidarCacheNodos()
+        FrmResumenes.InvalidarCacheJerarquia()
         Conexion.InvalidarCacheCatalogos()
         Login.Show()
         Me.Close()

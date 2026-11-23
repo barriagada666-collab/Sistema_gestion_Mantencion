@@ -23,7 +23,7 @@
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <_AppVersionRaw Condition="Exists('$(MSBuildProjectDirectory)\..\VERSION.txt')">$([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)\..\VERSION.txt').Trim())</_AppVersionRaw>
     <Version Condition="'$(_AppVersionRaw)' != ''">$(_AppVersionRaw)</Version>
-    <Version Condition="'$(Version)' == ''">2026.2.0</Version>
+    <Version Condition="'$(Version)' == ''">2026.2.1</Version>
     <_AppVersionBase>$(Version.Split('-')[0])</_AppVersionBase>
     <AssemblyVersion Condition="'$(_AppVersionBase.Split(&quot;.&quot;).Length)' == '3'">$(_AppVersionBase).0</AssemblyVersion>
     <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">$(_AppVersionBase)</AssemblyVersion>
@@ -38,8 +38,8 @@
     <!-- Habilita compilación cruzada en Linux/macOS sin advertencias -->
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
 
-    <!-- Silencia advertencias obsoletas de VB, compatibilidad de plataforma y serialización para compilación 100% limpia -->
-    <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036,SYSLIB0051,CA1416</NoWarn>
+    <!-- Silencia únicamente conversiones implícitas / enlace tardío COM propios de Option Strict Off -->
+    <NoWarn>42016,42017,42019</NoWarn>
 
     <!-- Compilación Release compacta sin archivos .pdb -->
     <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
@@ -54,7 +54,7 @@
     <PackageProjectUrl>https://github.com/barriagada666-collab/Sistema_gestion_Mantencion</PackageProjectUrl>
     <RepositoryUrl>https://github.com/barriagada666-collab/Sistema_gestion_Mantencion</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Versión 2026.2.0 LTS: control de versionado centralizado, menú Acerca de con fecha y hora de instalación, indicador de versión en barra inferior, rangos por defecto [Hoy - 1 día .. Hoy], barras Carta Gantt en color puro y mejoras de exportación.</PackageReleaseNotes>
+    <PackageReleaseNotes>Versión 2026.2.1 LTS: auditoría integral de código, limpieza de código muerto, endurecimiento de seguridad y cachés de sesión/conexión, normalización ortográfica UI, control de advertencias optimizado y documentación técnica/funcional completa.</PackageReleaseNotes>
     <PackageTags>mantencion;gestion;industrial;cambiaso;cmms;mantenimiento;ot;preventivo;sqlserver;net8;windows;macos</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>app_icon_rounded.png</PackageIcon>

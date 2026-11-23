@@ -493,7 +493,7 @@ Partial Class FrmInfOT
         Me.Controls.Add(Me.arbol5)
         Me.Controls.Add(Me.GrpFiltroInfOt2)
         Me.Name = "FrmInfOT"
-        Me.Text = "Informe Ordenes de Trabajo"
+        Me.Text = "Informe Órdenes de Trabajo"
         Me.WindowState = System.Windows.Forms.FormWindowState.Normal
         CType(Me.grillaInfOt, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GrpFiltroFechas.ResumeLayout(False)

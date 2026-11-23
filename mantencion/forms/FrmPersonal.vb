@@ -65,6 +65,7 @@ Public Class FrmPersonal
             planta.crgPlanta(cmbPlanta)
             seccion.crgCmbSeccion(cmbSeccion)
             cargo.crgCmbCargo(cmbCargo)
+            btnCrearUsuario.Enabled = principal.UsuariosToolStripMenuItem.Enabled
             Utilitarios.AplicarTemaModerno(Me)
         Finally
             Me.ResumeLayout(True)

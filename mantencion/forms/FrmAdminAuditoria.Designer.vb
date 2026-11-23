@@ -605,7 +605,7 @@ Partial Class FrmAdminAuditoria
         Me.lblTitKpi5.Name = "lblTitKpi5"
         Me.lblTitKpi5.Size = New System.Drawing.Size(117, 13)
         Me.lblTitKpi5.TabIndex = 0
-        Me.lblTitKpi5.Text = "TOP USUARIO / SESION"
+        Me.lblTitKpi5.Text = "TOP USUARIO / SESIÓN"
         '
         'lblKpiTopUsuario
         '

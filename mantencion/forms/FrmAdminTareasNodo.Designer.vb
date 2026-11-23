@@ -304,7 +304,7 @@ Partial Class FrmAdminTareasNodo
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(211, 15)
         Me.Label7.TabIndex = 7
-        Me.Label7.Text = "Tareas Asociadas al item seleccionado"
+        Me.Label7.Text = "Tareas Asociadas al Ítem Seleccionado"
         '
         'btnCambiarIDMod
         '
@@ -335,7 +335,7 @@ Partial Class FrmAdminTareasNodo
         Me.Controls.Add(Me.Panel1)
         Me.Name = "FrmAdminTareasNodo"
         Me.ShowIcon = False
-        Me.Text = "Mantenedor Tareas Items / Maquinas"
+        Me.Text = "Mantenedor Tareas Ítems / Máquinas"
         Me.WindowState = System.Windows.Forms.FormWindowState.Normal
         Me.Panel1.ResumeLayout(False)
         Me.Panel1.PerformLayout()

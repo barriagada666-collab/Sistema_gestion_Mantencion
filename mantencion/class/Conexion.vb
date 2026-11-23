@@ -348,6 +348,9 @@ Public Class Conexion
                 _ultimaBaseDatosConectada = Nothing
             End SyncLock
             InvalidarCacheCatalogos()
+            Nodo.InvalidarCacheNodos()
+            OT.InvalidarCachePersonal()
+            FrmResumenes.InvalidarCacheJerarquia()
             ObtenerConnectionString()
 
             Return (True, "La configuración de conexión fue guardada y respaldada exitosamente.")

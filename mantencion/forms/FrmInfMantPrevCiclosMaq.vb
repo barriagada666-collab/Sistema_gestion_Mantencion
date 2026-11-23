@@ -115,7 +115,7 @@ Public Class FrmInfMantPrevCiclosMaq
                 FrmCartaGantt.Show()
             End If
         Else
-            MsgBox("Debe desplegar ciclos antes de exportar a informe gantt", MsgBoxStyle.Exclamation, "validación")
+            MsgBox("Debe desplegar ciclos antes de exportar al Informe Gantt.", MsgBoxStyle.Exclamation, "Validación")
         End If
 
     End Sub
