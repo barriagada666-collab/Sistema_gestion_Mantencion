@@ -1,7 +1,7 @@
-Archivo: Instalador_Sistema_Mantencion_v2026.2.2.exe
-Versión: 2026.2.2
-Tamaño: 41.47 MB (43485846 bytes)
-Fecha Generación: 2026-11-24 14:38:52
+Archivo: Instalador_Sistema_Mantencion_v2026.2.3.exe
+Versión: 2026.2.3
+Tamaño: 41.47 MB (43484210 bytes)
+Fecha Generación: 2026-11-24 15:41:18
 Plataforma: Microsoft .NET 8 LTS (Windows x64 - Autocontenido)
 Algoritmo: SHA-256
-Hash: 27D3EA232703FF4DEC989B9E9790079DB15DFEEAC26C3B8B70C954190FD0120E
+Hash: 64A25499BA2C14A0DA1E286647A920698BB925322B7F8ABCB856A499798FAD2A
