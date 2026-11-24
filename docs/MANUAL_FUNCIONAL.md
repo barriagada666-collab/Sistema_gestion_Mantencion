@@ -17,7 +17,7 @@
    - **Salir:** Permite cerrar sesión (cambiando de usuario) o salir de la aplicación (`Ctrl+Q`).
 3. **Barra Inferior de Estado:**
    - **Izquierda:** Usuario en sesión e indicador luminoso del estado de conexión al servidor.
-   - **Esquina Inferior Derecha:** Versión instalada activa (por ejemplo `v2026.2.1`); al hacer clic abre directamente la ventana **Acerca de**.
+   - **Esquina Inferior Derecha:** Versión instalada activa (por ejemplo `v2026.2.2`); al hacer clic abre directamente la ventana **Acerca de**.
 
 ---
 
@@ -58,9 +58,28 @@
 
 ---
 
-## 6. Activos, Personal, Turnos, Seguridad y Auditoría
+## 6. Gestión Integral de Personal (CRUD Completo y Gestión por Lotes)
+
+Desde **Mantenedores → Personal** puede administrar de forma completa todo el padrón de trabajadores (activos e inactivos) sin salir de la pantalla:
+
+- **Padrón Completo y Filtros en Vivo:** Visualice todos los trabajadores en una grilla integrada con búsqueda instantánea por RUT, nombres, apellidos, alias, código interno, correo, planta, sección o cargo, combinable con filtros por **Estado** (`Todos` / `Activos` / `Inactivos`), **Planta**, **Sección** y **Cargo**.
+- **CRUD Completo en una sola vista:**
+  - **Ingresar:** Complete los datos personales y laborales (RUT con validación de dígito verificador, incluyendo `K`) y presione **Ingresar**.
+  - **Editar / Actualizar:** Haga clic sobre cualquier fila del padrón (o use el buscador por RUT/nombre) para cargar automáticamente el trabajador en modo edición, modifique los campos deseados y presione **Actualizar**.
+  - **Eliminar:** Elimina de forma segura trabajadores sin historial asociado; si el trabajador posee órdenes de trabajo, mantenciones preventivas o cuenta de usuario vinculadas, el sistema protege la integridad histórica y sugiere marcarlo como **Inactivo**.
+  - **Nuevo / Limpiar** y **Crear Usuario:** Restablece el formulario a modo creación o abre directamente la creación de cuenta de usuario prellenada con el trabajador seleccionado.
+- **Gestión por Lotes con Checkboxes:**
+  - Marque uno o múltiples trabajadores mediante la columna **`Sel.`** (con barra espaciadora, clic o casilla **Sel. visibles**). La selección se mantiene persistente incluso al cambiar los filtros de búsqueda.
+  - **Activar Lote / Desactivar Lote:** Activa o desactiva masivamente todos los trabajadores marcados en una sola operación auditada.
+  - **Reasignar Laboral:** Abre un diálogo para cambiar masivamente **Planta**, **Sección** y/o **Cargo** de todo el lote seleccionado (dejando *«— Sin cambios —»* en los campos que no desea modificar).
+  - **Eliminar Lote:** Elimina masivamente los registros sin dependencias y, si alguno se omite por historial operativo, ofrece desactivarlo en un solo clic.
+- **Exportación Excel y PDF:** Exporta automáticamente el lote marcado mediante checkboxes (o todo el listado filtrado si no hay filas marcadas).
+
+---
+
+## 7. Activos, Turnos, Seguridad y Auditoría
 
 - **Activos y Datos Técnicos:** Gestione la estructura jerárquica de equipos, catálogo de atributos técnicos y fichas técnicas por máquina.
-- **Personal y Turnos:** Administre trabajadores, cargos, plantas, secciones y calendario de programación de turnos.
+- **Turnos y Catálogos:** Administre cargos, plantas, secciones y calendario de programación de turnos.
 - **Usuarios y Perfiles:** Cree o edite perfiles personalizados y asigne permisos individuales por módulo/operación.
 - **Auditoría de Operaciones:** Consulte el historial de eventos por rango de fechas, sesión, operación, equipo o tabla, con indicadores KPI y exportación a Excel/PDF.

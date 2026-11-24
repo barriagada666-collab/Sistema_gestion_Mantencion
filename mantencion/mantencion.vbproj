@@ -23,7 +23,7 @@
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <_AppVersionRaw Condition="Exists('$(MSBuildProjectDirectory)\..\VERSION.txt')">$([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)\..\VERSION.txt').Trim())</_AppVersionRaw>
     <Version Condition="'$(_AppVersionRaw)' != ''">$(_AppVersionRaw)</Version>
-    <Version Condition="'$(Version)' == ''">2026.2.1</Version>
+    <Version Condition="'$(Version)' == ''">2026.2.2</Version>
     <_AppVersionBase>$(Version.Split('-')[0])</_AppVersionBase>
     <AssemblyVersion Condition="'$(_AppVersionBase.Split(&quot;.&quot;).Length)' == '3'">$(_AppVersionBase).0</AssemblyVersion>
     <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">$(_AppVersionBase)</AssemblyVersion>
@@ -54,7 +54,7 @@
     <PackageProjectUrl>https://github.com/barriagada666-collab/Sistema_gestion_Mantencion</PackageProjectUrl>
     <RepositoryUrl>https://github.com/barriagada666-collab/Sistema_gestion_Mantencion</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Versión 2026.2.1 LTS: auditoría integral de código, limpieza de código muerto, endurecimiento de seguridad y cachés de sesión/conexión, normalización ortográfica UI, control de advertencias optimizado y documentación técnica/funcional completa.</PackageReleaseNotes>
+    <PackageReleaseNotes>Versión 2026.2.2 LTS: Gestión integral de Personal con padrón completo, filtros en vivo, CRUD completo (compatible con DV K), exportación Excel/PDF y gestión por lotes con checkboxes.</PackageReleaseNotes>
     <PackageTags>mantencion;gestion;industrial;cambiaso;cmms;mantenimiento;ot;preventivo;sqlserver;net8;windows;macos</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>app_icon_rounded.png</PackageIcon>

@@ -21,12 +21,12 @@ Antes de desplegar en equipos productivos, valide la integridad del instalador d
 
 ```powershell
 # Windows (PowerShell)
-Get-FileHash .\Instalador_Sistema_Mantencion_v2026.2.1.exe -Algorithm SHA256
+Get-FileHash .\Instalador_Sistema_Mantencion_v2026.2.2.exe -Algorithm SHA256
 ```
 
 ```bash
 # macOS (Terminal)
-shasum -a 256 Instalador_Sistema_Mantencion_v2026.2.1_macOS.dmg
+shasum -a 256 Instalador_Sistema_Mantencion_v2026.2.2_macOS.dmg
 ```
 
 ---

@@ -4,6 +4,17 @@ Todas las actualizaciones relevantes de **Sistema de Gestión Departamento Mante
 
 ---
 
+## [2026.2.2 LTS] — 2026-11-24
+
+### Gestión Integral de Personal (CRUD Completo y Lotes)
+- **Padrón completo integrado en `Mantenedores → Personal`:** Carga unificada de todo el personal (activos e inactivos) con búsqueda en vivo por RUT, nombres, apellidos, alias, código interno, correo, planta, sección o cargo, combinable con filtros por **Estado**, **Planta**, **Sección** y **Cargo**, además de contador resumen en tiempo real.
+- **CRUD completo en una sola vista:** Botones con icono y etiqueta clara (**Ingresar**, **Actualizar**, **Eliminar**, **Nuevo / Limpiar**, **Crear Usuario**, **Excel**, **PDF** y **Salir**), carga instantánea de cualquier fila al formulario superior con bloqueo seguro del RUT en modo edición e indicador visual de modo activo.
+- **Compatibilidad total con RUT terminados en dígito verificador `K`:** Actualización transaccional auditada que corrige el error de conversión al editar trabajadores cuyo dígito verificador es `K`.
+- **Gestión por lotes mediante checkboxes (`Sel.`):** Selección individual o masiva (**Sel. visibles** / clic en cabecera / tecla Espacio) persistente al cambiar filtros, con acciones masivas transaccionales y auditadas: **Activar Lote**, **Desactivar Lote**, **Reasignar Laboral** (Planta, Sección y/o Cargo con opción *«— Sin cambios —»*), **Eliminar Lote** (protegiendo automáticamente registros con historial operativo y ofreciendo desactivación en un clic) y **Limpiar Sel.**
+- **Exportación inteligente a Excel y PDF:** Exporta automáticamente el lote marcado mediante checkboxes (o todo el listado filtrado si no hay selección activa).
+
+---
+
 ## [2026.2.1 LTS] — 2026-11-23
 
 ### Auditoría, Seguridad, Limpieza y Estabilidad
