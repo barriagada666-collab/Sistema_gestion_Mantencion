@@ -189,6 +189,7 @@ jobs:
     name: Build e Instalador macOS Universal (DMG)
     needs: resolve-version
     runs-on: macos-15-intel
+    timeout-minutes: 35
 
     steps:
       - name: 1. Descargar Código Fuente (Checkout)
@@ -317,31 +318,37 @@ jobs:
           "$WINE_ENGINE/bin/wineserver" -k 2>/dev/null || true
           rm -rf "$HOME/Library/Application Support/SistemaMantencion" "$HOME/Library/Logs/SistemaMantencion" /tmp/ci-launcher-stdout.log
 
-      - name: 8. Comprimir DMG (ULMO LZMA) y ZIP (-9) + Checksums SHA256
+      - name: 8. Comprimir DMG y ZIP + Checksums SHA256
         run: |
           mkdir -p Instalador
           APP_VER="${{ needs.resolve-version.outputs.version }}"
           DMG_NAME="Instalador_Sistema_Mantencion_v${APP_VER}_macOS.dmg"
           ZIP_NAME="Instalador_Sistema_Mantencion_v${APP_VER}_macOS_Universal.zip"
 
+          # Evita que Spotlight bloquee el desmontaje/compresión de dist-mac en macOS
+          touch dist-mac/.metadata_never_index
           (
             cd dist-mac
-            zip -9 -r -y "../Instalador/$ZIP_NAME" "Sistema de Gestion Mantencion.app" "Instalar_en_Mac.command" "Iniciar_con_Whisky.command" "LEAME_MAC.html"
+            zip -6 -r -y "../Instalador/$ZIP_NAME" "Sistema de Gestion Mantencion.app" "Instalar_en_Mac.command" "Iniciar_con_Whisky.command" "LEAME_MAC.html"
           )
 
-          # Reintento ante bloqueo transitorio de Spotlight / diskimages-helper en runners macOS
-          for intento in 1 2 3; do
+          # Límite de 480s para ULMO LZMA (matando el grupo de procesos ante cuelgue) y respaldo automático UDZO
+          DMG_OK=0
+          for intento in 1 2; do
             rm -f "Instalador/$DMG_NAME"
-            if hdiutil create -volname "Sistema Mantencion" -srcfolder "dist-mac" -ov -format ULMO "Instalador/$DMG_NAME"; then
+            if perl -e 'use POSIX qw(setsid); my $t=shift; my $pid=fork(); die unless defined $pid; if($pid==0){ setsid(); exec @ARGV; die; } $SIG{ALRM}=sub{ kill "KILL", -$pid; die "timeout\n"; }; alarm $t; waitpid($pid,0); my $st=$?; alarm 0; exit($st==0 ? 0 : 1);' 480 hdiutil create -volname "Sistema Mantencion" -srcfolder "dist-mac" -ov -format ULMO "Instalador/$DMG_NAME"; then
+              DMG_OK=1
               break
             fi
-            if [[ "$intento" -eq 3 ]]; then
-              echo "[ERROR] hdiutil create fallo tras 3 intentos."
-              exit 1
-            fi
-            echo "[AVISO] hdiutil reporto Resource busy (intento $intento/3); reintentando en 10s..."
-            sleep 10
+            echo "[AVISO] hdiutil ULMO falló o superó 480s (intento $intento/2); limpiando volúmenes y reintentando..."
+            hdiutil detach "/Volumes/Sistema Mantencion" -force 2>/dev/null || true
+            sleep 5
           done
+          if [[ "$DMG_OK" -ne 1 ]]; then
+            echo "[AVISO] Generando DMG con compresión rápida UDZO (zlib-level=9) tras timeout de ULMO."
+            rm -f "Instalador/$DMG_NAME"
+            hdiutil create -volname "Sistema Mantencion" -srcfolder "dist-mac" -ov -format UDZO -imagekey zlib-level=9 "Instalador/$DMG_NAME"
+          fi
 
           cd Instalador
           shasum -a 256 "$DMG_NAME" > checksums_mac_sha256.txt
