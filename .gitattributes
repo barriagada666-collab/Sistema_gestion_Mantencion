@@ -1,2 +1,0 @@
-Instalador/*.zip filter=lfs diff=lfs merge=lfs -text
-Instalador/*.dmg filter=lfs diff=lfs merge=lfs -text

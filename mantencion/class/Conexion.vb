@@ -292,7 +292,7 @@ Public Class Conexion
 
             Dim timestamp As String = DateTime.Now.ToString("yyyyMMdd_HHmmss")
 
-            ' 1. Guardar en LocalApplicationData (siempre escribible en Windows Program Files y macOS)
+            ' 1. Guardar en LocalApplicationData (siempre escribible sin privilegios de administrador en Windows)
             Dim rutaUsuarioCfg As String = ObtenerRutaConfigPersonalizada()
             Dim dirUsuario As String = Path.GetDirectoryName(rutaUsuarioCfg)
             If Not String.IsNullOrWhiteSpace(dirUsuario) AndAlso Not Directory.Exists(dirUsuario) Then

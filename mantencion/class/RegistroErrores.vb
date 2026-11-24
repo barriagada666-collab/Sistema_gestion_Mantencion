@@ -182,7 +182,7 @@ Public NotInheritable Class RegistroErrores
                 "No se pudo conectar con el servidor SQL Server '{0}' (Base de datos: '{1}').{2}{2}" &
                 "¿Por qué aparece este mensaje?{2}" &
                 "• Su equipo no tiene acceso en este momento a la red interna de la empresa o la VPN está desconectada.{2}" &
-                "• El nombre o dirección del servidor '{0}' no responde o no se resuelve en su red (en Mac o fuera de oficina suele requerirse la IP directa del servidor, ej. 192.168.x.x).{2}" &
+                "• El nombre o dirección del servidor '{0}' no responde o no se resuelve en su red (fuera de la red corporativa o vía VPN suele requerirse la IP directa del servidor, ej. 192.168.x.x).{2}" &
                 "• El servicio SQL Server está detenido o el firewall bloquea el puerto 1433.{2}{2}" &
                 "¿Cómo solucionarlo?{2}" &
                 "• Verifique que esté conectado a la red/VPN corporativa.{2}" &
@@ -366,7 +366,7 @@ Public NotInheritable Class RegistroErrores
     End Function
 
     ''' <summary>
-    ''' Abre la carpeta de archivos de registro (.log) en el Explorador de Windows o Finder de macOS.
+    ''' Abre la carpeta de archivos de registro (.log) en el Explorador de Windows.
     ''' </summary>
     Public Shared Sub AbrirCarpetaLogs()
         Dim carpeta As String = ObtenerCarpetaLogs()

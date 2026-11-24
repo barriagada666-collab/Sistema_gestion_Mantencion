@@ -119,7 +119,7 @@ Public Class Utilitarios
             If Not String.IsNullOrEmpty(ruta) AndAlso File.Exists(ruta) Then Return Path.GetFullPath(ruta)
         Next
 
-        ' Respaldo insensible a mayúsculas/minúsculas para sistemas de archivos case-sensitive (macOS/Wine/Linux)
+        ' Respaldo insensible a mayúsculas/minúsculas en búsqueda de plantillas locales
         Dim carpetas As String() = {
             Path.Combine(asmDir, "plantillas"),
             Path.Combine(baseDir, "plantillas"),
@@ -697,7 +697,7 @@ Public Class Utilitarios
 
     ''' <summary>
     ''' Respaldo 100% libre de dependencias para exportar una o más tablas/grillas a Excel (SpreadsheetML .xls)
-    ''' cuando Microsoft Excel COM no está instalado (macOS/Whisky o PCs Windows sin Office).
+    ''' cuando Microsoft Excel no está instalado en el equipo Windows.
     ''' </summary>
     Public Shared UltimaExportacionCancelada As Boolean = False
 

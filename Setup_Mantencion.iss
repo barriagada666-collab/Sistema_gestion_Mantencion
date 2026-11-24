@@ -1,6 +1,6 @@
 ; Script de Instalación para Sistema de Gestión Departamento Mantención
-; Migrado y optimizado para Microsoft .NET 8 Windows Desktop (x64)
-; Paquete Autocontenido (Self-Contained) - Zero Dependency
+; Optimizado para Microsoft .NET 8 Windows Desktop (64 bits)
+; Paquete Autocontenido para Windows 10 y Windows 11
 ; Compatible con Inno Setup 6
 ; Configurado con máxima compresión y ruta C:\Temp\Sistema de Mantencion
 
@@ -10,10 +10,10 @@
   #include "version.iss"
 #endif
 #ifndef MyAppVersion
-  #define MyAppVersion "2026.2.0"
+  #define MyAppVersion "2026.2.3"
 #endif
 #ifndef MyAppFileVersion
-  #define MyAppFileVersion "2026.2.0.0"
+  #define MyAppFileVersion "2026.2.3.0"
 #endif
 #define MyAppPublisher "Cambiaso Hnos. S.A.C. — División de Mantención Industrial"
 #define MyAppURL "https://github.com/barriagada666-collab/Sistema_gestion_Mantencion"
@@ -25,20 +25,20 @@
 AppId={{81543D95-46BE-4730-8A08-A163B21205D7}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-AppVerName={#MyAppName} v{#MyAppVersion} LTS (.NET 8 Autocontenido)
+AppVerName={#MyAppName} v{#MyAppVersion} LTS
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}/releases
 AppUpdatesURL={#MyAppURL}/releases
-AppComments=Plataforma corporativa de Gestión de Mantención Industrial — Cambiaso Hnos. S.A.C. — Desarrollado por Boris Arriagada
-VersionInfoDescription=Instalador Autocontenido Sistema de Gestión Departamento Mantención v{#MyAppVersion} LTS (.NET 8 x64 Zero-Dependency)
+AppComments=Sistema corporativo de Gestión de Mantención Industrial — Cambiaso Hnos. S.A.C.
+VersionInfoDescription=Instalador Sistema de Gestión Departamento Mantención v{#MyAppVersion} LTS (Windows 64 bits)
 VersionInfoProductName=Sistema de Gestión Departamento Mantención
 VersionInfoProductVersion={#MyAppFileVersion}
 VersionInfoCompany=Cambiaso Hnos. S.A.C. — División de Mantención Industrial
 VersionInfoCopyright=Copyright (C) 2026 Cambiaso Hnos. S.A.C. — Desarrollado por Boris Arriagada
 VersionInfoVersion={#MyAppFileVersion}
 
-; Arquitectura de 64 bits (x64 nativo / ARM64 compatible)
+; Arquitectura exclusiva de 64 bits (Windows x64)
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 
@@ -93,9 +93,9 @@ Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 [Messages]
 spanish.BeveledLabel=Cambiaso Hnos. S.A.C. — División Mantención Industrial · v{#MyAppVersion} LTS
 spanish.WelcomeLabel1=Bienvenido al Asistente de Instalación de {#MyAppName}
-spanish.WelcomeLabel2=Este asistente instalará {#MyAppName} v{#MyAppVersion} LTS (.NET 8 Autocontenido) en su equipo.%n%nIncluye gestión de Órdenes de Trabajo, Mantención Preventiva, Carta Gantt, control de activos, reportes y exportación integrada a Excel y PDF.%n%nHaga clic en Siguiente para continuar o en Cancelar para salir.
+spanish.WelcomeLabel2=Este asistente instalará {#MyAppName} v{#MyAppVersion} LTS en su equipo Windows (64 bits).%n%nIncluye gestión de Órdenes de Trabajo, Mantención Preventiva, Carta Gantt, equipos, personal, informes y exportación a Excel y PDF.%n%nHaga clic en Siguiente para continuar o en Cancelar para salir.
 spanish.FinishedHeadingLabel=Instalación Completada — {#MyAppName}
-spanish.FinishedLabel=La instalación de {#MyAppName} v{#MyAppVersion} LTS ha finalizado correctamente.%n%nSi requiere ajustar parámetros del servidor SQL, un usuario administrador puede configurarlos directamente dentro de la aplicación.
+spanish.FinishedLabel=La instalación de {#MyAppName} v{#MyAppVersion} LTS ha finalizado correctamente.%n%nSi necesita ajustar la conexión de red, un usuario administrador puede configurarla directamente dentro de la aplicación.
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
@@ -143,10 +143,10 @@ function InitializeSetup(): Boolean;
 begin
   Result := True;
   
-  // Validar que el sistema operativo sea Windows de 64 bits (x64 / ARM64)
+  // Validar que el sistema operativo sea Windows de 64 bits
   if not Is64BitInstallMode then
   begin
-    MsgBox('Este instalador contiene la versión de alto rendimiento de 64 bits (x64) para Microsoft .NET 8.' + #13#10 + #13#10 +
+    MsgBox('Este instalador requiere un sistema operativo Windows de 64 bits.' + #13#10 + #13#10 +
            'No es posible ejecutar esta instalación en un sistema operativo de 32 bits.' + #13#10 +
            'Por favor ejecute el instalador en un equipo con Windows 10 o Windows 11 de 64 bits.', mbCriticalError, MB_OK);
     Result := False;

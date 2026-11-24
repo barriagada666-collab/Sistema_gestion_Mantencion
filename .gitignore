@@ -19,7 +19,6 @@ mantencion/obj/
 Backup/
 
 # Carpetas temporales de empaquetado (los releases finales se conservan en Instalador/)
-dist-mac/
 nupkg/
 
 # Credenciales locales y tokens (no sincronizar con Git)

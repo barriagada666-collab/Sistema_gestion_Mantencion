@@ -45,9 +45,9 @@ $currentBranch = (& $gitExe branch --show-current).Trim()
 if (-not $currentBranch) { $currentBranch = "main" }
 
 if ($Token) {
-    $authUrl = "https://$($Token)@github.com/barriagada666-collab/Sistema_gestion_Mantencion.git"
-    Write-Host "Subiendo rama '$currentBranch' con Personal Access Token (PAT)..." -ForegroundColor Yellow
-    & $gitExe push -u $authUrl $currentBranch
+    $b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("x-access-token:$Token"))
+    Write-Host "Subiendo rama '$currentBranch' con Personal Access Token (PAT) en memoria..." -ForegroundColor Yellow
+    & $gitExe -c "http.https://github.com/.extraheader=Authorization: Basic $b64" push -u origin $currentBranch
 } else {
     Write-Host "Iniciando Git Push en rama '$currentBranch'..." -ForegroundColor Yellow
     Write-Host "Si se solicita autenticacion, autorice el acceso en la ventana de su navegador." -ForegroundColor Gray

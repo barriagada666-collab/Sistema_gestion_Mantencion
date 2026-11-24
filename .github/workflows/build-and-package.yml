@@ -81,9 +81,10 @@ jobs:
         run: |
           dotnet restore mantencion.sln
 
-      - name: 6. Compilar Solución (Release)
+      - name: 6. Compilar Solución (Debug y Release)
         run: |
-          dotnet build mantencion.sln -c Release --no-restore
+          dotnet build mantencion.sln -c Debug --no-restore --no-incremental --nologo
+          dotnet build mantencion.sln -c Release --no-restore --no-incremental --nologo
 
       - name: 7. Publicar Aplicación Autocontenida (Self-Contained win-x64)
         run: |
@@ -185,206 +186,9 @@ jobs:
             nupkg/*.nupkg
           token: ${{ secrets.GITHUB_TOKEN }}
 
-  build-mac-installer:
-    name: Build e Instalador macOS Universal (DMG)
-    needs: resolve-version
-    runs-on: macos-15-intel
-    timeout-minutes: 35
-
-    steps:
-      - name: 1. Descargar Código Fuente (Checkout)
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      - name: 2. Configurar Microsoft .NET 8 SDK
-        uses: actions/setup-dotnet@v6
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: 3. Cachear Motores Wine (MetalSharp ARM64 + Wine Staging x64)
-        uses: actions/cache@v6
-        with:
-          path: ~/.cache/wine-downloads
-          key: macos-wine-engines-v7.0-11.21
-
-      - name: 4. Instalar llvm-strip si no está presente (para optimizar binarios PE ARM64 y x64)
-        run: |
-          if ! command -v llvm-strip &>/dev/null && [ ! -x /opt/homebrew/opt/llvm/bin/llvm-strip ] && [ ! -x /usr/local/opt/llvm/bin/llvm-strip ]; then
-            brew install llvm
-          fi
-
-      - name: 5. Publicar Aplicación Autocontenida (win-arm64 y win-x64)
-        run: |
-          dotnet publish mantencion/mantencion.vbproj -c Release -r win-arm64 --self-contained true -o mantencion/bin/Release/net8-selfcontained-arm64 -p:EnableWindowsTargeting=true --nologo -v m
-          dotnet publish mantencion/mantencion.vbproj -c Release -r win-x64 --self-contained true -o mantencion/bin/Release/net8-selfcontained-x64 -p:EnableWindowsTargeting=true --nologo -v m
-
-      - name: 6. Generar macOS App Bundle Universal Nativo
-        run: |
-          chmod +x "automatizadores de instalacion/Generar_Instalador_Mac.sh"
-          SKIP_ARCHIVE=1 WINE_CACHE_DIR="$HOME/.cache/wine-downloads" "./automatizadores de instalacion/Generar_Instalador_Mac.sh"
-
-      - name: 7. Pruebas Exhaustivas de Paquete Universal (ARM64 + Intel x64) y Arranque Nativo
-        run: |
-          APP_BUNDLE="$(pwd)/dist-mac/Sistema de Gestion Mantencion.app"
-          HOST_ARCH="$(uname -m)"
-          echo "=== Arquitectura del Runner: $HOST_ARCH ==="
-
-          # 1. Verificar Mach-O Universal (arm64 + x86_64) en Contents/MacOS/launcher
-          LIPO_OUT=$(lipo -info "$APP_BUNDLE/Contents/MacOS/launcher")
-          echo "Launcher lipo: $LIPO_OUT"
-          echo "$LIPO_OUT" | grep -q "arm64"
-          echo "$LIPO_OUT" | grep -q "x86_64"
-
-          # 2. Verificar que wine-arm64 no contenga NINGÚN binario x86_64 y que ambos payloads existan
-          X64_FOUND=$(find "$APP_BUNDLE/Contents/Resources/wine-arm64" -type f -exec file {} + | grep -i "x86_64" || true)
-          if [ -n "$X64_FOUND" ]; then
-            echo "[ERROR] Se detectaron binarios x86_64 dentro de wine-arm64:"
-            echo "$X64_FOUND"
-            exit 1
-          fi
-          test -f "$APP_BUNDLE/Contents/Resources/app-arm64/Sistema de Gestion Mantencion.exe"
-          test -f "$APP_BUNDLE/Contents/Resources/app-x64/Sistema de Gestion Mantencion.exe"
-          test -x "$APP_BUNDLE/Contents/Resources/wine-arm64/bin/wine-launcher"
-          test -x "$APP_BUNDLE/Contents/Resources/wine-x64/bin/wine"
-          echo "✓ Payloads Universal ARM64 + Intel x86_64 verificados (0 binarios x86_64 en wine-arm64)."
-
-          # 3. Verificar firma local del App Bundle
-          codesign --verify --strict "$APP_BUNDLE"
-          echo "✓ codesign verificado."
-
-          # 4. Prueba funcional real del launcher Universal en entorno Finder limpio (sin LANG/LC_ALL)
-          if [ "$HOST_ARCH" = "arm64" ]; then
-            WINE_ENGINE="$APP_BUNDLE/Contents/Resources/wine-arm64"
-            PREFIX_SUBDIR="wineprefix-arm64"
-          else
-            WINE_ENGINE="$APP_BUNDLE/Contents/Resources/wine-x64"
-            PREFIX_SUBDIR="wineprefix-x86_64"
-          fi
-
-          rm -rf "$HOME/Library/Application Support/SistemaMantencion/$PREFIX_SUBDIR" "$HOME/Library/Logs/SistemaMantencion"
-
-          echo "Lanzando Contents/MacOS/launcher ($HOST_ARCH) simulando entorno limpio Finder/launchd..."
-          env -i HOME="$HOME" PATH="/usr/bin:/bin:/usr/sbin:/sbin" "$APP_BUNDLE/Contents/MacOS/launcher" >/tmp/ci-launcher-stdout.log 2>&1 &
-          APP_PID=$!
-
-          LOG_FILE="$HOME/Library/Logs/SistemaMantencion/launcher.log"
-          for _ in $(seq 1 25); do
-            if ! kill -0 "$APP_PID" 2>/dev/null; then
-              break
-            fi
-            if grep -q "Lanzando Sistema de Gestion Mantencion.exe" "$LOG_FILE" 2>/dev/null; then
-              sleep 6
-              break
-            fi
-            sleep 1
-          done
-
-          echo "=== Contenido de launcher.log ==="
-          cat "$LOG_FILE" || true
-          cat /tmp/ci-launcher-stdout.log || true
-
-          if grep -Eqi "Unhandled exception|FileNotFoundException|Could not load|Fatal error|ICU data|ApplicationException|starting debugger|winedbg" "$LOG_FILE" /tmp/ci-launcher-stdout.log 2>/dev/null; then
-            echo "[ERROR] Se detectó una excepción de arranque en macOS ($HOST_ARCH)."
-            kill "$APP_PID" 2>/dev/null || true
-            "$WINE_ENGINE/bin/wineserver" -k 2>/dev/null || true
-            exit 1
-          fi
-
-          if pgrep -f "winedbg" >/dev/null 2>&1; then
-            echo "[ERROR] winedbg está activo: la aplicación crasheó en Wine ($HOST_ARCH)."
-            "$WINE_ENGINE/bin/wineserver" -k 2>/dev/null || true
-            exit 1
-          fi
-
-          RUNTIME_ERR=$(find "$HOME/Library/Application Support/SistemaMantencion/$PREFIX_SUBDIR" -name "error_runtime.log" 2>/dev/null | head -n 1)
-          if [ -n "$RUNTIME_ERR" ] && [ -s "$RUNTIME_ERR" ]; then
-            echo "[ERROR] ApplicationEvents.vb registró un error de ejecución en tiempo de arranque:"
-            cat "$RUNTIME_ERR"
-            "$WINE_ENGINE/bin/wineserver" -k 2>/dev/null || true
-            exit 1
-          fi
-
-          if kill -0 "$APP_PID" 2>/dev/null; then
-            echo "✓ Proceso .NET 8 ($HOST_ARCH) en ejecución estable sin excepciones (PID $APP_PID)."
-            kill "$APP_PID" 2>/dev/null || true
-          else
-            wait "$APP_PID" || APP_EXIT=$?
-            echo "[ERROR] Launcher finalizó prematuramente con código: ${APP_EXIT:-0}"
-            "$WINE_ENGINE/bin/wineserver" -k 2>/dev/null || true
-            exit 1
-          fi
-
-          "$WINE_ENGINE/bin/wineserver" -k 2>/dev/null || true
-          rm -rf "$HOME/Library/Application Support/SistemaMantencion" "$HOME/Library/Logs/SistemaMantencion" /tmp/ci-launcher-stdout.log
-
-      - name: 8. Comprimir DMG y ZIP + Checksums SHA256
-        run: |
-          mkdir -p Instalador
-          APP_VER="${{ needs.resolve-version.outputs.version }}"
-          DMG_NAME="Instalador_Sistema_Mantencion_v${APP_VER}_macOS.dmg"
-          ZIP_NAME="Instalador_Sistema_Mantencion_v${APP_VER}_macOS_Universal.zip"
-
-          # Evita que Spotlight bloquee el desmontaje/compresión de dist-mac en macOS
-          touch dist-mac/.metadata_never_index
-          (
-            cd dist-mac
-            zip -6 -r -y "../Instalador/$ZIP_NAME" "Sistema de Gestion Mantencion.app" "Instalar_en_Mac.command" "Iniciar_con_Whisky.command" "LEAME_MAC.html"
-          )
-
-          # Límite de 480s para ULMO LZMA (matando el grupo de procesos ante cuelgue) y respaldo automático UDZO
-          DMG_OK=0
-          for intento in 1 2; do
-            rm -f "Instalador/$DMG_NAME"
-            if perl -e 'use POSIX qw(setsid); my $t=shift; my $pid=fork(); die unless defined $pid; if($pid==0){ setsid(); exec @ARGV; die; } $SIG{ALRM}=sub{ kill "KILL", -$pid; die "timeout\n"; }; alarm $t; waitpid($pid,0); my $st=$?; alarm 0; exit($st==0 ? 0 : 1);' 480 hdiutil create -volname "Sistema Mantencion" -srcfolder "dist-mac" -ov -format ULMO "Instalador/$DMG_NAME"; then
-              DMG_OK=1
-              break
-            fi
-            echo "[AVISO] hdiutil ULMO falló o superó 480s (intento $intento/2); limpiando volúmenes y reintentando..."
-            hdiutil detach "/Volumes/Sistema Mantencion" -force 2>/dev/null || true
-            sleep 5
-          done
-          if [[ "$DMG_OK" -ne 1 ]]; then
-            echo "[AVISO] Generando DMG con compresión rápida UDZO (zlib-level=9) tras timeout de ULMO."
-            rm -f "Instalador/$DMG_NAME"
-            hdiutil create -volname "Sistema Mantencion" -srcfolder "dist-mac" -ov -format UDZO -imagekey zlib-level=9 "Instalador/$DMG_NAME"
-          fi
-
-          cd Instalador
-          shasum -a 256 "$DMG_NAME" > checksums_mac_sha256.txt
-          shasum -a 256 "$ZIP_NAME" >> checksums_mac_sha256.txt
-          cat checksums_mac_sha256.txt
-          ls -lh "$DMG_NAME" "$ZIP_NAME"
-
-
-      - name: 9. Publicar Artefacto - Instalador macOS (DMG y ZIP)
-        uses: actions/upload-artifact@v7
-        with:
-          name: Instalador-Sistema-Mantencion-v${{ needs.resolve-version.outputs.version }}-macOS
-          path: |
-            Instalador/Instalador_Sistema_Mantencion_v${{ needs.resolve-version.outputs.version }}_macOS.dmg
-            Instalador/Instalador_Sistema_Mantencion_v${{ needs.resolve-version.outputs.version }}_macOS_Universal.zip
-            Instalador/checksums_mac_sha256.txt
-          if-no-files-found: error
-          retention-days: 30
-
-      - name: 10. Publicar en GitHub Releases (macOS Assets)
-        uses: softprops/action-gh-release@v3
-        if: github.ref == 'refs/heads/main'
-        with:
-          tag_name: ${{ needs.resolve-version.outputs.tag }}
-          name: Sistema de Gestión Mantención ${{ needs.resolve-version.outputs.tag }} LTS
-          draft: false
-          prerelease: false
-          files: |
-            Instalador/Instalador_Sistema_Mantencion_v${{ needs.resolve-version.outputs.version }}_macOS.dmg
-            Instalador/Instalador_Sistema_Mantencion_v${{ needs.resolve-version.outputs.version }}_macOS_Universal.zip
-            Instalador/checksums_mac_sha256.txt
-          token: ${{ secrets.GITHUB_TOKEN }}
-
   sync-installers-to-repo:
     name: Sincronizar Instaladores Oficiales en Carpeta /Instalador
-    needs: [resolve-version, build-and-package, build-mac-installer]
+    needs: [resolve-version, build-and-package]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
 
@@ -393,7 +197,6 @@ jobs:
         uses: actions/checkout@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          lfs: true
 
       - name: Descargar Artefactos Windows y NuGet
         uses: actions/download-artifact@v8
@@ -401,20 +204,13 @@ jobs:
           name: Instalador-Sistema-Mantencion-v${{ needs.resolve-version.outputs.version }}
           path: temp-win
 
-      - name: Descargar Artefactos macOS
-        uses: actions/download-artifact@v8
-        with:
-          name: Instalador-Sistema-Mantencion-v${{ needs.resolve-version.outputs.version }}-macOS
-          path: temp-mac
-
       - name: Copiar Archivos a /Instalador
         run: |
           mkdir -p Instalador
-          rm -f Instalador/Instalador_Sistema_Mantencion_*.exe Instalador/Instalador_Sistema_Mantencion_*.dmg Instalador/Instalador_Sistema_Mantencion_*.zip Instalador/Sistema.Gestion.Mantencion.*.nupkg
+          find Instalador -maxdepth 1 -type f ! -name 'README.md' -delete
           cp -fv temp-win/Instalador/* Instalador/ 2>/dev/null || cp -fv temp-win/* Instalador/ 2>/dev/null || true
-          cp -fv temp-mac/Instalador/* Instalador/ 2>/dev/null || cp -fv temp-mac/* Instalador/ 2>/dev/null || true
           if [ -d "temp-win/nupkg" ]; then cp -fv temp-win/nupkg/*.nupkg Instalador/ 2>/dev/null || true; fi
-          rm -rf temp-win temp-mac
+          rm -rf temp-win
           ls -la Instalador/
 
       - name: Commit, Push a main y Actualizar Tag ${{ needs.resolve-version.outputs.tag }}
@@ -422,8 +218,7 @@ jobs:
           TAG_NAME="${{ needs.resolve-version.outputs.tag }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git lfs install
-          git add .gitattributes Instalador/
+          git add -A Instalador/
           if git diff --staged --quiet; then
             echo "No hay cambios pendientes en Instalador/."
           else

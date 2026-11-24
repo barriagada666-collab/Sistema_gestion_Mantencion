@@ -1,7 +1,7 @@
 # Arquitectura y Documentación Técnica
 
 **Sistema de Gestión Departamento Mantención** — Cambiaso Hnos. S.A.C. (División de Mantención Industrial)  
-**Plataforma:** Microsoft .NET 8 LTS (Windows Desktop WinForms, autocontenido `x64` / `ARM64` y paquete universal macOS).
+**Plataforma:** Microsoft .NET 8 LTS (Windows Desktop WinForms, distribución autocontenida `x64` para Windows 10 y Windows 11).
 
 ---
 
@@ -42,7 +42,7 @@ flowchart TD
 ### 2.3 Control Centralizado de Versionado
 - El número de versión corporativo (`YYYY.M.P`) se mantiene en una única fuente (`VERSION.txt` en la raíz del repositorio).
 - Durante la compilación, el proyecto `.NET` lee automáticamente `VERSION.txt` para poblar `Version`, `AssemblyVersion`, `FileVersion`, `InformationalVersion` y el paquete NuGet.
-- Los scripts de empaquetado sincronizan automáticamente la misma versión hacia el instalador Windows, el paquete macOS Universal y el flujo CI/CD de GitHub Actions.
+- Los scripts de empaquetado sincronizan automáticamente la misma versión hacia el instalador Windows, sus gráficas de bienvenida, el paquete NuGet y el flujo CI/CD de GitHub Actions.
 - El instalador Windows registra la versión instalada, la carpeta de destino y la fecha/hora exacta de instalación en el Registro del usuario/equipo, consumidos en tiempo de ejecución por **Acerca de** (con respaldo automático a la marca temporal del ejecutable en modo portable).
 
 ### 2.4 Diagnóstico y Registro de Errores

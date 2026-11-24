@@ -98,17 +98,17 @@ $releaseBody = @"
 
 ---
 
-### ✨ Características Principales
-- **Interfaz Corporativa Unificada:** Módulos de Órdenes de Trabajo, Mantención Preventiva, Carta Gantt, Activos, Personal, Estadísticas y Auditoría bajo diseño homogéneo.
-- **Control de Usuarios y Perfiles:** Administración de usuarios, perfiles y permisos por módulo, con ajustes de conexión restringidos a administradores.
-- **Informes y Exportación Integrada:** Generación directa de reportes Excel y PDF en orientación horizontal completa, sin requerir software adicional.
-- **Instaladores Multiplataforma Autocontenidos:** Paquetes independientes listos para ejecutar en Windows (`x64`) y macOS Universal (`ARM64` + `Intel`).
+### Características Principales
+- **Operación Integral:** Módulos de Órdenes de Trabajo, Mantención Preventiva, Carta Gantt, Activos, Personal, Estadísticas y Auditoría bajo interfaz corporativa unificada.
+- **Administración y Perfiles:** Gestión de usuarios, permisos por módulo y parámetros de conexión SQL restringidos a administradores.
+- **Reportes y Exportación:** Generación directa de informes en Excel y PDF en formato apaisado.
+- **Edición Windows Exclusiva (64 bits):** Instalador autocontenido para Windows 10 y Windows 11, sin requisitos adicionales.
 
 ---
 
-### ⬇️ Descarga Oficial:
-- 💾 **Windows (`x64`):** $($item.Name) ($sizeMb MB · SHA-256: `$hash`)
-- 🍏 **macOS Universal & 📦 NuGet:** disponibles en los Assets del Release y en `/Instalador`.
+### Descarga Oficial (Windows 64 bits)
+- **Instalador Windows:** $($item.Name) ($sizeMb MB · SHA-256: `$hash`)
+- **Paquete NuGet y Verificación:** disponibles en los Assets del Release y en `/Instalador`.
 "@
 
 if ($null -eq $release) {

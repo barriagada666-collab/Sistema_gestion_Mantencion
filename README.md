@@ -6,15 +6,15 @@
 
 # Sistema de Gestión Departamento Mantención
 ### Cambiaso Hnos. S.A.C. — División de Mantención Industrial
-**Plataforma corporativa para Órdenes de Trabajo (OT), Mantención Preventiva (MP), Carta Gantt, Personal y Control de Activos**
+**Aplicación corporativa de escritorio para Windows (64 bits) enfocada en Órdenes de Trabajo, Mantención Preventiva, Carta Gantt, Activos y Personal**
 
 [![CI/CD](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/actions/workflows/build-and-package.yml/badge.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/actions/workflows/build-and-package.yml)
-[![Versión](https://img.shields.io/badge/Versi%C3%B3n-2026.2.2%20LTS-025E87.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/tag/v2026.2.2)
-[![Plataformas](https://img.shields.io/badge/Plataformas-Windows%2010%2F11%20%7C%20macOS%20Universal-0191B3.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases)
+[![Versión](https://img.shields.io/badge/Versi%C3%B3n-2026.2.3%20LTS-025E87.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/tag/v2026.2.3)
+[![Plataforma](https://img.shields.io/badge/Plataforma-Windows%2010%20%2F%2011%20(64%20bits)-0191B3.svg)](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases)
 
 <p align="center">
-  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.2/Instalador_Sistema_Mantencion_v2026.2.2.exe"><img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_WINDOWS-v2026.2.2_LTS-025E87?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar Windows" /></a>&nbsp;
-  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases"><img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_RELEASES_%26_MAC_(DMG)-v2026.2.2_LTS-0191B3?style=for-the-badge&logo=apple&logoColor=white" alt="Ver Releases y macOS" /></a>
+  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.3/Instalador_Sistema_Mantencion_v2026.2.3.exe"><img src="https://img.shields.io/badge/%E2%AC%87%EF%B8%8F_DESCARGAR_WINDOWS-v2026.2.3_LTS-025E87?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar Instalador Windows" /></a>&nbsp;
+  <a href="https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases"><img src="https://img.shields.io/badge/%F0%9F%93%A6_VER_RELEASES-v2026.2.3_LTS-0191B3?style=for-the-badge&logo=github&logoColor=white" alt="Ver Releases Oficiales" /></a>
 </p>
 
 </div>
@@ -23,7 +23,7 @@
 
 ## 📌 Descripción del Proyecto
 
-El **Sistema de Gestión Departamento Mantención** es una plataforma corporativa de escritorio desarrollada sobre **Microsoft .NET 8 LTS** para planificar, registrar, ejecutar y controlar integralmente las operaciones de mantenimiento correctivo y preventivo, la programación Carta Gantt, el inventario jerárquico de equipos y el padrón de personal técnico de **Cambiaso Hnos. S.A.C.**
+El **Sistema de Gestión Departamento Mantención** es una aplicación de escritorio corporativa para **Windows 10 y Windows 11 (64 bits)** desarrollada sobre **Microsoft .NET 8 LTS** para planificar, registrar, ejecutar y controlar integralmente las operaciones de mantenimiento correctivo y preventivo, la programación Carta Gantt, el inventario jerárquico de equipos y el padrón de personal técnico de **Cambiaso Hnos. S.A.C.**
 
 ---
 
@@ -31,17 +31,17 @@ El **Sistema de Gestión Departamento Mantención** es una plataforma corporativ
 
 - **Órdenes de Trabajo (OT):** Creación, edición, asignación de técnicos, tiempos de detención, insumos/repuestos, OT externas y cierre o anulación controlada por permisos.
 - **Mantención Preventiva y Carta Gantt:** Pautas periódicas, planificación masiva de ciclos, selección múltiple por casillas (`Solo Marcados`), búsqueda directa por **N° de Mantención (`N° MP`)**, **ID de Ciclo**, máquina, estado o fecha de inicio, ordenamiento por plan más reciente, vista multi-año con barras en color sólido puro y panel detallado de tareas.
-- **Gestión Integral de Personal (Nuevo en `v2026.2.2 LTS`):** Padrón completo (activos e inactivos) integrado en pantalla única con búsqueda en vivo, filtros combinables por **Estado**, **Planta**, **Sección** y **Cargo**, CRUD completo (incluyendo validación y edición segura de RUT terminados en dígito verificador `K`), creación directa de cuentas de usuario, **gestión masiva por lotes con checkboxes (`Sel.`)** (activar, desactivar, reasignar Planta/Sección/Cargo y eliminar protegiendo historial operativo) y exportación selectiva a **Excel** y **PDF**.
-- **Activos, Fichas Técnicas y Turnos:** Árbol jerárquico acelerado en un único recorrido, especificaciones técnicas por equipo, catálogos de plantas/secciones/cargos y calendario de turnos.
-- **Informes y Exportación Nativa:** Selectores inicializados por defecto al rango **ayer – hoy**, reportes de OT, resúmenes KPI e informes preventivos (individual y multi-máquina) con exportación a **Excel** y **PDF horizontal completo** sin dependencias externas.
-- **Seguridad, Trazabilidad y Versionado:** Control granular de **21 permisos** por perfil con validación en capas, bitácora de auditoría operativa, configuración de red restringida a administradores, ventana **Acerca de** con fecha/hora exacta de instalación, indicador permanente de versión en esquina inferior derecha y compilación estricta (`0 errores, 0 advertencias`).
+- **Gestión Integral de Personal (CRUD Completo y Lotes):** Padrón completo (activos e inactivos) integrado en pantalla única con búsqueda en vivo, filtros combinables por **Estado**, **Planta**, **Sección** y **Cargo**, CRUD completo (compatible con dígito verificador `K`), creación directa de cuentas de usuario, **gestión masiva por lotes con checkboxes (`Sel.`)** (activar, desactivar, reasignar Planta/Sección/Cargo y eliminar protegiendo historial operativo) y exportación selectiva a **Excel** y **PDF**.
+- **Activos, Fichas Técnicas y Turnos:** Árbol jerárquico de planta y equipos de carga rápida, especificaciones técnicas, catálogos operativos y calendario de turnos.
+- **Informes y Exportación Nativa:** Selectores inicializados por defecto al rango **ayer – hoy**, reportes de OT, resúmenes KPI e informes preventivos (individual y multi-máquina) con exportación directa a **Excel** y **PDF horizontal completo** sin requerir software externo.
+- **Seguridad, Trazabilidad y Control de Versiones:** Control granular de **21 permisos** por perfil, bitácora de auditoría operativa, ajustes de conectividad restringidos a administradores, ventana **Acerca de** con fecha/hora exacta de instalación, indicador permanente de versión en esquina inferior derecha y compilación limpia (`0 errores, 0 advertencias`).
 
 ---
 
 ## 🖼️ Capturas del Sistema
 
 <p align="center">
-  <img src="docs/screenshots/carrusel_mockups.gif" alt="Vista general de módulos del Sistema de Gestión Mantención v2026.2.2 LTS" width="880" />
+  <img src="docs/screenshots/carrusel_mockups.gif" alt="Vista general de módulos del Sistema de Gestión Mantención v2026.2.3 LTS" width="880" />
 </p>
 
 <details>
@@ -52,7 +52,7 @@ El **Sistema de Gestión Departamento Mantención** es una plataforma corporativ
 | Vista (Impar) | Vista (Par) |
 | :---: | :---: |
 | **01.** Pantalla de Arranque Corporativa<br/>[<img src="docs/screenshots/01_Inicio.png" width="400" alt="01"/>](docs/screenshots/01_Inicio.png) | **02.** Inicio de Sesión Corporativo<br/>[<img src="docs/screenshots/02_Login.png" width="400" alt="02"/>](docs/screenshots/02_Login.png) |
-| **03.** Escritorio Principal MDI<br/>[<img src="docs/screenshots/03_principal.png" width="400" alt="03"/>](docs/screenshots/03_principal.png) | **04.** Configuración de Servidor BD<br/>[<img src="docs/screenshots/04_FrmConfiguracionServidor.png" width="400" alt="04"/>](docs/screenshots/04_FrmConfiguracionServidor.png) |
+| **03.** Escritorio Principal MDI<br/>[<img src="docs/screenshots/03_principal.png" width="400" alt="03"/>](docs/screenshots/03_principal.png) | **04.** Configuración de Conexión Corporativa<br/>[<img src="docs/screenshots/04_FrmConfiguracionServidor.png" width="400" alt="04"/>](docs/screenshots/04_FrmConfiguracionServidor.png) |
 | **05.** Gestión de Órdenes de Trabajo<br/>[<img src="docs/screenshots/05_frm_OT.png" width="400" alt="05"/>](docs/screenshots/05_frm_OT.png) | **06.** Detalle Completo de OT<br/>[<img src="docs/screenshots/06_FrmDetalleOt.png" width="400" alt="06"/>](docs/screenshots/06_FrmDetalleOt.png) |
 | **07.** Gestión de Mantención Preventiva<br/>[<img src="docs/screenshots/07_FrmMp.png" width="400" alt="07"/>](docs/screenshots/07_FrmMp.png) | **08.** Tareas Preventivas por Máquina<br/>[<img src="docs/screenshots/08_FrmAdminTareasNodo.png" width="400" alt="08"/>](docs/screenshots/08_FrmAdminTareasNodo.png) |
 | **09.** Planificador Masivo de Ciclos<br/>[<img src="docs/screenshots/09_FrmPlanificarCiclos.png" width="400" alt="09"/>](docs/screenshots/09_FrmPlanificarCiclos.png) | **10.** Informe de Órdenes de Trabajo<br/>[<img src="docs/screenshots/10_FrmInfOT.png" width="400" alt="10"/>](docs/screenshots/10_FrmInfOT.png) |
@@ -77,48 +77,43 @@ El **Sistema de Gestión Departamento Mantención** es una plataforma corporativ
 
 ---
 
-## 📦 Descargas Oficiales (`v2026.2.2 LTS`)
+## 📦 Descarga Oficial (`v2026.2.3 LTS`)
 
-> **Autocontenido (Zero-Dependency):** No requiere instalar previamente .NET Runtime, Crystal Reports ni Microsoft Office.
+> **Instalación Completa para Windows:** No requiere instalar previamente .NET Runtime, Crystal Reports ni Microsoft Office.
 
-| Plataforma | Instalador / Paquete | Tamaño | Descarga |
+| Plataforma | Instalador / Paquete | Estado | Descarga |
 | :--- | :--- | :---: | :--- |
-| 🪟 **Windows 10 / 11** (`x64`) | Instalador estándar (`.exe`) | `41.48 MB` | [⬇️ **Descargar Windows (.exe)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.2/Instalador_Sistema_Mantencion_v2026.2.2.exe) |
-| 📦 **NuGet / GitHub Packages** | Paquete de distribución (`.nupkg`) | `2.24 MB` | [⬇️ **Descargar Paquete (.nupkg)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.2/Sistema.Gestion.Mantencion.2026.2.2.nupkg) |
-| 🍏 **macOS Universal** (`ARM64` + `Intel`) | Imagen de disco (`.dmg`) y `.zip` | Automático CI | [⬇️ **Releases Oficiales**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases) |
+| 🪟 **Windows 10 / 11** (`64 bits`) | Instalador oficial (`.exe`) | Publicado por CI | [⬇️ **Descargar Windows (.exe)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.3/Instalador_Sistema_Mantencion_v2026.2.3.exe) |
+| 📦 **NuGet / GitHub Packages** | Paquete de distribución (`.nupkg`) | Publicado por CI | [⬇️ **Descargar Paquete (.nupkg)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.3/Sistema.Gestion.Mantencion.2026.2.3.nupkg) |
 
 <details>
-<summary>🔐 Verificación de Integridad Windows & NuGet (SHA-256)</summary>
+<summary>🔐 Verificación de Integridad (SHA-256)</summary>
 
-| Archivo | SHA-256 |
-| :--- | :--- |
-| `Instalador_Sistema_Mantencion_v2026.2.2.exe` | `3B6C17BD6652741AC9DA7E91DAF3E8E0E11D10BA262C5F8FCA0F5B9BBF45F2B3` |
-| `Sistema.Gestion.Mantencion.2026.2.2.nupkg` | `8E1D978E5A6FB7FCEAC28ED3028676A8EFFC222DD7F0FF783B0A185493165E6A` |
+Consulte [`Instalador/checksums_sha256.txt`](Instalador/checksums_sha256.txt) o los assets del [Release `v2026.2.3`](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/tag/v2026.2.3) para verificar las firmas SHA-256 oficiales generadas por GitHub Actions.
 
 </details>
 
 ---
 
-## 💻 Requisitos e Instalación
+## 💻 Requisitos e Instalación en Windows
 
 ### Requisitos
-- **Windows:** Windows 10 u 11 de 64 bits (`x64` o compatible).
-- **macOS:** macOS 11+ con procesador Apple Silicon (`ARM64`) o `Intel` (`x86_64`).
-- **Red:** Acceso a la red corporativa para conectarse al servidor de datos de la organización.
+- **Sistema Operativo:** Windows 10 o Windows 11 (`64 bits`).
+- **Red:** Acceso a la red corporativa para conectarse al servicio de datos de la organización.
 
 ### Instalación
-- **Windows:** Descargue y ejecute `Instalador_Sistema_Mantencion_v2026.2.2.exe` y siga el asistente en español (soporta instalación silenciosa `/VERYSILENT /SUPPRESSMSGBOXES /NORESTART` y actualización in-place conservando la configuración del usuario).
-- **macOS:** Monte el `.dmg` Universal publicado en GitHub Releases (o descomprima el `.zip`) y ejecute `Instalar_en_Mac.command`.
+1. Descargue y ejecute `Instalador_Sistema_Mantencion_v2026.2.3.exe`.
+2. Siga el asistente en español (soporta instalación desatendida `/VERYSILENT /SUPPRESSMSGBOXES /NORESTART` y actualización directa conservando la configuración del usuario).
 
 ---
 
-## 🛠️ Configuración y Uso
+## 🛠️ Uso Rápido
 
 1. Inicie sesión con sus credenciales corporativas habilitadas.
 2. Navegue por los módulos desde la barra superior (**Órdenes de Trabajo**, **Mant. Preventiva**, **Informes**, **Mantenedores**, **Control de Eventos**, **Acerca de**).
-3. En **Mantenedores → Personal**, utilice la grilla integrada con filtros en vivo para administrar trabajadores individualmente (**Ingresar**, **Actualizar**, **Eliminar**, **Crear Usuario**) o marque múltiples registros mediante la columna **`Sel.`** para ejecutar acciones por lotes (**Activar**, **Desactivar**, **Reasignar Laboral**, **Eliminar Lote**) y exportaciones Excel/PDF.
-4. En **Carta Gantt** y en todos los filtros por fecha de informes, auditoría y turnos, las fechas se inicializan automáticamente entre **ayer y hoy**, manteniendo visualización limpia y selección múltiple por casillas.
-5. La barra inferior muestra el estado de conexión a la izquierda y la versión activa en la esquina inferior derecha (`v2026.2.2`, clic para abrir **Acerca de** con la fecha y hora exacta de instalación). Los usuarios **Administrador** pueden ajustar la conectividad desde **Mantenedores**.
+3. En **Mantenedores → Personal**, utilice el padrón integrado con filtros en vivo para gestionar trabajadores individualmente (**Ingresar**, **Actualizar**, **Eliminar**, **Crear Usuario**) o seleccione múltiples filas con checkboxes (`Sel.`) para operar por lotes y exportar a Excel/PDF.
+4. En **Carta Gantt** e informes por fechas, los selectores inician automáticamente entre **ayer y hoy**, con exportación directa a **Excel** y **PDF**.
+5. La barra inferior muestra el estado de conexión a la izquierda y la versión activa en la esquina inferior derecha (`v2026.2.3`, clic para abrir **Acerca de**). Los usuarios **Administrador** pueden ajustar la conectividad desde **Mantenedores**.
 
 ---
 
@@ -134,8 +129,8 @@ El **Sistema de Gestión Departamento Mantención** es una plataforma corporativ
 
 ## 🏷️ Versionado e Historial de Cambios
 
-El proyecto sigue el esquema corporativo `YYYY.M.P LTS` (`v2026.2.2 LTS`), gestionado de forma centralizada desde `VERSION.txt`.  
-Consulte el historial completo de versiones, mejoras y correcciones en [CHANGELOG.md](CHANGELOG.md).
+El proyecto sigue el esquema corporativo `YYYY.M.P LTS` (`v2026.2.3 LTS`), gestionado centralmente desde `VERSION.txt`.  
+Consulte el historial completo de versiones en [CHANGELOG.md](CHANGELOG.md).
 
 ---
 

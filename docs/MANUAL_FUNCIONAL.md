@@ -17,7 +17,7 @@
    - **Salir:** Permite cerrar sesión (cambiando de usuario) o salir de la aplicación (`Ctrl+Q`).
 3. **Barra Inferior de Estado:**
    - **Izquierda:** Usuario en sesión e indicador luminoso del estado de conexión al servidor.
-   - **Esquina Inferior Derecha:** Versión instalada activa (por ejemplo `v2026.2.2`); al hacer clic abre directamente la ventana **Acerca de**.
+   - **Esquina Inferior Derecha:** Versión instalada activa (por ejemplo `v2026.2.3`); al hacer clic abre directamente la ventana **Acerca de**.
 
 ---
 
