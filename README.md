@@ -81,15 +81,20 @@ El **Sistema de Gestión Departamento Mantención** es una aplicación de escrit
 
 > **Instalación Completa para Windows:** No requiere instalar previamente .NET Runtime, Crystal Reports ni Microsoft Office.
 
-| Plataforma | Instalador / Paquete | Estado | Descarga |
+| Plataforma | Instalador / Paquete | Tamaño | Descarga |
 | :--- | :--- | :---: | :--- |
-| 🪟 **Windows 10 / 11** (`64 bits`) | Instalador oficial (`.exe`) | Publicado por CI | [⬇️ **Descargar Windows (.exe)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.3/Instalador_Sistema_Mantencion_v2026.2.3.exe) |
-| 📦 **NuGet / GitHub Packages** | Paquete de distribución (`.nupkg`) | Publicado por CI | [⬇️ **Descargar Paquete (.nupkg)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.3/Sistema.Gestion.Mantencion.2026.2.3.nupkg) |
+| 🪟 **Windows 10 / 11** (`64 bits`) | Instalador oficial (`.exe`) | `41.47 MB` | [⬇️ **Descargar Windows (.exe)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.3/Instalador_Sistema_Mantencion_v2026.2.3.exe) |
+| 📦 **NuGet / GitHub Packages** | Paquete de distribución (`.nupkg`) | `2.24 MB` | [⬇️ **Descargar Paquete (.nupkg)**](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/download/v2026.2.3/Sistema.Gestion.Mantencion.2026.2.3.nupkg) |
 
 <details>
-<summary>🔐 Verificación de Integridad (SHA-256)</summary>
+<summary>🔐 Verificación de Integridad Oficial (SHA-256)</summary>
 
-Consulte [`Instalador/checksums_sha256.txt`](Instalador/checksums_sha256.txt) o los assets del [Release `v2026.2.3`](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/tag/v2026.2.3) para verificar las firmas SHA-256 oficiales generadas por GitHub Actions.
+| Archivo | Tamaño exacto | SHA-256 |
+| :--- | :---: | :--- |
+| `Instalador_Sistema_Mantencion_v2026.2.3.exe` | `41.47 MB` (`43,484,210 bytes`) | `64A25499BA2C14A0DA1E286647A920698BB925322B7F8ABCB856A499798FAD2A` |
+| `Sistema.Gestion.Mantencion.2026.2.3.nupkg` | `2.24 MB` (`2,350,275 bytes`) | `9A4B431BC4346F2151C547999B2F6EF2B18C710E675C397C9B256E84DE8C1B0A` |
+
+También disponible en [`Instalador/checksums_sha256.txt`](Instalador/checksums_sha256.txt) y en los assets del [Release `v2026.2.3`](https://github.com/barriagada666-collab/Sistema_gestion_Mantencion/releases/tag/v2026.2.3).
 
 </details>
 

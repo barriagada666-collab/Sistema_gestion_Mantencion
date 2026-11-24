@@ -2,10 +2,10 @@
 
 Paquete de distribución **100% autocontenido para Windows 10 / 11 (64 bits)**, sin requisitos previos de instalación.
 
-| Archivo | Plataforma | Formato | Tamaño | Verificación |
+| Archivo | Plataforma | Formato | Tamaño | SHA-256 |
 | :--- | :--- | :---: | :---: | :--- |
-| `Instalador_Sistema_Mantencion_v2026.2.3.exe` | **Windows 10 / 11** (`64 bits`) | `.exe` | Sincronizado por CI | Ver `checksums_sha256.txt` tras compilación CI |
-| `Sistema.Gestion.Mantencion.2026.2.3.nupkg` | **NuGet / GitHub Packages** | `.nupkg` | Sincronizado por CI | Ver paquete oficial en Releases |
+| `Instalador_Sistema_Mantencion_v2026.2.3.exe` | **Windows 10 / 11** (`64 bits`) | `.exe` | `41.47 MB` | `64A25499BA2C14A0DA1E286647A920698BB925322B7F8ABCB856A499798FAD2A` |
+| `Sistema.Gestion.Mantencion.2026.2.3.nupkg` | **NuGet / GitHub Packages** | `.nupkg` | `2.24 MB` | `9A4B431BC4346F2151C547999B2F6EF2B18C710E675C397C9B256E84DE8C1B0A` |
 
 ## 🚀 Uso Rápido (Windows 64 bits)
 - Ejecute `Instalador_Sistema_Mantencion_v2026.2.3.exe` y siga el asistente en español (o utilice `/VERYSILENT /SUPPRESSMSGBOXES /NORESTART` para despliegue masivo).
