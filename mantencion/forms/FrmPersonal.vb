@@ -7,7 +7,27 @@ Public Class FrmPersonal
     Private _cargandoFiltros As Boolean = False
     Private _sincronizandoCheckTodos As Boolean = False
     Private _modoEdicion As Boolean = False
+    Private _fontEstadoBold As Font
     Private ReadOnly _rutsMarcados As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+
+    Private Function TienePermisoPersonal() As Boolean
+        If Not Usuario.UsuarioAutenticado OrElse Usuario.EsAdministrador Then Return True
+        Try
+            If principal IsNot Nothing AndAlso principal.PersonalToolStripMenuItem IsNot Nothing AndAlso Not principal.PersonalToolStripMenuItem.Enabled Then
+                MessageBox.Show(Me, "No posee permisos para modificar registros en el módulo de Personal.", "Acceso restringido", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return False
+            End If
+        Catch
+        End Try
+        Return True
+    End Function
+
+    Private Sub FrmPersonal_FormClosed(ByVal sender As Object, ByVal e As FormClosedEventArgs) Handles Me.FormClosed
+        If _fontEstadoBold IsNot Nothing Then
+            _fontEstadoBold.Dispose()
+            _fontEstadoBold = Nothing
+        End If
+    End Sub
 
     Private Function ObtenerUsuarioSesion() As String
         Try
@@ -463,14 +483,12 @@ Public Class FrmPersonal
         If e.RowIndex < 0 OrElse e.ColumnIndex < 0 Then Exit Sub
         Dim colName As String = dgvPersonal.Columns(e.ColumnIndex).Name
         If colName = "Estado" AndAlso e.Value IsNot Nothing Then
-            Dim est As String = e.Value.ToString().Trim()
-            If est.Equals("Activo", StringComparison.OrdinalIgnoreCase) Then
-                e.CellStyle.ForeColor = Color.FromArgb(21, 128, 61)
-                e.CellStyle.Font = New Font(dgvPersonal.Font, FontStyle.Bold)
-            Else
-                e.CellStyle.ForeColor = Color.FromArgb(185, 28, 28)
-                e.CellStyle.Font = New Font(dgvPersonal.Font, FontStyle.Bold)
+            If _fontEstadoBold Is Nothing Then
+                _fontEstadoBold = New Font(dgvPersonal.Font, FontStyle.Bold)
             End If
+            Dim est As String = e.Value.ToString().Trim()
+            e.CellStyle.ForeColor = If(est.Equals("Activo", StringComparison.OrdinalIgnoreCase), Color.FromArgb(21, 128, 61), Color.FromArgb(185, 28, 28))
+            e.CellStyle.Font = _fontEstadoBold
         End If
     End Sub
 
@@ -550,6 +568,7 @@ Public Class FrmPersonal
     ' OPERACIONES CRUD INDIVIDUALES
     ' ==============================================================================
     Private Sub btnIngresar_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnIngresar.Click
+        If Not TienePermisoPersonal() Then Exit Sub
         Dim err As String = String.Empty
         If Not ValidarCamposObligatorios(err) Then
             MessageBox.Show(Me, err, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
@@ -574,6 +593,7 @@ Public Class FrmPersonal
     End Sub
 
     Private Sub btnActualizar_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnActualizar.Click
+        If Not TienePermisoPersonal() Then Exit Sub
         Dim err As String = String.Empty
         If Not ValidarCamposObligatorios(err) Then
             MessageBox.Show(Me, err, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
@@ -600,6 +620,7 @@ Public Class FrmPersonal
     End Sub
 
     Private Sub btnEliminar_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnEliminar.Click
+        If Not TienePermisoPersonal() Then Exit Sub
         Dim rutLimpio As String = txtRut.Text.Trim()
         If String.IsNullOrEmpty(rutLimpio) Then
             MessageBox.Show(Me, "Debe buscar y seleccionar un trabajador antes de eliminar.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
@@ -787,6 +808,7 @@ Public Class FrmPersonal
     End Sub
 
     Private Sub EjecutarCambioEstadoLote(ByVal nuevoEstado As Boolean)
+        If Not TienePermisoPersonal() Then Exit Sub
         Dim ruts As List(Of String) = ObtenerRutsMarcados()
         If ruts.Count = 0 Then
             MessageBox.Show(Me, "Marque al menos un trabajador en la columna 'Sel.' para aplicar la acción por lotes.", "Gestión por Lotes", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -812,6 +834,7 @@ Public Class FrmPersonal
     End Sub
 
     Private Sub btnLoteReasignar_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnLoteReasignar.Click
+        If Not TienePermisoPersonal() Then Exit Sub
         Dim ruts As List(Of String) = ObtenerRutsMarcados()
         If ruts.Count = 0 Then
             MessageBox.Show(Me, "Marque al menos un trabajador en la columna 'Sel.' para reasignar Planta, Sección o Cargo.", "Gestión por Lotes", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -947,6 +970,7 @@ Public Class FrmPersonal
     End Function
 
     Private Sub btnLoteEliminar_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnLoteEliminar.Click
+        If Not TienePermisoPersonal() Then Exit Sub
         Dim ruts As List(Of String) = ObtenerRutsMarcados()
         If ruts.Count = 0 Then
             MessageBox.Show(Me, "Marque al menos un trabajador en la columna 'Sel.' para eliminar por lotes.", "Gestión por Lotes", MessageBoxButtons.OK, MessageBoxIcon.Information)

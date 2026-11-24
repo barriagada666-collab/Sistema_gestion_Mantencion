@@ -13,6 +13,11 @@ Todas las actualizaciones relevantes de **Sistema de Gestión Departamento Mante
 - **Gestión por lotes mediante checkboxes (`Sel.`):** Selección individual o masiva (**Sel. visibles** / clic en cabecera / tecla Espacio) persistente al cambiar filtros, con acciones masivas transaccionales y auditadas: **Activar Lote**, **Desactivar Lote**, **Reasignar Laboral** (Planta, Sección y/o Cargo con opción *«— Sin cambios —»*), **Eliminar Lote** (protegiendo automáticamente registros con historial operativo y ofreciendo desactivación en un clic) y **Limpiar Sel.**
 - **Exportación inteligente a Excel y PDF:** Exporta automáticamente el lote marcado mediante checkboxes (o todo el listado filtrado si no hay selección activa).
 
+### Auditoría Técnica, Seguridad, Compilación y Documentación
+- **Compilación estricta (`0` errores, `0` advertencias reales sin supresiones):** Eliminación completa de `<NoWarn>42016,42017,42019</NoWarn>` tras corregir las 236 advertencias implícitas y de enlace tardío COM en reportes Excel y formularios OT/MP/Login mediante auxiliares tipados compartidos.
+- **Defensa en profundidad y eficiencia GDI:** Validación directa de permisos de módulo dentro de **Gestión de Personal** y **Administración de Usuarios**, validación de rango numérico (`máx. 9 dígitos`) para código interno y reutilización cacheada de fuentes de estado en grilla con liberación al cerrar.
+- **Documentación y README corporativos actualizados:** Renovación integral de [README.md](README.md), carrusel animado (`41` vistas incluyendo `26_FrmPersonal.png` y `41_FrmAcercaDe.png`), [Arquitectura Técnica](docs/ARQUITECTURA_TECNICA.md), [Manual Funcional](docs/MANUAL_FUNCIONAL.md), [Guía de Compilación](docs/GUIA_COMPILACION.md), [Guía de Despliegue](docs/GUIA_DESPLIEGUE.md) y [Paquetes Oficiales](Instalador/README.md).
+
 ---
 
 ## [2026.2.1 LTS] — 2026-11-23

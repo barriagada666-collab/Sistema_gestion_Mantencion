@@ -29,7 +29,7 @@ Public Class Login
         End Try
 
         If cod_resp = 1 Then
-            usuario.CrgPermisosUsuarioLogin(nombreUsuario, clave, 0)
+            usuario.CrgPermisosUsuarioLogin(nombreUsuario, clave, "0")
             If Not Usuario.UsuarioAutenticado Then
                 MessageBox.Show(Me, "No fue posible cargar los permisos del usuario. Revise la conexión SQL.", "Inicio de Sesión", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 Password.Focus()

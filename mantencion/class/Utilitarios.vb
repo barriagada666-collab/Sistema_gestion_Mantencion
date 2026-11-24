@@ -319,10 +319,9 @@ Public Class Utilitarios
 
         ConfigurarImpresionHorizontalAjustada(workbook, respetarFitExistente)
 
-        ' 1. Exportación directa nativa a PDF de alta velocidad (Excel.XlFixedFormatType.xlTypePDF = 0)
+        ' 1. Exportación directa nativa a PDF de alta velocidad (Excel.XlFixedFormatType.xlTypePDF)
         Try
-            Dim objWorkbook As Object = workbook
-            objWorkbook.ExportAsFixedFormat(0, rutaPdf, 0, True, False, Type.Missing, Type.Missing, False)
+            workbook.ExportAsFixedFormat(Excel.XlFixedFormatType.xlTypePDF, rutaPdf, Excel.XlFixedFormatQuality.xlQualityStandard, True, False, Type.Missing, Type.Missing, False)
             exportadoOk = File.Exists(rutaPdf)
         Catch
             exportadoOk = False
@@ -895,6 +894,24 @@ Public Class Utilitarios
         tv.ForeColor = ColorTextoPrincipal
         tv.LineColor = ColorSecundario
     End Sub
+
+    Public Shared Function ExcelCelda(ByVal ws As Excel.Worksheet, ByVal fila As Integer, ByVal col As Integer) As Excel.Range
+        Return CType(ws.Cells(fila, col), Excel.Range)
+    End Function
+
+    Public Shared Function ExcelFila(ByVal ws As Excel.Worksheet, ByVal fila As Integer) As Excel.Range
+        Return CType(ws.Rows(fila), Excel.Range)
+    End Function
+
+    Public Shared Function ExcelColumna(ByVal ws As Excel.Worksheet, ByVal col As String) As Excel.Range
+        Return CType(ws.Columns(col), Excel.Range)
+    End Function
+
+    Public Shared Function ValorCeldaStr(ByVal grilla As DataGridView, ByVal fila As Integer, ByVal col As Integer) As String
+        If grilla Is Nothing OrElse fila < 0 OrElse fila >= grilla.RowCount OrElse col < 0 OrElse col >= grilla.ColumnCount Then Return String.Empty
+        Dim v As Object = grilla.Rows(fila).Cells(col).Value
+        Return If(v Is Nothing OrElse IsDBNull(v), String.Empty, v.ToString().Trim())
+    End Function
 
     Public Sub solonumeros(ByVal e As System.Windows.Forms.KeyPressEventArgs)
         If Char.IsDigit(e.KeyChar) OrElse Char.IsControl(e.KeyChar) Then

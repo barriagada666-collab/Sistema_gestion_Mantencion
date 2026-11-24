@@ -464,7 +464,7 @@ Public Class Informes
                 ws1.Range("G10:G11").Copy()
                 ws1.Range("H10:H11").PasteSpecial(Excel.XlPasteType.xlPasteFormats)
                 ws1.Range("I10:I11").PasteSpecial(Excel.XlPasteType.xlPasteFormats)
-                excelApp.CutCopyMode = False
+                excelApp.CutCopyMode = CType(0, Excel.XlCutCopyMode)
                 ws1.Range("H10:H11").MergeCells = True
                 ws1.Range("I10:I11").MergeCells = True
             Catch
@@ -489,9 +489,9 @@ Public Class Informes
 
                 Dim rMerge As Excel.Range = ws1.Range("B" & rEx & ":D" & rEx)
                 rMerge.MergeCells = True
-                ws1.Rows(rEx).RowHeight = 20
+                Utilitarios.ExcelFila(ws1, rEx).RowHeight = 20
 
-                Dim cEst As Excel.Range = CType(ws1.Cells(rEx, 8), Excel.Range)
+                Dim cEst As Excel.Range = Utilitarios.ExcelCelda(ws1, rEx, 8)
                 cEst.Font.Bold = True
                 cEst.Font.Color = ColorOleDesdeEstado(reg.Estado, reg.FechaTermino)
             Next
@@ -500,14 +500,14 @@ Public Class Informes
             rngTabla1.Borders.LineStyle = Excel.XlLineStyle.xlContinuous
             rngTabla1.Borders.Weight = Excel.XlBorderWeight.xlThin
             ws1.Range("I6:J6").NumberFormat = "@"
-            ws1.Columns("E").ColumnWidth = 14
-            ws1.Columns("F").ColumnWidth = 14
-            ws1.Columns("G").ColumnWidth = 12
-            ws1.Columns("H").ColumnWidth = 17
-            ws1.Columns("I").ColumnWidth = 24
-            ws1.Columns("J").ColumnWidth = 13
-            ws1.Columns("K").ColumnWidth = 10
-            ws1.Columns("L").ColumnWidth = 14
+            Utilitarios.ExcelColumna(ws1, "E").ColumnWidth = 14
+            Utilitarios.ExcelColumna(ws1, "F").ColumnWidth = 14
+            Utilitarios.ExcelColumna(ws1, "G").ColumnWidth = 12
+            Utilitarios.ExcelColumna(ws1, "H").ColumnWidth = 17
+            Utilitarios.ExcelColumna(ws1, "I").ColumnWidth = 24
+            Utilitarios.ExcelColumna(ws1, "J").ColumnWidth = 13
+            Utilitarios.ExcelColumna(ws1, "K").ColumnWidth = 10
+            Utilitarios.ExcelColumna(ws1, "L").ColumnWidth = 14
             ws1.PageSetup.PrintArea = "$A$1:$M$" & fila1Fin.ToString()
             ws1.PageSetup.Orientation = Excel.XlPageOrientation.xlLandscape
             ws1.PageSetup.PaperSize = Excel.XlPaperSize.xlPaperLetter
@@ -550,12 +550,12 @@ Public Class Informes
                 rngHdrFechas.Font.Bold = True
                 rngHdrFechas.Font.Size = 8
                 rngHdrFechas.ColumnWidth = 3.6
-                ws2.Rows(10).RowHeight = 52
+                Utilitarios.ExcelFila(ws2, 10).RowHeight = 52
 
-                ws2.Columns("A").ColumnWidth = 8
-                ws2.Columns("B").ColumnWidth = 18
-                ws2.Columns("C").ColumnWidth = 18
-                ws2.Columns("D").ColumnWidth = 22
+                Utilitarios.ExcelColumna(ws2, "A").ColumnWidth = 8
+                Utilitarios.ExcelColumna(ws2, "B").ColumnWidth = 18
+                Utilitarios.ExcelColumna(ws2, "C").ColumnWidth = 18
+                Utilitarios.ExcelColumna(ws2, "D").ColumnWidth = 22
 
                 ' Reordenar bloque superior de metadatos evitando recortes ("#######" / "cuencia :") sobre columnas angostas de 3.6
                 ws2.Range("A5:D5").MergeCells = True
@@ -609,7 +609,7 @@ Public Class Informes
                     ws2.Cells(rEx, 1) = reg.IdCiclo
                     ws2.Cells(rEx, 2) = reg.Observacion
                     ws2.Range("B" & rEx & ":D" & rEx).MergeCells = True
-                    ws2.Rows(rEx).RowHeight = 20
+                    Utilitarios.ExcelFila(ws2, rEx).RowHeight = 20
                 Next
 
                 ' Sombreado de fines de semana y barras Gantt horizontales con color semántico por estado
@@ -632,11 +632,11 @@ Public Class Informes
                 ws3.Range("C5:D6").NumberFormat = "@"
                 ws3.Cells(5, 3) = fDesdeFinal
                 ws3.Cells(6, 3) = fHastaFinal
-                ws3.Columns("A").ColumnWidth = 9
-                ws3.Columns("B").ColumnWidth = 26
-                ws3.Columns("C").ColumnWidth = 16
-                ws3.Columns("D").ColumnWidth = 16
-                ws3.Columns("E").ColumnWidth = 18
+                Utilitarios.ExcelColumna(ws3, "A").ColumnWidth = 9
+                Utilitarios.ExcelColumna(ws3, "B").ColumnWidth = 26
+                Utilitarios.ExcelColumna(ws3, "C").ColumnWidth = 16
+                Utilitarios.ExcelColumna(ws3, "D").ColumnWidth = 16
+                Utilitarios.ExcelColumna(ws3, "E").ColumnWidth = 18
 
                 Dim colIniCal3 As Integer = 6
                 Dim colFinCal3 As Integer = colIniCal3 + totalDias - 1
@@ -657,7 +657,7 @@ Public Class Informes
                 If totalDias > 1 Then
                     primerHdr3.Copy()
                     ws3.Range("F4:" & letraFinCal3 & "9").PasteSpecial(Excel.XlPasteType.xlPasteFormats)
-                    excelApp.CutCopyMode = False
+                    excelApp.CutCopyMode = CType(0, Excel.XlCutCopyMode)
                 End If
                 ws3.Range("F4:" & letraFinCal3 & "4").Value2 = arrFechas
                 Dim rngHdr3 As Excel.Range = ws3.Range("F4:" & letraFinCal3 & "9")
@@ -678,7 +678,7 @@ Public Class Informes
                     ws3.Cells(rEx, 2) = reg.ItemMaquina
                     ws3.Cells(rEx, 3) = If(reg.IdMant > 0, String.Format("MP #{0} · {1}", reg.IdMant, reg.Observacion).Trim(), reg.Observacion)
                     ws3.Range("C" & rEx & ":E" & rEx).MergeCells = True
-                    ws3.Rows(rEx).RowHeight = 20
+                    Utilitarios.ExcelFila(ws3, rEx).RowHeight = 20
                 Next
 
                 PintarCalendarioGanttEnHoja(ws3, registros, fechaMin, totalDias, colIniCal3, fila3Ini, fila3Fin, colorFinSemana, colorBlanco)
@@ -798,7 +798,7 @@ Public Class Informes
             worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetVisible
 
             ' Si la plantilla no tenía cabeceras (libro en blanco creado de respaldo), estructurarlo
-            If worksheet_1.Cells(8, 3).Value Is Nothing OrElse String.IsNullOrEmpty(Convert.ToString(worksheet_1.Cells(8, 3).Value)) Then
+            If Utilitarios.ExcelCelda(worksheet_1, 8, 3).Value Is Nothing OrElse String.IsNullOrEmpty(Convert.ToString(Utilitarios.ExcelCelda(worksheet_1, 8, 3).Value)) Then
                 worksheet_1.Cells(1, 3) = "Informe Control de Eventos / Auditoría"
                 worksheet_1.Cells(5, 5) = "Fecha Desde:"
                 worksheet_1.Cells(6, 5) = "Fecha Hasta:"
@@ -809,8 +809,8 @@ Public Class Informes
             End If
 
             ' Impresión fecha inicio y fecha fin
-            worksheet_1.Cells(5, 6).NumberFormat = "@"
-            worksheet_1.Cells(6, 6).NumberFormat = "@"
+            Utilitarios.ExcelCelda(worksheet_1, 5, 6).NumberFormat = "@"
+            Utilitarios.ExcelCelda(worksheet_1, 6, 6).NumberFormat = "@"
             worksheet_1.Cells(5, 6) = fecha_inicio.ToString("dd-MM-yyyy")
             worksheet_1.Cells(6, 6) = fecha_fin.ToString("dd-MM-yyyy")
 
@@ -1070,8 +1070,8 @@ Public Class Informes
             worksheet.Visible = Excel.XlSheetVisibility.xlSheetVisible
 
             '---------------------- impresion fecha inicio y fecha fin ----------------
-            worksheet.Cells(4, 7).NumberFormat = "@"
-            worksheet.Cells(5, 7).NumberFormat = "@"
+            Utilitarios.ExcelCelda(worksheet, 4, 7).NumberFormat = "@"
+            Utilitarios.ExcelCelda(worksheet, 5, 7).NumberFormat = "@"
             worksheet.Cells(4, 7) = fecha_inicio.ToString("dd-MM-yyyy")
             worksheet.Cells(5, 7) = fecha_fin.ToString("dd-MM-yyyy")
             '---------------------------------------------------------------------------------------
@@ -1083,7 +1083,7 @@ Public Class Informes
             If opcion = 1 Then
                 With FrmResumenes.grillaOtPorTurno
                     For i = 0 To .RowCount - 1
-                        worksheet.Rows(filaexcel + 1).Insert()
+                        Utilitarios.ExcelFila(worksheet, filaexcel + 1).Insert()
                         worksheet.Cells(filaexcel, 2) = ObtenerValorCelda(FrmResumenes.grillaOtPorTurno, i, "Turno", 0)
                         worksheet.Cells(filaexcel, 3) = ObtenerValorCelda(FrmResumenes.grillaOtPorTurno, i, "Cantidad OTs", 1)
                         filaexcel = filaexcel + 1
@@ -1123,7 +1123,7 @@ Public Class Informes
             ElseIf opcion = 2 Then
                 With FrmResumenes.grillaOtPorDia
                     For i = 0 To .RowCount - 1
-                        worksheet.Rows(filaexcel + 1).Insert()
+                        Utilitarios.ExcelFila(worksheet, filaexcel + 1).Insert()
                         worksheet.Cells(filaexcel, 5) = ObtenerValorCelda(FrmResumenes.grillaOtPorDia, i, "Fecha", 0)
                         worksheet.Cells(filaexcel, 6) = ObtenerValorCelda(FrmResumenes.grillaOtPorDia, i, "Cantidad OTs", 1)
                         filaexcel = filaexcel + 1
@@ -1164,7 +1164,7 @@ Public Class Informes
                 If FrmResumenes.grillaOtPorMes.Visible Then
                     With FrmResumenes.grillaOtPorMes
                         For i = 0 To .RowCount - 1
-                            worksheet.Rows(filaexcel + 1).Insert()
+                            Utilitarios.ExcelFila(worksheet, filaexcel + 1).Insert()
                             worksheet.Cells(filaexcel, 8) = ObtenerValorCelda(FrmResumenes.grillaOtPorMes, i, "Mes", 0)
                             worksheet.Cells(filaexcel, 9) = ObtenerValorCelda(FrmResumenes.grillaOtPorMes, i, "Cantidad OTs", 1)
                             filaexcel = filaexcel + 1
@@ -1173,7 +1173,7 @@ Public Class Informes
                 ElseIf FrmResumenes.grillaTotalesPeriodo.Visible Then
                     With FrmResumenes.grillaTotalesPeriodo
                         For i = 0 To .RowCount - 1
-                            worksheet.Rows(filaexcel + 1).Insert()
+                            Utilitarios.ExcelFila(worksheet, filaexcel + 1).Insert()
                             worksheet.Cells(filaexcel, 8) = ObtenerValorCelda(FrmResumenes.grillaTotalesPeriodo, i, "Estado", 0)
                             worksheet.Cells(filaexcel, 9) = ObtenerValorCelda(FrmResumenes.grillaTotalesPeriodo, i, "Cantidad OTs", 1)
                             filaexcel = filaexcel + 1
@@ -1206,7 +1206,7 @@ Public Class Informes
             If opcion = 1 Then
                 With FrmResumenes.grillaOtRecibidaPor
                     For i = 0 To .RowCount - 1
-                        worksheet.Rows(filaexcel + 1).Insert()
+                        Utilitarios.ExcelFila(worksheet, filaexcel + 1).Insert()
                         worksheet.Cells(filaexcel, 2) = ObtenerValorCelda(FrmResumenes.grillaOtRecibidaPor, i, "Recibido Por", 0)
                         worksheet.Cells(filaexcel, 3) = ObtenerValorCelda(FrmResumenes.grillaOtRecibidaPor, i, "Cantidad OTs", 1)
                         filaexcel = filaexcel + 1
@@ -1234,7 +1234,7 @@ Public Class Informes
             ElseIf opcion = 2 Then
                 With FrmResumenes.grillaOtCerradaPorTec
                     For i = 0 To .RowCount - 1
-                        worksheet.Rows(filaexcel + 1).Insert()
+                        Utilitarios.ExcelFila(worksheet, filaexcel + 1).Insert()
                         worksheet.Cells(filaexcel, 5) = ObtenerValorCelda(FrmResumenes.grillaOtCerradaPorTec, i, "Técnico / Personal", 0)
                         worksheet.Cells(filaexcel, 6) = ObtenerValorCelda(FrmResumenes.grillaOtCerradaPorTec, i, "OTs Cerradas", 1)
                         filaexcel = filaexcel + 1
@@ -1262,7 +1262,7 @@ Public Class Informes
             ElseIf opcion = 3 Then
                 With FrmResumenes.grillaOtPorTipoFalla
                     For i = 0 To .RowCount - 1
-                        worksheet.Rows(filaexcel + 1).Insert()
+                        Utilitarios.ExcelFila(worksheet, filaexcel + 1).Insert()
                         worksheet.Cells(filaexcel, 8) = ObtenerValorCelda(FrmResumenes.grillaOtPorTipoFalla, i, "Tipo de Trabajo / Falla", 0)
                         worksheet.Cells(filaexcel, 9) = ObtenerValorCelda(FrmResumenes.grillaOtPorTipoFalla, i, "Cantidad OTs", 1)
                         filaexcel = filaexcel + 1
@@ -1290,23 +1290,26 @@ Public Class Informes
 
             ' Exportar hoja adicional "Top Máquinas y Componentes"
             If FrmResumenes.grillaTopMaquinas.RowCount > 0 OrElse FrmResumenes.grillaTopComponentes.RowCount > 0 Then
-                Dim wsTop As Excel.Worksheet = workbook.Sheets.Add(After:=worksheet)
+                Dim wsTop As Excel.Worksheet = CType(workbook.Sheets.Add(After:=worksheet), Excel.Worksheet)
                 wsTop.Name = "Top Máquinas y Componentes"
 
                 wsTop.Cells(2, 2) = "INFORME ESTADÍSTICO - TOP MÁQUINAS Y COMPONENTES"
-                wsTop.Cells(2, 2).Font.Bold = True
-                wsTop.Cells(2, 2).Font.Size = 13
-                wsTop.Cells(2, 2).Font.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorDeepNavy)
+                Dim cTitTop As Excel.Range = Utilitarios.ExcelCelda(wsTop, 2, 2)
+                cTitTop.Font.Bold = True
+                cTitTop.Font.Size = 13
+                cTitTop.Font.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorDeepNavy)
 
                 wsTop.Cells(3, 2) = "Período: " & fecha_inicio.ToString("dd-MM-yyyy") & " al " & fecha_fin.ToString("dd-MM-yyyy")
-                wsTop.Cells(3, 2).Font.Italic = True
-                wsTop.Cells(3, 2).Font.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorSecundario)
+                Dim cSubTop As Excel.Range = Utilitarios.ExcelCelda(wsTop, 3, 2)
+                cSubTop.Font.Italic = True
+                cSubTop.Font.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorSecundario)
 
                 ' Top Máquinas
                 Dim fRow As Integer = 5
                 wsTop.Cells(fRow, 2) = "TOP MÁQUINAS CON MÁS ÓRDENES DE TRABAJO"
-                wsTop.Cells(fRow, 2).Font.Bold = True
-                wsTop.Cells(fRow, 2).Font.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorPrimario)
+                Dim cSecMaq As Excel.Range = Utilitarios.ExcelCelda(wsTop, fRow, 2)
+                cSecMaq.Font.Bold = True
+                cSecMaq.Font.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorPrimario)
 
                 fRow += 1
                 Dim cabMaq() As String = {"Ranking", "Máquina / Equipo", "Total OTs", "% Participación", "OTs Cerradas", "OTs Abiertas", "% Resueltas"}
@@ -1331,8 +1334,9 @@ Public Class Informes
                 ' Top Componentes
                 fRow += 2
                 wsTop.Cells(fRow, 2) = "TOP COMPONENTES / PARTES CON MÁS ÓRDENES"
-                wsTop.Cells(fRow, 2).Font.Bold = True
-                wsTop.Cells(fRow, 2).Font.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorPrimario)
+                Dim cSecComp As Excel.Range = Utilitarios.ExcelCelda(wsTop, fRow, 2)
+                cSecComp.Font.Bold = True
+                cSecComp.Font.Color = System.Drawing.ColorTranslator.ToOle(Utilitarios.ColorPrimario)
 
                 fRow += 1
                 Dim cabComp() As String = {"Ranking", "Componente / Parte", "Máquina Asociada", "Total OTs", "% Participación", "OTs Cerradas", "OTs Abiertas"}
@@ -1577,8 +1581,8 @@ Public Class Informes
             worksheet_1 = CType(workbook.Sheets(1), Excel.Worksheet)
             worksheet_1.Visible = Excel.XlSheetVisibility.xlSheetVisible
 
-            worksheet_1.Cells(6, 4).NumberFormat = "@"
-            worksheet_1.Cells(7, 4).NumberFormat = "@"
+            Utilitarios.ExcelCelda(worksheet_1, 6, 4).NumberFormat = "@"
+            Utilitarios.ExcelCelda(worksheet_1, 7, 4).NumberFormat = "@"
             worksheet_1.Cells(6, 4) = fecha_desde.ToString("dd-MM-yyyy")
             worksheet_1.Cells(7, 4) = fecha_hasta.ToString("dd-MM-yyyy")
 

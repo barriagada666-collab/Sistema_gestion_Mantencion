@@ -97,7 +97,11 @@ Public Class Personal
             Exit Sub
         End If
 
-        Dim codIntNum As Integer = ParsearEnteroSeguro(cod_int, 0)
+        Dim codIntNum As Integer = 0
+        If Not String.IsNullOrWhiteSpace(cod_int) AndAlso Not Integer.TryParse(cod_int.Trim(), codIntNum) Then
+            resp = "El código interno ingresado excede el límite numérico permitido (máx. 9 dígitos)."
+            Exit Sub
+        End If
         Dim fonoNum As Integer = 0
         If Not String.IsNullOrWhiteSpace(fono) AndAlso Not Integer.TryParse(fono.Trim(), fonoNum) Then
             resp = "El teléfono ingresado excede el límite numérico permitido (máx. 9 dígitos)."
@@ -173,7 +177,11 @@ Public Class Personal
             Exit Sub
         End If
 
-        Dim codIntNum As Integer = ParsearEnteroSeguro(cod_int, 0)
+        Dim codIntNum As Integer = 0
+        If Not String.IsNullOrWhiteSpace(cod_int) AndAlso Not Integer.TryParse(cod_int.Trim(), codIntNum) Then
+            resp = "El código interno ingresado excede el límite numérico permitido (máx. 9 dígitos)."
+            Exit Sub
+        End If
         Dim fonoNum As Integer = 0
         If Not String.IsNullOrWhiteSpace(fono) AndAlso Not Integer.TryParse(fono.Trim(), fonoNum) Then
             resp = "El teléfono ingresado excede el límite numérico permitido (máx. 9 dígitos)."

@@ -390,7 +390,7 @@ Public Class MantPreventiva
 
                 Using DR As SqlDataReader = com.ExecuteReader()
                     If DR.Read() Then
-                        cod_resp = DR(0)
+                        cod_resp = Utilitarios.SafeInt(DR(0), 0)
                     End If
                 End Using
             End Using
@@ -1510,7 +1510,7 @@ Public Class MantPreventiva
 
             '------------- llenado de tareas realizadas --------------------------------------------
             For i = 0 To grilla_tareas_r.RowCount - 1
-                worksheet.Rows(filaexcel + 1).Insert()
+                Utilitarios.ExcelFila(worksheet, filaexcel + 1).Insert()
                 worksheet.Cells(filaexcel, 1) = grilla_tareas_r.Rows(i).Cells(0).Value
                 worksheet.Cells(filaexcel, 2) = grilla_tareas_r.Rows(i).Cells(1).Value
                 worksheet.Cells(filaexcel, 8) = grilla_tareas_r.Rows(i).Cells(2).Value
@@ -1528,7 +1528,7 @@ Public Class MantPreventiva
                 Dim col As Integer = 2
                 For i = 0 To grilla_personal.RowCount - 1
                     If i <= 3 Then
-                        worksheet.Cells(filaexcel_2, col) = grilla_personal.Rows(i).Cells(1).Value & " " & grilla_personal.Rows(i).Cells(2).Value
+                        worksheet.Cells(filaexcel_2, col) = (Utilitarios.ValorCeldaStr(grilla_personal, i, 1) & " " & Utilitarios.ValorCeldaStr(grilla_personal, i, 2)).Trim()
                         col = col + 3
                     End If
                 Next
@@ -1562,7 +1562,7 @@ Public Class MantPreventiva
                     Dim col As Integer = 2
                     For i = 0 To grilla_personal.RowCount - 1
                         If i <= 3 Then
-                            worksheet_2.Cells(filaexcel_2, col) = grilla_personal.Rows(i).Cells(1).Value & " " & grilla_personal.Rows(i).Cells(2).Value
+                            worksheet_2.Cells(filaexcel_2, col) = (Utilitarios.ValorCeldaStr(grilla_personal, i, 1) & " " & Utilitarios.ValorCeldaStr(grilla_personal, i, 2)).Trim()
                             col = col + 3
                         End If
                     Next
@@ -1571,7 +1571,7 @@ Public Class MantPreventiva
                 filaexcel_2 = 18
 
                 For i = 0 To grilla_tareas_pend.RowCount - 1
-                    worksheet_2.Rows(filaexcel_2 + 1).Insert()
+                    Utilitarios.ExcelFila(worksheet_2, filaexcel_2 + 1).Insert()
                     worksheet_2.Cells(filaexcel_2, 1) = grilla_tareas_pend.Rows(i).Cells(0).Value
                     worksheet_2.Cells(filaexcel_2, 2) = grilla_tareas_pend.Rows(i).Cells(1).Value
                     worksheet_2.Cells(filaexcel_2, 8) = grilla_tareas_pend.Rows(i).Cells(2).Value
@@ -1804,7 +1804,7 @@ Public Class MantPreventiva
 
             '------------- llenado de tareas realizadas --------------------------------------------
             For i = 0 To grilla_tareas_r.RowCount - 1
-                worksheet.Rows(filaexcel + 1).Insert()
+                Utilitarios.ExcelFila(worksheet, filaexcel + 1).Insert()
                 worksheet.Cells(filaexcel, 1) = grilla_tareas_r.Rows(i).Cells(0).Value
                 worksheet.Cells(filaexcel, 2) = grilla_tareas_r.Rows(i).Cells(1).Value
                 worksheet.Cells(filaexcel, 8) = grilla_tareas_r.Rows(i).Cells(2).Value
@@ -1822,7 +1822,7 @@ Public Class MantPreventiva
                 Dim col As Integer = 2
                 For i = 0 To grilla_personal.RowCount - 1
                     If i <= 3 Then
-                        worksheet.Cells(filaexcel_2, col) = grilla_personal.Rows(i).Cells(1).Value & " " & grilla_personal.Rows(i).Cells(2).Value
+                        worksheet.Cells(filaexcel_2, col) = (Utilitarios.ValorCeldaStr(grilla_personal, i, 1) & " " & Utilitarios.ValorCeldaStr(grilla_personal, i, 2)).Trim()
                         col = col + 3
                     End If
                 Next
@@ -1852,7 +1852,7 @@ Public Class MantPreventiva
                     Dim col As Integer = 2
                     For i = 0 To grilla_personal.RowCount - 1
                         If i <= 3 Then
-                            worksheet_2.Cells(filaexcel_2, col) = grilla_personal.Rows(i).Cells(1).Value & " " & grilla_personal.Rows(i).Cells(2).Value
+                            worksheet_2.Cells(filaexcel_2, col) = (Utilitarios.ValorCeldaStr(grilla_personal, i, 1) & " " & Utilitarios.ValorCeldaStr(grilla_personal, i, 2)).Trim()
                             col = col + 3
                         End If
                     Next
@@ -1861,7 +1861,7 @@ Public Class MantPreventiva
                 filaexcel_2 = 18
 
                 For i = 0 To grilla_tareas_pend.RowCount - 1
-                    worksheet_2.Rows(filaexcel_2 + 1).Insert()
+                    Utilitarios.ExcelFila(worksheet_2, filaexcel_2 + 1).Insert()
                     worksheet_2.Cells(filaexcel_2, 1) = grilla_tareas_pend.Rows(i).Cells(0).Value
                     worksheet_2.Cells(filaexcel_2, 2) = grilla_tareas_pend.Rows(i).Cells(1).Value
                     worksheet_2.Cells(filaexcel_2, 8) = grilla_tareas_pend.Rows(i).Cells(2).Value

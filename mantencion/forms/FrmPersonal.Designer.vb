@@ -202,7 +202,7 @@ Partial Class FrmPersonal
         '
         Me.txtCodInt.BackColor = System.Drawing.Color.White
         Me.txtCodInt.Location = New System.Drawing.Point(242, 37)
-        Me.txtCodInt.MaxLength = 10
+        Me.txtCodInt.MaxLength = 9
         Me.txtCodInt.Name = "txtCodInt"
         Me.txtCodInt.Size = New System.Drawing.Size(82, 23)
         Me.txtCodInt.TabIndex = 6

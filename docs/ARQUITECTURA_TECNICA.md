@@ -10,9 +10,9 @@
 La aplicación está organizada bajo una arquitectura modular de escritorio (MDI) con separación clara entre:
 
 - **Capa de Presentación (`mantencion/forms/`):** 41 formularios corporativos bajo una ventana contenedora MDI principal, con renderizado profesional de menús y barra de estado, soporte DPI escalable (`AutoScaleMode.Dpi`), doble búfer para evitar parpadeos y tema visual unificado.
-- **Capa de Servicios y Dominio (`mantencion/class/`):** Clases especializadas por dominio operativo (órdenes de trabajo, mantención preventiva, activos jerárquicos, fichas técnicas, personal, calendario de turnos, plantas, secciones, cargos, usuarios/perfiles/permisos, auditoría, reportes y utilidades transversales).
-- **Capa de Datos (ADO.NET Nativo):** Acceso directo a SQL Server corporativo mediante procedimientos almacenados, parámetros tipados seguros, pool de conexiones reutilizable y cierre/liberación determinista de recursos en bloques protegidos.
-- **Motor de Reportes y Exportación:** Generación híbrida mediante plantillas corporativas cuando Microsoft Excel está disponible y motor nativo integrado (PDF horizontal completo y exportación tabular) que opera sin dependencias externas ni runtimes heredados.
+- **Capa de Servicios y Dominio (`mantencion/class/`):** Clases especializadas por dominio operativo (órdenes de trabajo, mantención preventiva, activos jerárquicos, fichas técnicas, padrón completo y lotes transaccionales de personal, calendario de turnos, plantas, secciones, cargos, usuarios/perfiles/permisos, auditoría, reportes y utilidades transversales).
+- **Capa de Datos (ADO.NET Nativo):** Acceso directo a SQL Server corporativo mediante procedimientos almacenados, consultas parametrizadas transaccionales auditadas, pool de conexiones reutilizable y cierre/liberación determinista de recursos en bloques protegidos (`Using` / `Finally`).
+- **Motor de Reportes y Exportación:** Generación híbrida mediante plantillas corporativas tipadas (COM Excel sin enlaces tardíos ni advertencias de compilación) y motor nativo integrado (PDF horizontal completo y exportación tabular Excel) que opera sin dependencias externas ni runtimes heredados.
 
 ```mermaid
 flowchart TD
@@ -35,7 +35,8 @@ flowchart TD
 ### 2.2 Seguridad, Perfiles y Control de Accesos
 - **Autenticación y Sesión:** Validación de credenciales corporativas y registro de estado de sesión en memoria, limpiado por completo al cerrar sesión.
 - **Permisos Granulares (21 permisos):** Control independiente por módulo y por operación crítica (creación, modificación, eliminación y anulación de OT; creación, edición y eliminación de MP/ciclos; mantenedores de activos, personal, ítems, usuarios, tareas y auditoría).
-- **Defensa en Profundidad para Configuración SQL:** La ventana de configuración de conexión está restringida exclusivamente al perfil **Administrador** tanto en la barra de menú como en la lógica de guardado del diálogo, con respaldo automático antes de sobrescribir parámetros.
+- **Defensa en Profundidad y Control por Módulo:** Validación de perfil **Administrador** y permisos específicos tanto en la navegación como directamente dentro de los eventos críticos de formulario (administración de conectividad SQL, usuarios/perfiles, órdenes de trabajo, mantenciones preventivas, reasignación de tareas y gestión individual o por lotes de personal).
+- **Compilación Estricta sin Supresiones:** La solución compila íntegramente en **Debug** y **Release** con **0 errores y 0 advertencias reales** (`NoWarn` de compilación eliminado tras tipar todas las conversiones y accesos COM).
 - **Acceso Universal a `Acerca de`:** La consulta de versión instalada y marca temporal de instalación está disponible para todos los perfiles desde el menú superior y desde la barra inferior derecha.
 
 ### 2.3 Control Centralizado de Versionado

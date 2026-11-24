@@ -21,10 +21,10 @@ La versión del sistema se administra desde una única fuente en `VERSION.txt` (
 Utilice el script de versionamiento en la carpeta de automatizadores:
 
 ```powershell
-# Incrementar parche (ej. 2026.2.0 -> 2026.2.1)
+# Incrementar parche (ej. 2026.2.1 -> 2026.2.2)
 .\automatizadores de instalacion\Actualizar_Version.ps1 -IncrementarPatch
 
-# Incrementar versión menor (ej. 2026.2.1 -> 2026.3.0)
+# Incrementar versión menor (ej. 2026.2.2 -> 2026.3.0)
 .\automatizadores de instalacion\Actualizar_Version.ps1 -IncrementarMinor
 
 # Establecer una versión específica con notas de paquete

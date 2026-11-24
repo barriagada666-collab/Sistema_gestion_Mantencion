@@ -38,9 +38,6 @@
     <!-- Habilita compilación cruzada en Linux/macOS sin advertencias -->
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
 
-    <!-- Silencia únicamente conversiones implícitas / enlace tardío COM propios de Option Strict Off -->
-    <NoWarn>42016,42017,42019</NoWarn>
-
     <!-- Compilación Release compacta sin archivos .pdb -->
     <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
     <DebugSymbols Condition="'$(Configuration)' == 'Release'">false</DebugSymbols>

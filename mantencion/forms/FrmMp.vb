@@ -153,8 +153,8 @@ Public Class FrmMp
         Dim nodo As New Nodo
 
         Try
-            txtIdMant.Text = mant_prev.NuevoIdMp()
-            txtIdCiclo.Text = 1
+            txtIdMant.Text = mant_prev.NuevoIdMp().ToString()
+            txtIdCiclo.Text = "1"
             txtFrecuenciaMp.Focus()
             btnNuevoCiclo.Enabled = False
             btnGuardarComoNuevoCiclo.Enabled = False

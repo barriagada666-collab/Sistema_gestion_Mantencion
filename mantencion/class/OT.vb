@@ -914,7 +914,7 @@ Public Class OT
         Dim cnx As New SqlConnection
         Dim conexion As New Conexion
         If num_ot = "" Then
-            num_ot = 0
+            num_ot = "0"
         End If
         Try
             conexion.Conectar(cnx)
@@ -949,7 +949,7 @@ Public Class OT
         Dim cnx As New SqlConnection
         Dim conexion As New Conexion
         If num_ot = "" Then
-            num_ot = 0
+            num_ot = "0"
         End If
         Try
             conexion.Conectar(cnx)
@@ -1361,13 +1361,14 @@ Public Class OT
 
 
     Private Sub LlenarHojaInfOt(ByVal worksheet As Excel.Worksheet, ByVal grilla As DataGridView, ByVal fecha_inicio As DateTime, ByVal fecha_fin As DateTime, ByVal planta As String)
-        worksheet.Cells(5, 6).NumberFormat = "@"
-        worksheet.Cells(6, 6).NumberFormat = "@"
+        Utilitarios.ExcelCelda(worksheet, 5, 6).NumberFormat = "@"
+        Utilitarios.ExcelCelda(worksheet, 6, 6).NumberFormat = "@"
         worksheet.Cells(5, 6) = fecha_inicio.ToString("dd-MM-yyyy")
         worksheet.Cells(6, 6) = fecha_fin.ToString("dd-MM-yyyy")
 
         If Not String.IsNullOrEmpty(planta) Then
-            worksheet.Cells(1, 4) = worksheet.Cells(1, 4).Value & " " & planta
+            Dim encabezadoActual As String = Convert.ToString(Utilitarios.ExcelCelda(worksheet, 1, 4).Value)
+            worksheet.Cells(1, 4) = encabezadoActual & " " & planta
         End If
 
         Dim totalFilas As Integer = grilla.RowCount

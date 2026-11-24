@@ -18,6 +18,13 @@ Public Class frm_OT
         Return val.ToString().Trim()
     End Function
 
+    Private Shared Function ValorComboStr(ByVal cmb As ComboBox) As String
+        If cmb Is Nothing OrElse cmb.SelectedValue Is Nothing OrElse TypeOf cmb.SelectedValue Is DataRowView Then
+            Return String.Empty
+        End If
+        Return cmb.SelectedValue.ToString()
+    End Function
+
     Private Sub frm_OT_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Me.DoubleBuffered = True
         Me.SuspendLayout()
@@ -44,7 +51,7 @@ Public Class frm_OT
             falla.crgTipoFalla(cmb_Tipo_trab)
             falla.crgModoFalla(cmbFalla)
             PanFechaCierreOt.Enabled = False
-            cmbEstadoOt.Text = cmbEstadoOt.Items(0)
+            cmbEstadoOt.Text = Convert.ToString(cmbEstadoOt.Items(0))
             cmbEstadoOt.Enabled = False
             btn_guardar.Enabled = Usuario.PermisoGuardarOt
             btn_eliminar.Enabled = Usuario.PermisoEliminarOt
@@ -92,7 +99,7 @@ Public Class frm_OT
                         mant_interna = True
                     End If
 
-                    OT.IngOtCerrada(txtNot.Text, id_nodo_ot_select, cmbSintoma.SelectedValue, cmbFalla.SelectedValue, dt_fecha_rec.Value, dt_hr_rec.Value, dt_fecha_ini.Value, dt_hr_ini.Value, dt_fecha_ter.Value, dt_hr_ter.Value, dt_fecha_cierre.Value, dt_hr_cierre.Value, txtDuracionOt.Text, cmb_Tipo_Det.SelectedValue, cmb_det.Text, text_des_falla.Text, txtDescTrab.Text, txtSolicitadoPor.Text, txtRecibidoPor.Text, txtCerradoPor.Text, cmb_Tipo_trab.SelectedValue, principal.lblUsuario.Text, estado_ot, mant_interna, cod_resp, resp)
+                    OT.IngOtCerrada(txtNot.Text, id_nodo_ot_select, ValorComboStr(cmbSintoma), ValorComboStr(cmbFalla), dt_fecha_rec.Value, dt_hr_rec.Value, dt_fecha_ini.Value, dt_hr_ini.Value, dt_fecha_ter.Value, dt_hr_ter.Value, dt_fecha_cierre.Value, dt_hr_cierre.Value, txtDuracionOt.Text, ValorComboStr(cmb_Tipo_Det), cmb_det.Text, text_des_falla.Text, txtDescTrab.Text, txtSolicitadoPor.Text, txtRecibidoPor.Text, txtCerradoPor.Text, ValorComboStr(cmb_Tipo_trab), principal.lblUsuario.Text, estado_ot, mant_interna, cod_resp, resp)
                     If grillaPersonalOt.RowCount > 0 Then
                         For i = 0 To grillaPersonalOt.RowCount - 1
                             If grillaPersonalOt.Rows(i).IsNewRow Then Continue For
@@ -158,7 +165,7 @@ Public Class frm_OT
                         mant_interna = True
                     End If
 
-                    OT.UpdOtCerrada(txtNot.Text, id_nodo_ot_select, cmbSintoma.SelectedValue, cmbFalla.SelectedValue, dt_fecha_rec.Value, dt_hr_rec.Value, dt_fecha_ini.Value, dt_hr_ini.Value, dt_fecha_ter.Value, dt_hr_ter.Value, dt_fecha_cierre.Value, dt_hr_cierre.Value, txtDuracionOt.Text, cmb_Tipo_Det.SelectedValue, cmb_det.Text, text_des_falla.Text, txtDescTrab.Text, txtSolicitadoPor.Text, txtRecibidoPor.Text, txtCerradoPor.Text, cmb_Tipo_trab.SelectedValue, principal.lblUsuario.Text, estado_ot, mant_interna, cod_resp, resp)
+                    OT.UpdOtCerrada(txtNot.Text, id_nodo_ot_select, ValorComboStr(cmbSintoma), ValorComboStr(cmbFalla), dt_fecha_rec.Value, dt_hr_rec.Value, dt_fecha_ini.Value, dt_hr_ini.Value, dt_fecha_ter.Value, dt_hr_ter.Value, dt_fecha_cierre.Value, dt_hr_cierre.Value, txtDuracionOt.Text, ValorComboStr(cmb_Tipo_Det), cmb_det.Text, text_des_falla.Text, txtDescTrab.Text, txtSolicitadoPor.Text, txtRecibidoPor.Text, txtCerradoPor.Text, ValorComboStr(cmb_Tipo_trab), principal.lblUsuario.Text, estado_ot, mant_interna, cod_resp, resp)
 
                     If grillaPersonalOt.RowCount > 0 Then
                         For i = 0 To grillaPersonalOt.RowCount - 1
@@ -215,7 +222,7 @@ Public Class frm_OT
                         mant_interna = True
                     End If
 
-                    OT.IngOtAbierta(txtNot.Text, id_nodo_ot_select, cmbSintoma.SelectedValue, cmbFalla.SelectedValue, dt_fecha_rec.Value, dt_hr_rec.Value, dt_fecha_ini.Value, dt_hr_ini.Value, cmb_Tipo_Det.SelectedValue, cmb_det.Text, text_des_falla.Text, txtSolicitadoPor.Text, txtRecibidoPor.Text, cmb_Tipo_trab.SelectedValue, principal.lblUsuario.Text, txtDescTrab.Text, mant_interna, cod_resp, resp)
+                    OT.IngOtAbierta(txtNot.Text, id_nodo_ot_select, ValorComboStr(cmbSintoma), ValorComboStr(cmbFalla), dt_fecha_rec.Value, dt_hr_rec.Value, dt_fecha_ini.Value, dt_hr_ini.Value, ValorComboStr(cmb_Tipo_Det), cmb_det.Text, text_des_falla.Text, txtSolicitadoPor.Text, txtRecibidoPor.Text, ValorComboStr(cmb_Tipo_trab), principal.lblUsuario.Text, txtDescTrab.Text, mant_interna, cod_resp, resp)
 
                     If grillaPersonalOt.RowCount > 0 Then
                         For i = 0 To grillaPersonalOt.RowCount - 1
@@ -263,7 +270,7 @@ Public Class frm_OT
                         mant_interna = True
                     End If
 
-                    OT.UpdOtAbierta(txtNot.Text, id_nodo_ot_select, cmbSintoma.SelectedValue, cmbFalla.SelectedValue, dt_fecha_rec.Value, dt_hr_rec.Value, dt_fecha_ini.Value, dt_hr_ini.Value, cmb_Tipo_Det.SelectedValue, cmb_det.Text, text_des_falla.Text, txtSolicitadoPor.Text, txtRecibidoPor.Text, cmb_Tipo_trab.SelectedValue, principal.lblUsuario.Text, mant_interna, txtDescTrab.Text, cod_resp, resp)
+                    OT.UpdOtAbierta(txtNot.Text, id_nodo_ot_select, ValorComboStr(cmbSintoma), ValorComboStr(cmbFalla), dt_fecha_rec.Value, dt_hr_rec.Value, dt_fecha_ini.Value, dt_hr_ini.Value, ValorComboStr(cmb_Tipo_Det), cmb_det.Text, text_des_falla.Text, txtSolicitadoPor.Text, txtRecibidoPor.Text, ValorComboStr(cmb_Tipo_trab), principal.lblUsuario.Text, mant_interna, txtDescTrab.Text, cod_resp, resp)
 
                     If grillaPersonalOt.RowCount > 0 Then
                         For i = 0 To grillaPersonalOt.RowCount - 1
@@ -367,7 +374,7 @@ Public Class frm_OT
             Dim OT As New OT
             OT.autocompletar_personal(txtCerradoPor)
             cmbEstadoOt.Enabled = True
-            cmbEstadoOt.Text = cmbEstadoOt.Items(1)
+            cmbEstadoOt.Text = Convert.ToString(cmbEstadoOt.Items(1))
         Else
             PanFechaCierreOt.Enabled = False
         End If
@@ -484,7 +491,7 @@ Public Class frm_OT
                         txtDescTrab.Text = DST_OT.Tables(0).Rows(0).Item(16).ToString
                         id_nodo = DST_OT.Tables(0).Rows(0).Item(1).ToString
                         Nodo.SeleccionarNodoPorId(arbol3, id_nodo, id_nodo_ot_select)
-                        cmbEstadoOt.Text = cmbEstadoOt.Items(0)
+                        cmbEstadoOt.Text = Convert.ToString(cmbEstadoOt.Items(0))
 
                         Dim formato_grid As New FormatoGrillas
 
@@ -522,7 +529,7 @@ Public Class frm_OT
                         cmb_Tipo_trab.Text = DST_OT.Tables(0).Rows(0).Item(2).ToString
                         txtRecibidoPor.Text = DST_OT.Tables(0).Rows(0).Item(19).ToString
                         txtSolicitadoPor.Text = DST_OT.Tables(0).Rows(0).Item(20).ToString
-                        cmbEstadoOt.Text = cmbEstadoOt.Items(1)
+                        cmbEstadoOt.Text = Convert.ToString(cmbEstadoOt.Items(1))
                         chkOtMpInterna.Checked = (DST_OT.Tables(0).Rows(0).Item(22).ToString().ToLower() = "true" OrElse DST_OT.Tables(0).Rows(0).Item(22).ToString() = "1")
 
                         ' Fechas y horas de término y cierre con protección contra nulos (previene el error en línea 461)
@@ -600,7 +607,7 @@ Public Class frm_OT
                         cmb_Tipo_trab.Text = DST_OT.Tables(0).Rows(0).Item(2).ToString
                         txtRecibidoPor.Text = DST_OT.Tables(0).Rows(0).Item(19).ToString
                         txtSolicitadoPor.Text = DST_OT.Tables(0).Rows(0).Item(20).ToString
-                        cmbEstadoOt.Text = cmbEstadoOt.Items(2)
+                        cmbEstadoOt.Text = Convert.ToString(cmbEstadoOt.Items(2))
                         chkOtMpInterna.Checked = (DST_OT.Tables(0).Rows(0).Item(22).ToString().ToLower() = "true" OrElse DST_OT.Tables(0).Rows(0).Item(22).ToString() = "1")
 
                         ' Fechas y horas de término y cierre seguras

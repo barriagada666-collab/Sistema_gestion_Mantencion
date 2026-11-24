@@ -161,7 +161,20 @@ Public Class FrmAdminUsuarios
         AplicarMapaPermisosAGrillas(plantilla)
     End Sub
 
+    Private Shared Function TienePermisoAdminUsuarios(ByVal owner As IWin32Window) As Boolean
+        If Not Usuario.UsuarioAutenticado OrElse Usuario.EsAdministrador Then Return True
+        Try
+            If principal IsNot Nothing AndAlso principal.UsuariosToolStripMenuItem IsNot Nothing AndAlso Not principal.UsuariosToolStripMenuItem.Enabled Then
+                MessageBox.Show(owner, "No posee permisos para administrar usuarios o perfiles.", "Acceso restringido", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return False
+            End If
+        Catch
+        End Try
+        Return True
+    End Function
+
     Private Sub btnIngUsuario_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnIngUsuario.Click
+        If Not TienePermisoAdminUsuarios(Me) Then Exit Sub
         Try
             Dim usuario As New Usuario
             Dim cod_resp As Integer = 0
@@ -189,6 +202,7 @@ Public Class FrmAdminUsuarios
     End Sub
 
     Private Sub btnActUsuario_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnActUsuario.Click
+        If Not TienePermisoAdminUsuarios(Me) Then Exit Sub
         Try
             If Not _modoEdicion Then
                 MessageBox.Show(Me, "Seleccione un usuario con doble clic desde la tabla antes de actualizar.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
@@ -230,6 +244,7 @@ Public Class FrmAdminUsuarios
     End Sub
 
     Private Sub btnDelUsuario_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnDelUsuario.Click
+        If Not TienePermisoAdminUsuarios(Me) Then Exit Sub
         Try
             Dim rutSel As String = txtRutUsuario.Text.Trim()
             Dim nomSel As String = txtNomUsuario.Text.Trim()
